@@ -2,22 +2,38 @@
 TIENDA ONLINE - ESTILOS PROFESIONALES
 ============================================ */
 
-/* Header Shop */
+/* ============================================
+RESET COMPATIBLE CON STYLE.CSS PRINCIPAL
+============================================ */
+.shop-header,
+.shop-header *,
+.cart-sidebar,
+.cart-sidebar *,
+.quick-view-modal,
+.quick-view-modal * {
+    box-sizing: border-box;
+}
+
+/* ============================================
+HEADER SHOP
+============================================ */
 .shop-header {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-    padding: 1.5rem 3rem;
-    background: transparent;
-    transition: all 0.5s var(--ease-out-expo);
+    padding: 1.2rem 2rem;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    transition: padding 0.4s var(--ease-out-expo),
+                background 0.4s var(--ease-out-expo);
 }
 
 .shop-header.scrolled {
-    background: rgba(10, 10, 10, 0.95);
-    backdrop-filter: blur(20px);
-    padding: 1rem 3rem;
+    padding: 0.8rem 2rem;
+    background: rgba(10, 10, 10, 0.98);
 }
 
 .shop-header-inner {
@@ -26,16 +42,17 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .shop-logo {
     font-family: var(--font-display);
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 700;
     letter-spacing: 0.08em;
     color: var(--color-text);
     text-transform: uppercase;
+    flex-shrink: 0;
 }
 
 .shop-logo span {
@@ -44,19 +61,19 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 
 .shop-search-bar {
     flex: 1;
-    max-width: 500px;
+    max-width: 450px;
     position: relative;
 }
 
 .shop-search-bar input {
     width: 100%;
-    padding: 0.8rem 3rem 0.8rem 1.5rem;
+    padding: 0.7rem 2.8rem 0.7rem 1.2rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 4px;
     color: var(--color-text);
     font-family: var(--font-body);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     transition: all 0.3s var(--ease-out-expo);
 }
 
@@ -72,17 +89,20 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 
 .search-icon {
     position: absolute;
-    right: 1rem;
+    right: 0.9rem;
     top: 50%;
     transform: translateY(-50%);
     color: var(--color-text-muted);
     pointer-events: none;
+    width: 18px;
+    height: 18px;
 }
 
 .shop-header-actions {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
+    flex-shrink: 0;
 }
 
 .cart-toggle {
@@ -90,8 +110,11 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
     background: none;
     border: none;
     color: var(--color-text);
-    cursor: none;
+    cursor: pointer;
     padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: color 0.3s;
 }
 
@@ -101,95 +124,96 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 
 .cart-count {
     position: absolute;
-    top: -5px;
-    right: -5px;
-    width: 20px;
-    height: 20px;
+    top: -4px;
+    right: -4px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
     background: var(--color-accent);
     color: var(--color-dark);
-    font-size: 0.7rem;
-    font-weight: 600;
-    border-radius: 50%;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Hero Tienda */
+/* ============================================
+HERO TIENDA
+============================================ */
 .shop-hero {
     position: relative;
-    height: 70vh;
-    min-height: 500px;
+    height: 65vh;
+    min-height: 420px;
+    max-height: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    margin-top: 80px;
+    margin-top: 60px;
 }
 
 .shop-hero-bg {
     position: absolute;
-    inset: -20%;
-    background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%);
-    background-size: cover;
-    background-position: center;
-    will-change: transform;
+    inset: 0;
+    background: linear-gradient(160deg, #1a1a2e 0%, #0f0f1a 40%, #0a0a0a 100%);
     z-index: 0;
 }
 
 .shop-hero-glow {
     position: absolute;
-    bottom: -20%;
+    bottom: -10%;
     left: 50%;
     transform: translateX(-50%);
     width: 100%;
-    height: 80%;
+    height: 70%;
     background: radial-gradient(
         ellipse at center bottom,
-        rgba(201, 169, 110, 0.3) 0%,
-        rgba(201, 169, 110, 0.1) 40%,
+        rgba(201, 169, 110, 0.25) 0%,
+        rgba(201, 169, 110, 0.08) 40%,
         transparent 70%
     );
-    filter: blur(60px);
+    filter: blur(50px);
     pointer-events: none;
     z-index: 1;
     animation: shopGlowPulse 8s ease-in-out infinite;
 }
 
 @keyframes shopGlowPulse {
-    0%, 100% { opacity: 0.4; transform: translateX(-50%) scale(1); }
-    50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+    0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+    50% { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
 }
 
 .shop-hero-content {
     position: relative;
     z-index: 2;
     text-align: center;
-    padding: 0 2rem;
-    max-width: 900px;
+    padding: 0 1.5rem;
+    max-width: 800px;
 }
 
 .shop-eyebrow {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 500;
     letter-spacing: 0.4em;
     text-transform: uppercase;
     color: var(--color-accent);
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     display: block;
     opacity: 0;
-    transform: translateY(30px);
-    animation: fadeInUp 1s var(--ease-out-expo) 0.3s forwards;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s var(--ease-out-expo) 0.3s forwards;
 }
 
 .shop-title {
     font-family: var(--font-display);
-    font-size: clamp(3rem, 8vw, 6rem);
+    font-size: clamp(2.5rem, 7vw, 5rem);
     font-weight: 400;
     line-height: 1.1;
     letter-spacing: -0.02em;
     color: var(--color-white);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
 .shop-title .line {
@@ -200,11 +224,11 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 .shop-title .line-inner {
     display: block;
     transform: translateY(110%);
-    animation: slideUp 1.2s var(--ease-out-expo) forwards;
+    animation: slideUp 1s var(--ease-out-expo) forwards;
 }
 
-.shop-title .line-inner:nth-child(1) { animation-delay: 0.4s; }
-.shop-title .line-inner:nth-child(2) { animation-delay: 0.6s; }
+.shop-title .line:nth-child(1) .line-inner { animation-delay: 0.4s; }
+.shop-title .line:nth-child(2) .line-inner { animation-delay: 0.6s; }
 
 .shop-title em {
     font-style: italic;
@@ -212,63 +236,117 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 }
 
 .shop-subtitle {
-    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    font-size: clamp(0.9rem, 1.3vw, 1.1rem);
     font-weight: 300;
     color: var(--color-text-muted);
-    max-width: 600px;
+    max-width: 550px;
     margin: 0 auto;
+    line-height: 1.7;
     opacity: 0;
-    transform: translateY(30px);
-    animation: fadeInUp 1s var(--ease-out-expo) 0.9s forwards;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s var(--ease-out-expo) 0.9s forwards;
 }
 
 .shop-hero-wave {
     position: absolute;
-    bottom: 0;
+    bottom: -1px; /* ★ CAMBIO: -1px para evitar línea blanca */
     left: 0;
     width: 100%;
-    height: 120px;
+    height: 100px;
     z-index: 3;
+    pointer-events: none;
+    overflow: hidden;
 }
 
 .shop-hero-wave svg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    display: block;
 }
 
-/* Filtros */
+.shop-hero-wave svg path {
+    fill: var(--color-bg); /* ★ CAMBIO: usa el color de fondo de la siguiente sección */
+}
+
+/* ============================================
+ESTRELLAS PARPADEANTES - SHOP HERO
+============================================ */
+.shop-stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.shop-star {
+    position: absolute;
+    background: var(--color-accent);
+    border-radius: 50%;
+    animation: shopStarTwinkle var(--twinkle-duration) ease-in-out infinite;
+    animation-delay: var(--twinkle-delay);
+    box-shadow: 0 0 var(--glow-size) var(--color-accent);
+}
+
+@keyframes shopStarTwinkle {
+    0%, 100% {
+        opacity: var(--min-opacity);
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: var(--max-opacity);
+        transform: scale(1.2);
+    }
+}
+
+/* Responsive: menos estrellas en móvil */
+@media (max-width: 768px) {
+    .shop-stars {
+        opacity: 0.7;
+    }
+}
+
+/* ============================================
+FILTROS
+============================================ */
 .shop-filters-section {
     position: sticky;
-    top: 80px;
+    top: 60px;
     z-index: 100;
     background: var(--color-bg);
-    padding: 2rem 3rem;
+    padding: 1.5rem 2rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
 }
 
 .shop-filters {
     max-width: 1400px;
     margin: 0 auto;
     display: flex;
-    gap: 1rem;
+    gap: 0.8rem;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
 }
 
 .filter-btn {
-    padding: 0.6rem 1.8rem;
+    padding: 0.55rem 1.5rem;
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--color-text-muted);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    cursor: none;
-    transition: all 0.4s var(--ease-out-expo);
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out-expo);
     border-radius: 4px;
+    font-family: var(--font-body);
 }
 
 .filter-btn:hover,
@@ -280,104 +358,129 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 
 .shop-sort {
     max-width: 1400px;
-    margin: 1.5rem auto 0;
+    margin: 1.2rem auto 0;
     display: flex;
     justify-content: flex-end;
 }
 
 .shop-sort select {
-    padding: 0.6rem 1.5rem;
+    padding: 0.55rem 1.2rem;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--color-text);
     font-family: var(--font-body);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     border-radius: 4px;
-    cursor: none;
+    cursor: pointer;
     outline: none;
+    transition: border-color 0.3s;
 }
 
-/* Productos Grid */
+.shop-sort select:focus {
+    border-color: var(--color-accent);
+}
+
+.shop-sort select option {
+    background: var(--color-bg-alt);
+    color: var(--color-text);
+}
+
+/* ============================================
+PRODUCTOS GRID
+============================================ */
 .shop-products-section {
-    padding: 4rem 3rem;
+    padding: 3rem 2rem 5rem;
     max-width: 1400px;
+    min-height: 400px;
     margin: 0 auto;
 }
 
 .shop-products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 3rem;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 1.8rem;
+    width: 100%;
 }
 
+/* No results */
+.shop-no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 5rem 2rem;
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    font-style: italic;
+}
+
+/* ============================================
+PRODUCT CARD - OPTIMIZADO
+============================================ */
 .product-card {
     position: relative;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
-    transition: all 0.6s var(--ease-out-expo);
-    opacity: 0;
-    transform: translateY(40px);
-    animation: fadeInUp 0.8s var(--ease-out-expo) forwards;
-}
-
-.product-card.visible {
+    transition: transform 0.35s var(--ease-out-expo),
+                border-color 0.35s var(--ease-out-expo),
+                box-shadow 0.35s var(--ease-out-expo);
     opacity: 1;
     transform: translateY(0);
 }
 
 .product-card:hover {
     background: rgba(255, 255, 255, 0.04);
-    transform: translateY(-10px);
-    border-color: rgba(201, 169, 110, 0.3);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    transform: translateY(-6px);
+    border-color: rgba(201, 169, 110, 0.25);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
 .product-image-wrapper {
     position: relative;
     aspect-ratio: 1;
     overflow: hidden;
+    background: rgba(255, 255, 255, 0.02);
 }
 
 .product-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.8s var(--ease-out-expo);
-    filter: brightness(0.9) saturate(0.9);
+    transition: transform 0.6s var(--ease-out-expo);
+    filter: brightness(0.92) saturate(0.92);
 }
 
 .product-card:hover .product-image {
-    transform: scale(1.1);
+    transform: scale(1.06);
     filter: brightness(1) saturate(1);
 }
 
 .product-badge {
     position: absolute;
-    top: 1rem;
-    left: 1rem;
-    padding: 0.4rem 1rem;
+    top: 0.8rem;
+    left: 0.8rem;
+    padding: 0.35rem 0.8rem;
     background: var(--color-accent);
     color: var(--color-dark);
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 600;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    border-radius: 4px;
+    border-radius: 3px;
     z-index: 2;
 }
 
 .product-actions {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 0.8rem;
+    right: 0.8rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.4rem;
     opacity: 0;
-    transform: translateX(20px);
-    transition: all 0.4s var(--ease-out-expo);
+    transform: translateX(10px);
+    transition: all 0.35s var(--ease-out-expo);
+    z-index: 2;
 }
 
 .product-card:hover .product-actions {
@@ -386,8 +489,8 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 }
 
 .action-btn {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
     background: rgba(255, 255, 255, 0.95);
     border: none;
     border-radius: 50%;
@@ -395,48 +498,62 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
     align-items: center;
     justify-content: center;
     color: var(--color-dark);
-    cursor: none;
+    cursor: pointer;
     transition: all 0.3s var(--ease-out-expo);
+    padding: 0;
 }
 
 .action-btn:hover {
     background: var(--color-accent);
-    transform: scale(1.1);
+    transform: scale(1.08);
+}
+
+.action-btn svg {
+    width: 18px;
+    height: 18px;
 }
 
 .product-info {
-    padding: 1.5rem;
+    padding: 1.2rem;
 }
 
 .product-category {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--color-accent);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
+    opacity: 0.8;
 }
 
 .product-name {
     font-family: var(--font-display);
-    font-size: 1.4rem;
+    font-size: 1.25rem;
     color: var(--color-white);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.3;
 }
 
 .product-price {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     font-weight: 600;
     color: var(--color-accent);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
 }
 
 .product-price .original-price {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--color-text-muted);
     text-decoration: line-through;
-    margin-left: 0.5rem;
+    font-weight: 400;
 }
 
-/* Carrito Sidebar */
+/* ============================================
+CARRITO SIDEBAR
+============================================ */
 .cart-sidebar {
     position: fixed;
     top: 0;
@@ -445,18 +562,20 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
     height: 100%;
     z-index: 2000;
     visibility: hidden;
+    pointer-events: none;
 }
 
 .cart-sidebar.open {
     visibility: visible;
+    pointer-events: auto;
 }
 
 .cart-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.75);
     opacity: 0;
-    transition: opacity 0.5s var(--ease-out-expo);
+    transition: opacity 0.4s var(--ease-out-expo);
 }
 
 .cart-sidebar.open .cart-overlay {
@@ -468,14 +587,14 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
     top: 0;
     right: 0;
     width: 100%;
-    max-width: 500px;
+    max-width: 420px;
     height: 100%;
     background: var(--color-bg-alt);
     border-left: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     flex-direction: column;
     transform: translateX(100%);
-    transition: transform 0.6s var(--ease-out-expo);
+    transition: transform 0.5s var(--ease-out-expo);
 }
 
 .cart-sidebar.open .cart-content {
@@ -483,25 +602,30 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 }
 
 .cart-header {
-    padding: 2rem;
+    padding: 1.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-shrink: 0;
 }
 
 .cart-header h2 {
     font-family: var(--font-display);
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     color: var(--color-white);
+    font-weight: 400;
 }
 
 .cart-close {
     background: none;
     border: none;
     color: var(--color-text);
-    cursor: none;
-    padding: 0.5rem;
+    cursor: pointer;
+    padding: 0.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: color 0.3s;
 }
 
@@ -512,71 +636,110 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 .cart-items {
     flex: 1;
     overflow-y: auto;
-    padding: 2rem;
+    padding: 1.5rem;
+    -webkit-overflow-scrolling: touch;
+}
+
+.cart-items::-webkit-scrollbar {
+    width: 4px;
+}
+
+.cart-items::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.cart-items::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
 }
 
 .cart-item {
     display: flex;
-    gap: 1.5rem;
-    padding: 1.5rem 0;
+    gap: 1rem;
+    padding: 1.2rem 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    align-items: flex-start;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
 }
 
 .cart-item-image {
-    width: 80px;
-    height: 80px;
+    width: 70px;
+    height: 70px;
     object-fit: cover;
     border-radius: 4px;
+    flex-shrink: 0;
 }
 
 .cart-item-details {
     flex: 1;
+    min-width: 0;
 }
 
 .cart-item-name {
     font-family: var(--font-display);
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--color-white);
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.2rem;
+    line-height: 1.3;
 }
 
 .cart-item-price {
     color: var(--color-accent);
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.6rem;
 }
 
 .cart-item-quantity {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.6rem;
 }
 
 .qty-btn {
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--color-text);
-    cursor: none;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s;
+    transition: all 0.2s;
+    font-size: 1rem;
+    padding: 0;
+    border-radius: 3px;
 }
 
 .qty-btn:hover {
     background: rgba(201, 169, 110, 0.1);
     border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.cart-item-quantity span {
+    min-width: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--color-text);
 }
 
 .cart-item-remove {
     background: none;
     border: none;
     color: var(--color-text-muted);
-    cursor: none;
-    padding: 0.5rem;
+    cursor: pointer;
+    padding: 0.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: color 0.3s;
+    flex-shrink: 0;
+    align-self: center;
 }
 
 .cart-item-remove:hover {
@@ -587,16 +750,26 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
     text-align: center;
     padding: 4rem 2rem;
     color: var(--color-text-muted);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.cart-empty p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
 }
 
 .cart-continue {
     display: inline-block;
-    margin-top: 1rem;
     color: var(--color-accent);
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     transition: color 0.3s;
+    cursor: pointer;
 }
 
 .cart-continue:hover {
@@ -604,38 +777,42 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 }
 
 .cart-footer {
-    padding: 2rem;
+    padding: 1.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-shrink: 0;
 }
 
 .cart-total {
     display: flex;
     justify-content: space-between;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--color-white);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
 .cart-checkout {
     width: 100%;
-    padding: 1.2rem;
+    padding: 1rem;
     background: var(--color-accent);
     color: var(--color-dark);
     border: none;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    cursor: none;
-    transition: all 0.4s var(--ease-out-expo);
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out-expo);
+    font-family: var(--font-body);
 }
 
 .cart-checkout:hover {
     background: var(--color-accent-light);
 }
 
-/* Quick View Modal */
+/* ============================================
+QUICK VIEW MODAL
+============================================ */
 .quick-view-modal {
     position: fixed;
     inset: 0;
@@ -643,21 +820,23 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 2rem;
+    padding: 1.5rem;
     visibility: hidden;
     opacity: 0;
-    transition: all 0.5s var(--ease-out-expo);
+    transition: all 0.4s var(--ease-out-expo);
+    pointer-events: none;
 }
 
 .quick-view-modal.open {
     visibility: visible;
     opacity: 1;
+    pointer-events: auto;
 }
 
 .quick-view-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.85);
 }
 
 .quick-view-content {
@@ -665,12 +844,12 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
     background: var(--color-bg-alt);
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 8px;
-    max-width: 900px;
+    max-width: 850px;
     width: 100%;
-    max-height: 90vh;
+    max-height: 85vh;
     overflow-y: auto;
-    transform: scale(0.9);
-    transition: transform 0.5s var(--ease-out-expo);
+    transform: scale(0.95);
+    transition: transform 0.4s var(--ease-out-expo);
 }
 
 .quick-view-modal.open .quick-view-content {
@@ -679,18 +858,25 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 
 .quick-view-close {
     position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    background: none;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.5);
     border: none;
     color: var(--color-text);
-    cursor: none;
+    cursor: pointer;
     z-index: 1;
-    transition: color 0.3s;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s;
 }
 
 .quick-view-close:hover {
-    color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-dark);
 }
 
 .quick-view-body {
@@ -701,42 +887,522 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
 .quick-view-image {
     width: 100%;
     height: 100%;
+    min-height: 300px;
     object-fit: cover;
 }
 
 .quick-view-info {
-    padding: 3rem;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .quick-view-category {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--color-accent);
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
 }
 
 .quick-view-title {
     font-family: var(--font-display);
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: var(--color-white);
-    margin-bottom: 1rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.2;
 }
 
 .quick-view-price {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-bottom: 1.5rem;
+}
+
+.quick-view-description {
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+.quick-view-add-to-cart {
+    width: 100%;
+    padding: 1rem;
+    background: var(--color-accent);
+    color: var(--color-dark);
+    border: none;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out-expo);
+    font-family: var(--font-body);
+}
+
+.quick-view-add-to-cart:hover {
+    background: var(--color-accent-light);
+}
+
+/* ============================================
+ANIMACIONES
+============================================ */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(110%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+RESPONSIVE
+============================================ */
+@media (max-width: 768px) {
+    .shop-header {
+        padding: 1rem 1.2rem;
+    }
+    
+    .shop-header.scrolled {
+        padding: 0.7rem 1.2rem;
+    }
+    
+    .shop-header-inner {
+        gap: 1rem;
+    }
+    
+    .shop-logo {
+        font-size: 1.3rem;
+    }
+    
+    .shop-search-bar {
+        display: none;
+    }
+    
+    .shop-hero {
+        height: 55vh;
+        min-height: 350px;
+        margin-top: 55px;
+    }
+    
+    .shop-hero-content {
+        padding: 0 1.2rem;
+    }
+    
+    .shop-hero-wave {
+        height: 70px;
+    }
+    
+    .shop-filters-section {
+        padding: 1.2rem;
+        top: 55px;
+    }
+    
+    .shop-filters {
+        gap: 0.5rem;
+    }
+    
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.65rem;
+    }
+    
+    .shop-sort {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .shop-products-section {
+        padding: 2rem 1.2rem 4rem;
+    }
+    
+    .shop-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.2rem;
+    }
+    
+    .product-card:hover {
+        transform: none;
+    }
+    
+    .product-actions {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    .quick-view-body {
+        grid-template-columns: 1fr;
+    }
+    
+    .quick-view-image {
+        min-height: 250px;
+        max-height: 300px;
+    }
+    
+    .quick-view-info {
+        padding: 1.5rem;
+    }
+    
+    .cart-content {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .shop-products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .shop-title {
+        font-size: clamp(2rem, 8vw, 3rem);
+    }
+    
+    .filter-btn {
+        padding: 0.45rem 0.8rem;
+        font-size: 0.6rem;
+    }
+}
+
+/* ============================================
+REDUCIR MOVIMIENTO (Accesibilidad)
+============================================ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .shop-hero-bg,
+    .shop-hero-glow {
+        animation: none;
+    }
+}
+
+/* ============================================
+MODAL DE FICHA TÉCNICA - PARALLAX
+============================================ */
+.product-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.5s var(--ease-out-expo);
+    pointer-events: none;
+}
+
+.product-modal.open {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.modal-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    background: var(--color-bg-alt);
+    overflow-y: auto;
+    transform: scale(0.9) translateY(50px);
+    transition: transform 0.6s var(--ease-out-expo);
+}
+
+.product-modal.open .modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.modal-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: var(--color-text);
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 10;
+    transition: all 0.3s;
+}
+
+.modal-close:hover {
+    background: var(--color-accent);
+    color: var(--color-dark);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 100vh;
+}
+
+/* Galería */
+.modal-gallery-section {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-dark);
+}
+
+.modal-gallery {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+}
+
+.modal-gallery-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.6s var(--ease-out-expo);
+    overflow: hidden;
+}
+
+.modal-gallery-slide.active {
+    opacity: 1;
+}
+
+.modal-gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s linear;
+    will-change: transform;
+}
+
+.modal-thumbnails {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.8rem;
+    z-index: 5;
+    padding: 0.8rem;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+}
+
+.modal-thumbnail {
+    width: 60px;
+    height: 60px;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 0;
+    background: none;
+}
+
+.modal-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-thumbnail:hover {
+    border-color: rgba(201, 169, 110, 0.5);
+}
+
+.modal-thumbnail.active {
+    border-color: var(--color-accent);
+}
+
+/* Info del producto */
+.modal-info-section {
+    padding: clamp(3rem, 6vw, 6rem) clamp(2rem, 4vw, 4rem);
+    overflow-y: auto;
+}
+
+.modal-info-content {
+    max-width: 600px;
+}
+
+.modal-category {
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.modal-title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 400;
+    color: var(--color-white);
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.modal-price {
+    font-size: 2.5rem;
     font-weight: 600;
     color: var(--color-accent);
     margin-bottom: 2rem;
 }
 
-.quick-view-description {
+.modal-description {
+    font-size: 1.05rem;
     color: var(--color-text-muted);
     line-height: 1.8;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
 }
 
-.quick-view-add-to-cart {
+/* Características */
+.modal-features-section {
+    margin-bottom: 3rem;
+}
+
+.modal-features-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 1.5rem;
+}
+
+.modal-features-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--color-text);
+    font-size: 0.95rem;
+}
+
+.modal-feature-item svg {
+    color: var(--color-accent);
+    flex-shrink: 0;
+}
+
+/* Variantes */
+.modal-variants-section {
+    margin-bottom: 3rem;
+}
+
+.modal-variants-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 1.5rem;
+}
+
+.modal-variants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.modal-variant {
+    position: relative;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    padding: 0;
+    text-align: left;
+}
+
+.modal-variant:hover {
+    border-color: rgba(201, 169, 110, 0.3);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.modal-variant.active {
+    border-color: var(--color-accent);
+    background: rgba(201, 169, 110, 0.05);
+}
+
+.modal-variant.out-of-stock {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.modal-variant img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+.modal-variant-info {
+    padding: 0.8rem;
+}
+
+.modal-variant-name {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--color-white);
+    margin-bottom: 0.3rem;
+}
+
+.modal-variant-price {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+.modal-variant-stock {
+    display: block;
+    font-size: 0.7rem;
+    color: #ff4444;
+    margin-top: 0.3rem;
+}
+
+.cart-item-variant {
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    margin-bottom: 0.3rem;
+    font-style: italic;
+}
+
+/* Botón agregar al carrito */
+.modal-add-to-cart {
     width: 100%;
     padding: 1.2rem;
     background: var(--color-accent);
@@ -746,61 +1412,658 @@ TIENDA ONLINE - ESTILOS PROFESIONALES
     font-weight: 600;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    cursor: none;
+    cursor: pointer;
     transition: all 0.4s var(--ease-out-expo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    font-family: var(--font-body);
 }
 
-.quick-view-add-to-cart:hover {
+.modal-add-to-cart:hover {
     background: var(--color-accent-light);
+    transform: translateY(-2px);
 }
 
-/* Animaciones */
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* Botón "Ver Más" en tarjetas */
+.product-view-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 1rem;
+    background: transparent;
+    border: 1px solid rgba(201, 169, 110, 0.3);
+    color: var(--color-accent);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out-expo);
+    font-family: var(--font-body);
 }
 
-@keyframes slideUp {
-    to {
-        transform: translateY(0);
-    }
+.product-view-more:hover {
+    background: var(--color-accent);
+    color: var(--color-dark);
+    border-color: var(--color-accent);
+}
+
+.product-view-more svg {
+    transition: transform 0.3s;
+}
+
+.product-view-more:hover svg {
+    transform: translateX(4px);
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-    .shop-header {
-        padding: 1rem 1.5rem;
-    }
-    
-    .shop-search-bar {
-        display: none;
-    }
-    
-    .shop-hero {
-        height: 60vh;
-        min-height: 400px;
-    }
-    
-    .shop-filters-section {
-        padding: 1.5rem;
-    }
-    
-    .shop-products-section {
-        padding: 2rem 1.5rem;
-    }
-    
-    .shop-products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 2rem;
-    }
-    
-    .quick-view-body {
+@media (max-width: 968px) {
+    .modal-body {
         grid-template-columns: 1fr;
     }
     
-    .cart-content {
-        max-width: 100%;
+    .modal-gallery-section {
+        height: 50vh;
     }
+    
+    .modal-gallery {
+        height: 50vh;
+    }
+    
+    .modal-info-section {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .modal-variants-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .modal-thumbnail {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* ============================================
+POPUP DE PROMOCIONES - PREMIUM
+============================================ */
+.promo-popup {
+    position: fixed;
+    inset: 0;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.5s var(--ease-out-expo);
+}
+
+.promo-popup.open {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.promo-popup-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.promo-popup-content {
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 100%);
+    border: 1px solid rgba(201, 169, 110, 0.3);
+    border-radius: 12px;
+    padding: clamp(2rem, 4vw, 3rem);
+    transform: scale(0.9) translateY(30px);
+    transition: transform 0.6s var(--ease-out-expo);
+    box-shadow: 
+        0 25px 50px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(201, 169, 110, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    overflow: hidden;
+}
+
+.promo-popup.open .promo-popup-content {
+    transform: scale(1) translateY(0);
+}
+
+/* Efecto de brillo en el borde */
+.promo-popup-content::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 0deg,
+        rgba(201, 169, 110, 0.1) 90deg,
+        transparent 180deg
+    );
+    animation: promoBorderShine 8s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes promoBorderShine {
+    to { transform: rotate(360deg); }
+}
+
+/* Botón cerrar */
+.promo-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.promo-close:hover {
+    background: var(--color-accent);
+    color: var(--color-dark);
+    border-color: var(--color-accent);
+    transform: rotate(90deg);
+}
+
+/* Dots de navegación */
+.promo-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.promo-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    padding: 0;
+}
+
+.promo-dot.active {
+    background: var(--color-accent);
+    width: 24px;
+    border-radius: 4px;
+}
+
+/* Slider de promociones */
+.promo-slider {
+    position: relative;
+    min-height: 280px;
+}
+
+.promo-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: all 0.5s var(--ease-out-expo);
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.promo-slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+    position: relative;
+}
+
+/* Badge de la promoción */
+.promo-badge {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    animation: promoBadgePulse 2s ease-in-out infinite;
+}
+
+.promo-badge.gold {
+    background: linear-gradient(135deg, #c9a96e 0%, #e2c992 100%);
+    color: #0a0a0a;
+}
+
+.promo-badge.red {
+    background: linear-gradient(135deg, #ff4444 0%, #ff6b6b 100%);
+    color: #fff;
+}
+
+.promo-badge.purple {
+    background: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+    color: #fff;
+}
+
+@keyframes promoBadgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Descuento grande */
+.promo-discount {
+    font-family: var(--font-display);
+    font-size: clamp(3rem, 8vw, 5rem);
+    font-weight: 700;
+    color: var(--color-accent);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 40px rgba(201, 169, 110, 0.3);
+}
+
+/* Título */
+.promo-title {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: var(--color-white);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+/* Subtítulo */
+.promo-subtitle {
+    font-size: 1rem;
+    color: var(--color-accent);
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+/* Descripción */
+.promo-description {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    max-width: 400px;
+}
+
+/* Código de cupón */
+.promo-code-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(201, 169, 110, 0.4);
+    border-radius: 6px;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.promo-code-wrapper:hover {
+    background: rgba(201, 169, 110, 0.05);
+    border-color: var(--color-accent);
+}
+
+.promo-code-label {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.promo-code {
+    font-family: 'Courier New', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-accent);
+    letter-spacing: 0.15em;
+}
+
+.promo-code-copy {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    transition: color 0.3s;
+}
+
+.promo-code-wrapper:hover .promo-code-copy {
+    color: var(--color-accent);
+}
+
+/* Vigencia */
+.promo-validity {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.promo-validity svg {
+    width: 14px;
+    height: 14px;
+    color: var(--color-accent);
+}
+
+/* CTA Button */
+.promo-cta {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background: var(--color-accent);
+    color: var(--color-dark);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.4s var(--ease-out-expo);
+    text-decoration: none;
+    font-family: var(--font-body);
+    position: relative;
+    overflow: hidden;
+}
+
+.promo-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s;
+}
+
+.promo-cta:hover::before {
+    transform: translateX(100%);
+}
+
+.promo-cta:hover {
+    background: var(--color-accent-light);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(201, 169, 110, 0.3);
+}
+
+/* No mostrar de nuevo */
+.promo-dont-show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.promo-dont-show input {
+    accent-color: var(--color-accent);
+    cursor: pointer;
+}
+
+/* Toast de código copiado */
+.promo-toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--color-accent);
+    color: var(--color-dark);
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 6000;
+    opacity: 0;
+    transition: all 0.4s var(--ease-out-expo);
+    pointer-events: none;
+}
+
+.promo-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .promo-popup-content {
+        padding: 2rem 1.5rem;
+    }
+    
+    .promo-slider {
+        min-height: 320px;
+    }
+    
+    .promo-code-wrapper {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* Reducir movimiento */
+@media (prefers-reduced-motion: reduce) {
+    .promo-popup-content::before {
+        animation: none;
+    }
+    
+    .promo-badge {
+        animation: none;
+    }
+}
+
+/* ============================================
+BOTONES DE NAVEGACIÓN - POPUP
+============================================ */
+.promo-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(201, 169, 110, 0.3);
+    border-radius: 50%;
+    color: var(--color-accent);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.3s var(--ease-out-expo);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.promo-popup-content:hover .promo-nav {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.promo-nav-prev {
+    left: 1rem;
+}
+
+.promo-nav-next {
+    right: 1rem;
+}
+
+.promo-nav:hover {
+    background: var(--color-accent);
+    color: var(--color-dark);
+    border-color: var(--color-accent);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* Ajustar velocidad de transición - MÁS LENTO */
+.promo-slide {
+    transition: all 0.8s var(--ease-out-expo); /* Antes: 0.5s */
+}
+
+/* Animación más suave del badge */
+.promo-badge {
+    animation: promoBadgePulse 3s ease-in-out infinite; /* Antes: 2s */
+}
+
+/* Responsive: mostrar botones siempre en móvil */
+@media (max-width: 768px) {
+    .promo-nav {
+        opacity: 1;
+        pointer-events: auto;
+        width: 36px;
+        height: 36px;
+    }
+    
+    .promo-nav-prev {
+        left: 0.5rem;
+    }
+    
+    .promo-nav-next {
+        right: 0.5rem;
+    }
+    
+    .promo-nav svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* ============================================
+CARRITO - CÓDIGO DE DESCUENTO
+============================================ */
+.cart-promo-section {
+    margin-bottom: 1.5rem;
+}
+
+.cart-promo-input {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.cart-promo-input input {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    transition: border-color 0.3s;
+}
+
+.cart-promo-input input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.cart-promo-input input.error {
+    border-color: #ff4444;
+    animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.cart-promo-apply {
+    padding: 0.7rem 1.2rem;
+    background: rgba(201, 169, 110, 0.1);
+    border: 1px solid var(--color-accent);
+    color: var(--color-accent);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.cart-promo-apply:hover {
+    background: var(--color-accent);
+    color: var(--color-dark);
+}
+
+.cart-remove-promo {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.3s;
+}
+
+.cart-remove-promo:hover {
+    color: #ff4444;
+}
+
+.cart-summary {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 1rem;
+    margin-bottom: 1.2rem;
+}
+
+.cart-summary-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.cart-discount-row {
+    color: #4ade80; /* Verde para descuento */
+}
+
+.cart-discount-text {
+    font-weight: 600;
+}
+
+.cart-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--color-white);
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }

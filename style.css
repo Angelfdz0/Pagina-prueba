@@ -123,52 +123,73 @@ button { cursor: none; }
 }
 
 /* ============================================
-   LOADER
-   ============================================ */
+LOADER CON TÍTULO QUE SE RELLENA
+============================================ */
 .loader {
-  position: fixed;
-  inset: 0;
-  background: var(--color-dark);
-  z-index: 100000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.8s var(--ease-out-expo),
-              visibility 0.8s;
+    position: fixed;
+    inset: 0;
+    background: var(--color-dark);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1),
+                visibility 1.5s;
 }
 
 .loader.hidden {
-  opacity: 0;
-  visibility: hidden;
+    opacity: 0;
+    visibility: hidden;
 }
 
 .loader-inner {
-  text-align: center;
+    text-align: center;
+    position: relative;
 }
 
-.loader-text {
-  font-family: var(--font-display);
-  font-size: clamp(1.5rem, 4vw, 3rem);
-  color: var(--color-text);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  display: block;
-  margin-bottom: 2rem;
+/* Contenedor del título con efecto de relleno */
+.loader-title-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 1.5rem;
 }
 
-.loader-bar {
-  width: 200px;
-  height: 1px;
-  background: rgba(255,255,255,0.1);
-  margin: 0 auto;
-  overflow: hidden;
+/* Texto base (color tenue) */
+.loader-title-base {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.1); /* Color tenue de fondo */
+    display: block;
 }
 
-.loader-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: var(--color-accent);
-  transition: width 0.3s var(--ease-out-expo);
+/* Texto que se rellena (color dorado) */
+.loader-title-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 6vw, 4rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-accent); /* Color dorado */
+    display: block;
+    width: 0%; /* ★ Se anima de 0% a 100% */
+    overflow: hidden;
+    white-space: nowrap;
+    transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Porcentaje debajo del título */
+.loader-percentage {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    color: var(--color-text-muted);
+    opacity: 0.6;
 }
 
 /* ============================================
@@ -1174,6 +1195,134 @@ BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
 }
 
 /* ============================================
+EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
+============================================ */
+
+/* Contenedor de luz que barre */
+.gallery-slide-light {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(201, 169, 110, 0.0) 20%,
+        rgba(201, 169, 110, 0.15) 45%,
+        rgba(201, 169, 110, 0.3) 50%,
+        rgba(201, 169, 110, 0.15) 55%,
+        rgba(201, 169, 110, 0.0) 80%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 2;
+    transition: left 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+}
+
+.gallery-slide:hover .gallery-slide-light {
+    left: 100%;
+    opacity: 1;
+}
+
+/* Contenedor de partículas */
+.gallery-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.gallery-slide:hover .gallery-particles {
+    opacity: 1;
+}
+
+/* Partícula individual */
+.gallery-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 4px var(--color-accent),
+        0 0 8px rgba(201, 169, 110, 0.5);
+    opacity: 0;
+    will-change: transform, opacity;
+}
+
+@keyframes galleryParticleFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(0) translateX(0) scale(0.5);
+    }
+    20% {
+        opacity: 0.8;
+    }
+    80% {
+        opacity: 0.6;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) translateX(var(--drift-x, 15px)) scale(1);
+    }
+}
+
+/* Caption mejorado con efecto de luz */
+.gallery-slide-caption {
+    position: absolute;
+    bottom: clamp(1.2rem, 2.5vw, 2rem);
+    left: clamp(1.2rem, 2.5vw, 2rem);
+    z-index: 4;
+    font-size: 0.7rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-white);
+    opacity: 0;
+    transform: translateY(15px);
+    transition: all 0.6s var(--ease-out-expo);
+    text-shadow: 0 0 20px rgba(201, 169, 110, 0.5);
+}
+
+.gallery-slide:hover .gallery-slide-caption {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: 0.3s; /* Aparece después de la luz */
+}
+
+/* Efecto de brillo en el borde al hover */
+.gallery-slide::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(201, 169, 110, 0.15);
+    z-index: 2;
+    pointer-events: none;
+    transition: all 0.6s var(--ease-out-expo);
+}
+
+.gallery-slide:hover::before {
+    border-color: rgba(201, 169, 110, 0.6);
+    box-shadow: 
+        inset 0 0 30px rgba(201, 169, 110, 0.1),
+        0 0 30px rgba(201, 169, 110, 0.15);
+}
+
+/* Imagen con saturación aumentada al hover */
+.gallery-slide-img {
+    transition: transform 0.6s var(--ease-out-expo),
+                filter 0.6s var(--ease-out-expo);
+}
+
+.gallery-slide:hover .gallery-slide-img {
+    filter: brightness(1.1) saturate(1.3);
+}
+
+/* ============================================
    BLOQUE 4 — FILOSOFÍA / CTA
    ============================================ */
 .section-philosophy {
@@ -1642,6 +1791,31 @@ BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
   overflow: hidden;
 }
 
+.section-ecommerce::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+        ellipse 80% 50% at 50% 50%,
+        rgba(201, 169, 110, 0.08) 0%,
+        transparent 50%
+    );
+    animation: ecommerceGlowPulse 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes ecommerceGlowPulse {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
 .ecommerce-inner {
   max-width: 800px;
   margin: 0 auto;
@@ -1671,6 +1845,26 @@ BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
   overflow: hidden;
 }
 
+.ecommerce-cta::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+    );
+    transition: left 0.7s;
+}
+
+.ecommerce-cta:hover::after {
+    left: 100%;
+}
+
 .ecommerce-cta::before {
   content: '';
   position: absolute;
@@ -1687,6 +1881,41 @@ BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
 .ecommerce-cta span {
   position: relative;
   z-index: 1;
+}
+
+/* Partículas flotantes para ecommerce */
+.ecommerce-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.ecommerce-particle {
+    position: absolute;
+    background: var(--color-accent);
+    border-radius: 50%;
+    opacity: 0;
+    box-shadow: 0 0 10px var(--color-accent);
+    animation: ecommerceParticleFloat var(--particle-duration) ease-in-out infinite;
+    animation-delay: var(--particle-delay);
+}
+
+@keyframes ecommerceParticleFloat {
+    0%, 100% {
+        opacity: 0;
+        transform: translateY(0) scale(0.5);
+    }
+    20% {
+        opacity: 0.6;
+    }
+    80% {
+        opacity: 0.4;
+    }
+    50% {
+        transform: translateY(-80px) scale(1.2);
+    }
 }
 
 /* ============================================
@@ -1750,4 +1979,458 @@ BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
     right: -30%;
     opacity: 0.03;
   }
+}
+
+/* ============================================
+BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
+============================================ */
+.section-blog {
+    background: var(--color-bg-alt);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    min-height: 90vh;
+    position: relative;
+    overflow: hidden;
+    perspective: 1000px; /* ★ CLAVE para el efecto 3D profundo */
+}
+
+/* 1. EFECTO TINTA DORADA (Ink Reveal) */
+.blog-ink-bg {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 120%; height: 120%;
+    transform: translate(-50%, -50%) scale(0);
+    background: radial-gradient(
+        circle at center,
+        rgba(201, 169, 110, 0.15) 0%,
+        rgba(201, 169, 110, 0.08) 30%,
+        transparent 70%
+    );
+    filter: blur(60px);
+    opacity: 0;
+    transition: transform 4s cubic-bezier(0.16, 1, 0.3, 1), opacity 2s ease-out;
+    z-index: 0;
+    pointer-events: none;
+}
+/* Cuando la sección es visible, la tinta se expande */
+.section-blog.blog-visible .blog-ink-bg {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+}
+
+/* 2. PARTÍCULAS DE POLVO DORADO */
+.blog-particles-container {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+.blog-particle {
+    position: absolute;
+    width: 2px; height: 2px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--color-accent), 0 0 12px rgba(201, 169, 110, 0.5);
+    opacity: 0;
+    will-change: transform, opacity;
+}
+@keyframes blogParticleFloat {
+    0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+    20% { opacity: 0.8; }
+    80% { opacity: 0.6; }
+    100% { transform: translateY(-150px) translateX(var(--drift-x, 20px)) scale(1.2); opacity: 0; }
+}
+
+/* 3. ÍCONO SVG CON PARALLAX 3D */
+.blog-bg-icon {
+    position: absolute;
+    top: 50%; right: -5%;
+    transform: translateY(-50%) rotateY(-15deg) rotateX(5deg); /* ★ Inclinación 3D inicial */
+    width: 45%; max-width: 550px;
+    color: var(--color-accent);
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+    transition: transform 0.1s linear; /* Suaviza el parallax de scroll */
+    filter: drop-shadow(0 10px 30px rgba(201, 169, 110, 0.1));
+}
+.blog-bg-icon svg {
+    width: 100%; height: auto;
+}
+
+/* Contenido Central */
+.blog-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+}
+.blog-subtitle {
+    font-size: clamp(1rem, 1.3vw, 1.15rem);
+    color: var(--color-text-muted);
+    line-height: 1.9;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto; margin-right: auto;
+}
+
+/* Botón CTA */
+.blog-cta {
+    display: inline-block;
+    font-size: 0.75rem; font-weight: 500;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    padding: 1.2rem 3.5rem;
+    background: var(--color-accent);
+    color: var(--color-dark);
+    transition: all 0.5s var(--ease-out-expo);
+    position: relative; overflow: hidden;
+}
+.blog-cta::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--color-white);
+    transform: translateX(-101%);
+    transition: transform 0.5s var(--ease-out-expo);
+}
+.blog-cta:hover::before { transform: translateX(0); }
+.blog-cta span { position: relative; z-index: 1; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .blog-bg-icon {
+        width: 90%; right: -20%; top: auto; bottom: -10%;
+        transform: translateY(0) rotateX(15deg);
+        opacity: 0.04;
+    }
+    .section-blog { min-height: 80vh; }
+}
+@media (max-width: 480px) {
+    .blog-bg-icon {
+        width: 120%;
+        right: -30%;
+        opacity: 0.03;
+    }
+}
+
+/* ============================================
+BLOQUE 7 — CONTACTO (FORMULARIO CON ONDAS)
+============================================ */
+.section-contact {
+    background: var(--color-bg-alt);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    perspective: 1000px;
+}
+
+/* ============================================
+ONDAS DE TINTA LÍQUIDA (MEJORADO)
+============================================ */
+.contact-waves {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.contact-waves svg {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%; /* ★ Doble ancho para animación continua */
+    height: 60%; /* ★ Solo ocupa la parte inferior */
+    animation: contactWaveMove 25s linear infinite;
+}
+
+/* Animación de movimiento horizontal continuo */
+@keyframes contactWaveMove {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%); /* ★ Se mueve exactamente la mitad */
+    }
+}
+
+/* Cada onda se mueve a diferente velocidad para efecto parallax */
+.wave-1 {
+    animation: wave1Move 20s ease-in-out infinite;
+}
+
+.wave-2 {
+    animation: wave2Move 15s ease-in-out infinite;
+}
+
+.wave-3 {
+    animation: wave3Move 10s ease-in-out infinite;
+}
+
+@keyframes wave1Move {
+    0%, 100% {
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(-20px) scaleY(1.1);
+    }
+}
+
+@keyframes wave2Move {
+    0%, 100% {
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(-15px) scaleY(1.05);
+    }
+}
+
+@keyframes wave3Move {
+    0%, 100% {
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(-10px) scaleY(1.08);
+    }
+}
+
+/* Responsive: ondas más sutiles en móvil */
+@media (max-width: 768px) {
+    .contact-waves svg {
+        height: 50%;
+    }
+}
+
+/* 2. PARTÍCULAS DE POLVO DORADO */
+.contact-particles-container {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.contact-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--color-accent), 0 0 12px rgba(201, 169, 110, 0.5);
+    opacity: 0;
+    will-change: transform, opacity;
+}
+
+@keyframes contactParticleFloat {
+    0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+    20% { opacity: 0.8; }
+    80% { opacity: 0.6; }
+    100% { transform: translateY(-150px) translateX(var(--drift-x, 20px)) scale(1.2); opacity: 0; }
+}
+
+/* 3. ÍCONO DE SOBRE CON PARALLAX 3D */
+.contact-bg-icon {
+    position: absolute;
+    top: 50%;
+    left: -5%;
+    transform: translateY(-50%) rotateY(15deg) rotateX(-5deg);
+    width: 40%;
+    max-width: 500px;
+    color: var(--color-accent);
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+    transition: transform 0.1s linear;
+    filter: drop-shadow(0 10px 30px rgba(201, 169, 110, 0.1));
+}
+
+.contact-bg-icon svg {
+    width: 100%;
+    height: auto;
+}
+
+/* Contenido Central */
+.contact-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    padding: 0 clamp(1.5rem, 5vw, 3rem);
+}
+
+.contact-subtitle {
+    font-size: clamp(1rem, 1.3vw, 1.15rem);
+    color: var(--color-text-muted);
+    line-height: 1.9;
+    margin-bottom: 3rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Formulario */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    text-align: left;
+}
+
+.form-group {
+    position: relative;
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    transition: all 0.4s var(--ease-out-expo);
+    outline: none;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    background: rgba(201, 169, 110, 0.05);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 30px rgba(201, 169, 110, 0.15);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.5;
+}
+
+.form-textarea {
+    min-height: 150px;
+    resize: vertical;
+    font-family: var(--font-body);
+}
+
+/* Efecto de partículas al escribir */
+.form-input.typing,
+.form-textarea.typing {
+    position: relative;
+}
+
+/* Botón de envío con efecto de onda expansiva */
+.contact-submit {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 1.2rem 3.5rem;
+    background: var(--color-accent);
+    color: var(--color-dark);
+    border: none;
+    cursor: pointer;
+    transition: all 0.5s var(--ease-out-expo);
+    position: relative;
+    overflow: hidden;
+    margin-top: 1rem;
+    align-self: center;
+}
+
+.contact-submit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-white);
+    transform: translateX(-101%);
+    transition: transform 0.5s var(--ease-out-expo);
+}
+
+.contact-submit:hover::before {
+    transform: translateX(0);
+}
+
+.contact-submit span {
+    position: relative;
+    z-index: 1;
+}
+
+/* Efecto de onda expansiva al click */
+.contact-submit::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s, opacity 0.6s;
+    opacity: 0;
+}
+
+.contact-submit:active::after {
+    width: 300px;
+    height: 300px;
+    opacity: 1;
+    transition: width 0s, height 0s, opacity 0s;
+}
+
+/* Mensaje de éxito/error */
+.form-message {
+    text-align: center;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.5s var(--ease-out-expo);
+}
+
+.form-message.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.form-message.success {
+    color: #4ade80;
+    background: rgba(74, 222, 128, 0.1);
+    border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.form-message.error {
+    color: #ff4444;
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contact-bg-icon {
+        width: 80%;
+        left: -20%;
+        top: auto;
+        bottom: -10%;
+        transform: translateY(0) rotateX(15deg);
+        opacity: 0.04;
+    }
+    .section-contact {
+        min-height: auto;
+        padding: clamp(4rem, 8vw, 6rem) 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-bg-icon {
+        width: 100%;
+        left: -30%;
+        opacity: 0.03;
+    }
 }

@@ -40,6 +40,7 @@ const SITE_CONFIG = {
   // 🧭 HEADER / NAVEGACIÓN
   // ──────────────────────────────────────────
   header: {
+    enabled: true,
     logo: {
       text: "STU",           // Primera parte del logo
       highlight: "DIO",      // Parte resaltada (color accent)
@@ -50,6 +51,9 @@ const SITE_CONFIG = {
       { label: "Servicios",  href: "#services" },
       { label: "Galería",    href: "#gallery" },
       { label: "Filosofía",  href: "#philosophy" },
+      { label: "Tienda",     href: "#ecommerce" },
+      { label: "Blog",       href: "#blog" },
+      { label: "Contacto",   href: "#contact" },
     ],
     cta: {
       label: "Contacto",
@@ -61,6 +65,7 @@ const SITE_CONFIG = {
   // 🏠 HERO / INTRO
   // ──────────────────────────────────────────
   hero: {
+    enabled: true,
     backgroundImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2064&auto=format&fit=crop",
     eyebrow: "Estudio Creativo — Desde 2018",
     title: {
@@ -78,6 +83,7 @@ const SITE_CONFIG = {
   // 📖 BLOQUE 1 — HISTORIA (Scrollytelling)
   // ──────────────────────────────────────────
   story: {
+    enabled: true,
     label: "Nuestra Historia",
     heading: "Donde la <em>visión</em> se convierte en realidad",
     image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop",
@@ -96,6 +102,7 @@ const SITE_CONFIG = {
   // ⚙️ BLOQUE 2 — SERVICIOS
   // ──────────────────────────────────────────
   services: {
+    enabled: true,
     label: "Lo Que Hacemos",
     heading: "Servicios que <em>transforman</em>",
     subtitle: "Cada servicio está diseñado para elevar tu marca al siguiente nivel, combinando estética impecable con funcionalidad estratégica.",
@@ -127,6 +134,7 @@ const SITE_CONFIG = {
   // 🖼️ BLOQUE 3 — GALERÍA (Parallax)
   // ──────────────────────────────────────────
   gallery: {
+    enabled: true,
     label: "Portafolio",
     heading: "Trabajo que <em>habla</em> por sí solo",
     subtitle: "Una selección de proyectos donde la creatividad y la estrategia se encuentran.",
@@ -172,21 +180,242 @@ philosophy: {
 },
 
 // ──────────────────────────────────────────
-//  BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
+// 🛍️ BLOQUE 5 — E-COMMERCE
 // ──────────────────────────────────────────
 ecommerce: {
-  enabled: true,  // ★ true/false para mostrar/ocultar
+  enabled: true,
   label: "Tienda Online",
   heading: "Productos que <em>inspiran</em>",
   subtitle: "Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida.",
   cta: "Ver Catálogo Completo",
-  ctaHref: "tienda.html",  // URL de tu tienda
+  ctaHref: "tienda.html",
+  products: [
+    {
+      id: 1,
+      name: "Reloj Minimalista Premium",
+      category: "destacado",
+      price: 299,
+      originalPrice: null,
+      badge: "Destacado",
+      description: "Diseño atemporal con materiales de la más alta calidad. Correa de cuero genuino y movimiento suizo de precisión.",
+      features: [
+        "Movimiento suizo automático",
+        "Cristal de zafiro antirreflejos",
+        "Resistencia al agua 100m",
+        "Correa de cuero italiano",
+        "Garantía de 2 años"
+      ],
+      // ★ Múltiples imágenes
+      images: [
+        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1542496658-e33a6d0d41f6?q=80&w=1200&auto=format&fit=crop"
+      ],
+      // ★ Variantes del producto
+      variants: [
+        {
+          name: "Negro Clásico",
+          image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop",
+          price: 299,
+          inStock: true
+        },
+        {
+          name: "Plata Elegante",
+          image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=400&auto=format&fit=crop",
+          price: 329,
+          inStock: true
+        },
+        {
+          name: "Dorado Premium",
+          image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=400&auto=format&fit=crop",
+          price: 399,
+          inStock: false
+        }
+      ]
+    },
+    {
+      id: 2,
+      name: "Auriculares Wireless Elite",
+      category: "nuevo",
+      price: 449,
+      originalPrice: 549,
+      badge: "Nuevo",
+      description: "Sonido de estudio con cancelación activa de ruido. 40 horas de batería y comodidad excepcional.",
+      features: [
+        "Cancelación activa de ruido",
+        "40 horas de batería",
+        "Audio Hi-Res certificado",
+        "Conectividad multipoint",
+        "Micrófono integrado"
+      ],
+      images: [
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?q=80&w=1200&auto=format&fit=crop"
+      ],
+      variants: [
+        {
+          name: "Negro Mate",
+          image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&auto=format&fit=crop",
+          price: 449,
+          inStock: true
+        },
+        {
+          name: "Blanco Perla",
+          image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=400&auto=format&fit=crop",
+          price: 449,
+          inStock: true
+        }
+      ]
+    },
+    {
+      id: 3,
+      name: "Café Especial de Origen",
+      category: "popular",
+      price: 24,
+      originalPrice: null,
+      badge: "Popular",
+      description: "Café de especialidad 100% arábica, cultivado en las montañas de Colombia. Tostado artesanal para resaltar notas de chocolate y frutos rojos.",
+      features: [
+        "100% Arábica de origen único",
+        "Tostado medio artesanal",
+        "Notas: chocolate, frutos rojos, caramelo",
+        "Empaque con válvula de desgasificación",
+        "Certificación de comercio justo"
+      ],
+      images: [
+        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1200&auto=format&fit=crop",
+        "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=1200&auto=format&fit=crop"
+      ],
+      variants: [
+        {
+          name: "Colombia - 250g",
+          image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=400&auto=format&fit=crop",
+          price: 24,
+          inStock: true
+        },
+        {
+          name: "Colombia - 500g",
+          image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=400&auto=format&fit=crop",
+          price: 42,
+          inStock: true
+        },
+        {
+          name: "Etiopía - 250g",
+          image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=400&auto=format&fit=crop",
+          price: 28,
+          inStock: true
+        },
+        {
+          name: "Brasil - 250g",
+          image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop",
+          price: 22,
+          inStock: false
+        }
+      ]
+    }
+    ],
+  
+  // ★ PROMOCIONES (agrega esto)
+  promotions: {
+    enabled: true,                    // Activar/desactivar popup
+    delay: 3000,                      // Aparecer después de 3 segundos
+    autoRotate: true,                 // Rotar entre promociones
+    rotateInterval: 6000,             // Cambiar cada 6 segundos
+    showCloseButton: true,            // Mostrar botón X
+    rememberDismiss: true,            // Recordar si el usuario cerró
+    dismissDuration: 24,              // Horas antes de volver a mostrar
+    items: [
+      {
+        id: 1,
+        badge: "🔥 OFERTA LIMITADA",
+        title: "30% de Descuento",
+        subtitle: "En toda la colección de relojes",
+        description: "Solo por tiempo limitado. Aprovecha nuestro descuento especial en productos seleccionados.",
+        code: "RELOJ30",
+        discount: "30%",
+        validUntil: "2025-12-31",
+        cta: "Comprar Ahora",
+        ctaHref: "#products",
+        accent: "gold"  // gold, red, purple
+      },
+      {
+        id: 2,
+        badge: "✨ NUEVO",
+        title: "Envío Gratis",
+        subtitle: "En compras mayores a $100",
+        description: "Recibe tus productos sin costo de envío en todo el país. Sin código necesario.",
+        code: "ENVIOGRATIS",
+        discount: "FREE",
+        validUntil: "2025-11-30",
+        cta: "Ver Productos",
+        ctaHref: "#products",
+        accent: "purple"
+      },
+      {
+        id: 3,
+        badge: "🎁 EXCLUSIVO",
+        title: "2x1 en Accesorios",
+        subtitle: "Lleva dos, paga uno",
+        description: "Compra cualquier accesorio y llévate otro completamente gratis. Oferta por tiempo limitado.",
+        code: "2X1ACC",
+        discount: "2x1",
+        validUntil: "2025-10-15",
+        cta: "Aprovechar Oferta",
+        ctaHref: "#products",
+        accent: "red"
+      }
+    ]
+  },
+
+  promoCodes: {
+    "RELOJ30": { type: "percent", value: 30, label: "30% de descuento" },
+    "ENVIOGRATIS": { type: "fixed", value: 50, label: "$50 de descuento" },
+    "2X1ACC": { type: "percent", value: 50, label: "50% de descuento" }
+  }
+},
+
+  // ──────────────────────────────────────────
+// 📝 BLOQUE 6 — BLOG
+// ──────────────────────────────────────────
+blog: {
+    enabled: true, // ★ true/false para mostrar/ocultar
+    label: "Nuestro Blog",
+    heading: "Historias que <em>inspiran</em>",
+    subtitle: "Reflexiones, tendencias y detrás de escena de nuestro proceso creativo. Un espacio para compartir ideas que dejan huella.",
+    cta: "Leer Artículos",
+    ctaHref: "blog.html", // ★ Enlace a tu futura página de blog
+},
+
+  // ──────────────────────────────────────────
+//  BLOQUE 7 — CONTACTO (FORMULARIO)
+// ──────────────────────────────────────────
+contact: {
+    enabled: true,
+    label: "Contacto",
+    heading: "Hablemos de tu <em>próximo proyecto</em>",
+    subtitle: "¿Tienes una idea en mente? Cuéntanos sobre ella y juntos la haremos realidad. Estamos listos para escucharte.",
+    form: {
+        namePlaceholder: "Tu nombre",
+        emailPlaceholder: "Tu correo electrónico",
+        subjectPlaceholder: "Asunto",
+        messagePlaceholder: "Cuéntanos sobre tu proyecto...",
+        submitText: "Enviar Mensaje",
+        successMessage: "¡Mensaje enviado con éxito! Te contactaremos pronto.",
+        errorMessage: "Hubo un error al enviar. Por favor, intenta de nuevo.",
+    },
+    email: "hola@studio.com", // ★ Tu correo de contacto
+    phone: "+34 612 345 678", // ★ Tu teléfono (opcional)
+    address: "Madrid, España", // ★ Tu dirección (opcional)
 },
 
   // ──────────────────────────────────────────
   // 🦶 FOOTER
   // ──────────────────────────────────────────
   footer: {
+    enabled: true,
     brand: {
       name: "STU",
       highlight: "DIO",
@@ -200,6 +429,9 @@ ecommerce: {
           { label: "Historia",  href: "#story" },
           { label: "Servicios", href: "#services" },
           { label: "Galería",   href: "#gallery" },
+          { label: "Tienda",    href: "#ecommerce" },
+          { label: "Blog",      href: "#blog" },
+          { label: "Contacto",  href: "#contact" },
         ],
       },
       {
@@ -241,4 +473,18 @@ ecommerce: {
     grainEnabled: true,            // Activar/desactivar grano
     progressBarEnabled: true,      // Barra de progreso superior
   },
+
+  // ──────────────────────────────────────────
+// 🛒 CONFIGURACIÓN DE LA TIENDA (tienda.html)
+// ──────────────────────────────────────────
+tienda: {
+    whatsapp: "521234567890", // ★ TU NÚMERO AQUÍ (sin +, sin espacios)
+    hero: {
+        eyebrow: "Tienda Online",
+        titleLine1: "Productos que",
+        titleLine2: "inspiran",
+        subtitle: "Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida."
+    }
+},
+  
 };

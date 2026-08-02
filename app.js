@@ -15,10 +15,16 @@
   const C = SITE_CONFIG;
 
   // ─── UTILIDADES ──────────────────────────
-  const $ = (sel, ctx = document) => ctx.querySelector(sel);
-  const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
-  const lerp = (a, b, t) => a + (b - a) * t;
-  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+const lerp = (a, b, t) => a + (b - a) * t;
+const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+
+// ★ NUEVA FUNCIÓN: Verifica si un bloque está habilitado
+function isBlockEnabled(blockName) {
+    // Si no existe la propiedad enabled, asumimos true para retrocompatibilidad
+    return C[blockName]?.enabled !== false;
+}
 
   // ─── APLICAR TEMA ───────────────────────
   function applyTheme() {
@@ -37,8 +43,40 @@
     document.title = C.header.logo.text + C.header.logo.highlight;
   }
 
+  // ─── INYECTAR SEO DINÁMICO ──────────────
+
+  function injectSEO() {
+      const C = SITE_CONFIG;
+      // Meta Description
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+          metaDesc = document.createElement('meta');
+          metaDesc.name = 'description';
+          document.head.appendChild(metaDesc);
+      }
+      metaDesc.content = C.story.paragraphs[0].substring(0, 155); // Ejemplo
+      
+      // OpenGraph (Para WhatsApp, Facebook, LinkedIn)
+      const ogTags = {
+          'og:title': C.header.logo.text + C.header.logo.highlight,
+          'og:description': C.hero.subtitle,
+          'og:image': C.hero.backgroundImage,
+          'og:type': 'website'
+      };
+      for (const [key, value] of Object.entries(ogTags)) {
+          let tag = document.querySelector(`meta[property="${key}"]`);
+          if (!tag) {
+              tag = document.createElement('meta');
+              tag.setAttribute('property', key);
+              document.head.appendChild(tag);
+          }
+          tag.content = value;
+      }
+  }
+
   // ─── HERO STARS (Estrellas parpadeantes) ──────────────────────
 function initHeroStars() {
+  if (!isBlockEnabled("hero")) return;
   const hero = $("#hero");
   if (!hero) return;
 
@@ -102,41 +140,67 @@ function initHeroStars() {
     }, { passive: true });
   }
 
-  // ─── LOADER ──────────────────────────────
-  function initLoader() {
+  // ─── LOADER CON TÍTULO QUE SE RELLENA ─────────────────────────────
+function initLoader() {
     const loader = $("#loader");
-    const text = $("#loaderText");
-    const bar = $("#loaderBar");
-    text.textContent = C.loader.text;
+    const titleFill = $("#loaderTitleFill");
+    const percentage = $("#loaderPercentage");
 
     let progress = 0;
     const interval = setInterval(() => {
-      progress += Math.random() * 15 + 5;
-      if (progress > 100) progress = 100;
-      bar.style.width = progress + "%";
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          loader.classList.add("hidden");
-          animateHero();
-        }, 400);
-      }
+        progress += Math.random() * 8 + 3;
+        if (progress > 100) progress = 100;
+        
+        // ★ Actualizar el relleno del título
+        if (titleFill) {
+            titleFill.style.width = progress + "%";
+        }
+        
+        // ★ Actualizar el porcentaje
+        if (percentage) {
+            percentage.textContent = Math.round(progress) + "%";
+        }
+        
+        if (progress >= 100) {
+            clearInterval(interval);
+            // Esperar un momento para que el usuario vea el 100%
+            setTimeout(() => {
+                // Ocultar el loader
+                loader.classList.add("hidden");
+                
+                // Animar el Hero después
+                setTimeout(() => {
+                    if (isBlockEnabled("hero")) {
+                        animateHero();
+                    }
+                }, 800);
+            }, 600);
+        }
     }, C.loader.duration / 8);
-  }
+}
 
   // ─── HEADER ──────────────────────────────
-  function buildHeader() {
+function buildHeader() {
     const nav = $("#nav");
     const h = C.header;
-    nav.innerHTML = `<a href="#hero" class="nav-logo">${h.logo.text}<span>${h.logo.highlight}</span></a>
+    
+    // ★ FILTRAR LINKS: Solo muestra los que apuntan a bloques habilitados
+    const visibleLinks = h.links.filter(link => {
+        const blockId = link.href.replace("#", ""); // Ej: "#story" -> "story"
+        return isBlockEnabled(blockId);
+    });
+
+    nav.innerHTML = `
+        <a href="#hero" class="nav-logo">${h.logo.text}<span>${h.logo.highlight}</span></a>
         <ul class="nav-links" id="navLinks">
-            ${h.links.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join("")}
+            ${visibleLinks.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join("")}
         </ul>
         <a href="${h.cta.href}" class="nav-cta">${h.cta.label}</a>
         <button class="nav-hamburger" id="hamburger" aria-label="Menu">
             <span></span><span></span><span></span>
-        </button>`;
-
+        </button>
+    `;
+  
     // Hamburger toggle
     const hamburger = $("#hamburger");
     const navLinks = $("#navLinks");
@@ -180,6 +244,11 @@ function initHeroStars() {
 
   // ─── HERO ────────────────────────────────
   function buildHero() {
+    if (!isBlockEnabled("hero")) {
+        const section = $("#hero");
+        if (section) section.style.display = "none";
+        return;
+    }
   const h = C.hero;
   const bg = $("#heroBg");
   const content = $("#heroContent");
@@ -245,6 +314,7 @@ function initHeroStars() {
 
 // ─── TYPEWRITER EFFECT ───────────────────
 function initTypewriter() {
+  if (!isBlockEnabled("hero")) return;
   const words = C.hero.title.typewriterWords;
   const wordEl = $("#typewriterWord");
   const wrapperEl = $("#typewriterWrapper");
@@ -322,6 +392,11 @@ function initTypewriter() {
   
   // ─── BLOQUE 1: HISTORIA ─────────────────
 function buildStory() {
+  if (!isBlockEnabled("story")) {
+        const section = $("#story");
+        if (section) section.style.display = "none";
+        return;
+  }
   const s = C.story;
   const inner = $("#storyInner");
   inner.innerHTML = `
@@ -367,6 +442,11 @@ function buildStory() {
 
   // ─── BLOQUE 2: SERVICIOS ────────────────
   function buildServices() {
+    if (!isBlockEnabled("services")) {
+        const section = $("#services");
+        if (section) section.style.display = "none";
+        return;
+  }
     const s = C.services;
     const inner = $("#servicesInner");
     inner.innerHTML = `
@@ -491,8 +571,13 @@ function initServicesLight() {
     observer.observe(servicesSection);
 }
 
-  // ─── BLOQUE 3: GALERÍA (CARRUSEL) ──────────────────
+  // ─── BLOQUE 3: GALERÍA (CARRUSEL) ─────────────────
 function buildGallery() {
+    if (!isBlockEnabled("gallery")) {
+        const section = $("#gallery");
+        if (section) section.style.display = "none";
+        return;
+    }
     const g = C.gallery;
     const inner = $("#galleryInner");
     inner.innerHTML = `
@@ -506,6 +591,12 @@ function buildGallery() {
             <div class="gallery-carousel" id="galleryCarousel">
                 ${g.items.map((item, i) => `
                     <div class="gallery-slide reveal-scale reveal-delay-${i + 1}" data-index="${i}">
+                        <!-- ★ NUEVO: Contenedor de luz que barre -->
+                        <div class="gallery-slide-light"></div>
+                        
+                        <!-- ★ NUEVO: Contenedor de partículas -->
+                        <div class="gallery-particles" id="galleryParticles-${i}"></div>
+                        
                         <div class="gallery-slide-img-wrapper">
                             <img class="gallery-slide-img" src="${item.image}" alt="${item.caption}" loading="lazy" />
                         </div>
@@ -519,6 +610,62 @@ function buildGallery() {
         </div>
         <div class="gallery-drag-hint">← Arrastra para explorar →</div>
     `;
+    
+    // ★ NUEVO: Inicializar partículas después de renderizar
+    setTimeout(() => initGalleryParticles(), 100);
+}
+
+// ★ NUEVA FUNCIÓN: Crear partículas para cada slide
+function initGalleryParticles() {
+    const slides = $$(".gallery-slide");
+    
+    slides.forEach((slide, index) => {
+        const particlesContainer = $(`#galleryParticles-${index}`);
+        if (!particlesContainer) return;
+        
+        const particleCount = 12; // 12 partículas por slide
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement("div");
+            particle.className = "gallery-particle";
+            
+            // Posición aleatoria dentro del slide
+            const x = Math.random() * 100;
+            const y = 50 + Math.random() * 50; // Empiezan desde la mitad hacia abajo
+            
+            // Variables para la animación
+            const duration = Math.random() * 3 + 2; // 2s a 5s
+            const delay = Math.random() * 2; // 0s a 2s
+            const driftX = (Math.random() - 0.5) * 40; // -20px a +20px
+            
+            particle.style.left = `${x}%`;
+            particle.style.top = `${y}%`;
+            particle.style.animation = `galleryParticleFloat ${duration}s ease-in-out ${delay}s infinite`;
+            particle.style.setProperty("--drift-x", `${driftX}px`);
+            
+            particlesContainer.appendChild(particle);
+        }
+        
+        // ★ NUEVO: Efecto de luz que sigue al cursor
+        slide.addEventListener("mousemove", (e) => {
+            const rect = slide.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            // Mover el haz de luz según la posición del cursor
+            const light = $(".gallery-slide-light", slide);
+            if (light) {
+                light.style.background = `
+                    radial-gradient(
+                        circle at ${x}% ${y}%,
+                        rgba(201, 169, 110, 0.3) 0%,
+                        rgba(201, 169, 110, 0.1) 30%,
+                        transparent 60%
+                    )
+                `;
+            }
+        });
+    });
 }
 
   // ─── CARRUSEL PARALLAX DE GALERÍA ─────────────────
@@ -665,6 +812,11 @@ function initGalleryCarousel() {
 
   // ─── BLOQUE 4: FILOSOFÍA ────────────────
 function buildPhilosophy() {
+  if (!isBlockEnabled("philosophy")) {
+        const section = $("#philosophy");
+        if (section) section.style.display = "none";
+        return;
+  }
   const p = C.philosophy;
   const section = $("#philosophy");  // ★ La sección completa
 
@@ -693,6 +845,11 @@ function buildPhilosophy() {
 
 // ─── BLOQUE 5: E-COMMERCE ──────────────
 function buildEcommerce() {
+  if (!isBlockEnabled("ecommerce")) {
+        const section = $("#ecommerce");
+        if (section) section.style.display = "none";
+        return;
+  }
   const e = C.ecommerce;
   const section = $("#ecommerce");
 
@@ -768,10 +925,213 @@ function buildEcommerce() {
   `;
 }
 
+  // ─── EFECTO PARTÍCULAS PARA TIENDA ─────────────
+function initEcommerceParticles() {
+    const section = $("#ecommerce");
+    if (!section) return;
+
+    // Crear contenedor de partículas
+    const particlesContainer = document.createElement("div");
+    particlesContainer.className = "ecommerce-particles";
+    section.appendChild(particlesContainer);
+
+    // Crear 20 partículas
+    for (let i = 0; i < 20; i++) {
+        const particle = document.createElement("div");
+        particle.className = "ecommerce-particle";
+        
+        const x = Math.random() * 100;
+        const y = Math.random() * 100;
+        const size = Math.random() * 3 + 1;
+        const duration = Math.random() * 8 + 6;
+        const delay = Math.random() * 5;
+        
+        particle.style.cssText = `
+            left: ${x}%;
+            top: ${y}%;
+            width: ${size}px;
+            height: ${size}px;
+            --particle-duration: ${duration}s;
+            --particle-delay: ${delay}s;
+        `;
+        
+        particlesContainer.appendChild(particle);
+    }
+
+    // Animar al entrar en viewport
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                particlesContainer.classList.add("active");
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.2 });
+
+    observer.observe(section);
+}
+
+  // ─── BLOQUE 6: BLOG (TINTA DORADA) ──────────────
+function buildBlog() {
+    if (!isBlockEnabled("blog")) {
+        const section = $("#blog");
+        if (section) section.style.display = "none";
+        return;
+    }
+    const b = C.blog;
+    const section = $("#blog");
+    if (section) section.style.display = "flex";
+
+    const inner = $("#blogInner");
+    inner.innerHTML = `
+        <!-- CAPA 1: Tinta Dorada que se expande -->
+        <div class="blog-ink-bg"></div>
+        
+        <!-- CAPA 2: Partículas de polvo flotante -->
+        <div class="blog-particles-container" id="blogParticles"></div>
+
+        <!-- CAPA 3: Ícono de Libro con Parallax 3D -->
+        <div class="blog-bg-icon" id="blogBgIcon">
+            <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                <!-- Hoja izquierda -->
+                <path d="M200,320 L200,100 C160,80 120,90 100,100 L100,300 C120,290 160,280 200,320 Z" 
+                      fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                <!-- Hoja derecha -->
+                <path d="M200,320 L200,100 C240,80 280,90 300,100 L300,300 C280,290 240,280 200,320 Z" 
+                      fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                <!-- Líneas de texto (simulando páginas escritas) -->
+                <line x1="130" y1="150" x2="180" y2="160" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+                <line x1="130" y1="190" x2="170" y2="200" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+                <line x1="130" y1="230" x2="180" y2="240" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+                <line x1="220" y1="160" x2="270" y2="150" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+                <line x1="230" y1="200" x2="270" y2="190" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+                <!-- Elementos místicos (Tinta / Estrellas) -->
+                <circle cx="150" cy="280" r="3" fill="currentColor" opacity="0.5"/>
+                <circle cx="250" cy="270" r="4" fill="currentColor" opacity="0.3"/>
+                <path d="M140,270 Q150,260 160,275" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+            </svg>
+        </div>
+        
+        <!-- CAPA 4: Contenido Editorial -->
+        <div class="blog-inner">
+            <span class="section-label reveal">${b.label}</span>
+            <h2 class="section-heading reveal reveal-delay-1">${b.heading}</h2>
+            <hr class="editorial-hr center reveal reveal-delay-2" />
+            <p class="blog-subtitle reveal reveal-delay-3">${b.subtitle}</p>
+            <a href="${b.ctaHref}" class="blog-cta reveal reveal-delay-4" target="_blank" rel="noopener">
+                <span>${b.cta}</span>
+            </a>
+        </div>
+    `;
+}
+
+// ─── EFECTO TINTA DORADA (Intersection Observer optimizado) ─────
+function initBlogInkEffect() {
+    const section = $("#blog");
+    if (!section) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // ★ CAMBIO 1: Umbral al 35%. Se activa cuando el bloque está realmente enfocado en pantalla
+                // ★ CAMBIO 2: Pequeño delay de 200ms para que la aparición se sienta más natural y menos robótica
+                setTimeout(() => {
+                    section.classList.add("blog-visible");
+                }, 200);
+                
+                // Dejamos de observar para que la animación solo ocurra una vez
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { 
+        threshold: 0.35, // ★ Antes era 0.2. Ahora requiere que el 35% del bloque sea visible
+        rootMargin: "0px 0px -50px 0px" // Ayuda a que se active justo antes de que el usuario llegue al centro
+    });
+
+    observer.observe(section);
+}
+
+// ─── PARTÍCULAS DE POLVO DORADO ────────────────────
+function initBlogParticles() {
+    const container = $("#blogParticles");
+    if (!container) return;
+
+    const particleCount = 25; // Cantidad de partículas (suficiente para efecto, sin lag)
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement("div");
+        particle.className = "blog-particle";
+        
+        // Posición aleatoria
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${50 + Math.random() * 50}%`; // Empiezan desde la mitad hacia abajo
+        
+        // Variables para la animación CSS
+        const duration = Math.random() * 6 + 4; // 4s a 10s
+        const delay = Math.random() * 5; // 0s a 5s
+        const driftX = (Math.random() - 0.5) * 60; // -30px a +30px
+        
+        particle.style.animation = `blogParticleFloat ${duration}s ease-in-out ${delay}s infinite`;
+        particle.style.setProperty("--drift-x", `${driftX}px`);
+        
+        container.appendChild(particle);
+    }
+}
+
+// ─── PARALLAX 3D PARA EL ÍCONO DEL BLOG ────────────
+function initBlogParallax() {
+    const icon = $("#blogBgIcon");
+    if (!icon) return;
+
+    let ticking = false;
+
+    window.addEventListener("scroll", () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                const rect = icon.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                
+                // Solo calcular si la sección está en pantalla
+                if (rect.top < windowHeight && rect.bottom > 0) {
+                    // Progreso de scroll (de -1 a 1)
+                    const progress = (windowHeight - rect.top) / (windowHeight + rect.height);
+                    const normalizedProgress = (progress - 0.5) * 2; 
+                    
+                    // Movimiento vertical (Parallax clásico)
+                    const translateY = normalizedProgress * -40; 
+                    
+                    // Inclinación 3D basada en el scroll (Profundidad)
+                    const rotateX = 5 + (normalizedProgress * 8); 
+                    const rotateY = -15 + (normalizedProgress * 10);
+                    
+                    icon.style.transform = `translateY(calc(-50% + ${translateY}px)) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+                }
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+}
+
   // ─── FOOTER ──────────────────────────────
   function buildFooter() {
+    if (!isBlockEnabled("footer")) {
+        const section = $("#footer");
+        if (section) section.style.display = "none";
+        return;
+  }
     const f = C.footer;
     const inner = $("#footerInner");
+
+    // ★ FILTRAR COLUMNAS Y LINKS DEL FOOTER
+    const visibleColumns = f.columns.map(col => {
+        const visibleLinks = col.links.filter(link => {
+            const blockId = link.href.replace("#", "");
+            return isBlockEnabled(blockId);
+        });
+        return { ...col, links: visibleLinks };
+    }).filter(col => col.links.length > 0); // Oculta la columna entera si se queda sin links
+    
     inner.innerHTML = `
       <div class="footer-top">
         <div class="footer-brand">
@@ -969,16 +1329,250 @@ function buildEcommerce() {
     });
   }
 
+  // ─── BLOQUE 7: CONTACTO (FORMULARIO CON ONDAS MEJORADAS) ──────────────
+function buildContact() {
+    if (!isBlockEnabled("contact")) {
+        const section = $("#contact");
+        if (section) section.style.display = "none";
+        return;
+    }
+    const c = C.contact;
+    const section = $("#contact");
+    if (section) section.style.display = "flex";
+
+    const inner = $("#contactInner");
+    inner.innerHTML = `
+        <!-- CAPA 1: Ondas de tinta líquida (MEJORADO) -->
+        <div class="contact-waves">
+            <svg viewBox="0 0 1440 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <!-- Onda 1: Más grande y lenta -->
+                <path class="wave-path wave-1" 
+                      d="M0,200 C240,100 480,300 720,200 C960,100 1200,300 1440,200 L1440,400 L0,400 Z" 
+                      fill="var(--color-accent)" 
+                      fill-opacity="0.08"/>
+                
+                <!-- Onda 2: Mediana -->
+                <path class="wave-path wave-2" 
+                      d="M0,250 C180,180 360,320 540,250 C720,180 900,320 1080,250 C1260,180 1440,320 1440,250 L1440,400 L0,400 Z" 
+                      fill="var(--color-accent)" 
+                      fill-opacity="0.05"/>
+                
+                <!-- Onda 3: Más pequeña y rápida -->
+                <path class="wave-path wave-3" 
+                      d="M0,280 C120,240 240,320 360,280 C480,240 600,320 720,280 C840,240 960,320 1080,280 C1200,240 1320,320 1440,280 L1440,400 L0,400 Z" 
+                      fill="var(--color-accent)" 
+                      fill-opacity="0.03"/>
+            </svg>
+        </div>
+        
+        <!-- CAPA 2: Partículas de polvo flotante -->
+        <div class="contact-particles-container" id="contactParticles"></div>
+
+        <!-- CAPA 3: Ícono de Sobre con Parallax 3D -->
+        <div class="contact-bg-icon" id="contactBgIcon">
+            <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                <!-- Sobre base -->
+                <rect x="80" y="120" width="240" height="160" rx="8" 
+                      fill="none" stroke="currentColor" stroke-width="2.5"/>
+                <!-- Solapa del sobre -->
+                <path d="M80,120 L200,220 L320,120" 
+                      fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                <!-- Líneas decorativas (texto del sobre) -->
+                <line x1="120" y1="200" x2="280" y2="200" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
+                <line x1="120" y1="220" x2="240" y2="220" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
+                <line x1="120" y1="240" x2="260" y2="240" stroke="currentColor" stroke-width="1.5" opacity="0.2"/>
+                <!-- Sello decorativo -->
+                <circle cx="280" cy="240" r="15" fill="currentColor" opacity="0.3"/>
+                <path d="M275,240 L280,245 L288,235" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+            </svg>
+        </div>
+        
+        <!-- CAPA 4: Formulario de Contacto -->
+        <div class="contact-inner">
+            <span class="section-label reveal">${c.label}</span>
+            <h2 class="section-heading reveal reveal-delay-1">${c.heading}</h2>
+            <hr class="editorial-hr center reveal reveal-delay-2" />
+            <p class="contact-subtitle reveal reveal-delay-3">${c.subtitle}</p>
+            
+            <form class="contact-form reveal reveal-delay-4" id="contactForm">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder="${c.form.namePlaceholder}" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-input" placeholder="${c.form.emailPlaceholder}" required>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder="${c.form.subjectPlaceholder}" required>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-textarea" placeholder="${c.form.messagePlaceholder}" required></textarea>
+                </div>
+                <button type="submit" class="contact-submit">
+                    <span>${c.form.submitText}</span>
+                </button>
+            </form>
+            
+            <div class="form-message" id="formMessage"></div>
+        </div>
+    `;
+
+    // Inicializar efectos después de renderizar
+    setTimeout(() => {
+        initContactParticles();
+        initContactParallax();
+        initContactForm();
+    }, 100);
+}
+
+// ─── PARTÍCULAS DE POLVO DORADO (CONTACTO) ────────────────────
+function initContactParticles() {
+    const container = $("#contactParticles");
+    if (!container) return;
+
+    const particleCount = 20;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement("div");
+        particle.className = "contact-particle";
+        
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.top = `${50 + Math.random() * 50}%`;
+        
+        const duration = Math.random() * 6 + 4;
+        const delay = Math.random() * 5;
+        const driftX = (Math.random() - 0.5) * 60;
+        
+        particle.style.animation = `contactParticleFloat ${duration}s ease-in-out ${delay}s infinite`;
+        particle.style.setProperty("--drift-x", `${driftX}px`);
+        
+        container.appendChild(particle);
+    }
+}
+
+// ─── PARALLAX 3D PARA EL ÍCONO DEL SOBRE ────────────
+function initContactParallax() {
+    const icon = $("#contactBgIcon");
+    if (!icon) return;
+
+    let ticking = false;
+
+    window.addEventListener("scroll", () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                const rect = icon.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+                
+                if (rect.top < windowHeight && rect.bottom > 0) {
+                    const progress = (windowHeight - rect.top) / (windowHeight + rect.height);
+                    const normalizedProgress = (progress - 0.5) * 2;
+                    
+                    const translateY = normalizedProgress * -40;
+                    const rotateX = -5 + (normalizedProgress * 8);
+                    const rotateY = 15 + (normalizedProgress * 10);
+                    
+                    icon.style.transform = `translateY(calc(-50% + ${translateY}px)) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+                }
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+}
+
+// ─── FORMULARIO DE CONTACTO (FormSubmit - Sin registro) ───────────────────
+function initContactForm() {
+    const form = $("#contactForm");
+    const messageEl = $("#formMessage");
+    if (!form) return;
+
+    // Efecto de partículas al escribir
+    const inputs = $$(".form-input, .form-textarea", form);
+    inputs.forEach(input => {
+        input.addEventListener("input", () => {
+            input.classList.add("typing");
+            clearTimeout(input.typingTimeout);
+            input.typingTimeout = setTimeout(() => {
+                input.classList.remove("typing");
+            }, 500);
+        });
+    });
+
+    // Manejar envío del formulario
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+        
+        // Mostrar estado de carga
+        const submitBtn = $(".contact-submit", form);
+        const originalText = submitBtn.querySelector("span").textContent;
+        submitBtn.querySelector("span").textContent = "Enviando...";
+        submitBtn.disabled = true;
+
+        try {
+            // ★ Enviar a FormSubmit (reemplaza TU_EMAIL@ejemplo.com con tu email real)
+            const response = await fetch("https://formsubmit.co/ajax/TU_EMAIL@ejemplo.com", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify({
+                    name: data.name,
+                    email: data.email,
+                    subject: data.subject,
+                    message: data.message,
+                    _subject: `Nuevo mensaje de ${data.name} - ${data.subject}`,
+                    _template: "table" // Formato bonito del email
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success === "true" || response.ok) {
+                messageEl.textContent = C.contact.form.successMessage;
+                messageEl.className = "form-message success visible";
+                form.reset();
+                
+                setTimeout(() => {
+                    messageEl.classList.remove("visible");
+                }, 5000);
+            } else {
+                throw new Error("Error en el envío");
+            }
+            
+        } catch (error) {
+            messageEl.textContent = C.contact.form.errorMessage;
+            messageEl.className = "form-message error visible";
+            
+            setTimeout(() => {
+                messageEl.classList.remove("visible");
+            }, 5000);
+        } finally {
+            submitBtn.querySelector("span").textContent = originalText;
+            submitBtn.disabled = false;
+        }
+    });
+}
+
   // ─── INIT ────────────────────────────────
 function init() {
   applyTheme();
+  injectSEO();
   buildHeader();
   buildHero();
   buildStory();
   buildServices();
   buildGallery();
   buildPhilosophy();
-  buildEcommerce();  // ★ NUEVO: construir bloque E-commerce
+  buildEcommerce();
+  initEcommerceParticles();
+  buildBlog();
+  initBlogInkEffect();
+  initBlogParticles();
+  initBlogParallax();
+  buildContact();
   buildFooter();
   initGrain();
   initProgressBar();
@@ -992,6 +1586,7 @@ function init() {
   initSmoothScroll();
   initCounters();
   initGalleryCarousel();
+  initGalleryParticles();
   initServicesLight();
   
   // Delay magnetic init until after loader
