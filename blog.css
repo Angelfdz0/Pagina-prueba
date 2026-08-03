@@ -355,11 +355,27 @@ ESTRELLAS PARPADEANTES - BLOG HERO
     position: absolute;
     background: var(--color-accent);
     border-radius: 50%;
-    animation: blogStarTwinkle var(--twinkle-duration) ease-in-out infinite;
-    animation-delay: var(--twinkle-delay);
+    opacity: 0; /* ★ FIX: Inicia invisible */
+    /* ★ Dos animaciones: primero fade-in (una vez), luego twinkle (infinito) */
+    animation: 
+        blogStarFadeIn 1.8s ease-out var(--twinkle-delay) forwards,
+        blogStarTwinkle var(--twinkle-duration) ease-in-out calc(var(--twinkle-delay) + 1.8s) infinite;
     box-shadow: 0 0 var(--glow-size) var(--color-accent);
 }
 
+/* ★ NUEVA: Animación de entrada suave */
+@keyframes blogStarFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    to {
+        opacity: var(--min-opacity);
+        transform: scale(0.8);
+    }
+}
+
+/* Twinkle (se mantiene igual que antes) */
 @keyframes blogStarTwinkle {
     0%, 100% {
         opacity: var(--min-opacity);

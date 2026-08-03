@@ -361,7 +361,7 @@ EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
     position: absolute;
     top: -20%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateZ(0); /* ★ GPU force */
     width: 40%;
     height: 120%;
     background: linear-gradient(
@@ -370,9 +370,12 @@ EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
         rgba(201, 169, 110, 0.08) 40%,
         transparent 100%
     );
+    -webkit-clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%); /* ★ Prefijo */
     clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+    -webkit-filter: blur(30px); /* ★ Prefijo */
     filter: blur(30px);
     opacity: 1;
+    will-change: transform, opacity; /* ★ Hint para GPU */
     animation: spotlightBreathe 10s ease-in-out infinite;
 }
 
@@ -381,7 +384,7 @@ EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
     position: absolute;
     bottom: 10%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateZ(0); /* ★ GPU force */
     width: 60%;
     height: 40%;
     background: radial-gradient(
@@ -390,8 +393,10 @@ EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
         rgba(201, 169, 110, 0.05) 40%,
         transparent 70%
     );
+    -webkit-filter: blur(40px); /* ★ Prefijo */
     filter: blur(40px);
     opacity: 1;
+    will-change: transform, opacity; /* ★ Hint para GPU */
     animation: glowBreathe 10s ease-in-out infinite;
 }
 
@@ -399,34 +404,47 @@ EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
 @keyframes spotlightBreathe {
     0%, 100% {
         opacity: 0.1;
-        transform: translateX(calc(-50% - 3%)) scaleX(0.95);
+        transform: translateX(calc(-50% - 3%)) translateZ(0) scaleX(0.95);
     }
     50% {
         opacity: 0.9;
-        transform: translateX(calc(-50% + 3%)) scaleX(1.05);
+        transform: translateX(calc(-50% + 3%)) translateZ(0) scaleX(1.05);
     }
 }
 
 @keyframes glowBreathe {
     0%, 100% {
         opacity: 0.15;
-        transform: translateX(calc(-50% - 3%)) scale(0.95);
+        transform: translateX(calc(-50% - 3%)) translateZ(0) scale(0.95);
     }
     50% {
         opacity: 1;
-        transform: translateX(calc(-50% + 3%)) scale(1.1);
+        transform: translateX(calc(-50% + 3%)) translateZ(0) scale(1.1);
     }
 }
 
-/* Responsive: luz más sutil en móvil */
+/* ★ SOLUCIÓN MÓVIL: Reducir complejidad para que SÍ se renderice */
 @media (max-width: 768px) {
     .spotlight-beam {
-        width: 60%;
-        filter: blur(20px);
+        width: 70%;
+        -webkit-filter: blur(15px); /* ★ Menos blur = menos carga GPU */
+        filter: blur(15px);
+        /* ★ Fallback: si clip-path falla, usar gradiente radial */
+        -webkit-clip-path: none;
+        clip-path: none;
+        background: radial-gradient(
+            ellipse at center top,
+            rgba(201, 169, 110, 0.2) 0%,
+            rgba(201, 169, 110, 0.08) 40%,
+            transparent 70%
+        );
+        border-radius: 0 0 50% 50%;
     }
+
     .spotlight-glow {
-        width: 80%;
-        filter: blur(30px);
+        width: 90%;
+        -webkit-filter: blur(20px); /* ★ Menos blur */
+        filter: blur(20px);
     }
 }
 

@@ -550,13 +550,42 @@ function initScrollEffects() {
 
 function initBlogStars() {
     const starsContainer = document.getElementById("blogStars");
-    if (!starsContainer) return;
-    for (let i = 0; i < 35; i++) {
+    if (!starsContainer) {
+        console.warn("⚠️ No se encontró el contenedor blogStars");
+        return;
+    }
+
+    // ★ Detectar si es móvil para ajustar cantidad y tamaño
+    const isMobile = window.innerWidth < 769;
+    const starCount = isMobile ? 5 : 15; // Menos estrellas en móvil = mejor rendimiento
+    const minSize = isMobile ? 2 : 1;     // ★ Más grandes en móvil
+    const maxSize = isMobile ? 4 : 2.5;   // ★ Más grandes en móvil
+
+    for (let i = 0; i < starCount; i++) {
         const star = document.createElement("div");
         star.className = "blog-star";
-        star.style.cssText = `left: ${Math.random()*100}%; top: ${Math.random()*100}%; width: ${Math.random()*1.5+1}px; height: ${Math.random()*1.5+1}px; --twinkle-duration: ${Math.random()*4+3}s; --twinkle-delay: ${Math.random()*5}s; --min-opacity: ${Math.random()*0.2+0.1}; --max-opacity: ${Math.random()*0.4+0.4}; --glow-size: ${(Math.random()*1.5+1)*2.5}px;`;
+
+        const size = Math.random() * (maxSize - minSize) + minSize;
+        const glowSize = size * 3;
+        const duration = Math.random() * 4 + 3;
+        const delay = Math.random() * 5;
+        const minOpacity = Math.random() * 0.3 + 0.2;   // ★ Mínimo 0.2 (más visible)
+        const maxOpacity = Math.random() * 0.4 + 0.5;   // ★ Máximo 0.5-0.9
+
+        star.style.cssText = `
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            width: ${size}px;
+            height: ${size}px;
+            --twinkle-duration: ${duration}s;
+            --twinkle-delay: ${delay}s;
+            --min-opacity: ${minOpacity};
+            --max-opacity: ${maxOpacity};
+            --glow-size: ${glowSize}px;
+        `;
         starsContainer.appendChild(star);
     }
+    console.log(`✨ ${starCount} estrellas creadas (${isMobile ? 'móvil' : 'desktop'})`);
 }
 
 function formatDate(dateString) {

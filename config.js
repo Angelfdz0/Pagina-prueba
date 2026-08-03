@@ -51,8 +51,8 @@ const SITE_CONFIG = {
       { label: "Servicios",  href: "#services" },
       { label: "Galería",    href: "#gallery" },
       { label: "Filosofía",  href: "#philosophy" },
-      { label: "Tienda",     href: "#ecommerce" }, // ★ Enlace a página externa
-      { label: "Blog",       href: "#blog" },   // ★ Enlace a página externa
+      { label: "Tienda",     href: "#ecommerce" },
+      { label: "Blog",       href: "#blog" },
       { label: "Contacto",   href: "#contact" },
     ],
     cta: {
