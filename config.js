@@ -51,13 +51,13 @@ const SITE_CONFIG = {
       { label: "Servicios",  href: "#services" },
       { label: "Galería",    href: "#gallery" },
       { label: "Filosofía",  href: "#philosophy" },
-      { label: "Tienda",     href: "#ecommerce" },
-      { label: "Blog",       href: "#blog" },
+      { label: "Tienda",     href: "tienda.html" }, // ★ Enlace a página externa
+      { label: "Blog",       href: "blog.html" },   // ★ Enlace a página externa
       { label: "Contacto",   href: "#contact" },
     ],
     cta: {
       label: "Contacto",
-      href: "#footer",
+      href: "#contact",
     },
   },
 
@@ -69,15 +69,14 @@ const SITE_CONFIG = {
     backgroundImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2064&auto=format&fit=crop",
     eyebrow: "Estudio Creativo — Desde 2018",
     title: {
-    line1: "Creamos",
-    line2: "Experiencias",
-    // ★ CAMBIO AQUÍ: array de palabras que se escribirán en bucle
-    typewriterWords: ["Digitales", "Únicas", "Memorables"],
+      line1: "Creamos",
+      line2: "Experiencias",
+      typewriterWords: ["Digitales", "Únicas", "Memorables"],
+    },
+    subtitle: "Diseño, estrategia y tecnología fusionados para construir marcas que trascienden lo ordinario.",
+    cta: "Descubrir Más",
+    ctaHref: "#story",
   },
-  subtitle: "Diseño, estrategia y tecnología fusionados para construir marcas que trascienden lo ordinario.",
-  cta: "Descubrir Más",
-  ctaHref: "#story",
-},
 
   // ──────────────────────────────────────────
   // 📖 BLOQUE 1 — HISTORIA (Scrollytelling)
@@ -167,249 +166,184 @@ const SITE_CONFIG = {
     ],
   },
 
-  // ─────────────────────────────────────────
-// 💬 BLOQUE 4 — FILOSOFÍA / CTA
-// ──────────────────────────────────────────
-philosophy: {
-  enabled: false,  // ★ true/false para mostrar/ocultar
-  label: "Nuestra Filosofía",
-  quote: "El diseño no es solo lo que se ve y se siente. El diseño es <em>cómo funciona</em>.",
-  author: "— Steve Jobs",
-  cta: "Iniciar un Proyecto",
-  ctaHref: "#footer",
-},
+  // ──────────────────────────────────────────
+  // 💬 BLOQUE 4 — FILOSOFÍA / CTA
+  // ──────────────────────────────────────────
+  philosophy: {
+    enabled: false,  // ★ true/false para mostrar/ocultar
+    label: "Nuestra Filosofía",
+    quote: "El diseño no es solo lo que se ve y se siente. El diseño es <em>cómo funciona</em>.",
+    author: "— Steve Jobs",
+    cta: "Iniciar un Proyecto",
+    ctaHref: "#contact",
+  },
 
-// ──────────────────────────────────────────
-// 🛍️ BLOQUE 5 — E-COMMERCE
-// ──────────────────────────────────────────
-ecommerce: {
-  enabled: true,
-  label: "Tienda Online",
-  heading: "Productos que <em>inspiran</em>",
-  subtitle: "Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida.",
-  cta: "Ver Catálogo Completo",
-  ctaHref: "tienda.html",
-  products: [
-    {
-      id: 1,
-      name: "Reloj Minimalista Premium",
-      category: "destacado",
-      price: 299,
-      originalPrice: null,
-      badge: "Destacado",
-      description: "Diseño atemporal con materiales de la más alta calidad. Correa de cuero genuino y movimiento suizo de precisión.",
-      features: [
-        "Movimiento suizo automático",
-        "Cristal de zafiro antirreflejos",
-        "Resistencia al agua 100m",
-        "Correa de cuero italiano",
-        "Garantía de 2 años"
-      ],
-      // ★ Múltiples imágenes
-      images: [
-        "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=1200&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=1200&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1542496658-e33a6d0d41f6?q=80&w=1200&auto=format&fit=crop"
-      ],
-      // ★ Variantes del producto
-      variants: [
-        {
-          name: "Negro Clásico",
-          image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop",
-          price: 299,
-          inStock: true
-        },
-        {
-          name: "Plata Elegante",
-          image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=400&auto=format&fit=crop",
-          price: 329,
-          inStock: true
-        },
-        {
-          name: "Dorado Premium",
-          image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=400&auto=format&fit=crop",
-          price: 399,
-          inStock: false
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: "Auriculares Wireless Elite",
-      category: "nuevo",
-      price: 449,
-      originalPrice: 549,
-      badge: "Nuevo",
-      description: "Sonido de estudio con cancelación activa de ruido. 40 horas de batería y comodidad excepcional.",
-      features: [
-        "Cancelación activa de ruido",
-        "40 horas de batería",
-        "Audio Hi-Res certificado",
-        "Conectividad multipoint",
-        "Micrófono integrado"
-      ],
-      images: [
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1200&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=1200&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?q=80&w=1200&auto=format&fit=crop"
-      ],
-      variants: [
-        {
-          name: "Negro Mate",
-          image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&auto=format&fit=crop",
-          price: 449,
-          inStock: true
-        },
-        {
-          name: "Blanco Perla",
-          image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=400&auto=format&fit=crop",
-          price: 449,
-          inStock: true
-        }
-      ]
-    },
-    {
-      id: 3,
-      name: "Café Especial de Origen",
-      category: "popular",
-      price: 24,
-      originalPrice: null,
-      badge: "Popular",
-      description: "Café de especialidad 100% arábica, cultivado en las montañas de Colombia. Tostado artesanal para resaltar notas de chocolate y frutos rojos.",
-      features: [
-        "100% Arábica de origen único",
-        "Tostado medio artesanal",
-        "Notas: chocolate, frutos rojos, caramelo",
-        "Empaque con válvula de desgasificación",
-        "Certificación de comercio justo"
-      ],
-      images: [
-        "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=1200&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1200&auto=format&fit=crop",
-        "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=1200&auto=format&fit=crop"
-      ],
-      variants: [
-        {
-          name: "Colombia - 250g",
-          image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=400&auto=format&fit=crop",
-          price: 24,
-          inStock: true
-        },
-        {
-          name: "Colombia - 500g",
-          image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=400&auto=format&fit=crop",
-          price: 42,
-          inStock: true
-        },
-        {
-          name: "Etiopía - 250g",
-          image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=400&auto=format&fit=crop",
-          price: 28,
-          inStock: true
-        },
-        {
-          name: "Brasil - 250g",
-          image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop",
-          price: 22,
-          inStock: false
-        }
-      ]
-    }
-    ],
-  
-  // ★ PROMOCIONES (agrega esto)
-  promotions: {
-    enabled: true,                    // Activar/desactivar popup
-    delay: 3000,                      // Aparecer después de 3 segundos
-    autoRotate: true,                 // Rotar entre promociones
-    rotateInterval: 6000,             // Cambiar cada 6 segundos
-    showCloseButton: true,            // Mostrar botón X
-    rememberDismiss: true,            // Recordar si el usuario cerró
-    dismissDuration: 24,              // Horas antes de volver a mostrar
-    items: [
+  // ──────────────────────────────────────────
+  // 🛍️ BLOQUE 5 — E-COMMERCE
+  // ──────────────────────────────────────────
+  ecommerce: {
+    enabled: true,
+    label: "Tienda Online",
+    heading: "Productos que <em>inspiran</em>",
+    subtitle: "Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida.",
+    cta: "Ver Catálogo Completo",
+    ctaHref: "tienda.html",
+    products: [
       {
         id: 1,
-        badge: "🔥 OFERTA LIMITADA",
-        title: "30% de Descuento",
-        subtitle: "En toda la colección de relojes",
-        description: "Solo por tiempo limitado. Aprovecha nuestro descuento especial en productos seleccionados.",
-        code: "RELOJ30",
-        discount: "30%",
-        validUntil: "2025-12-31",
-        cta: "Comprar Ahora",
-        ctaHref: "#products",
-        accent: "gold"  // gold, red, purple
+        name: "Reloj Minimalista Premium",
+        category: "destacado",
+        price: 299,
+        originalPrice: null,
+        badge: "Destacado",
+        description: "Diseño atemporal con materiales de la más alta calidad. Correa de cuero genuino y movimiento suizo de precisión.",
+        features: [
+          "Movimiento suizo automático",
+          "Cristal de zafiro antirreflejos",
+          "Resistencia al agua 100m",
+          "Correa de cuero italiano",
+          "Garantía de 2 años"
+        ],
+        images: [
+          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1542496658-e33a6d0d41f6?q=80&w=1200&auto=format&fit=crop"
+        ],
+        variants: [
+          { name: "Negro Clásico", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop", price: 299, inStock: true },
+          { name: "Plata Elegante", image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=400&auto=format&fit=crop", price: 329, inStock: true },
+          { name: "Dorado Premium", image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=400&auto=format&fit=crop", price: 399, inStock: false }
+        ]
       },
       {
         id: 2,
-        badge: "✨ NUEVO",
-        title: "Envío Gratis",
-        subtitle: "En compras mayores a $100",
-        description: "Recibe tus productos sin costo de envío en todo el país. Sin código necesario.",
-        code: "ENVIOGRATIS",
-        discount: "FREE",
-        validUntil: "2025-11-30",
-        cta: "Ver Productos",
-        ctaHref: "#products",
-        accent: "purple"
+        name: "Auriculares Wireless Elite",
+        category: "nuevo",
+        price: 449,
+        originalPrice: 549,
+        badge: "Nuevo",
+        description: "Sonido de estudio con cancelación activa de ruido. 40 horas de batería y comodidad excepcional.",
+        features: [
+          "Cancelación activa de ruido",
+          "40 horas de batería",
+          "Audio Hi-Res certificado",
+          "Conectividad multipoint",
+          "Micrófono integrado"
+        ],
+        images: [
+          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?q=80&w=1200&auto=format&fit=crop"
+        ],
+        variants: [
+          { name: "Negro Mate", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&auto=format&fit=crop", price: 449, inStock: true },
+          { name: "Blanco Perla", image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=400&auto=format&fit=crop", price: 449, inStock: true }
+        ]
       },
       {
         id: 3,
-        badge: "🎁 EXCLUSIVO",
-        title: "2x1 en Accesorios",
-        subtitle: "Lleva dos, paga uno",
-        description: "Compra cualquier accesorio y llévate otro completamente gratis. Oferta por tiempo limitado.",
-        code: "2X1ACC",
-        discount: "2x1",
-        validUntil: "2025-10-15",
-        cta: "Aprovechar Oferta",
-        ctaHref: "#products",
-        accent: "red"
+        name: "Café Especial de Origen",
+        category: "popular",
+        price: 24,
+        originalPrice: null,
+        badge: "Popular",
+        description: "Café de especialidad 100% arábica, cultivado en las montañas de Colombia. Tostado artesanal para resaltar notas de chocolate y frutos rojos.",
+        features: [
+          "100% Arábica de origen único",
+          "Tostado medio artesanal",
+          "Notas: chocolate, frutos rojos, caramelo",
+          "Empaque con válvula de desgasificación",
+          "Certificación de comercio justo"
+        ],
+        images: [
+          "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1200&auto=format&fit=crop",
+          "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=1200&auto=format&fit=crop"
+        ],
+        variants: [
+          { name: "Colombia - 250g", image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=400&auto=format&fit=crop", price: 24, inStock: true },
+          { name: "Colombia - 500g", image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=400&auto=format&fit=crop", price: 42, inStock: true },
+          { name: "Etiopía - 250g", image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=400&auto=format&fit=crop", price: 28, inStock: true },
+          { name: "Brasil - 250g", image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop", price: 22, inStock: false }
+        ]
       }
-    ]
+    ],
+  
+    // ★ PROMOCIONES
+    promotions: {
+      enabled: true,
+      delay: 3000,
+      autoRotate: true,
+      rotateInterval: 6000,
+      showCloseButton: true,
+      rememberDismiss: true,
+      dismissDuration: 24,
+      items: [
+        {
+          id: 1, badge: "🔥 OFERTA LIMITADA", title: "30% de Descuento",
+          subtitle: "En toda la colección de relojes",
+          description: "Solo por tiempo limitado. Aprovecha nuestro descuento especial en productos seleccionados.",
+          code: "RELOJ30", discount: "30%", validUntil: "2025-12-31",
+          cta: "Comprar Ahora", ctaHref: "#products", accent: "gold"
+        },
+        {
+          id: 2, badge: "✨ NUEVO", title: "Envío Gratis",
+          subtitle: "En compras mayores a $100",
+          description: "Recibe tus productos sin costo de envío en todo el país. Sin código necesario.",
+          code: "ENVIOGRATIS", discount: "FREE", validUntil: "2025-11-30",
+          cta: "Ver Productos", ctaHref: "#products", accent: "purple"
+        },
+        {
+          id: 3, badge: "🎁 EXCLUSIVO", title: "2x1 en Accesorios",
+          subtitle: "Lleva dos, paga uno",
+          description: "Compra cualquier accesorio y llévate otro completamente gratis. Oferta por tiempo limitado.",
+          code: "2X1ACC", discount: "2x1", validUntil: "2025-10-15",
+          cta: "Aprovechar Oferta", ctaHref: "#products", accent: "red"
+        }
+      ]
+    },
+
+    promoCodes: {
+      "RELOJ30": { type: "percent", value: 30, label: "30% de descuento" },
+      "ENVIOGRATIS": { type: "fixed", value: 50, label: "$50 de descuento" },
+      "2X1ACC": { type: "percent", value: 50, label: "50% de descuento" }
+    }
   },
 
-  promoCodes: {
-    "RELOJ30": { type: "percent", value: 30, label: "30% de descuento" },
-    "ENVIOGRATIS": { type: "fixed", value: 50, label: "$50 de descuento" },
-    "2X1ACC": { type: "percent", value: 50, label: "50% de descuento" }
-  }
-},
-
   // ──────────────────────────────────────────
-// 📝 BLOQUE 6 — BLOG
-// ──────────────────────────────────────────
-blog: {
-    enabled: true, // ★ true/false para mostrar/ocultar
+  // 📝 BLOQUE 6 — BLOG
+  // ──────────────────────────────────────────
+  blog: {
+    enabled: true, 
     label: "Nuestro Blog",
     heading: "Historias que <em>inspiran</em>",
     subtitle: "Reflexiones, tendencias y detrás de escena de nuestro proceso creativo. Un espacio para compartir ideas que dejan huella.",
     cta: "Leer Artículos",
-    ctaHref: "blog.html", // ★ Enlace a tu futura página de blog
-},
+    ctaHref: "blog.html", 
+  },
 
   // ──────────────────────────────────────────
-//  BLOQUE 7 — CONTACTO (FORMULARIO)
-// ──────────────────────────────────────────
-contact: {
-    enabled: true,
+  // 📬 BLOQUE 7 — CONTACTO (FORMULARIO)
+  // ──────────────────────────────────────────
+  contact: {
+    enabled: true, // ★ Cambiado a true para que se muestre
     label: "Contacto",
     heading: "Hablemos de tu <em>próximo proyecto</em>",
     subtitle: "¿Tienes una idea en mente? Cuéntanos sobre ella y juntos la haremos realidad. Estamos listos para escucharte.",
     form: {
-        namePlaceholder: "Tu nombre",
-        emailPlaceholder: "Tu correo electrónico",
-        subjectPlaceholder: "Asunto",
-        messagePlaceholder: "Cuéntanos sobre tu proyecto...",
-        submitText: "Enviar Mensaje",
-        successMessage: "¡Mensaje enviado con éxito! Te contactaremos pronto.",
-        errorMessage: "Hubo un error al enviar. Por favor, intenta de nuevo.",
+      namePlaceholder: "Tu nombre",
+      emailPlaceholder: "Tu correo electrónico",
+      subjectPlaceholder: "Asunto",
+      messagePlaceholder: "Cuéntanos sobre tu proyecto...",
+      submitText: "Enviar Mensaje",
+      successMessage: "¡Mensaje enviado con éxito! Te contactaremos pronto.",
+      errorMessage: "Hubo un error al enviar. Por favor, intenta de nuevo.",
     },
-    email: "hola@studio.com", // ★ Tu correo de contacto
-    phone: "+34 612 345 678", // ★ Tu teléfono (opcional)
-    address: "Madrid, España", // ★ Tu dirección (opcional)
-},
+    email: "hola@studio.com", 
+    phone: "+34 612 345 678", 
+    address: "Madrid, España", 
+  },
 
   // ──────────────────────────────────────────
   // 🦶 FOOTER
@@ -429,18 +363,26 @@ contact: {
           { label: "Historia",  href: "#story" },
           { label: "Servicios", href: "#services" },
           { label: "Galería",   href: "#gallery" },
-          { label: "Tienda",    href: "#ecommerce" },
-          { label: "Blog",      href: "#blog" },
+          { label: "Tienda",    href: "tienda.html" },
+          { label: "Blog",      href: "blog.html" },
           { label: "Contacto",  href: "#contact" },
+        ],
+      },
+      {
+        title: "Legal",
+        links: [
+          { label: "Política de Privacidad", href: "legal.html#privacy" },
+          { label: "Términos y Condiciones", href: "legal.html#terms" },
+          { label: "Política de Cookies",    href: "legal.html#cookies" },
         ],
       },
       {
         title: "Servicios",
         links: [
-          { label: "Branding",     href: "#" },
-          { label: "Diseño Web",   href: "#" },
-          { label: "Desarrollo",   href: "#" },
-          { label: "Estrategia",   href: "#" },
+          { label: "Branding",   href: "#" },
+          { label: "Diseño Web", href: "#" },
+          { label: "Desarrollo", href: "#" },
+          { label: "Estrategia", href: "#" },
         ],
       },
       {
@@ -448,43 +390,136 @@ contact: {
         links: [
           { label: "hola@studio.com",  href: "mailto:hola@studio.com" },
           { label: "+34 612 345 678",  href: "tel:+34612345678" },
-          { label: "Madrid, España",    href: "#" },
+          { label: "Madrid, España",   href: "#" },
         ],
       },
-    ],
-    socials: [
-      { label: "Instagram", href: "#" },
-      { label: "Behance",   href: "#" },
-      { label: "LinkedIn",  href: "#" },
-      { label: "Twitter",   href: "#" },
     ],
     copyright: "© 2025 Studio. Todos los derechos reservados.",
   },
 
   // ──────────────────────────────────────────
+  // 🌐 REDES SOCIALES (ÚNICA FUENTE DE VERDAD)
+  // ──────────────────────────────────────────
+  socials: [
+    { label: "Instagram", href: "https://instagram.com/studio" },
+    { label: "Behance",   href: "https://behance.net/studio" },
+    { label: "LinkedIn",  href: "https://linkedin.com/company/studio" },
+    { label: "Twitter",   href: "https://twitter.com/studio" }
+  ],
+
+  // ──────────────────────────────────────────
   // ⚡ CONFIGURACIÓN DE EFECTOS
   // ──────────────────────────────────────────
   effects: {
-    parallaxHeroSpeed: 0.35,       // Velocidad parallax del hero (0-1)
-    parallaxImageSpeed: 0.12,      // Velocidad parallax imágenes story
-    smoothScrollLerp: 0.08,        // Suavizado del scroll (menor = más suave)
-    revealThreshold: 0.15,         // % visible para activar reveal (0-1)
-    cursorEnabled: true,           // Activar/desactivar cursor custom
-    grainEnabled: true,            // Activar/desactivar grano
-    progressBarEnabled: true,      // Barra de progreso superior
+    parallaxHeroSpeed: 0.35,
+    parallaxImageSpeed: 0.12,
+    smoothScrollLerp: 0.08,
+    revealThreshold: 0.15,
+    cursorEnabled: true,
+    grainEnabled: true,
+    progressBarEnabled: true,
   },
 
   // ──────────────────────────────────────────
-// 🛒 CONFIGURACIÓN DE LA TIENDA (tienda.html)
-// ──────────────────────────────────────────
-tienda: {
+  // 🛒 CONFIGURACIÓN DE LA TIENDA (tienda.html)
+  // ──────────────────────────────────────────
+  tienda: {
     whatsapp: "521234567890", // ★ TU NÚMERO AQUÍ (sin +, sin espacios)
     hero: {
-        eyebrow: "Tienda Online",
-        titleLine1: "Productos que",
-        titleLine2: "inspiran",
-        subtitle: "Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida."
+      eyebrow: "Tienda Online",
+      titleLine1: "Productos que",
+      titleLine2: "inspiran",
+      subtitle: "Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida."
     }
-},
+  },
   
+  // ──────────────────────────────────────────
+  // 🔐 SUPABASE (Blog)
+  // ──────────────────────────────────────────
+  supabase: {
+    url: "https://ouxfmeugibrpjysjfqso.supabase.co",
+    key: "sb_publishable_jAgXqz1iqlEyveCIFy4eOw_idYvxmoQ",
+    storageBucket: "blog-images",
+  },
+
+  // ──────────────────────────────────────────
+  // 📧 EMAIL & FORMULARIOS
+  // ──────────────────────────────────────────
+  email: {
+    contactForm: "hola@studio.com",
+    formSubmitUrl: "https://formsubmit.co/ajax/hola@studio.com",
+  },
+
+  // ──────────────────────────────────────────
+  // 📝 BLOG CONFIG (Mensajes y categorías)
+  // ──────────────────────────────────────────
+  blogConfig: {
+    categories: ["historias", "recetas", "opiniones", "datos", "tutoriales"],
+    heroStars: 35,
+    messages: {
+      postSuccess: "¡Post publicado con éxito!",
+      postError: "Error al crear el post",
+      categoryAdded: "Categoría agregada",
+      categoryRemoved: "Categoría eliminada",
+      categoryExists: "Categoría ya existe o inválida",
+      loginWelcome: "¡Bienvenido, administrador!",
+      loginError: "Credenciales inválidas. Verifica tu email y contraseña.",
+      sessionClosed: "Sesión cerrada",
+      logoutError: "Error al cerrar sesión",
+      imageUploading: "Subiendo imágenes...",
+      imageSuccess: "Imágenes subidas correctamente",
+      imageError: "Error al subir",
+      notImage: "no es una imagen",
+      exceedsSize: "excede 5MB",
+      needLogin: "Debes iniciar sesión primero",
+      needImage: "Debes subir al menos una imagen",
+      dbError: "Error al conectar con la base de datos",
+      noPosts: "No se encontraron artículos",
+      noComments: "Sé el primero en comentar",
+      commentAdded: "¡Comentario agregado!",
+      likeAdded: "¡Te gustó este post!",
+      likeRemoved: "Like removido",
+      saved: "Post guardado",
+      unsaved: "Post removido de guardados",
+      invalidCategory: "Debe haber al menos una categoría",
+    },
+  },
+
+  // ──────────────────────────────────────────
+  // 🛒 TIENDA CONFIG (Extensiones de mensajes)
+  // ──────────────────────────────────────────
+  shopConfig: {
+    whatsapp: {
+      number: "521234567890",
+      defaultMessage: "¡Hola! Me interesa conocer más sobre sus productos.",
+      orderMessage: "¡Hola! Me interesa hacer el siguiente pedido:\n\n",
+      orderTotal: "\n*💰 Total a pagar: $",
+      emptyCartAlert: "Tu carrito está vacío. ¡Agrega algunos productos primero!",
+    },
+    whatsappButton: {
+      showThreshold: 0.80,
+      hideThreshold: 0.75,
+    },
+    messages: {
+      promoApplied: '¡Código "{code}" aplicado! {label}',
+      promoInvalid: "Código no válido o expirado",
+      promoRemoved: "Código de descuento eliminado",
+      promoCopied: 'Código "{code}" copiado',
+      addedToCart: "Producto agregado al carrito",
+    },
+  },
+
+  // ──────────────────────────────────────────
+  // 🏢 INFORMACIÓN DEL NEGOCIO
+  // ──────────────────────────────────────────
+  business: {
+    name: "Studio Creativo",
+    legalName: "Studio Creativo S.L.",
+    taxId: "B12345678",
+    address: "Calle Principal 123, 28001 Madrid, España",
+    phone: "+34 612 345 678",
+    email: "hola@studio.com",
+    businessHours: "Lun - Vie: 9:00 - 18:00",
+    registryData: "Inscrita en el Registro Mercantil de Madrid",
+  },
 };

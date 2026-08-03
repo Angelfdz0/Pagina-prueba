@@ -15,6 +15,77 @@ RESET COMPATIBLE CON STYLE.CSS PRINCIPAL
 }
 
 /* ============================================
+CURSOR PERSONALIZADO - TIENDA
+============================================ */
+body {
+    cursor: none;
+}
+
+a, button {
+    cursor: none;
+}
+
+.cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s var(--ease-out-expo),
+                height 0.3s var(--ease-out-expo),
+                background 0.3s;
+    mix-blend-mode: difference;
+}
+
+.cursor-follower {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--color-accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    transition: width 0.4s var(--ease-out-expo),
+                height 0.4s var(--ease-out-expo),
+                border-color 0.3s,
+                opacity 0.3s;
+    opacity: 0.5;
+}
+
+.cursor.hover {
+    width: 60px;
+    height: 60px;
+    background: transparent;
+    border: 1px solid var(--color-accent);
+}
+
+.cursor-follower.hover {
+    width: 80px;
+    height: 80px;
+    opacity: 0.2;
+}
+
+@media (max-width: 768px) {
+    .cursor, .cursor-follower {
+        display: none;
+    }
+    body {
+        cursor: auto;
+    }
+    a, button {
+        cursor: pointer;
+    }
+}
+
+/* ============================================
 HEADER SHOP
 ============================================ */
 .shop-header {
@@ -272,9 +343,9 @@ HERO TIENDA
 }
 
 /* ============================================
-ESTRELLAS PARPADEANTES - SHOP HERO
+EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
 ============================================ */
-.shop-stars {
+.shop-spotlight {
     position: absolute;
     top: 0;
     left: 0;
@@ -285,30 +356,77 @@ ESTRELLAS PARPADEANTES - SHOP HERO
     overflow: hidden;
 }
 
-.shop-star {
+/* Haz de luz principal (cono desde arriba) */
+.spotlight-beam {
     position: absolute;
-    background: var(--color-accent);
-    border-radius: 50%;
-    animation: shopStarTwinkle var(--twinkle-duration) ease-in-out infinite;
-    animation-delay: var(--twinkle-delay);
-    box-shadow: 0 0 var(--glow-size) var(--color-accent);
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40%;
+    height: 120%;
+    background: linear-gradient(
+        to bottom,
+        rgba(201, 169, 110, 0.2) 0%,
+        rgba(201, 169, 110, 0.08) 40%,
+        transparent 100%
+    );
+    clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+    filter: blur(30px);
+    opacity: 1;
+    animation: spotlightBreathe 10s ease-in-out infinite;
 }
 
-@keyframes shopStarTwinkle {
+/* Resplandor en la base (donde "toca" la luz) */
+.spotlight-glow {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 40%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(201, 169, 110, 0.15) 0%,
+        rgba(201, 169, 110, 0.05) 40%,
+        transparent 70%
+    );
+    filter: blur(40px);
+    opacity: 1;
+    animation: glowBreathe 10s ease-in-out infinite;
+}
+
+/* ANIMACIÓN: Se ilumina poco a poco y disminuye */
+@keyframes spotlightBreathe {
     0%, 100% {
-        opacity: var(--min-opacity);
-        transform: scale(0.8);
+        opacity: 0.1;
+        transform: translateX(calc(-50% - 3%)) scaleX(0.95);
     }
     50% {
-        opacity: var(--max-opacity);
-        transform: scale(1.2);
+        opacity: 0.9;
+        transform: translateX(calc(-50% + 3%)) scaleX(1.05);
     }
 }
 
-/* Responsive: menos estrellas en móvil */
+@keyframes glowBreathe {
+    0%, 100% {
+        opacity: 0.15;
+        transform: translateX(calc(-50% - 3%)) scale(0.95);
+    }
+    50% {
+        opacity: 1;
+        transform: translateX(calc(-50% + 3%)) scale(1.1);
+    }
+}
+
+/* Responsive: luz más sutil en móvil */
 @media (max-width: 768px) {
-    .shop-stars {
-        opacity: 0.7;
+    .spotlight-beam {
+        width: 60%;
+        filter: blur(20px);
+    }
+    .spotlight-glow {
+        width: 80%;
+        filter: blur(30px);
     }
 }
 
@@ -1928,12 +2046,12 @@ BOTONES DE NAVEGACIÓN - POPUP
 
 /* Ajustar velocidad de transición - MÁS LENTO */
 .promo-slide {
-    transition: all 0.8s var(--ease-out-expo); /* Antes: 0.5s */
+    transition: all 0.8s var(--ease-out-expo);
 }
 
 /* Animación más suave del badge */
 .promo-badge {
-    animation: promoBadgePulse 3s ease-in-out infinite; /* Antes: 2s */
+    animation: promoBadgePulse 3s ease-in-out infinite;
 }
 
 /* Responsive: mostrar botones siempre en móvil */
@@ -2050,7 +2168,7 @@ CARRITO - CÓDIGO DE DESCUENTO
 }
 
 .cart-discount-row {
-    color: #4ade80; /* Verde para descuento */
+    color: #4ade80;
 }
 
 .cart-discount-text {
@@ -2066,4 +2184,99 @@ CARRITO - CÓDIGO DE DESCUENTO
     margin-top: 0.8rem;
     padding-top: 0.8rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+BOTÓN FLOTANTE DE WHATSAPP
+============================================ */
+.whatsapp-float {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+    z-index: 1000;
+    transition: all 0.4s var(--ease-out-expo);
+    animation: whatsappPulse 2s ease-in-out infinite;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
+    animation: none;
+}
+
+.whatsapp-icon {
+    width: 32px;
+    height: 32px;
+    color: white;
+}
+
+/* ============================================
+BOTÓN FLOTANTE DE WHATSAPP (LIMPIO)
+============================================ */
+.whatsapp-float {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+    z-index: 1000;
+    transition: all 0.4s var(--ease-out-expo);
+    animation: whatsappPulse 2s ease-in-out infinite;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
+    animation: none;
+}
+
+.whatsapp-icon {
+    width: 32px;
+    height: 32px;
+    color: white;
+}
+
+@keyframes whatsappPulse {
+    0%, 100% {
+        box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+    }
+    50% {
+        box-shadow: 0 4px 30px rgba(37, 211, 102, 0.7);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .whatsapp-float {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        width: 55px;
+        height: 55px;
+    }
+    
+    .whatsapp-icon {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 480px) {
+    .whatsapp-float {
+        bottom: 1rem;
+        right: 1rem;
+    }
 }

@@ -59,10 +59,10 @@ TIENDA ONLINE - CON MODAL DE FICHA TÉCNICA
     
     // Inicialización
     function init() {
-      if (C.ecommerce && C.ecommerce.enabled === false) {
-        window.location.href = "index.html";
-        return;
-      }
+        if (C.ecommerce && C.ecommerce.enabled === false) {
+            window.location.href = "index.html";
+            return;
+        }
         buildShopHeader();
         buildShopHero();
         renderProducts();
@@ -70,59 +70,58 @@ TIENDA ONLINE - CON MODAL DE FICHA TÉCNICA
         updatePromoUI();
         initEvents();
         initScrollEffects();
-        initShopStars();
         initPromoPopup();
+        initWhatsAppButton();
     }
 
-  // ─── CONSTRUIR HEADER DE LA TIENDA ─────────────────
-function buildShopHeader() {
-    const header = $("#shopHeader");
-    if (!header) return;
-    
-    const h = C.header; // Reutilizamos el logo del config principal
-    header.innerHTML = `
-        <div class="shop-header-inner">
-            <a href="index.html" class="shop-logo">${h.logo.text}<span>${h.logo.highlight}</span></a>
-            <div class="shop-search-bar">
-                <input type="text" id="searchInput" placeholder="Buscar productos...">
-                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="M21 21l-4.35-4.35"></path>
-                </svg>
-            </div>
-            <div class="shop-header-actions">
-                <button class="cart-toggle" id="cartToggle" aria-label="Carrito">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M6 6h15l-1.5 9h-12z"></path>
-                        <circle cx="9" cy="20" r="1"></circle>
-                        <circle cx="18" cy="20" r="1"></circle>
+    // ─── CONSTRUIR HEADER DE LA TIENDA ─────────────────
+    function buildShopHeader() {
+        const header = $("#shopHeader");
+        if (!header) return;
+        
+        const h = C.header;
+        header.innerHTML = `
+            <div class="shop-header-inner">
+                <a href="index.html" class="shop-logo">${h.logo.text}<span>${h.logo.highlight}</span></a>
+                <div class="shop-search-bar">
+                    <input type="text" id="searchInput" placeholder="Buscar productos...">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35"></path>
                     </svg>
-                    <span class="cart-count" id="cartCount">0</span>
-                </button>
+                </div>
+                <div class="shop-header-actions">
+                    <button class="cart-toggle" id="cartToggle" aria-label="Carrito">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M6 6h15l-1.5 9h-12z"></path>
+                            <circle cx="9" cy="20" r="1"></circle>
+                            <circle cx="18" cy="20" r="1"></circle>
+                        </svg>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                </div>
             </div>
-        </div>
-    `;
-    // Re-asignar el elemento al DOM actualizado
-    elements.cartToggle = $("#cartToggle");
-    elements.cartCount = $("#cartCount");
-    elements.searchInput = $("#searchInput");
-}
+        `;
+        elements.cartToggle = $("#cartToggle");
+        elements.cartCount = $("#cartCount");
+        elements.searchInput = $("#searchInput");
+    }
 
-// ─── CONSTRUIR HERO DE LA TIENDA ─────────────────
-function buildShopHero() {
-    const heroContent = $(".shop-hero-content");
-    if (!heroContent || !C.tienda) return;
+    // ─── CONSTRUIR HERO DE LA TIENDA ─────────────────
+    function buildShopHero() {
+        const heroContent = $(".shop-hero-content");
+        if (!heroContent || !C.tienda) return;
 
-    const t = C.tienda.hero;
-    heroContent.innerHTML = `
-        <span class="shop-eyebrow">${t.eyebrow}</span>
-        <h1 class="shop-title">
-            <span class="line"><span class="line-inner">${t.titleLine1}</span></span>
-            <span class="line"><span class="line-inner"><em>${t.titleLine2}</em></span></span>
-        </h1>
-        <p class="shop-subtitle">${t.subtitle}</p>
-    `;
-}
+        const t = C.tienda.hero;
+        heroContent.innerHTML = `
+            <span class="shop-eyebrow">${t.eyebrow}</span>
+            <h1 class="shop-title">
+                <span class="line"><span class="line-inner">${t.titleLine1}</span></span>
+                <span class="line"><span class="line-inner"><em>${t.titleLine2}</em></span></span>
+            </h1>
+            <p class="shop-subtitle">${t.subtitle}</p>
+        `;
+    }
     
     // Renderizar productos
     function renderProducts() {
@@ -133,15 +132,11 @@ function buildShopHero() {
         
         if (filtered.length === 0) {
             elements.productsGrid.innerHTML = "";
-            if (elements.noResults) {
-                elements.noResults.style.display = "block";
-            }
+            if (elements.noResults) elements.noResults.style.display = "block";
             return;
         }
         
-        if (elements.noResults) {
-            elements.noResults.style.display = "none";
-        }
+        if (elements.noResults) elements.noResults.style.display = "none";
         
         const html = filtered.map((product, index) => createProductCard(product, index)).join("");
         elements.productsGrid.innerHTML = html;
@@ -150,16 +145,14 @@ function buildShopHero() {
             $$(".product-view-more").forEach(btn => {
                 btn.addEventListener("click", (e) => {
                     e.preventDefault();
-                    const id = parseInt(btn.dataset.id);
-                    openProductModal(id);
+                    openProductModal(parseInt(btn.dataset.id));
                 });
             });
             
             $$(".product-add-to-cart").forEach(btn => {
                 btn.addEventListener("click", (e) => {
                     e.preventDefault();
-                    const id = parseInt(btn.dataset.id);
-                    addToCart(id, null);
+                    addToCart(parseInt(btn.dataset.id), null);
                 });
             });
         }, 100);
@@ -178,14 +171,10 @@ function buildShopHero() {
     function sortProducts(products) {
         const sorted = [...products];
         switch(sortValue) {
-            case "price-asc":
-                return sorted.sort((a, b) => a.price - b.price);
-            case "price-desc":
-                return sorted.sort((a, b) => b.price - a.price);
-            case "name-asc":
-                return sorted.sort((a, b) => a.name.localeCompare(b.name));
-            default:
-                return sorted;
+            case "price-asc": return sorted.sort((a, b) => a.price - b.price);
+            case "price-desc": return sorted.sort((a, b) => b.price - a.price);
+            case "name-asc": return sorted.sort((a, b) => a.name.localeCompare(b.name));
+            default: return sorted;
         }
     }
     
@@ -242,7 +231,6 @@ function buildShopHero() {
     
     function renderModalContent() {
         if (!currentProduct) return;
-        
         const product = currentProduct;
         const variant = currentVariant || product;
         
@@ -300,8 +288,7 @@ function buildShopHero() {
                     if (btn.classList.contains("out-of-stock")) return;
                     $$(".modal-variant").forEach(b => b.classList.remove("active"));
                     btn.classList.add("active");
-                    const index = parseInt(btn.dataset.index);
-                    currentVariant = product.variants[index];
+                    currentVariant = product.variants[parseInt(btn.dataset.index)];
                     if (elements.modalPrice) elements.modalPrice.innerHTML = `$${currentVariant.price}`;
                 });
             });
@@ -346,7 +333,6 @@ function buildShopHero() {
                 });
             }
         };
-        
         window.addEventListener("scroll", window.modalParallaxHandler, { passive: true });
     }
     
@@ -368,12 +354,10 @@ function buildShopHero() {
         document.addEventListener("keydown", (e) => {
             if (!elements.productModal.classList.contains("open")) return;
             if (e.key === "ArrowLeft" && currentImageIndex > 0) {
-                const prevIndex = currentImageIndex - 1;
-                const prevThumb = $(`.modal-thumbnail[data-index="${prevIndex}"]`);
+                const prevThumb = $(`.modal-thumbnail[data-index="${currentImageIndex - 1}"]`);
                 if (prevThumb) prevThumb.click();
             } else if (e.key === "ArrowRight" && currentImageIndex < slides.length - 1) {
-                const nextIndex = currentImageIndex + 1;
-                const nextThumb = $(`.modal-thumbnail[data-index="${nextIndex}"]`);
+                const nextThumb = $(`.modal-thumbnail[data-index="${currentImageIndex + 1}"]`);
                 if (nextThumb) nextThumb.click();
             } else if (e.key === "Escape") {
                 closeProductModal();
@@ -386,128 +370,100 @@ function buildShopHero() {
         if (!product) return;
         
         const itemData = variant ? {
-            id: product.id,
-            name: product.name,
-            price: variant.price,
-            variantName: variant.name,
-            variantImage: variant.image,
-            images: product.images
+            id: product.id, name: product.name, price: variant.price,
+            variantName: variant.name, variantImage: variant.image, images: product.images
         } : {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            variantName: null,
-            variantImage: product.images[0],
-            images: product.images
+            id: product.id, name: product.name, price: product.price,
+            variantName: null, variantImage: product.images[0], images: product.images
         };
         
-        const existingItem = cart.find(item => 
-            item.id === productId && item.variantName === itemData.variantName
-        );
-        
+        const existingItem = cart.find(item => item.id === productId && item.variantName === itemData.variantName);
         if (existingItem) {
             existingItem.quantity++;
         } else {
             cart.push({ ...itemData, quantity: 1 });
         }
-        
         saveCart();
         updateCart();
         openCart();
     }
     
     function updateCart() {
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    let discount = 0;
-    
-    // Calcular descuento si hay uno aplicado
-    if (appliedPromoCode) {
-        if (appliedPromoCode.type === "percent") {
-            discount = subtotal * (appliedPromoCode.value / 100);
-        } else if (appliedPromoCode.type === "fixed") {
-            discount = appliedPromoCode.value;
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        let discount = 0;
+        
+        if (appliedPromoCode) {
+            if (appliedPromoCode.type === "percent") discount = subtotal * (appliedPromoCode.value / 100);
+            else if (appliedPromoCode.type === "fixed") discount = appliedPromoCode.value;
+            discount = Math.min(discount, subtotal);
         }
-        // El descuento no puede ser mayor que el subtotal
-        discount = Math.min(discount, subtotal);
-    }
-    
-    const total = subtotal - discount;
-    
-    if (elements.cartCount) elements.cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
-    
-    if (elements.cartItems && elements.cartEmpty) {
-        if (cart.length === 0) {
-            elements.cartItems.innerHTML = "";
-            elements.cartEmpty.style.display = "block";
-            if (elements.cartSubtotal) elements.cartSubtotal.textContent = "$0";
-            if (elements.cartDiscountRow) elements.cartDiscountRow.style.display = "none";
-            if (elements.cartTotal) elements.cartTotal.textContent = "$0";
-        } else {
-            elements.cartEmpty.style.display = "none";
-            elements.cartItems.innerHTML = cart.map(item => `
-                <div class="cart-item">
-                    <img src="${item.variantImage || item.images[0]}" alt="${item.name}" class="cart-item-image">
-                    <div class="cart-item-details">
-                        <div class="cart-item-name">${item.name}</div>
-                        ${item.variantName ? `<div class="cart-item-variant">${item.variantName}</div>` : ""}
-                        <div class="cart-item-price">$${item.price}</div>
-                        <div class="cart-item-quantity">
-                            <button class="qty-btn" data-action="decrease" data-id="${item.id}" data-variant="${item.variantName || ''}">-</button>
-                            <span>${item.quantity}</span>
-                            <button class="qty-btn" data-action="increase" data-id="${item.id}" data-variant="${item.variantName || ''}">+</button>
+        
+        const total = subtotal - discount;
+        if (elements.cartCount) elements.cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+        
+        if (elements.cartItems && elements.cartEmpty) {
+            if (cart.length === 0) {
+                elements.cartItems.innerHTML = "";
+                elements.cartEmpty.style.display = "block";
+                if (elements.cartSubtotal) elements.cartSubtotal.textContent = "$0";
+                if (elements.cartDiscountRow) elements.cartDiscountRow.style.display = "none";
+                if (elements.cartTotal) elements.cartTotal.textContent = "$0";
+            } else {
+                elements.cartEmpty.style.display = "none";
+                elements.cartItems.innerHTML = cart.map(item => `
+                    <div class="cart-item">
+                        <img src="${item.variantImage || item.images[0]}" alt="${item.name}" class="cart-item-image">
+                        <div class="cart-item-details">
+                            <div class="cart-item-name">${item.name}</div>
+                            ${item.variantName ? `<div class="cart-item-variant">${item.variantName}</div>` : ""}
+                            <div class="cart-item-price">$${item.price}</div>
+                            <div class="cart-item-quantity">
+                                <button class="qty-btn" data-action="decrease" data-id="${item.id}" data-variant="${item.variantName || ''}">-</button>
+                                <span>${item.quantity}</span>
+                                <button class="qty-btn" data-action="increase" data-id="${item.id}" data-variant="${item.variantName || ''}">+</button>
+                            </div>
                         </div>
+                        <button class="cart-item-remove" data-id="${item.id}" data-variant="${item.variantName || ''}">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 6L6 18M6 6l12 12"></path>
+                            </svg>
+                        </button>
                     </div>
-                    <button class="cart-item-remove" data-id="${item.id}" data-variant="${item.variantName || ''}">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M18 6L6 18M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                </div>
-            `).join("");
-            
-            $$(".qty-btn").forEach(btn => {
-                btn.addEventListener("click", (e) => {
-                    const id = parseInt(btn.dataset.id);
-                    const variant = btn.dataset.variant || null;
-                    const action = btn.dataset.action;
-                    updateQuantity(id, action === "increase" ? 1 : -1, variant);
+                `).join("");
+                
+                $$(".qty-btn").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        updateQuantity(parseInt(btn.dataset.id), btn.dataset.action === "increase" ? 1 : -1, btn.dataset.variant || null);
+                    });
                 });
-            });
-            
-            $$(".cart-item-remove").forEach(btn => {
-                btn.addEventListener("click", (e) => {
-                    const id = parseInt(btn.dataset.id);
-                    const variant = btn.dataset.variant || null;
-                    removeFromCart(id, variant);
+                
+                $$(".cart-item-remove").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        removeFromCart(parseInt(btn.dataset.id), btn.dataset.variant || null);
+                    });
                 });
-            });
+            }
+        }
+        
+        if (elements.cartSubtotal) elements.cartSubtotal.textContent = `$${subtotal}`;
+        if (elements.cartTotal) elements.cartTotal.textContent = `$${total}`;
+        
+        if (elements.cartDiscountRow) {
+            if (discount > 0) {
+                elements.cartDiscountRow.style.display = "flex";
+                if (elements.cartDiscountAmount) elements.cartDiscountAmount.textContent = `-$${discount}`;
+            } else {
+                elements.cartDiscountRow.style.display = "none";
+            }
         }
     }
-    
-    // Actualizar UI de precios
-    if (elements.cartSubtotal) elements.cartSubtotal.textContent = `$${subtotal}`;
-    if (elements.cartTotal) elements.cartTotal.textContent = `$${total}`;
-    
-    if (elements.cartDiscountRow) {
-        if (discount > 0) {
-            elements.cartDiscountRow.style.display = "flex";
-            if (elements.cartDiscountAmount) elements.cartDiscountAmount.textContent = `-$${discount}`;
-        } else {
-            elements.cartDiscountRow.style.display = "none";
-        }
-    }
-}
     
     function updateQuantity(productId, change, variantName = null) {
         const item = cart.find(item => item.id === productId && item.variantName === variantName);
         if (item) {
             item.quantity += change;
-            if (item.quantity <= 0) {
-                removeFromCart(productId, variantName);
-            } else {
-                saveCart();
-                updateCart();
-            }
+            if (item.quantity <= 0) removeFromCart(productId, variantName);
+            else { saveCart(); updateCart(); }
         }
     }
     
@@ -536,69 +492,55 @@ function buildShopHero() {
     }
 
     function handleApplyPromo() {
-    const input = $("#promoCodeInput");
-    if (!input || appliedPromoCode) return; // ★ No permitir si ya hay código
-    
-    const code = input.value.trim().toUpperCase();
-    const validCodes = C.ecommerce.promoCodes || {};
-    
-    if (validCodes[code]) {
-        appliedPromoCode = { code: code, ...validCodes[code] };
-        input.value = "";
-        input.classList.remove("error");
+        const input = $("#promoCodeInput");
+        if (!input || appliedPromoCode) return;
         
-        // Actualizar UI
-        updatePromoUI();
-        showToast(`¡Código "${code}" aplicado! ${appliedPromoCode.label}`);
-        updateCart();
-    } else {
-        input.classList.add("error");
-        showToast("Código no válido o expirado");
-        setTimeout(() => input.classList.remove("error"), 2000);
-    }
-}
-
-function updatePromoUI() {
-    const inputContainer = $("#promoInputContainer");
-    const promoApplied = $("#promoApplied");
-    const promoCodeDisplay = $("#promoCodeDisplay");
-    const input = $("#promoCodeInput");
-    const applyBtn = $("#applyPromoBtn");
-    
-    if (!inputContainer || !promoApplied) return;
-    
-    if (appliedPromoCode) {
-        // Ocultar input, mostrar código aplicado
-        inputContainer.style.display = "none";
-        promoApplied.style.display = "flex";
+        const code = input.value.trim().toUpperCase();
+        const validCodes = C.ecommerce.promoCodes || {};
         
-        if (promoCodeDisplay) {
-            promoCodeDisplay.textContent = appliedPromoCode.code;
-        }
-        
-        // Deshabilitar input y botón
-        if (input) input.disabled = true;
-        if (applyBtn) applyBtn.disabled = true;
-    } else {
-        // Mostrar input, ocultar código aplicado
-        inputContainer.style.display = "flex";
-        promoApplied.style.display = "none";
-        
-        // Habilitar input y botón
-        if (input) {
-            input.disabled = false;
+        if (validCodes[code]) {
+            appliedPromoCode = { code: code, ...validCodes[code] };
             input.value = "";
+            input.classList.remove("error");
+            updatePromoUI();
+            showToast(`¡Código "${code}" aplicado! ${appliedPromoCode.label}`);
+            updateCart();
+        } else {
+            input.classList.add("error");
+            showToast("Código no válido o expirado");
+            setTimeout(() => input.classList.remove("error"), 2000);
         }
-        if (applyBtn) applyBtn.disabled = false;
     }
-}
 
-function handleRemovePromo() {
-    appliedPromoCode = null;
-    updatePromoUI();
-    showToast("Código de descuento eliminado");
-    updateCart();
-}
+    function updatePromoUI() {
+        const inputContainer = $("#promoInputContainer");
+        const promoApplied = $("#promoApplied");
+        const promoCodeDisplay = $("#promoCodeDisplay");
+        const input = $("#promoCodeInput");
+        const applyBtn = $("#applyPromoBtn");
+        
+        if (!inputContainer || !promoApplied) return;
+        
+        if (appliedPromoCode) {
+            inputContainer.style.display = "none";
+            promoApplied.style.display = "flex";
+            if (promoCodeDisplay) promoCodeDisplay.textContent = appliedPromoCode.code;
+            if (input) input.disabled = true;
+            if (applyBtn) applyBtn.disabled = true;
+        } else {
+            inputContainer.style.display = "flex";
+            promoApplied.style.display = "none";
+            if (input) { input.disabled = false; input.value = ""; }
+            if (applyBtn) applyBtn.disabled = false;
+        }
+    }
+
+    function handleRemovePromo() {
+        appliedPromoCode = null;
+        updatePromoUI();
+        showToast("Código de descuento eliminado");
+        updateCart();
+    }
     
     function initEvents() {
         elements.filterBtns.forEach(btn => {
@@ -638,30 +580,17 @@ function handleRemovePromo() {
         if (checkoutBtn) {
             checkoutBtn.addEventListener("click", () => {
                 if (cart.length > 0) {
-                    // 1. Recalcular el total de forma segura
                     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                    
-                    // 2. Construir el mensaje con saltos de línea reales (\n)
                     let msg = "¡Hola! Me interesa hacer el siguiente pedido:\n\n";
                     cart.forEach(item => {
-                        const itemTotal = item.price * item.quantity;
-                        msg += `▪️ *${item.name}* (${item.variantName || 'Único'}) x${item.quantity} = $${itemTotal}\n`;
+                        msg += `▪️ *${item.name}* (${item.variantName || 'Único'}) x${item.quantity} = $${item.price * item.quantity}\n`;
                     });
                     msg += `\n*💰 Total a pagar: $${subtotal}*`;
                     
-                    // 3. Codificar para URL (esto convierte los \n en %0A y los acentos correctamente)
                     const encodedMsg = encodeURIComponent(msg);
-                    
-                    // 4. ★ TU NÚMERO DE TELÉFONO AQUÍ ★
-                    // Formato: Código de país + número, TODO JUNTO, sin espacios, sin '+', sin paréntesis.
-                    // Ejemplo México: 525512345678 (El '1' después del 52 ya no es necesario en WhatsApp, pero si tu región lo usa, déjalo).
                     const phoneNumber = (C.tienda && C.tienda.whatsapp) ? C.tienda.whatsapp : "521234567890"; 
- 
-                    
-                    // 5. Abrir WhatsApp
                     window.open(`https://wa.me/${phoneNumber}?text=${encodedMsg}`, '_blank');
                     
-                    // 6. Limpiar carrito después de enviar el pedido
                     cart = [];
                     saveCart();
                     updateCart();
@@ -672,57 +601,28 @@ function handleRemovePromo() {
             });
         }
 
-        // Agrega esto dentro de initEvents(), al final:
-const applyPromoBtn = $("#applyPromoBtn");
-if (applyPromoBtn) {
-    applyPromoBtn.addEventListener("click", handleApplyPromo);
-}
+        const applyPromoBtn = $("#applyPromoBtn");
+        if (applyPromoBtn) applyPromoBtn.addEventListener("click", handleApplyPromo);
 
-const promoInput = $("#promoCodeInput");
-if (promoInput) {
-    promoInput.addEventListener("keypress", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            handleApplyPromo();
+        const promoInput = $("#promoCodeInput");
+        if (promoInput) {
+            promoInput.addEventListener("keypress", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleApplyPromo();
+                }
+            });
         }
-    });
-}
 
-const removePromoBtn = $("#removePromoBtn");
-if (removePromoBtn) {
-    removePromoBtn.addEventListener("click", handleRemovePromo);
-}
-
+        const removePromoBtn = $("#removePromoBtn");
+        if (removePromoBtn) removePromoBtn.addEventListener("click", handleRemovePromo);
     }
     
     function initScrollEffects() {
         const header = elements.shopHeader;
         window.addEventListener("scroll", () => {
-            if (header) {
-                header.classList.toggle("scrolled", window.scrollY > 100);
-            }
+            if (header) header.classList.toggle("scrolled", window.scrollY > 100);
         }, { passive: true });
-    }
-    
-    function initShopStars() {
-        const starsContainer = $("#shopStars");
-        if (!starsContainer) return;
-        
-        for (let i = 0; i < 35; i++) {
-            const star = document.createElement("div");
-            star.className = "shop-star";
-            const x = Math.random() * 100;
-            const y = Math.random() * 100;
-            const size = Math.random() * 1.5 + 1;
-            const duration = Math.random() * 4 + 3;
-            const delay = Math.random() * 5;
-            const minOpacity = Math.random() * 0.2 + 0.1;
-            const maxOpacity = Math.random() * 0.4 + 0.4;
-            const glowSize = size * 2.5;
-            
-            star.style.cssText = `left: ${x}%; top: ${y}%; width: ${size}px; height: ${size}px; --twinkle-duration: ${duration}s; --twinkle-delay: ${delay}s; --min-opacity: ${minOpacity}; --max-opacity: ${maxOpacity}; --glow-size: ${glowSize}px;`;
-            starsContainer.appendChild(star);
-        }
     }
     
     // ============================================
@@ -731,7 +631,6 @@ if (removePromoBtn) {
     function initPromoPopup() {
         const config = C.ecommerce.promotions;
         if (!config || !config.enabled) return;
-        
         const promotions = config.items;
         if (!promotions || promotions.length === 0) return;
         
@@ -805,13 +704,8 @@ if (removePromoBtn) {
             currentPromoIndex = index;
         }
         
-        function nextPromo() {
-            goToPromo((currentPromoIndex + 1) % promotions.length);
-        }
-        
-        function prevPromo() {
-            goToPromo((currentPromoIndex - 1 + promotions.length) % promotions.length);
-        }
+        function nextPromo() { goToPromo((currentPromoIndex + 1) % promotions.length); }
+        function prevPromo() { goToPromo((currentPromoIndex - 1 + promotions.length) % promotions.length); }
         
         function startRotation() {
             if (!config.autoRotate || promotions.length <= 1) return;
@@ -826,7 +720,14 @@ if (removePromoBtn) {
         
         function closePopup() {
             popup.classList.remove("open");
-            document.body.style.overflow = "";
+            
+            // ★ Pequeño delay para que la transición del popup termine primero
+            setTimeout(() => {
+                document.body.style.overflow = "";
+                // ★ Forzar "reflow" para reactivar animaciones CSS pausadas
+                void document.body.offsetWidth;
+            }, 100);
+            
             if (rotateTimer) clearInterval(rotateTimer);
             if (dontShowCheckbox && dontShowCheckbox.checked) {
                 localStorage.setItem('promoDismissed', 'true');
@@ -906,5 +807,122 @@ if (removePromoBtn) {
     } else {
         init();
     }
+
+    // ============================================
+// BOTÓN DE WHATSAPP
+// ============================================
+function initWhatsAppButton() {
+    const whatsappBtn = document.getElementById("whatsappFloat");
+    if (!whatsappBtn) return;
     
+    // ★ TU NÚMERO DE WHATSAPP AQUÍ
+    const phoneNumber = C.tienda?.whatsapp || "521234567890";
+    const defaultMessage = C.shopConfig?.whatsapp?.defaultMessage || "¡Hola! Me interesa conocer más sobre sus productos.";
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(defaultMessage)}`;
+    
+    whatsappBtn.href = whatsappUrl;
+    
+    // ★ OCULTAR INICIALMENTE
+    whatsappBtn.style.opacity = "0";
+    whatsappBtn.style.transform = "scale(0)";
+    whatsappBtn.style.pointerEvents = "none";
+    
+    // ★ UMBRALES CON HISTÉRESIS (evita parpadeos)
+    const SHOW_THRESHOLD = C.shopConfig?.whatsappButton?.showThreshold || 0.80;
+    const HIDE_THRESHOLD = C.shopConfig?.whatsappButton?.hideThreshold || 0.75;
+    
+    let isVisible = false;
+    let scrollTimeout;
+    
+    function checkScrollPosition() {
+        const scrollY = window.scrollY;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+        
+        // Calcular porcentaje de scroll (0 a 1)
+        const scrollPercentage = (scrollY + windowHeight) / documentHeight;
+        
+        // ★ LÓGICA CON HISTÉRESIS
+        if (!isVisible && scrollPercentage >= SHOW_THRESHOLD) {
+            // Mostrar botón
+            isVisible = true;
+            whatsappBtn.style.transition = "all 0.6s var(--ease-out-expo)";
+            whatsappBtn.style.opacity = "1";
+            whatsappBtn.style.transform = "scale(1)";
+            whatsappBtn.style.pointerEvents = "auto";
+        } else if (isVisible && scrollPercentage < HIDE_THRESHOLD) {
+            // Ocultar botón
+            isVisible = false;
+            whatsappBtn.style.transition = "all 0.6s var(--ease-out-expo)";
+            whatsappBtn.style.opacity = "0";
+            whatsappBtn.style.transform = "scale(0)";
+            whatsappBtn.style.pointerEvents = "none";
+        }
+    }
+    
+    // Escuchar el scroll con debounce para mejor rendimiento
+    window.addEventListener("scroll", () => {
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(checkScrollPosition, 50);
+    }, { passive: true });
+    
+    // Verificar al cargar (por si la página ya está scrolleada)
+    checkScrollPosition();
+}
+
+// ============================================
+// CURSOR PERSONALIZADO
+// ============================================
+function initCursor() {
+    if (window.innerWidth < 769) return;
+    
+    const cursor = document.getElementById("cursor");
+    const follower = document.getElementById("cursorFollower");
+    if (!cursor || !follower) return;
+    
+    let mx = 0, my = 0;
+    let fx = 0, fy = 0;
+    
+    document.addEventListener("mousemove", (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+        cursor.style.left = mx + "px";
+        cursor.style.top = my + "px";
+    });
+    
+    function animateFollower() {
+        fx = fx + (mx - fx) * 0.12;
+        fy = fy + (my - fy) * 0.12;
+        follower.style.left = fx + "px";
+        follower.style.top = fy + "px";
+        requestAnimationFrame(animateFollower);
+    }
+    animateFollower();
+    
+    // Hover effect en elementos interactivos
+    const hoverTargets = "a, button, .product-card, .action-btn, .filter-btn, .cart-toggle, .promo-cta, .modal-variant";
+    document.addEventListener("mouseover", (e) => {
+        if (e.target.closest(hoverTargets)) {
+            cursor.classList.add("hover");
+            follower.classList.add("hover");
+        }
+    });
+    document.addEventListener("mouseout", (e) => {
+        if (e.target.closest(hoverTargets)) {
+            cursor.classList.remove("hover");
+            follower.classList.remove("hover");
+        }
+    });
+}
+
+// Llamar al iniciar
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
+        init();
+        initCursor();
+    });
+} else {
+    init();
+    initCursor();
+}
 })();

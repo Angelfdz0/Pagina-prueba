@@ -123,8 +123,8 @@ button { cursor: none; }
 }
 
 /* ============================================
-LOADER CON TÍTULO QUE SE RELLENA
-============================================ */
+   LOADER CON TÍTULO QUE SE RELLENA
+   ============================================ */
 .loader {
     position: fixed;
     inset: 0;
@@ -147,25 +147,22 @@ LOADER CON TÍTULO QUE SE RELLENA
     position: relative;
 }
 
-/* Contenedor del título con efecto de relleno */
 .loader-title-wrapper {
     position: relative;
     display: inline-block;
     margin-bottom: 1.5rem;
 }
 
-/* Texto base (color tenue) */
 .loader-title-base {
     font-family: var(--font-display);
     font-size: clamp(2rem, 6vw, 4rem);
     font-weight: 700;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.1); /* Color tenue de fondo */
+    color: rgba(255, 255, 255, 0.1);
     display: block;
 }
 
-/* Texto que se rellena (color dorado) */
 .loader-title-fill {
     position: absolute;
     top: 0;
@@ -175,15 +172,14 @@ LOADER CON TÍTULO QUE SE RELLENA
     font-weight: 700;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: var(--color-accent); /* Color dorado */
+    color: var(--color-accent);
     display: block;
-    width: 0%; /* ★ Se anima de 0% a 100% */
+    width: 0%;
     overflow: hidden;
     white-space: nowrap;
     transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Porcentaje debajo del título */
 .loader-percentage {
     font-family: var(--font-body);
     font-size: 0.75rem;
@@ -193,8 +189,8 @@ LOADER CON TÍTULO QUE SE RELLENA
 }
 
 /* ============================================
-HEADER / NAV - CORREGIDO
-============================================ */
+   HEADER / NAV
+   ============================================ */
 .header {
     position: fixed;
     top: 0; left: 0; right: 0;
@@ -213,7 +209,6 @@ HEADER / NAV - CORREGIDO
     padding: 1rem 3rem;
 }
 
-/* Cuando el menú está abierto, quitar el blur del header */
 .header.menu-open {
     background: var(--color-dark) !important;
     backdrop-filter: none !important;
@@ -238,9 +233,7 @@ HEADER / NAV - CORREGIDO
     position: relative;
 }
 
-.nav-logo span {
-    color: var(--color-accent);
-}
+.nav-logo span { color: var(--color-accent); }
 
 .nav-links {
     display: flex;
@@ -268,13 +261,8 @@ HEADER / NAV - CORREGIDO
     transition: width 0.5s var(--ease-out-expo);
 }
 
-.nav-links a:hover {
-    color: var(--color-text);
-}
-
-.nav-links a:hover::after {
-    width: 100%;
-}
+.nav-links a:hover { color: var(--color-text); }
+.nav-links a:hover::after { width: 100%; }
 
 .nav-cta {
     font-size: 0.7rem;
@@ -294,7 +282,6 @@ HEADER / NAV - CORREGIDO
     color: var(--color-dark);
 }
 
-/* Hamburger */
 .nav-hamburger {
     display: none;
     flex-direction: column;
@@ -314,24 +301,15 @@ HEADER / NAV - CORREGIDO
     transition: all 0.4s var(--ease-out-expo);
 }
 
-.nav-hamburger.active span:nth-child(1) {
-    transform: rotate(45deg) translate(5px, 5px);
-}
-
-.nav-hamburger.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.nav-hamburger.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(5px, -5px);
-}
+.nav-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+.nav-hamburger.active span:nth-child(2) { opacity: 0; }
+.nav-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
 
 @media (max-width: 768px) {
     .header { padding: 1.2rem 1.5rem; }
     .header.scrolled { padding: 0.8rem 1.5rem; }
     .nav-hamburger { display: flex; }
     
-    /* ★ CORRECCIÓN PRINCIPAL DEL MENÚ MÓVIL ★ */
     .nav-links {
         position: fixed;
         inset: 0;
@@ -340,33 +318,27 @@ HEADER / NAV - CORREGIDO
         align-items: center;
         justify-content: center;
         gap: 2rem;
-        
-        /* Estado cerrado */
         opacity: 0;
         visibility: hidden;
-        pointer-events: none; /* ★ AÑADIDO: evita interacciones cuando está cerrado */
-        transform: translateY(-20px); /* ★ AÑADIDO: efecto de entrada suave */
-        
-        /* Transición optimizada - SOLO las propiedades necesarias */
+        pointer-events: none;
+        transform: translateY(-20px);
         transition: opacity 0.5s var(--ease-out-expo),
                     visibility 0.5s,
                     transform 0.5s var(--ease-out-expo);
-        
-        will-change: opacity, transform; /* ★ AÑADIDO: optimiza la animación */
+        will-change: opacity, transform;
         z-index: 1001;
     }
     
     .nav-links.open {
         opacity: 1;
         visibility: visible;
-        pointer-events: auto; /* ★ AÑADIDO: permite interacciones cuando está abierto */
-        transform: translateY(0); /* ★ AÑADIDO: posición final */
+        pointer-events: auto;
+        transform: translateY(0);
         z-index: 1001;
     }
     
     .nav-links a { 
         font-size: 1.2rem;
-        /* ★ AÑADIDO: animación escalonada para cada link */
         opacity: 0;
         transform: translateY(20px);
         transition: opacity 0.4s var(--ease-out-expo),
@@ -374,7 +346,6 @@ HEADER / NAV - CORREGIDO
                     color 0.4s;
     }
     
-    /* ★ AÑADIDO: animación escalonada cuando el menú está abierto */
     .nav-links.open a {
         opacity: 1;
         transform: translateY(0);
@@ -402,7 +373,6 @@ HEADER / NAV - CORREGIDO
   overflow: hidden;
 }
 
-/* CAPA 0: Imagen de fondo */
 .hero-bg {
   position: absolute;
   inset: -20%;
@@ -413,7 +383,7 @@ HEADER / NAV - CORREGIDO
   z-index: 0;
 }
 
-/* CAPA 1: Overlay oscuro (¡CLAVE! La parte de abajo es casi transparente) */
+/* Overlay oscuro */
 .hero-bg::after {
   content: '';
   position: absolute;
@@ -422,12 +392,12 @@ HEADER / NAV - CORREGIDO
     180deg,
     rgba(10, 10, 10, 0.7) 0%,
     rgba(10, 10, 10, 0.4) 50%,
-    rgba(10, 10, 10, 0.05) 100% /* ★ AQUÍ ESTÁ EL SECRETO: casi transparente abajo */
-  );
+    rgba(10, 10, 10, 0.05) 100%
+  ); /* ★ AQUÍ ESTÁ EL SECRETO: casi transparente abajo */
   z-index: 1;
 }
 
-/* CAPA 2: Luz pulsante (Con blur para que parezca luz real) */
+/* Luz pulsante */
 .hero-glow {
   position: absolute;
   bottom: -10%;
@@ -437,14 +407,14 @@ HEADER / NAV - CORREGIDO
   height: 70vh;
   background: radial-gradient(
     ellipse at center bottom,
-    rgba(201, 169, 110, 0.6) 0%,   /* Centro dorado intenso */
-    rgba(201, 169, 110, 0.25) 40%, /* Se desvanece */
-    rgba(139, 92, 246, 0.15) 70%,  /* Toque púrpura sutil */
+    rgba(201, 169, 110, 0.6) 0%,
+    rgba(201, 169, 110, 0.25) 40%,
+    rgba(139, 92, 246, 0.15) 70%,
     transparent 100%
   );
   pointer-events: none;
   z-index: 2;
-  filter: blur(50px); /* ★ ESTO LA CONVIerte EN LUZ REAL DIFUSA */
+  filter: blur(50px);
   animation: glowPulse 6s ease-in-out infinite;
 }
 
@@ -459,7 +429,6 @@ HEADER / NAV - CORREGIDO
   }
 }
 
-/* CAPA 3: Partículas */
 .hero-particles {
   position: absolute;
   top: 0;
@@ -470,9 +439,6 @@ HEADER / NAV - CORREGIDO
   z-index: 3;
 }
 
-/* ============================================
-   ESTRELLAS FIJAS PARPADEANTES
-   ============================================ */
 .hero-stars {
   position: absolute;
   top: 0;
@@ -503,7 +469,6 @@ HEADER / NAV - CORREGIDO
   }
 }
 
-/* CAPA 4: Contenido de texto */
 .hero-content {
   position: relative;
   z-index: 4;
@@ -580,10 +545,9 @@ HEADER / NAV - CORREGIDO
   border-color: var(--color-white);
 }
 
-/* Scroll indicator */
 .scroll-indicator {
   position: absolute;
-  bottom: 3rem;
+  bottom: 4rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -594,9 +558,6 @@ HEADER / NAV - CORREGIDO
   opacity: 0;
 }
 
-/* ============================================
-   HERO WAVE (Ola decorativa)
-   ============================================ */
 .hero-wave {
   position: absolute;
   bottom: 0;
@@ -616,17 +577,19 @@ HEADER / NAV - CORREGIDO
   height: 100%;
 }
 
-/* Responsive: ola más pequeña en móvil */
 @media (max-width: 768px) {
-  .hero-wave {
-    height: 80px;
+  .hero-wave { height: 80px; }
+  .hero-subtitle {
+    font-size: clamp(0.85rem, 3.5vw, 1rem);
+    max-width: 100%;
+    padding: 0 0.5rem;
+    line-height: 1.6;
   }
+  .hero-title { font-size: clamp(2.2rem, 10vw, 4rem); }
 }
 
 @media (max-width: 480px) {
-  .hero-wave {
-    height: 60px;
-  }
+  .hero-wave { height: 60px; }
 }
 
 .scroll-indicator-line {
@@ -686,7 +649,6 @@ HEADER / NAV - CORREGIDO
   color: var(--color-accent);
 }
 
-/* Reveal animations */
 .reveal {
   opacity: 0;
   transform: translateY(60px);
@@ -743,17 +705,14 @@ HEADER / NAV - CORREGIDO
 }
 
 /* ============================================
-   BLOQUE 1 — HISTORIA (Scrollytelling)
+   BLOQUE 1 — HISTORIA
    ============================================ */
 .section-story {
   background: var(--color-bg);
-  padding-top: clamp(2rem, 5vw, 4rem); /* ★ REDUCIDO */
+  padding-top: clamp(2rem, 5vw, 4rem);
   padding-bottom: clamp(5rem, 12vw, 10rem);
 }
 
-/* ============================================
-   LISTÓN DECORATIVO ANIMADO
-   ============================================ */
 .story-ribbon {
   position: absolute;
   top: 0;
@@ -774,12 +733,7 @@ HEADER / NAV - CORREGIDO
   animation: ribbonFloat 8s ease-in-out infinite;
 }
 
-.ribbon-path {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-}
-
-.ribbon-path-shadow {
+.ribbon-path, .ribbon-path-shadow {
   stroke-dasharray: 1000;
   stroke-dashoffset: 1000;
 }
@@ -793,52 +747,26 @@ HEADER / NAV - CORREGIDO
   animation: ribbonDraw 6s ease-out forwards 0.3s;
 }
 
-/* Animación de dibujo inicial */
-@keyframes ribbonDraw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
+@keyframes ribbonDraw { to { stroke-dashoffset: 0; } }
 
-/* Animación de flotación suave */
 @keyframes ribbonFloat {
-  0%, 100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(-5px, 10px) rotate(1deg);
-  }
-  50% {
-    transform: translate(0, 15px) rotate(0deg);
-  }
-  75% {
-    transform: translate(5px, 10px) rotate(-1deg);
-  }
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-5px, 10px) rotate(1deg); }
+  50% { transform: translate(0, 15px) rotate(0deg); }
+  75% { transform: translate(5px, 10px) rotate(-1deg); }
 }
 
-/* Animación de pulso en la opacidad */
 @keyframes ribbonPulse {
-  0%, 100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
 }
 
-/* Responsive: listón más pequeño en móvil */
 @media (max-width: 768px) {
-  .story-ribbon svg {
-    width: 200px;
-    right: 2%;
-  }
+  .story-ribbon svg { width: 200px; right: 2%; }
 }
 
 @media (max-width: 480px) {
-  .story-ribbon svg {
-    width: 150px;
-    right: 0;
-  }
+  .story-ribbon svg { width: 150px; right: 0; }
 }
 
 .story-grid {
@@ -914,12 +842,8 @@ HEADER / NAV - CORREGIDO
 }
 
 @media (max-width: 768px) {
-  .story-grid {
-    grid-template-columns: 1fr;
-  }
-  .story-image-wrapper {
-    aspect-ratio: 4/3;
-  }
+  .story-grid { grid-template-columns: 1fr; }
+  .story-image-wrapper { aspect-ratio: 4/3; }
 }
 
 /* ============================================
@@ -966,9 +890,7 @@ HEADER / NAV - CORREGIDO
   transition: transform 0.6s var(--ease-out-expo);
 }
 
-.service-card:hover::before {
-  transform: scaleX(1);
-}
+.service-card:hover::before { transform: scaleX(1); }
 
 .service-card:hover {
   background: rgba(255,255,255,0.04);
@@ -997,8 +919,8 @@ HEADER / NAV - CORREGIDO
 }
 
 /* ============================================
-BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
-============================================ */
+   BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
+   ============================================ */
 .section-gallery {
     background: var(--color-bg);
     padding-bottom: clamp(4rem, 8vw, 8rem);
@@ -1026,8 +948,8 @@ BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
     cursor: grab;
     -webkit-user-select: none;
     user-select: none;
+    touch-action: pan-y; /* Permite scroll vertical, bloquea el nativo horizontal */
 }
-
 .gallery-carousel-wrapper:active {
     cursor: grabbing;
 }
@@ -1037,10 +959,13 @@ BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
     gap: clamp(1rem, 2vw, 2rem);
     padding: 0 clamp(2rem, 5vw, 8rem);
     will-change: transform;
-    transition: transform 0.1s linear;
+    
+    /* ★ LIMPIEZA: Eliminamos la transition que causaba el tirón/lag */
+    transition: none; 
 }
 
-.gallery-carousel.smooth {
+/* ★ Esta clase SOLO se activa al soltar para centrar suavemente */
+.gallery-carousel.is-snapping {
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -1055,7 +980,6 @@ BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
     will-change: transform, opacity;
 }
 
-/* Tamaños alternados para ritmo visual */
 .gallery-slide:nth-child(odd) {
     width: clamp(280px, 45vw, 500px);
     height: clamp(380px, 60vw, 650px);
@@ -1066,7 +990,6 @@ BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
     height: clamp(320px, 45vw, 480px);
 }
 
-/* Imagen interna con parallax */
 .gallery-slide-img-wrapper {
     position: absolute;
     inset: -20%;
@@ -1078,12 +1001,14 @@ BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
     height: 100%;
     object-fit: cover;
     will-change: transform;
-    transition: transform 0.3s linear;
+    transition: transform 0.6s var(--ease-out-expo),
+                filter 0.6s var(--ease-out-expo);
     filter: brightness(0.85) saturate(0.9);
+    pointer-events: none;
 }
 
 .gallery-slide:hover .gallery-slide-img {
-    filter: brightness(1) saturate(1);
+    filter: brightness(1.1) saturate(1.3);
 }
 
 /* Overlay gradiente */
@@ -1102,11 +1027,9 @@ BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
     transition: opacity 0.5s;
 }
 
-.gallery-slide:hover::after {
-    opacity: 0.7;
-}
+.gallery-slide:hover::after { opacity: 0.7; }
 
-/* Borde sutil dorado */
+/* Borde sutil dorado + Brillo al hover */
 .gallery-slide::before {
     content: '';
     position: absolute;
@@ -1114,34 +1037,106 @@ BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
     border: 1px solid rgba(201, 169, 110, 0.15);
     z-index: 2;
     pointer-events: none;
-    transition: border-color 0.5s;
+    transition: all 0.6s var(--ease-out-expo);
 }
 
 .gallery-slide:hover::before {
-    border-color: rgba(201, 169, 110, 0.4);
+    border-color: rgba(201, 169, 110, 0.6);
+    box-shadow: 
+        inset 0 0 30px rgba(201, 169, 110, 0.1),
+        0 0 30px rgba(201, 169, 110, 0.15);
 }
 
-/* Caption */
+/* Efecto de luz que barre */
+.gallery-slide-light {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(201, 169, 110, 0.0) 20%,
+        rgba(201, 169, 110, 0.15) 45%,
+        rgba(201, 169, 110, 0.3) 50%,
+        rgba(201, 169, 110, 0.15) 55%,
+        rgba(201, 169, 110, 0.0) 80%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    transition: left 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
+                opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1); /* ★ Corregido */
+}
+
+.gallery-slide:hover .gallery-slide-light {
+    left: 100%;
+    opacity: 1;
+}
+
+/* Partículas */
+.gallery-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}
+
+.gallery-slide:hover .gallery-particles { opacity: 1; }
+
+.gallery-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 4px var(--color-accent),
+        0 0 8px rgba(201, 169, 110, 0.5);
+    opacity: 0;
+    will-change: transform, opacity;
+}
+
+@keyframes galleryParticleFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(0) translateX(0) scale(0.5);
+    }
+    20% { opacity: 0.8; }
+    80% { opacity: 0.6; }
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) translateX(var(--drift-x, 15px)) scale(1);
+    }
+}
+
+/* Caption unificado */
 .gallery-slide-caption {
     position: absolute;
     bottom: clamp(1.2rem, 2.5vw, 2rem);
     left: clamp(1.2rem, 2.5vw, 2rem);
-    z-index: 3;
+    z-index: 4;
     font-size: 0.7rem;
     letter-spacing: 0.25em;
     text-transform: uppercase;
     color: var(--color-white);
     opacity: 0;
     transform: translateY(15px);
-    transition: all 0.5s var(--ease-out-expo);
+    transition: all 0.6s var(--ease-out-expo);
+    text-shadow: 0 0 20px rgba(201, 169, 110, 0.5);
 }
 
 .gallery-slide:hover .gallery-slide-caption {
     opacity: 1;
     transform: translateY(0);
+    transition-delay: 0.3s;
 }
 
-/* Indicador de progreso */
 .gallery-progress {
     position: relative;
     width: clamp(100px, 20vw, 200px);
@@ -1161,7 +1156,6 @@ BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
     transition: width 0.3s linear;
 }
 
-/* Hint de arrastre */
 .gallery-drag-hint {
     text-align: center;
     font-size: 0.65rem;
@@ -1180,146 +1174,16 @@ BLOQUE 3 — GALERÍA (CARRUSEL PARALLAX)
     100% { opacity: 0; }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .gallery-slide:nth-child(odd),
     .gallery-slide:nth-child(even) {
         width: clamp(260px, 75vw, 320px);
         height: clamp(340px, 90vw, 420px);
     }
-    
     .gallery-carousel {
         padding: 0 1.5rem;
         gap: 1rem;
     }
-}
-
-/* ============================================
-EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
-============================================ */
-
-/* Contenedor de luz que barre */
-.gallery-slide-light {
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(201, 169, 110, 0.0) 20%,
-        rgba(201, 169, 110, 0.15) 45%,
-        rgba(201, 169, 110, 0.3) 50%,
-        rgba(201, 169, 110, 0.15) 55%,
-        rgba(201, 169, 110, 0.0) 80%,
-        transparent 100%
-    );
-    pointer-events: none;
-    z-index: 2;
-    transition: left 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    opacity: 0;
-}
-
-.gallery-slide:hover .gallery-slide-light {
-    left: 100%;
-    opacity: 1;
-}
-
-/* Contenedor de partículas */
-.gallery-particles {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 3;
-    overflow: hidden;
-    opacity: 0;
-    transition: opacity 0.5s ease-out;
-}
-
-.gallery-slide:hover .gallery-particles {
-    opacity: 1;
-}
-
-/* Partícula individual */
-.gallery-particle {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: var(--color-accent);
-    border-radius: 50%;
-    box-shadow: 
-        0 0 4px var(--color-accent),
-        0 0 8px rgba(201, 169, 110, 0.5);
-    opacity: 0;
-    will-change: transform, opacity;
-}
-
-@keyframes galleryParticleFloat {
-    0% {
-        opacity: 0;
-        transform: translateY(0) translateX(0) scale(0.5);
-    }
-    20% {
-        opacity: 0.8;
-    }
-    80% {
-        opacity: 0.6;
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-60px) translateX(var(--drift-x, 15px)) scale(1);
-    }
-}
-
-/* Caption mejorado con efecto de luz */
-.gallery-slide-caption {
-    position: absolute;
-    bottom: clamp(1.2rem, 2.5vw, 2rem);
-    left: clamp(1.2rem, 2.5vw, 2rem);
-    z-index: 4;
-    font-size: 0.7rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--color-white);
-    opacity: 0;
-    transform: translateY(15px);
-    transition: all 0.6s var(--ease-out-expo);
-    text-shadow: 0 0 20px rgba(201, 169, 110, 0.5);
-}
-
-.gallery-slide:hover .gallery-slide-caption {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 0.3s; /* Aparece después de la luz */
-}
-
-/* Efecto de brillo en el borde al hover */
-.gallery-slide::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 1px solid rgba(201, 169, 110, 0.15);
-    z-index: 2;
-    pointer-events: none;
-    transition: all 0.6s var(--ease-out-expo);
-}
-
-.gallery-slide:hover::before {
-    border-color: rgba(201, 169, 110, 0.6);
-    box-shadow: 
-        inset 0 0 30px rgba(201, 169, 110, 0.1),
-        0 0 30px rgba(201, 169, 110, 0.15);
-}
-
-/* Imagen con saturación aumentada al hover */
-.gallery-slide-img {
-    transition: transform 0.6s var(--ease-out-expo),
-                filter 0.6s var(--ease-out-expo);
-}
-
-.gallery-slide:hover .gallery-slide-img {
-    filter: brightness(1.1) saturate(1.3);
 }
 
 /* ============================================
@@ -1384,14 +1248,8 @@ EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
   transition: transform 0.5s var(--ease-out-expo);
 }
 
-.philosophy-cta:hover::before {
-  transform: translateX(0);
-}
-
-.philosophy-cta span {
-  position: relative;
-  z-index: 1;
-}
+.philosophy-cta:hover::before { transform: translateX(0); }
+.philosophy-cta span { position: relative; z-index: 1; }
 
 /* ============================================
    FOOTER
@@ -1423,9 +1281,7 @@ EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
   margin-bottom: 1rem;
 }
 
-.footer-brand-name span {
-  color: var(--color-accent);
-}
+.footer-brand-name span { color: var(--color-accent); }
 
 .footer-brand-desc {
   font-size: 0.9rem;
@@ -1443,13 +1299,8 @@ EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
   margin-bottom: 1.5rem;
 }
 
-.footer-col ul {
-  list-style: none;
-}
-
-.footer-col li {
-  margin-bottom: 0.8rem;
-}
+.footer-col ul { list-style: none; }
+.footer-col li { margin-bottom: 0.8rem; }
 
 .footer-col a {
   font-size: 0.85rem;
@@ -1457,9 +1308,7 @@ EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
   transition: color 0.3s;
 }
 
-.footer-col a:hover {
-  color: var(--color-white);
-}
+.footer-col a:hover { color: var(--color-white); }
 
 .footer-bottom {
   display: flex;
@@ -1487,14 +1336,10 @@ EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
   transition: color 0.3s;
 }
 
-.footer-socials a:hover {
-  color: var(--color-accent);
-}
+.footer-socials a:hover { color: var(--color-accent); }
 
 @media (max-width: 768px) {
-  .footer-top {
-    grid-template-columns: 1fr 1fr;
-  }
+  .footer-top { grid-template-columns: 1fr 1fr; }
   .footer-bottom {
     flex-direction: column;
     gap: 1rem;
@@ -1503,13 +1348,11 @@ EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
 }
 
 @media (max-width: 480px) {
-  .footer-top {
-    grid-template-columns: 1fr;
-  }
+  .footer-top { grid-template-columns: 1fr; }
 }
 
 /* ============================================
-   PARALLAX LINES (decorativas)
+   PARALLAX LINES & HORIZONTAL RULE
    ============================================ */
 .parallax-line {
   position: absolute;
@@ -1519,9 +1362,6 @@ EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
   will-change: transform;
 }
 
-/* ============================================
-   HORIZONTAL RULE EDITORIAL
-   ============================================ */
 .editorial-hr {
   width: 60px;
   height: 1px;
@@ -1530,9 +1370,7 @@ EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
   margin: 2rem 0;
 }
 
-.editorial-hr.center {
-  margin: 2rem auto;
-}
+.editorial-hr.center { margin: 2rem auto; }
 
 /* ============================================
    SMOOTH SCROLL PROGRESS BAR
@@ -1552,7 +1390,6 @@ EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
    ============================================ */
 .typewriter-wrapper {
   display: inline-block;
-  /* El min-width se aplicará dinámicamente via JS */
   vertical-align: baseline;
 }
 
@@ -1577,71 +1414,9 @@ EFECTO LUZ QUE BARRE + PARTÍCULAS (GALERÍA)
   50% { opacity: 0; }
 }
 
-@media (max-width: 768px) {
-  .hero-subtitle {
-    font-size: clamp(0.85rem, 3.5vw, 1rem);
-    max-width: 100%;
-    padding: 0 0.5rem;
-    line-height: 1.6;
-  }
-
-  .hero-title {
-    font-size: clamp(2.2rem, 10vw, 4rem);
-  }
-}
-
 /* ============================================
-   HERO GLOW (Luz inferior pulsante)
+   LUZ QUE CAE - SERVICIOS
    ============================================ */
-.hero-glow {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60%;
-  background: radial-gradient(
-    ellipse at center bottom,
-    rgba(201, 169, 110, 0.25) 0%,
-    rgba(201, 169, 110, 0.12) 30%,
-    rgba(139, 92, 246, 0.08) 60%,
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-  animation: glowPulse 6s ease-in-out infinite;
-}
-
-@keyframes glowPulse {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scaleY(0.95);
-  }
-  50% {
-    opacity: 1;
-    transform: scaleY(1.05);
-  }
-}
-
-/* ============================================
-   HEADER PARTICLES CANVAS
-   ============================================ */
-.hero-particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.hero {
-  position: relative;
-}
-
-/* ============================================
-LUZ QUE CAE - SERVICIOS (EFECTO ETÉREO)
-============================================ */
 .services-light-container {
     position: absolute;
     top: 0;
@@ -1653,7 +1428,6 @@ LUZ QUE CAE - SERVICIOS (EFECTO ETÉREO)
     z-index: 0;
 }
 
-/* Haz de luz principal que cae desde arriba */
 .light-beam {
     position: absolute;
     top: -20%;
@@ -1675,11 +1449,8 @@ LUZ QUE CAE - SERVICIOS (EFECTO ETÉREO)
     will-change: opacity;
 }
 
-.light-beam.active {
-    opacity: 1;
-}
+.light-beam.active { opacity: 1; }
 
-/* Resplandor general detrás del título */
 .services-ambient-glow {
     position: absolute;
     top: 20%;
@@ -1699,11 +1470,8 @@ LUZ QUE CAE - SERVICIOS (EFECTO ETÉREO)
     will-change: opacity;
 }
 
-.services-ambient-glow.active {
-    opacity: 1;
-}
+.services-ambient-glow.active { opacity: 1; }
 
-/* Partículas de luz que caen */
 .light-particle {
     position: absolute;
     width: 2px;
@@ -1722,12 +1490,8 @@ LUZ QUE CAE - SERVICIOS (EFECTO ETÉREO)
         opacity: 0;
         transform: translateY(-100px) translateX(0);
     }
-    10% {
-        opacity: 1;
-    }
-    90% {
-        opacity: 1;
-    }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
     100% {
         opacity: 0;
         transform: translateY(800px) translateX(var(--drift-x, 0px));
@@ -1739,7 +1503,6 @@ LUZ QUE CAE - SERVICIOS (EFECTO ETÉREO)
     animation-delay: var(--fall-delay, 0s);
 }
 
-/* Título con resplandor */
 .services-header .section-heading {
     position: relative;
     z-index: 1;
@@ -1758,18 +1521,9 @@ LUZ QUE CAE - SERVICIOS (EFECTO ETÉREO)
         0 0 160px rgba(201, 169, 110, 0.08);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-    .light-beam {
-        width: 150px;
-        filter: blur(30px);
-    }
-    
-    .services-ambient-glow {
-        width: 90%;
-        filter: blur(40px);
-    }
-    
+    .light-beam { width: 150px; filter: blur(30px); }
+    .services-ambient-glow { width: 90%; filter: blur(40px); }
     .services-header .section-heading.glow-active {
         text-shadow: 
             0 0 30px rgba(201, 169, 110, 0.5),
@@ -1779,8 +1533,8 @@ LUZ QUE CAE - SERVICIOS (EFECTO ETÉREO)
 }
 
 /* ============================================
-BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
-============================================ */
+   BLOQUE 5 — E-COMMERCE
+   ============================================ */
 .section-ecommerce {
   background: var(--color-bg-alt);
   text-align: center;
@@ -1806,19 +1560,15 @@ BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
 }
 
 @keyframes ecommerceGlowPulse {
-    0%, 100% {
-        opacity: 0.5;
-        transform: scale(1);
-    }
-    50% {
-        opacity: 1;
-        transform: scale(1.1);
-    }
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); }
 }
 
 .ecommerce-inner {
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .ecommerce-subtitle {
@@ -1861,9 +1611,7 @@ BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
     transition: left 0.7s;
 }
 
-.ecommerce-cta:hover::after {
-    left: 100%;
-}
+.ecommerce-cta:hover::after { left: 100%; }
 
 .ecommerce-cta::before {
   content: '';
@@ -1874,16 +1622,9 @@ BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
   transition: transform 0.5s var(--ease-out-expo);
 }
 
-.ecommerce-cta:hover::before {
-  transform: translateX(0);
-}
+.ecommerce-cta:hover::before { transform: translateX(0); }
+.ecommerce-cta span { position: relative; z-index: 1; }
 
-.ecommerce-cta span {
-  position: relative;
-  z-index: 1;
-}
-
-/* Partículas flotantes para ecommerce */
 .ecommerce-particles {
     position: absolute;
     inset: 0;
@@ -1907,20 +1648,11 @@ BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
         opacity: 0;
         transform: translateY(0) scale(0.5);
     }
-    20% {
-        opacity: 0.6;
-    }
-    80% {
-        opacity: 0.4;
-    }
-    50% {
-        transform: translateY(-80px) scale(1.2);
-    }
+    20% { opacity: 0.6; }
+    80% { opacity: 0.4; }
+    50% { transform: translateY(-80px) scale(1.2); }
 }
 
-/* ============================================
-ÍCONO DECORATIVO DE FONDO — E-COMMERCE
-============================================ */
 .ecommerce-bg-icon {
   position: absolute;
   top: 50%;
@@ -1942,48 +1674,24 @@ BLOQUE 5 — E-COMMERCE (SIMPLIFICADO)
   filter: drop-shadow(0 0 20px rgba(201, 169, 110, 0.1));
 }
 
-/* Animación de flotación suave */
 @keyframes ecommerceIconFloat {
-  0%, 100% {
-    transform: translateY(-50%) rotate(0deg);
-  }
-  25% {
-    transform: translateY(-52%) rotate(1deg);
-  }
-  50% {
-    transform: translateY(-48%) rotate(0deg);
-  }
-  75% {
-    transform: translateY(-51%) rotate(-1deg);
-  }
+  0%, 100% { transform: translateY(-50%) rotate(0deg); }
+  25% { transform: translateY(-52%) rotate(1deg); }
+  50% { transform: translateY(-48%) rotate(0deg); }
+  75% { transform: translateY(-51%) rotate(-1deg); }
 }
 
-/* Asegurar que el contenido esté por encima del ícono */
-.ecommerce-inner {
-  position: relative;
-  z-index: 1;
-}
-
-/* Responsive: ícono más pequeño en móvil */
 @media (max-width: 768px) {
-  .ecommerce-bg-icon {
-    width: 100%;  /* ★ MÁS GRANDE EN MÓVIL */
-    right: -20%;  /* ★ MÁS NEGATIVO */
-    opacity: 0.04;  /* ★ MÁS SUTIL */
-  }
+  .ecommerce-bg-icon { width: 100%; right: -20%; opacity: 0.04; }
 }
 
 @media (max-width: 480px) {
-  .ecommerce-bg-icon {
-    width: 120%;  /* ★ AÚN MÁS GRANDE */
-    right: -30%;
-    opacity: 0.03;
-  }
+  .ecommerce-bg-icon { width: 120%; right: -30%; opacity: 0.03; }
 }
 
 /* ============================================
-BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
-============================================ */
+   BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
+   ============================================ */
 .section-blog {
     background: var(--color-bg-alt);
     text-align: center;
@@ -1992,10 +1700,9 @@ BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
     min-height: 90vh;
     position: relative;
     overflow: hidden;
-    perspective: 1000px; /* ★ CLAVE para el efecto 3D profundo */
+    perspective: 1000px;
 }
 
-/* 1. EFECTO TINTA DORADA (Ink Reveal) */
 .blog-ink-bg {
     position: absolute;
     top: 50%; left: 50%;
@@ -2013,13 +1720,12 @@ BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
     z-index: 0;
     pointer-events: none;
 }
-/* Cuando la sección es visible, la tinta se expande */
+
 .section-blog.blog-visible .blog-ink-bg {
     transform: translate(-50%, -50%) scale(1.2);
     opacity: 1;
 }
 
-/* 2. PARTÍCULAS DE POLVO DORADO */
 .blog-particles-container {
     position: absolute;
     inset: 0;
@@ -2027,6 +1733,7 @@ BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
     pointer-events: none;
     overflow: hidden;
 }
+
 .blog-particle {
     position: absolute;
     width: 2px; height: 2px;
@@ -2036,6 +1743,7 @@ BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
     opacity: 0;
     will-change: transform, opacity;
 }
+
 @keyframes blogParticleFloat {
     0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
     20% { opacity: 0.8; }
@@ -2043,30 +1751,28 @@ BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
     100% { transform: translateY(-150px) translateX(var(--drift-x, 20px)) scale(1.2); opacity: 0; }
 }
 
-/* 3. ÍCONO SVG CON PARALLAX 3D */
 .blog-bg-icon {
     position: absolute;
     top: 50%; right: -5%;
-    transform: translateY(-50%) rotateY(-15deg) rotateX(5deg); /* ★ Inclinación 3D inicial */
+    transform: translateY(-50%) rotateY(-15deg) rotateX(5deg);
     width: 45%; max-width: 550px;
     color: var(--color-accent);
     opacity: 0.06;
     pointer-events: none;
     z-index: 0;
-    transition: transform 0.1s linear; /* Suaviza el parallax de scroll */
+    transition: transform 0.1s linear;
     filter: drop-shadow(0 10px 30px rgba(201, 169, 110, 0.1));
 }
-.blog-bg-icon svg {
-    width: 100%; height: auto;
-}
 
-/* Contenido Central */
+.blog-bg-icon svg { width: 100%; height: auto; }
+
 .blog-inner {
     max-width: 800px;
     margin: 0 auto;
     position: relative;
     z-index: 2;
 }
+
 .blog-subtitle {
     font-size: clamp(1rem, 1.3vw, 1.15rem);
     color: var(--color-text-muted);
@@ -2076,7 +1782,6 @@ BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
     margin-left: auto; margin-right: auto;
 }
 
-/* Botón CTA */
 .blog-cta {
     display: inline-block;
     font-size: 0.75rem; font-weight: 500;
@@ -2087,16 +1792,17 @@ BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
     transition: all 0.5s var(--ease-out-expo);
     position: relative; overflow: hidden;
 }
+
 .blog-cta::before {
     content: ''; position: absolute; inset: 0;
     background: var(--color-white);
     transform: translateX(-101%);
     transition: transform 0.5s var(--ease-out-expo);
 }
+
 .blog-cta:hover::before { transform: translateX(0); }
 .blog-cta span { position: relative; z-index: 1; }
 
-/* Responsive */
 @media (max-width: 768px) {
     .blog-bg-icon {
         width: 90%; right: -20%; top: auto; bottom: -10%;
@@ -2105,17 +1811,14 @@ BLOQUE 6 — BLOG (EFECTO TINTA DORADA)
     }
     .section-blog { min-height: 80vh; }
 }
+
 @media (max-width: 480px) {
-    .blog-bg-icon {
-        width: 120%;
-        right: -30%;
-        opacity: 0.03;
-    }
+    .blog-bg-icon { width: 120%; right: -30%; opacity: 0.03; }
 }
 
 /* ============================================
-BLOQUE 7 — CONTACTO (FORMULARIO CON ONDAS)
-============================================ */
+   BLOQUE 7 — CONTACTO
+   ============================================ */
 .section-contact {
     background: var(--color-bg-alt);
     text-align: center;
@@ -2127,9 +1830,6 @@ BLOQUE 7 — CONTACTO (FORMULARIO CON ONDAS)
     perspective: 1000px;
 }
 
-/* ============================================
-ONDAS DE TINTA LÍQUIDA (MEJORADO)
-============================================ */
 .contact-waves {
     position: absolute;
     bottom: 0;
@@ -2145,69 +1845,39 @@ ONDAS DE TINTA LÍQUIDA (MEJORADO)
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 200%; /* ★ Doble ancho para animación continua */
-    height: 60%; /* ★ Solo ocupa la parte inferior */
+    width: 200%;
+    height: 60%;
     animation: contactWaveMove 25s linear infinite;
 }
 
-/* Animación de movimiento horizontal continuo */
 @keyframes contactWaveMove {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%); /* ★ Se mueve exactamente la mitad */
-    }
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 
-/* Cada onda se mueve a diferente velocidad para efecto parallax */
-.wave-1 {
-    animation: wave1Move 20s ease-in-out infinite;
-}
-
-.wave-2 {
-    animation: wave2Move 15s ease-in-out infinite;
-}
-
-.wave-3 {
-    animation: wave3Move 10s ease-in-out infinite;
-}
+.wave-1 { animation: wave1Move 20s ease-in-out infinite; }
+.wave-2 { animation: wave2Move 15s ease-in-out infinite; }
+.wave-3 { animation: wave3Move 10s ease-in-out infinite; }
 
 @keyframes wave1Move {
-    0%, 100% {
-        transform: translateY(0) scaleY(1);
-    }
-    50% {
-        transform: translateY(-20px) scaleY(1.1);
-    }
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    50% { transform: translateY(-20px) scaleY(1.1); }
 }
 
 @keyframes wave2Move {
-    0%, 100% {
-        transform: translateY(0) scaleY(1);
-    }
-    50% {
-        transform: translateY(-15px) scaleY(1.05);
-    }
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    50% { transform: translateY(-15px) scaleY(1.05); }
 }
 
 @keyframes wave3Move {
-    0%, 100% {
-        transform: translateY(0) scaleY(1);
-    }
-    50% {
-        transform: translateY(-10px) scaleY(1.08);
-    }
+    0%, 100% { transform: translateY(0) scaleY(1); }
+    50% { transform: translateY(-10px) scaleY(1.08); }
 }
 
-/* Responsive: ondas más sutiles en móvil */
 @media (max-width: 768px) {
-    .contact-waves svg {
-        height: 50%;
-    }
+    .contact-waves svg { height: 50%; }
 }
 
-/* 2. PARTÍCULAS DE POLVO DORADO */
 .contact-particles-container {
     position: absolute;
     inset: 0;
@@ -2234,7 +1904,6 @@ ONDAS DE TINTA LÍQUIDA (MEJORADO)
     100% { transform: translateY(-150px) translateX(var(--drift-x, 20px)) scale(1.2); opacity: 0; }
 }
 
-/* 3. ÍCONO DE SOBRE CON PARALLAX 3D */
 .contact-bg-icon {
     position: absolute;
     top: 50%;
@@ -2250,12 +1919,8 @@ ONDAS DE TINTA LÍQUIDA (MEJORADO)
     filter: drop-shadow(0 10px 30px rgba(201, 169, 110, 0.1));
 }
 
-.contact-bg-icon svg {
-    width: 100%;
-    height: auto;
-}
+.contact-bg-icon svg { width: 100%; height: auto; }
 
-/* Contenido Central */
 .contact-inner {
     max-width: 700px;
     margin: 0 auto;
@@ -2274,7 +1939,6 @@ ONDAS DE TINTA LÍQUIDA (MEJORADO)
     margin-right: auto;
 }
 
-/* Formulario */
 .contact-form {
     display: flex;
     flex-direction: column;
@@ -2282,9 +1946,7 @@ ONDAS DE TINTA LÍQUIDA (MEJORADO)
     text-align: left;
 }
 
-.form-group {
-    position: relative;
-}
+.form-group { position: relative; }
 
 .form-input,
 .form-textarea {
@@ -2318,13 +1980,6 @@ ONDAS DE TINTA LÍQUIDA (MEJORADO)
     font-family: var(--font-body);
 }
 
-/* Efecto de partículas al escribir */
-.form-input.typing,
-.form-textarea.typing {
-    position: relative;
-}
-
-/* Botón de envío con efecto de onda expansiva */
 .contact-submit {
     display: inline-block;
     font-size: 0.75rem;
@@ -2352,16 +2007,9 @@ ONDAS DE TINTA LÍQUIDA (MEJORADO)
     transition: transform 0.5s var(--ease-out-expo);
 }
 
-.contact-submit:hover::before {
-    transform: translateX(0);
-}
+.contact-submit:hover::before { transform: translateX(0); }
+.contact-submit span { position: relative; z-index: 1; }
 
-.contact-submit span {
-    position: relative;
-    z-index: 1;
-}
-
-/* Efecto de onda expansiva al click */
 .contact-submit::after {
     content: '';
     position: absolute;
@@ -2383,7 +2031,6 @@ ONDAS DE TINTA LÍQUIDA (MEJORADO)
     transition: width 0s, height 0s, opacity 0s;
 }
 
-/* Mensaje de éxito/error */
 .form-message {
     text-align: center;
     padding: 1rem;
@@ -2411,7 +2058,6 @@ ONDAS DE TINTA LÍQUIDA (MEJORADO)
     border: 1px solid rgba(255, 68, 68, 0.3);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     .contact-bg-icon {
         width: 80%;
@@ -2433,4 +2079,108 @@ ONDAS DE TINTA LÍQUIDA (MEJORADO)
         left: -30%;
         opacity: 0.03;
     }
+}
+
+/* ============================================
+FOOTER - VERSIÓN MÓVIL COMPACTA & PREMIUM
+============================================ */
+@media (max-width: 768px) {
+  .footer {
+    padding: 3rem 1.5rem 1.5rem;
+  }
+  
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  .footer-brand {
+    grid-column: 1 / -1;
+    margin-bottom: 0.5rem;
+  }
+  
+  .footer-brand-name {
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+  }
+  
+  .footer-brand-desc {
+    font-size: 0.8rem;
+    max-width: 100%;
+    line-height: 1.6;
+  }
+  
+  .footer-col {
+    padding: 0;
+  }
+  
+  .footer-col-title {
+    font-size: 0.6rem;
+    margin-bottom: 1rem;
+  }
+  
+  .footer-col li {
+    margin-bottom: 0.6rem;
+  }
+  
+  .footer-col a {
+    font-size: 0.8rem;
+  }
+  
+  .footer-bottom {
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1.5rem;
+  }
+  
+  .footer-copy {
+    font-size: 0.7rem;
+  }
+  
+  .footer-socials {
+    gap: 1.2rem;
+  }
+  
+  .footer-socials a {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 2.5rem 1.2rem 1.2rem;
+  }
+  
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .footer-brand-name {
+    font-size: 1.2rem;
+  }
+  
+  .footer-brand-desc {
+    font-size: 0.75rem;
+  }
+  
+  .footer-col-title {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+  }
+  
+  .footer-col a {
+    font-size: 0.75rem;
+  }
+  
+  .footer-socials {
+    gap: 1rem;
+  }
+  
+  .footer-socials a {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+  }
 }
