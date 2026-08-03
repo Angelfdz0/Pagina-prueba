@@ -354,11 +354,7 @@
       </div>
       <div class="story-grid">
         <div class="story-image-wrapper reveal-left">
-          <img class="story-image" 
-         src="${s.image}" 
-         alt="${s.label}" 
-         loading="lazy" 
-         decoding="async" />
+          <img class="story-image" src="${s.image}" alt="${s.label}" loading="lazy" />
         </div>
         <div class="story-text">
           <span class="section-label reveal">${s.label}</span>
@@ -1178,8 +1174,6 @@ function initGalleryCarousel() {
   function initParallax() {
     const heroBg = $("#heroBg");
     const storyImg = $(".story-image");
-    let lastScroll = 0;
-  const throttle = 16; // ~60fps
     let ticking = false;
 
     function updateParallax() {
@@ -1198,12 +1192,11 @@ function initGalleryCarousel() {
     }
 
     window.addEventListener("scroll", () => {
-    const now = Date.now();
-    if (now - lastScroll >= throttle) {
-      lastScroll = now;
-      updateParallax();
-    }
-  }, { passive: true });
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }, { passive: true });
   }
 
   // ─── CURSOR PERSONALIZADO ────────────────
@@ -1310,8 +1303,6 @@ function initGalleryCarousel() {
 
   // ─── INIT ────────────────────────────────
   function init() {
-    const isMobile = window.innerWidth < 768;
-
     applyTheme();
     injectSEO();
     buildHeader();
@@ -1335,13 +1326,11 @@ function initGalleryCarousel() {
     initHeroStars();
     initStoryRibbon();
     initReveal();
-    if (!isMobile) {
     initParallax();
     initCursor();
-    }
-    initGalleryCarousel();
     initSmoothScroll();
     initCounters();
+    initGalleryCarousel();
     initGalleryParticles();
     initServicesLight();
     setTimeout(initMagnetic, C.loader.duration + 600);

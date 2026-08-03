@@ -85,7 +85,7 @@ const SITE_CONFIG = {
     enabled: true,
     label: "Nuestra Historia",
     heading: "Donde la <em>visión</em> se convierte en realidad",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop",
     paragraphs: [
       "Nacimos de la convicción de que cada marca merece una presencia digital que no solo se vea, sino que se sienta. Desde nuestro primer proyecto, entendimos que el diseño verdadero no decora: comunica, persuade y permanece.",
       "Hoy, nuestro estudio reúne a estrategas, diseñadores y desarrolladores que comparten una obsesión: crear experiencias digitales que dejen huella. Cada píxel, cada interacción, cada palabra está cuidadosamente orquestada para contar tu historia.",
@@ -159,7 +159,7 @@ const SITE_CONFIG = {
         parallaxSpeed: -0.07,
       },
       {
-        image: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=800&auto=format&fit=crop",
+        image: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop",
         caption: "Desarrollo Web",
         parallaxSpeed: 0.06,
       },
