@@ -550,7 +550,7 @@ button { cursor: none; }
   bottom: 4rem;
   left: 50%;
   transform: translateX(-50%);
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: center;
   gap: 0.8rem;
@@ -586,6 +586,7 @@ button { cursor: none; }
     line-height: 1.6;
   }
   .hero-title { font-size: clamp(2.2rem, 10vw, 4rem); }
+  .scroll-indicator { display: flex; }
 }
 
 @media (max-width: 480px) {

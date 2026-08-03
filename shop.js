@@ -225,7 +225,6 @@ TIENDA ONLINE - CON MODAL DE FICHA TÉCNICA
         renderModalContent();
         elements.productModal.classList.add("open");
         document.body.style.overflow = "hidden";
-        initModalParallax();
         initModalGallery();
     }
     
@@ -799,13 +798,6 @@ TIENDA ONLINE - CON MODAL DE FICHA TÉCNICA
     function formatDate(dateString) {
         const date = new Date(dateString);
         return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
-    }
-    
-    // Iniciar
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-    } else {
-        init();
     }
 
     // ============================================
