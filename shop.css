@@ -772,6 +772,7 @@ CARRITO SIDEBAR
 .cart-items {
     flex: 1;
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 1.5rem;
     -webkit-overflow-scrolling: touch;
 }
@@ -1267,6 +1268,7 @@ MODAL DE FICHA TÉCNICA - PARALLAX
     margin: 0 auto;
     background: var(--color-bg-alt);
     overflow-y: auto;
+    overscroll-behavior: contain;
     transform: scale(0.9) translateY(50px);
     transition: transform 0.6s var(--ease-out-expo);
 }
