@@ -1,26 +1,27 @@
 /* ============================================================
-   ██████  ██████  ███    ██ ███████ ██  ██████  
-   ██      ██    ██ ████   ██ ██      ██ ██       
-   ██      ██    ██ ██ ██  ██ █████   ██ ██   ███ 
-   ██      ██    ██ ██  ██ ██ ██      ██ ██    ██ 
-   ██████  ██████  ██   ████ ██      ██  ██████  
-                                                    
-   ★ AQUÍ EDITAS TODO EL CONTENIDO DE TU PÁGINA ★
-   Solo modifica este archivo para crear sitios 
-   de cualquier negocio.
+   ★ PLANTILLA MAESTRA DE CONFIGURACIÓN — USO POR CLIENTE ★
+   
+   FLUJO RÁPIDO (10 min por cliente):
+   1. Copia este archivo como config.js en la carpeta del cliente
+   2. Llena TODOS los campos marcados con ★ CLIENTE
+   3. Crea proyecto Supabase → ejecuta tu setup-supabase.sql
+   4. Crea usuario admin (Authentication → Add user → auto-confirm)
+   5. Pega URL + clave anon en la sección 🔐 SUPABASE
+   6. Sube archivos al hosting del cliente → listo ✅
    ============================================================ */
 
 const SITE_CONFIG = {
 
   // ──────────────────────────────────────────
   // 🎨 TEMA / COLORES
+  // ★ CLIENTE: ajusta a los colores de su marca
   // ──────────────────────────────────────────
   theme: {
     bg:           "#0a0a0a",
     bgAlt:        "#111111",
     text:         "#f0ece2",
-    textMuted:    "#8a8578",
-    accent:       "#c9a96e",
+    textMuted:    "#9a9488",
+    accent:       "#c9a96e",   // ★ Color principal de la marca
     accentLight:  "#e2c992",
     white:        "#ffffff",
     dark:         "#0a0a0a",
@@ -28,11 +29,8 @@ const SITE_CONFIG = {
     fontBody:     "'Inter', -apple-system, sans-serif",
   },
 
-  // ──────────────────────────────────────────
-  // ⏳ LOADER
-  // ──────────────────────────────────────────
   loader: {
-    text: "Studio",
+    text: "Studio",          // ★ Texto del loader (puede ser el nombre corto)
     duration: 2200,
   },
 
@@ -41,9 +39,10 @@ const SITE_CONFIG = {
   // ──────────────────────────────────────────
   header: {
     enabled: true,
+    maxLinks: 5,
     logo: {
-      text: "STU",
-      highlight: "DIO",
+      text: "STU",           // ★ CLIENTE: primera parte del logo
+      highlight: "DIO",      // ★ Parte resaltada con color accent
     },
     links: [
       { label: "Inicio",     href: "#hero" },
@@ -52,25 +51,24 @@ const SITE_CONFIG = {
       { label: "Galería",    href: "#gallery" },
       { label: "Tienda",     href: "#ecommerce" },
       { label: "Blog",       href: "#blog" },
+      { label: "Testimonios", href: "#testimonials" },
       { label: "Contacto",   href: "#contact" },
     ],
-    cta: {
-      label: "Contacto",
-      href: "#contact",
-    },
+    cta: { label: "Contacto", href: "#contact" },
   },
 
   // ──────────────────────────────────────────
-  // 🏠 HERO / INTRO
+  // 🏠 HERO
+  // ★ CLIENTE: textos y foto principal del negocio
   // ──────────────────────────────────────────
   hero: {
     enabled: true,
-    backgroundImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2064&auto=format&fit=crop",
-    eyebrow: "Estudio Creativo — Desde 2018",
+    backgroundImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2064&auto=format&fit=crop", // ★ Foto real
+    eyebrow: "Estudio Creativo — Desde 2018",   // ★ Frase corta
     title: {
       line1: "Creamos",
       line2: "Experiencias",
-      typewriterWords: ["Digitales", "Únicas", "Memorables"],
+      typewriterWords: ["Digitales", "Únicas", "Memorables"], // ★ Palabras rotativas
     },
     subtitle: "Diseño, estrategia y tecnología fusionados para construir marcas que trascienden lo ordinario.",
     cta: "Descubrir Más",
@@ -78,58 +76,44 @@ const SITE_CONFIG = {
   },
 
   // ──────────────────────────────────────────
-  // 📖 BLOQUE 1 — HISTORIA (Scrollytelling)
+  // 📖 HISTORIA
+  // ★ CLIENTE: su historia real y cifras reales
   // ──────────────────────────────────────────
   story: {
     enabled: true,
     label: "Nuestra Historia",
     heading: "Donde la <em>visión</em> se convierte en realidad",
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop", // ★ Foto real
     paragraphs: [
-      "Nacimos de la convicción de que cada marca merece una presencia digital que no solo se vea, sino que se sienta. Desde nuestro primer proyecto, entendimos que el diseño verdadero no decora: comunica, persuade y permanece.",
-      "Hoy, nuestro estudio reúne a estrategas, diseñadores y desarrolladores que comparten una obsesión: crear experiencias digitales que dejen huella. Cada píxel, cada interacción, cada palabra está cuidadosamente orquestada para contar tu historia.",
+      "Párrafo 1 de la historia del negocio...",  // ★
+      "Párrafo 2 de la historia del negocio...",  // ★
     ],
     stats: [
-      { number: "150+", label: "Proyectos" },
+      { number: "150+", label: "Proyectos" },   // ★ Cifras reales
       { number: "12",   label: "Premios" },
       { number: "98%",  label: "Satisfacción" },
     ],
   },
 
   // ──────────────────────────────────────────
-  // ⚙️ BLOQUE 2 — SERVICIOS
+  // ⚙️ SERVICIOS
+  // ★ CLIENTE: los servicios reales que ofrece
   // ──────────────────────────────────────────
   services: {
     enabled: true,
     label: "Lo Que Hacemos",
     heading: "Servicios que <em>transforman</em>",
-    subtitle: "Cada servicio está diseñado para elevar tu marca al siguiente nivel, combinando estética impecable con funcionalidad estratégica.",
+    subtitle: "Cada servicio está diseñado para elevar tu marca al siguiente nivel.",
     items: [
-      {
-        number: "01",
-        title: "Branding & Identidad",
-        desc: "Construimos sistemas de marca completos que comunican tu esencia de forma coherente y memorable en cada punto de contacto.",
-      },
-      {
-        number: "02",
-        title: "Diseño Web & UI/UX",
-        desc: "Interfaces digitales que equilibran belleza y usabilidad, diseñadas para cautivar y convertir visitantes en clientes leales.",
-      },
-      {
-        number: "03",
-        title: "Desarrollo a Medida",
-        desc: "Código limpio, rendimiento óptimo y arquitecturas escalables. Tu plataforma digital construida para crecer contigo.",
-      },
-      {
-        number: "04",
-        title: "Estrategia Digital",
-        desc: "Investigación, análisis y planificación estratégica para posicionar tu marca donde tu audiencia realmente está.",
-      },
+      { number: "01", title: "Servicio Uno",   desc: "Descripción del servicio 1..." }, // ★
+      { number: "02", title: "Servicio Dos",   desc: "Descripción del servicio 2..." }, // ★
+      { number: "03", title: "Servicio Tres",  desc: "Descripción del servicio 3..." }, // ★
     ],
   },
 
   // ──────────────────────────────────────────
-  // 🖼️ BLOQUE 3 — GALERÍA (Parallax)
+  // 🖼️ GALERÍA / PORTAFOLIO
+  // ★ CLIENTE: fotos reales de su trabajo
   // ──────────────────────────────────────────
   gallery: {
     enabled: true,
@@ -137,16 +121,14 @@ const SITE_CONFIG = {
     heading: "Trabajo que <em>habla</em> por sí solo",
     subtitle: "Una selección de proyectos donde la creatividad y la estrategia se encuentran.",
     items: [
-      { image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop", caption: "Identidad Visual", parallaxSpeed: 0.08 },
-      { image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2032&auto=format&fit=crop", caption: "Diseño Editorial", parallaxSpeed: -0.05 },
-      { image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?q=80&w=2080&auto=format&fit=crop", caption: "App Design", parallaxSpeed: 0.1 },
-      { image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop", caption: "E-Commerce", parallaxSpeed: -0.07 },
-      { image: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop", caption: "Desarrollo Web", parallaxSpeed: 0.06 },
+      { image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop", caption: "Proyecto 1", parallaxSpeed: 0.08 },  // ★
+      { image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2032&auto=format&fit=crop", caption: "Proyecto 2", parallaxSpeed: -0.05 }, // ★
+      { image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?q=80&w=2080&auto=format&fit=crop", caption: "Proyecto 3", parallaxSpeed: 0.1 },   // ★
     ],
   },
 
   // ──────────────────────────────────────────
-  // 💬 BLOQUE 4 — FILOSOFÍA / CTA
+  // 💬 FILOSOFÍA (opcional: true/false)
   // ──────────────────────────────────────────
   philosophy: {
     enabled: false,
@@ -158,98 +140,37 @@ const SITE_CONFIG = {
   },
 
   // ──────────────────────────────────────────
-  // 🛍️ BLOQUE 5 — E-COMMERCE
+  // 🛍️ TIENDA
+  // ★ CLIENTE: sus productos reales con fotos y precios en MXN
   // ──────────────────────────────────────────
   ecommerce: {
     enabled: true,
     label: "Tienda Online",
     heading: "Productos que <em>inspiran</em>",
-    subtitle: "Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida.",
+    subtitle: "Descubre nuestra colección curada de productos.",
     cta: "Ver Catálogo Completo",
     ctaHref: "tienda.html",
     products: [
       {
         id: 1,
-        name: "Reloj Minimalista Premium",
+        name: "Producto Uno",                 // ★
         category: "destacado",
-        price: 299,
+        price: 299,                          // ★ Precio en MXN
         originalPrice: null,
         badge: "Destacado",
-        description: "Diseño atemporal con materiales de la más alta calidad. Correa de cuero genuino y movimiento suizo de precisión.",
-        features: [
-          "Movimiento suizo automático",
-          "Cristal de zafiro antirreflejos",
-          "Resistencia al agua 100m",
-          "Correa de cuero italiano",
-          "Garantía de 2 años"
-        ],
+        description: "Descripción del producto...",
+        features: ["Característica 1", "Característica 2"],
         images: [
-          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1542496658-e33a6d0d41f6?q=80&w=1200&auto=format&fit=crop"
+          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop", // ★ Fotos reales
         ],
         variants: [
-          { name: "Negro Clásico", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop", price: 299, inStock: true },
-          { name: "Plata Elegante", image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=400&auto=format&fit=crop", price: 329, inStock: true },
-          { name: "Dorado Premium", image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=400&auto=format&fit=crop", price: 399, inStock: false }
+          { name: "Variante A", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop", price: 299, inStock: true },
+          { name: "Variante B", image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=400&auto=format&fit=crop", price: 329, inStock: false }, // inStock: false = agotado
         ]
       },
-      {
-        id: 2,
-        name: "Auriculares Wireless Elite",
-        category: "nuevo",
-        price: 449,
-        originalPrice: 549,
-        badge: "Nuevo",
-        description: "Sonido de estudio con cancelación activa de ruido. 40 horas de batería y comodidad excepcional.",
-        features: [
-          "Cancelación activa de ruido",
-          "40 horas de batería",
-          "Audio Hi-Res certificado",
-          "Conectividad multipoint",
-          "Micrófono integrado"
-        ],
-        images: [
-          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?q=80&w=1200&auto=format&fit=crop"
-        ],
-        variants: [
-          { name: "Negro Mate", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&auto=format&fit=crop", price: 449, inStock: true },
-          { name: "Blanco Perla", image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?q=80&w=400&auto=format&fit=crop", price: 449, inStock: true }
-        ]
-      },
-      {
-        id: 3,
-        name: "Café Especial de Origen",
-        category: "popular",
-        price: 24,
-        originalPrice: null,
-        badge: "Popular",
-        description: "Café de especialidad 100% arábica, cultivado en las montañas de Colombia. Tostado artesanal para resaltar notas de chocolate y frutos rojos.",
-        features: [
-          "100% Arábica de origen único",
-          "Tostado medio artesanal",
-          "Notas: chocolate, frutos rojos, caramelo",
-          "Empaque con válvula de desgasificación",
-          "Certificación de comercio justo"
-        ],
-        images: [
-          "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=1200&auto=format&fit=crop",
-          "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=1200&auto=format&fit=crop"
-        ],
-        variants: [
-          { name: "Colombia - 250g", image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=400&auto=format&fit=crop", price: 24, inStock: true },
-          { name: "Colombia - 500g", image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?q=80&w=400&auto=format&fit=crop", price: 42, inStock: true },
-          { name: "Etiopía - 250g", image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=400&auto=format&fit=crop", price: 28, inStock: true },
-          { name: "Brasil - 250g", image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=400&auto=format&fit=crop", price: 22, inStock: false }
-        ]
-      }
     ],
 
-    // ★ PROMOCIONES - FECHAS ACTUALIZADAS A 2026-2027
+    // ★ PROMOCIONES — actualiza fechas de vigencia por cliente
     promotions: {
       enabled: true,
       delay: 3000,
@@ -260,75 +181,42 @@ const SITE_CONFIG = {
       dismissDuration: 24,
       items: [
         {
-          id: 1, 
-          badge: "🔥 OFERTA LIMITADA", 
-          title: "30% de Descuento",
-          subtitle: "En toda la colección de relojes",
-          description: "Solo por tiempo limitado. Aprovecha nuestro descuento especial en productos seleccionados.",
-          code: "RELOJ30", 
-          discount: "30%", 
-          validUntil: "2026-12-31",    // ✅ Fecha futura
-          cta: "Comprar Ahora", 
-          ctaHref: "#products", 
-          accent: "gold"
+          id: 1, badge: "🔥 OFERTA", title: "10% de Descuento",
+          subtitle: "En toda la tienda",
+          description: "Aprovecha nuestro descuento de bienvenida.",
+          code: "BIENVENIDA10", discount: "10%", validUntil: "2026-12-31", // ★ Fecha futura
+          cta: "Comprar Ahora", ctaHref: "#products", accent: "gold"
         },
-        {
-          id: 2, 
-          badge: "✨ NUEVO", 
-          title: "$100 de Descuento",        // ✅ Coherente con el promoCode
-          subtitle: "En compras mayores a $500",
-          description: "Obtén $100 MXN de descuento en tu compra total. Aplica en todos los productos.",
-          code: "DESCUENTO100",              // ✅ Nombre coherente
-          discount: "$100", 
-          validUntil: "2026-11-30",           // ✅ Fecha futura
-          cta: "Ver Productos", 
-          ctaHref: "#products", 
-          accent: "purple"
-        },
-        {
-          id: 3, 
-          badge: "🎁 EXCLUSIVO", 
-          title: "50% de Descuento",         // ✅ Coherente con promoCode
-          subtitle: "En accesorios seleccionados",
-          description: "Mitad de precio en accesorios seleccionados. Oferta por tiempo limitado.",
-          code: "MITAD50",                    // ✅ Nombre coherente
-          discount: "50%", 
-          validUntil: "2026-10-31",           // ✅ Fecha futura
-          cta: "Aprovechar Oferta", 
-          ctaHref: "#products", 
-          accent: "red"
-        }
       ]
     },
 
-    // ✅ PROMOCODES COHERENTES CON LAS PROMOS
+    // ★ Debe coincidir con las promos de arriba (misma semántica)
     promoCodes: {
-      "RELOJ30": { type: "percent", value: 30, label: "30% de descuento" },
-      "DESCUENTO100": { type: "fixed", value: 100, label: "$100 MXN de descuento" },
-      "MITAD50": { type: "percent", value: 50, label: "50% de descuento" }
+      "BIENVENIDA10": { type: "percent", value: 10, label: "10% de descuento" },
     }
   },
 
   // ──────────────────────────────────────────
-  // 📝 BLOQUE 6 — BLOG
+  // 📝 BLOG
   // ──────────────────────────────────────────
   blog: {
     enabled: true,
     label: "Nuestro Blog",
     heading: "Historias que <em>inspiran</em>",
-    subtitle: "Reflexiones, tendencias y detrás de escena de nuestro proceso creativo. Un espacio para compartir ideas que dejan huella.",
+    subtitle: "Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.",
     cta: "Leer Artículos",
     ctaHref: "blog.html",
   },
 
   // ──────────────────────────────────────────
-  // 📬 BLOQUE 7 — CONTACTO (FORMULARIO)
+  // 📬 CONTACTO
+  // ★ CLIENTE: sus datos reales de contacto (México)
   // ──────────────────────────────────────────
   contact: {
     enabled: true,
     label: "Contacto",
     heading: "Hablemos de tu <em>próximo proyecto</em>",
-    subtitle: "¿Tienes una idea en mente? Cuéntanos sobre ella y juntos la haremos realidad. Estamos listos para escucharte.",
+    subtitle: "¿Tienes una idea en mente? Cuéntanos sobre ella.",
     form: {
       namePlaceholder: "Tu nombre",
       emailPlaceholder: "Tu correo electrónico",
@@ -338,9 +226,9 @@ const SITE_CONFIG = {
       successMessage: "¡Mensaje enviado con éxito! Te contactaremos pronto.",
       errorMessage: "Hubo un error al enviar. Por favor, intenta de nuevo.",
     },
-    email: "contacto@tudominio.com",              // ★ REEMPLAZAR
-    phone: "+52 55 1234 5678",                    // ★ REEMPLAZAR con tu número real
-    address: "Ciudad de México, México",          // ★ REEMPLAZAR
+    email: "contacto@clientedominio.com",   // ★ CLIENTE
+    phone: "+52 55 1234 5678",              // ★ CLIENTE (formato +52)
+    address: "Ciudad de México, México",    // ★ CLIENTE
   },
 
   // ──────────────────────────────────────────
@@ -349,9 +237,9 @@ const SITE_CONFIG = {
   footer: {
     enabled: true,
     brand: {
-      name: "STU",
+      name: "STU",          // ★ Igual que header.logo
       highlight: "DIO",
-      desc: "Estudio creativo especializado en diseño digital, branding y desarrollo web de alto impacto.",
+      desc: "Descripción corta del negocio para el pie de página.", // ★
     },
     columns: [
       {
@@ -363,6 +251,7 @@ const SITE_CONFIG = {
           { label: "Galería",   href: "#gallery" },
           { label: "Tienda",    href: "#ecommerce" },
           { label: "Blog",      href: "#blog" },
+          { label: "Testimonios", href: "#testimonials" },
           { label: "Contacto",  href: "#contact" },
         ],
       },
@@ -376,40 +265,30 @@ const SITE_CONFIG = {
         ],
       },
       {
-        // ✅ CORREGIDO: Enlaces llevan a las secciones reales de servicios
-        title: "Servicios",
-        links: [
-          { label: "Branding & Identidad", href: "#services" },
-          { label: "Diseño Web & UI/UX",   href: "#services" },
-          { label: "Desarrollo a Medida",  href: "#services" },
-          { label: "Estrategia Digital",   href: "#services" },
-        ],
-      },
-      {
-        // ✅ CORREGIDO: Datos reales de contacto de México
         title: "Contacto",
         links: [
-          { label: "contacto@tudominio.com",  href: "mailto:contacto@tudominio.com" },  // ★ REEMPLAZAR
-          { label: "+52 55 1234 5678",        href: "tel:+525512345678" },              // ★ REEMPLAZAR
-          { label: "Ciudad de México, MX",    href: "#contact" },                       // ★ REEMPLAZAR
+          { label: "contacto@clientedominio.com", href: "mailto:contacto@clientedominio.com" }, // ★
+          { label: "+52 55 1234 5678", href: "tel:+525512345678" }, // ★
+          { label: "Ciudad de México, MX", href: "#contact" },      // ★
         ],
       },
     ],
-    copyright: "© 2026 Studio Creativo S.A. de C.V. Todos los derechos reservados.",  // ✅ 2026 + razón social mexicana
+    // ★ Año automático + nombre legal del cliente
+    copyright: "© " + new Date().getFullYear() + " NOMBRE LEGAL S.A. de C.V. Todos los derechos reservados.",
   },
 
   // ──────────────────────────────────────────
-  // 🌐 REDES SOCIALES (ÚNICA FUENTE DE VERDAD)
+  // 🌐 REDES SOCIALES
+  // ★ CLIENTE: sus URLs reales
   // ──────────────────────────────────────────
   socials: [
-    { label: "Instagram", href: "https://instagram.com/TU_USUARIO" },    // ★ REEMPLAZAR
-    { label: "Behance",   href: "https://behance.net/TU_USUARIO" },      // ★ REEMPLAZAR
-    { label: "LinkedIn",  href: "https://linkedin.com/company/TU_EMPRESA" },  // ★ REEMPLAZAR
-    { label: "Twitter",   href: "https://twitter.com/TU_USUARIO" }       // ★ REEMPLAZAR
+    { label: "Instagram", href: "https://instagram.com/USUARIO_CLIENTE" },
+    { label: "Facebook",  href: "https://facebook.com/USUARIO_CLIENTE" },
+    { label: "WhatsApp",  href: "https://wa.me/5215512345678" },
   ],
 
   // ──────────────────────────────────────────
-  // ⚡ CONFIGURACIÓN DE EFECTOS
+  // ⚡ EFECTOS (normalmente no se toca)
   // ──────────────────────────────────────────
   effects: {
     parallaxHeroSpeed: 0.35,
@@ -422,42 +301,44 @@ const SITE_CONFIG = {
   },
 
   // ──────────────────────────────────────────
-  // 🛒 CONFIGURACIÓN DE LA TIENDA (tienda.html)
+  // 🛒 TIENDA (tienda.html)
+  // ★ CLIENTE: su WhatsApp (52 + 1 + 10 dígitos, sin + ni espacios)
   // ──────────────────────────────────────────
   tienda: {
-    whatsapp: "5215512345678",  // ★ REEMPLAZAR — Formato: 52 + 1 + 10 dígitos (sin +, sin espacios)
+    whatsapp: "5215512345678",
     hero: {
       eyebrow: "Tienda Online",
       titleLine1: "Productos que",
       titleLine2: "inspiran",
-      subtitle: "Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida."
+      subtitle: "Descubre nuestra colección curada de productos."
     }
   },
 
   // ──────────────────────────────────────────
   // 🔐 SUPABASE (Blog)
-  // ⚠️ ADVERTENCIA: Verifica RLS en Supabase
+  // ★ POR CLIENTE: pega aquí la URL y clave anon de SU proyecto
+  //   (Settings → API → Project URL + anon/public key)
   // ──────────────────────────────────────────
   supabase: {
-    url: "https://ouxfmeugibrpjysjfqso.supabase.co",   // ★ REEMPLAZAR con tu URL real
-    key: "sb_publishable_jAgXqz1iqlEyveCIFy4eOw_idYvxmoQ",                   // ★ REEMPLAZAR con tu anon key real (JWT largo)
+    url: "https://ouxfmeugibrpjysjfqso.supabase.co",   // ★ URL del proyecto del cliente
+    key: "sb_publishable_jAgXqz1iqlEyveCIFy4eOw_idYvxmoQ",                  // ★ Clave anon/public (NUNCA service_role)
     storageBucket: "blog-images",
   },
 
   // ──────────────────────────────────────────
   // 📧 EMAIL & FORMULARIOS
+  // ★ CLIENTE: su correo real (FormSubmit se activa al primer envío)
   // ──────────────────────────────────────────
   email: {
-    contactForm: "contacto@tudominio.com",                    // ★ REEMPLAZAR
-    formSubmitUrl: "https://formsubmit.co/ajax/contacto@tudominio.com",  // ★ REEMPLAZAR
+    contactForm: "contacto@clientedominio.com",
+    formSubmitUrl: "https://formsubmit.co/ajax/contacto@clientedominio.com",
   },
 
   // ──────────────────────────────────────────
-  // 📝 BLOG CONFIG (Mensajes y categorías)
-  // ✅ Categorías normalizadas con trim() implícito en blog.js
+  // 📝 BLOG CONFIG (mensajes del sistema)
   // ──────────────────────────────────────────
   blogConfig: {
-    categories: ["historias", "recetas", "opiniones", "datos", "tutoriales"].map(c => c.trim()),
+    categories: ["historias", "recetas", "opiniones", "datos", "tutoriales"], // ★ Categorías iniciales
     heroStars: 35,
     messages: {
       postSuccess: "¡Post publicado con éxito!",
@@ -489,11 +370,11 @@ const SITE_CONFIG = {
   },
 
   // ──────────────────────────────────────────
-  // 🛒 TIENDA CONFIG (Extensiones de mensajes)
+  // 🛒 TIENDA CONFIG (mensajes del sistema)
   // ──────────────────────────────────────────
   shopConfig: {
     whatsapp: {
-      number: "5215512345678",  // ★ REEMPLAZAR (mismo que tienda.whatsapp)
+      number: "5215512345678",  // ★ Igual que tienda.whatsapp
       defaultMessage: "¡Hola! Me interesa conocer más sobre sus productos.",
       orderMessage: "¡Hola! Me interesa hacer el siguiente pedido:\n\n",
       orderTotal: "\n*💰 Total a pagar: $",
@@ -513,17 +394,38 @@ const SITE_CONFIG = {
   },
 
   // ──────────────────────────────────────────
-  // 🏢 INFORMACIÓN DEL NEGOCIO (MÉXICO)
-  // ★ REEMPLAZAR TODOS LOS VALORES CON LOS DATOS REALES
+  // 🏢 DATOS FISCALES DEL NEGOCIO
+  // ★ CLIENTE: para la página legal (legal.html)
   // ──────────────────────────────────────────
   business: {
-    name: "Studio Creativo",                           // ★ REEMPLAZAR
-    legalName: "Studio Creativo S.A. de C.V.",         // ★ REEMPLAZAR (S.A. de C.V., S. de R.L., etc.)
-    taxId: "STC200115AB1",                             // ★ REEMPLAZAR con RFC real (12-13 caracteres)
-    address: "Av. Paseo de la Reforma 250, Piso 12, Col. Juárez, C.P. 06600, Ciudad de México",  // ★ REEMPLAZAR
-    phone: "+52 55 1234 5678",                         // ★ REEMPLAZAR
-    email: "contacto@tudominio.com",                   // ★ REEMPLAZAR
+    name: "Nombre Comercial",                    // ★
+    legalName: "Razón Social S.A. de C.V.",      // ★
+    taxId: "XXX000000XX0",                       // ★ RFC real (12-13 caracteres)
+    address: "Calle, Número, Colonia, C.P., Ciudad, México", // ★
+    phone: "+52 55 1234 5678",                   // ★
+    email: "contacto@clientedominio.com",        // ★
     businessHours: "Lun - Vie: 9:00 - 18:00",
-    registryData: "Inscrita en el Registro Público de Comercio de la CDMX",  // ★ REEMPLAZAR
+    registryData: "Inscrita en el Registro Público de Comercio", // ★
+  },
+
+    // ──────────────────────────────────────────
+  // 💳 PAGOS CON TARJETA (módulo listo para activar)
+  // ★ Déjalo en false hasta que un cliente pida cobrar con tarjeta
+  // ──────────────────────────────────────────
+  payments: {
+    enabled: false,            // ← EL INTERRUPTOR: true = pagos activos
+    provider: "mercadopago",   // "mercadopago" | "stripe"
+    currency: "MXN",
+    buttonLabel: "💳 Pagar con tarjeta",
+  },
+
+    // ──────────────────────────────────────────
+  // 🌟 TESTIMONIOS (prueba social real)
+  // ──────────────────────────────────────────
+  testimonials: {
+    enabled: true,
+    label: "Testimonios",
+    heading: "Clientes que <em>confían</em> en nosotros",
+    subtitle: "Opiniones reales tomadas de nuestras redes sociales, con fotos reales de nuestros productos.",
   },
 };

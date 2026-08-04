@@ -1455,3 +1455,308 @@
         transform: none;
     }
 }
+
+/* ============================================
+   GALERÍA DEL MODAL (corrige imagen duplicada)
+   ============================================ */
+.modal-gallery-section {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--color-dark);
+}
+.modal-gallery { position: absolute; inset: 0; }
+.modal-gallery-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.6s var(--ease-out-expo);
+    overflow: hidden;
+}
+.modal-gallery-slide.active { opacity: 1; }
+.modal-gallery-img { width: 100%; height: 100%; object-fit: cover; }
+.modal-thumbnails {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.6rem;
+    z-index: 5;
+    padding: 0.6rem;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    max-width: 90%;
+    overflow-x: auto;
+}
+.modal-thumbnail {
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    padding: 0;
+    background: transparent;
+}
+.modal-thumbnail.active { border-color: var(--color-accent); }
+.modal-thumbnail img { width: 100%; height: 100%; object-fit: cover; }
+
+@media (max-width: 968px) {
+    .modal-gallery-section { position: relative; height: 50vh; min-height: 320px; }
+}
+
+/* ============================================
+   SUBTÍTULO + IMÁGENES EN CONTENIDO
+   ============================================ */
+.modal-subtitle {
+    font-size: 1.05rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    line-height: 1.6;
+    margin: -0.8rem 0 1.5rem;
+}
+.content-toolbar { margin-bottom: 0.6rem; }
+.toolbar-btn {
+    padding: 0.6rem 1rem;
+    background: rgba(201, 169, 110, 0.1);
+    border: 1px dashed var(--color-accent);
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    transition: all 0.3s;
+}
+.toolbar-btn:hover { background: rgba(201, 169, 110, 0.2); }
+.content-inline-image {
+    margin: 1.5rem 0;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.content-inline-image img { width: 100%; display: block; }
+.comments-empty { color: var(--color-text-muted); font-size: 0.85rem; font-style: italic; }
+
+/* ============================================
+   ACCIONES DEL ARTÍCULO (Me gusta / Compartir / WhatsApp)
+   ============================================ */
+.modal-actions {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    margin: 2.5rem 0 2rem;
+    padding-top: 1.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-like-btn,
+.modal-save-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.75rem 1.4rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(201, 169, 110, 0.35);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out-expo);
+}
+
+/* ✅ TAMAÑO CORRECTO DE LOS ICONOS (esto corrige los SVG gigantes) */
+.modal-like-btn svg,
+.modal-save-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.modal-like-btn:hover,
+.modal-save-btn:hover {
+    background: rgba(201, 169, 110, 0.12);
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-2px);
+}
+
+/* Estado "Me gusta" activo */
+.modal-like-btn.liked {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-dark);
+}
+.modal-like-btn.liked svg {
+    fill: currentColor;
+    animation: likePop 0.4s var(--ease-out-expo);
+}
+@keyframes likePop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
+/* Botón WhatsApp con acento verde al hover */
+.whatsapp-btn:hover {
+    background: rgba(37, 211, 102, 0.1);
+    border-color: #25D366;
+    color: #25D366;
+}
+
+/* ============================================
+   COMENTARIOS (estilo premium)
+   ============================================ */
+.comments-section {
+    margin-top: 1rem;
+}
+
+.comments-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-white);
+    margin-bottom: 1.2rem;
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 0.3rem;
+}
+.comments-list::-webkit-scrollbar { width: 4px; }
+.comments-list::-webkit-scrollbar-thumb {
+    background: rgba(201, 169, 110, 0.3);
+    border-radius: 2px;
+}
+
+.comments-empty {
+    color: var(--color-text-muted);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.comment-item {
+    padding: 1rem 1.2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.4rem;
+}
+
+.comment-author {
+    color: var(--color-accent);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.comment-date {
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+}
+
+.comment-text {
+    color: var(--color-text);
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Formulario de comentarios */
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.comment-input,
+.comment-textarea {
+    width: 100%;
+    padding: 0.9rem 1.1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.3s, background 0.3s;
+}
+
+.comment-input:focus,
+.comment-textarea:focus {
+    border-color: var(--color-accent);
+    background: rgba(201, 169, 110, 0.06);
+}
+
+.comment-input::placeholder,
+.comment-textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.7;
+}
+
+.comment-textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.comment-submit {
+    align-self: flex-start;
+    padding: 0.85rem 2.2rem;
+    background: var(--color-accent);
+    color: var(--color-dark);
+    border: none;
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out-expo);
+}
+
+.comment-submit:hover {
+    background: var(--color-accent-light);
+    transform: translateY(-2px);
+}
+
+.comment-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Móvil: botones en fila que envuelven bonito */
+@media (max-width: 480px) {
+    .modal-actions {
+        gap: 0.6rem;
+    }
+    .modal-like-btn,
+    .modal-save-btn {
+        padding: 0.65rem 1.1rem;
+        font-size: 0.65rem;
+    }
+    .comment-submit {
+        width: 100%;
+        text-align: center;
+    }
+}

@@ -5,68 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Blog de Studio Creativo. Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.">
     <meta name="theme-color" content="#0a0a0a">
-    
+
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Blog | Studio Creativo">
     <meta property="og:description" content="Historias que inspiran. Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.">
     <meta property="og:locale" content="es_MX">
-    
+
     <title>Blog | Studio</title>
-    
-    <!-- Favicon SVG inline -->
+
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
-    
+
     <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <!-- Estilos -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="blog.css">
-    
+
     <!-- Fuentes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    
+
     <!-- Grain overlay -->
     <div class="grain-overlay" aria-hidden="true"></div>
 
-    <!-- ============================================
-         LOGIN MODAL
-         ✅ Accesible: role="dialog", aria-modal, aria-labelledby
-         ============================================ -->
-    <div class="login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
-        <div class="login-overlay" id="loginOverlay"></div>
-        <div class="login-content">
-            <button class="login-close" id="loginClose" aria-label="Cerrar modal de inicio de sesión">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                    <path d="M18 6L6 18M6 6l12 12"></path>
-                </svg>
-            </button>
-            <div class="login-header">
-                <span class="login-badge">🔐 Acceso Restringido</span>
-                <h2 class="login-title" id="loginModalTitle">Panel de Administración</h2>
-                <p class="login-subtitle">Ingresa tus credenciales para crear y gestionar contenido</p>
-            </div>
-            <form class="login-form" id="loginForm" novalidate>
-                <div class="form-group">
-                    <label for="loginEmail">Correo Electrónico</label>
-                    <input type="email" id="loginEmail" required placeholder="admin@tudominio.com" autocomplete="email" aria-describedby="loginError">
-                </div>
-                <div class="form-group">
-                    <label for="loginPassword">Contraseña</label>
-                    <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
-                </div>
-                <button type="submit" class="login-submit">
-                    <span>Iniciar Sesión</span>
-                </button>
-                <div class="login-error" id="loginError" role="alert" aria-live="polite"></div>
-            </form>
-        </div>
-    </div>
+    <!-- ✅ EL MODAL DE LOGIN SE ELIMINÓ: ahora el login vive en el footer (admin-auth.js) -->
 
     <!-- Header del Blog -->
     <header class="blog-header" id="blogHeader" role="banner">
@@ -81,7 +48,8 @@
                 </svg>
             </div>
             <div class="blog-header-actions">
-                <button class="blog-toggle" id="newPostBtn" aria-label="Crear nuevo post">
+                <!-- ✅ Oculto por defecto; blog.js lo muestra solo si hay sesión -->
+                <button class="blog-toggle" id="newPostBtn" aria-label="Crear nuevo post" style="display:none;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <path d="M12 5v14M5 12h14"></path>
                     </svg>
@@ -122,7 +90,6 @@
                 <select id="sortSelect" aria-label="Ordenar artículos por">
                     <option value="default">Ordenar por</option>
                     <option value="recent">Más recientes</option>
-                    <!-- ✅ ELIMINADO: "Más populares" no está implementado en blog.js -->
                 </select>
             </div>
         </section>
@@ -136,10 +103,7 @@
         </section>
     </main>
 
-    <!-- ============================================
-         MODAL DE LECTURA DE POST
-         ✅ Accesible: role="dialog", aria-modal, aria-labelledby
-         ============================================ -->
+    <!-- Modal de Lectura -->
     <div class="post-modal" id="postModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-overlay" id="modalOverlay"></div>
         <div class="modal-content">
@@ -157,21 +121,57 @@
                     <div class="modal-info-content">
                         <span class="modal-category" id="modalCategory"></span>
                         <h2 class="modal-title" id="modalTitle"></h2>
+                        <p class="modal-subtitle" id="modalSubtitle" style="display:none;"></p>
                         <div class="modal-meta">
                             <span class="modal-author" id="modalAuthor"></span>
                             <time class="modal-date" id="modalDate"></time>
                         </div>
+
+                        <div class="modal-actions">
+                            <button class="modal-like-btn" id="likeBtn" aria-label="Me gusta este artículo">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                                </svg>
+                                <span class="like-count">0</span> Me gusta
+                            </button>
+                            <button class="modal-save-btn" id="shareBtn" aria-label="Compartir artículo">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                    <circle cx="18" cy="5" r="3"></circle>
+                                    <circle cx="6" cy="12" r="3"></circle>
+                                    <circle cx="18" cy="19" r="3"></circle>
+                                    <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                    <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                                </svg>
+                                Compartir
+                            </button>
+                            <button class="modal-save-btn whatsapp-btn" id="shareWhatsappBtn" aria-label="Compartir por WhatsApp">
+                                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                                </svg>
+                                WhatsApp
+                            </button>
+                        </div>
+
                         <div class="modal-description" id="modalDescription"></div>
+
+                        <div class="comments-section" aria-label="Comentarios del artículo">
+                            <h4 class="comments-title">Comentarios (<span id="commentsCount">0</span>)</h4>
+                            <div class="comments-list" id="commentsList" aria-live="polite"></div>
+                            <form class="comment-form" id="commentForm" novalidate>
+                                <label for="commentName" class="sr-only">Tu nombre</label>
+                                <input type="text" class="comment-input" id="commentName" placeholder="Tu nombre" maxlength="60" required>
+                                <label for="commentText" class="sr-only">Escribe un comentario</label>
+                                <textarea class="comment-textarea" id="commentText" placeholder="Escribe un comentario..." maxlength="600" required></textarea>
+                                <button type="submit" class="comment-submit" id="commentSubmit">Comentar</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- ============================================
-         MODAL DE NUEVO POST (ADMIN)
-         ✅ Accesible: role="dialog", aria-modal, aria-labelledby
-         ============================================ -->
+    <!-- Modal de Nuevo Post (ADMIN) -->
     <div class="new-post-modal" id="newPostModal" role="dialog" aria-modal="true" aria-labelledby="newPostTitle">
         <div class="modal-overlay" id="newPostOverlay"></div>
         <div class="new-post-content">
@@ -182,7 +182,7 @@
             </button>
             <div class="new-post-inner">
                 <h2 class="new-post-title" id="newPostTitle">Crear Nuevo Post</h2>
-                
+
                 <!-- Gestión de Categorías -->
                 <div class="category-manager" role="region" aria-labelledby="categoryManagerTitle">
                     <h4 class="category-title" id="categoryManagerTitle">Categorías</h4>
@@ -199,19 +199,24 @@
                         <label for="postTitle">Título</label>
                         <input type="text" class="form-input" id="postTitle" name="title" required aria-required="true">
                     </div>
-                    
+
+                    <div class="form-group">
+                        <label for="postSubtitle">Subtítulo (opcional)</label>
+                        <input type="text" class="form-input" id="postSubtitle" name="subtitle" maxlength="200" placeholder="Una frase que complemente el título">
+                    </div>
+
                     <div class="form-group">
                         <label for="postCategory">Categoría</label>
                         <select class="form-select" name="category" id="postCategory" required aria-required="true"></select>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="postAuthor">Autor</label>
                         <input type="text" class="form-input" id="postAuthor" name="author" required aria-required="true">
                     </div>
-                    
+
                     <div class="form-group">
-                        <label id="imagesLabel">Imágenes</label>
+                        <label id="imagesLabel">Imágenes de Portada</label>
                         <div class="image-upload-area" id="imageUploadArea" role="button" tabindex="0" aria-labelledby="imagesLabel" aria-describedby="uploadHelp">
                             <input type="file" id="imageInput" multiple accept="image/*" style="display:none" aria-hidden="true" tabindex="-1">
                             <div class="upload-placeholder" id="uploadPlaceholder">
@@ -226,12 +231,17 @@
                             <div class="image-preview-grid" id="imagePreviewGrid" aria-live="polite" aria-label="Vista previa de imágenes seleccionadas"></div>
                         </div>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="postContent">Contenido</label>
-                        <textarea class="form-textarea" id="postContent" name="content" rows="8" required aria-required="true"></textarea>
+                        <div class="content-toolbar">
+                            <button type="button" class="toolbar-btn" id="insertImageBtn">📷 Insertar imagen en el texto</button>
+                        </div>
+                        <input type="file" id="contentImageInput" accept="image/*" style="display:none" aria-hidden="true" tabindex="-1">
+                        <textarea class="form-textarea" id="postContent" name="content" rows="8" required aria-required="true" aria-describedby="contentHelp"></textarea>
+                        <small id="contentHelp" class="sr-only">Puedes insertar imágenes dentro del contenido usando el botón de arriba</small>
                     </div>
-                    
+
                     <button type="submit" class="new-post-submit">
                         <span>Publicar Post</span>
                     </button>
@@ -240,11 +250,13 @@
         </div>
     </div>
 
-    <!-- ============================================
-         ✅ TOAST DE NOTIFICACIÓN CON ARIA-LIVE
-         Los lectores de pantalla anunciarán los mensajes
-         ============================================ -->
+    <!-- Toast de notificación -->
     <div class="blog-toast" id="blogToast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <!-- ✅ Footer discreto con login/logout de admin -->
+    <footer style="text-align:center;padding:2.5rem 1rem;border-top:1px solid rgba(255,255,255,.05);">
+        <div data-admin-link></div>
+    </footer>
 
     <!-- Cursor personalizado -->
     <div class="cursor" id="cursor" aria-hidden="true"></div>
@@ -265,8 +277,9 @@
         }
     </style>
 
-    <!-- Scripts -->
+    <!-- Scripts (orden importante) -->
     <script src="config.js"></script>
     <script src="blog.js"></script>
+    <script src="admin-auth.js"></script>
 </body>
 </html>

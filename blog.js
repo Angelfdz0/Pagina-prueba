@@ -1,1019 +1,639 @@
 /* ============================================================
-   BLOG ONLINE - CON SUPABASE + LOGIN + IMÁGENES
-   Versión robusta, segura y optimizada
+   BLOG ONLINE - SUPABASE + SUBTÍTULO + IMÁGENES EN CONTENIDO +
+   COMENTARIOS + LIKES + COMPARTIR + DEEP LINKING
+   (El login se gestiona desde el footer con admin-auth.js)
    ============================================================ */
 (function() {
-    "use strict";
+"use strict";
 
-    // ============================================
-    // UTILIDADES
-    // ============================================
-    const $ = (sel) => document.querySelector(sel);
-    const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+const C = typeof SITE_CONFIG !== 'undefined' ? SITE_CONFIG : {};
+const STORAGE_BUCKET = C.supabase?.storageBucket || 'blog-images';
+const supabase = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase?.url, C.supabase?.key));
 
-    // ✅ NUEVO: Escapar HTML para prevenir XSS
-    function escapeHtml(str) {
-        if (!str) return '';
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+let posts = [];
+let categories = C.blogConfig?.categories || ['historias', 'recetas', 'opiniones'];
+let currentFilter = "all";
+let searchQuery = "";
+let sortValue = "default";
+let currentPost = null;
+let isAdmin = false;
+let pendingImagesUrls = [];
+
+const elements = {
+    postsGrid: document.getElementById("postsGrid"),
+    searchInput: document.getElementById("searchInput"),
+    sortSelect: document.getElementById("sortSelect"),
+    blogFilters: document.getElementById("blogFilters"),
+    noResults: document.getElementById("noResults"),
+    blogHeader: document.getElementById("blogHeader"),
+    postModal: document.getElementById("postModal"),
+    modalOverlay: document.getElementById("modalOverlay"),
+    modalClose: document.getElementById("modalClose"),
+    modalGallery: document.getElementById("modalGallery"),
+    modalThumbnails: document.getElementById("modalThumbnails"),
+    modalCategory: document.getElementById("modalCategory"),
+    modalTitle: document.getElementById("modalTitle"),
+    modalSubtitle: document.getElementById("modalSubtitle"),
+    modalAuthor: document.getElementById("modalAuthor"),
+    modalDate: document.getElementById("modalDate"),
+    modalDescription: document.getElementById("modalDescription"),
+    likeBtn: document.getElementById("likeBtn"),
+    shareBtn: document.getElementById("shareBtn"),
+    shareWhatsappBtn: document.getElementById("shareWhatsappBtn"),
+    commentsList: document.getElementById("commentsList"),
+    commentsCount: document.getElementById("commentsCount"),
+    commentForm: document.getElementById("commentForm"),
+    commentName: document.getElementById("commentName"),
+    commentText: document.getElementById("commentText"),
+    commentSubmit: document.getElementById("commentSubmit"),
+    newPostModal: document.getElementById("newPostModal"),
+    newPostOverlay: document.getElementById("newPostOverlay"),
+    newPostBtn: document.getElementById("newPostBtn"),
+    newPostClose: document.getElementById("newPostClose"),
+    newPostForm: document.getElementById("newPostForm"),
+    categoryList: document.getElementById("categoryList"),
+    postCategory: document.getElementById("postCategory"),
+    newCategoryInput: document.getElementById("newCategoryInput"),
+    addCategoryBtn: document.getElementById("addCategoryBtn"),
+    imageUploadArea: document.getElementById("imageUploadArea"),
+    imageInput: document.getElementById("imageInput"),
+    uploadPlaceholder: document.getElementById("uploadPlaceholder"),
+    imagePreviewGrid: document.getElementById("imagePreviewGrid"),
+    blogToast: document.getElementById("blogToast")
+};
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
+
+// ─── UTILIDADES ───
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+function capitalize(str) { return str ? str.charAt(0).toUpperCase() + str.slice(1) : ""; }
+function formatDate(d) {
+    if (!d) return "";
+    return new Date(d).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+function showToast(message) {
+    if (!elements.blogToast) return;
+    elements.blogToast.textContent = message;
+    elements.blogToast.classList.add("show");
+    setTimeout(() => elements.blogToast.classList.remove("show"), 2500);
+}
+
+// ─── AUTH (solo estado; el login vive en el footer) ───
+async function checkAuth() {
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        isAdmin = !!session;
+        if (elements.newPostBtn) elements.newPostBtn.style.display = isAdmin ? "flex" : "none";
+    } catch (e) { console.error('Error de sesión:', e); }
+}
+
+// ─── POSTS (solo publicados en el blog público) ───
+async function loadPosts() {
+    try {
+        const { data, error } = await supabase.from('posts')
+            .select('*')
+            .eq('status', 'published')
+            .order('created_at', { ascending: false });
+        if (error) { showToast(C.blogConfig.messages.dbError); return; }
+        posts = data || [];
+    } catch (e) { console.error(e); }
+}
+
+function renderCategories() {
+    if (!elements.blogFilters) return;
+    const allBtn = `<button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" data-filter="all">Todos</button>`;
+    elements.blogFilters.innerHTML = allBtn + categories.map(cat =>
+        `<button class="filter-btn ${currentFilter === cat ? 'active' : ''}" data-filter="${escapeHtml(cat)}">${escapeHtml(capitalize(cat))}</button>`
+    ).join('');
+
+    if (elements.postCategory) {
+        elements.postCategory.innerHTML = categories.map(cat =>
+            `<option value="${escapeHtml(cat)}">${escapeHtml(capitalize(cat))}</option>`).join('');
+    }
+    if (elements.categoryList) {
+        elements.categoryList.innerHTML = categories.map(cat => `
+            <span class="category-tag">${escapeHtml(capitalize(cat))}
+                <span class="remove-category" data-category="${escapeHtml(cat)}" role="button" tabindex="0" aria-label="Eliminar categoría">×</span>
+            </span>`).join('');
+        $$('.remove-category').forEach(btn => {
+            const handler = () => removeCategory(btn.dataset.category);
+            btn.addEventListener('click', handler);
+            btn.addEventListener('keypress', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); } });
+        });
+    }
+}
+
+function addCategory() {
+    const input = elements.newCategoryInput;
+    const newCat = input.value.trim().toLowerCase();
+    if (!newCat || categories.includes(newCat)) { showToast(C.blogConfig.messages.categoryExists); return; }
+    categories.push(newCat);
+    input.value = '';
+    renderCategories();
+    showToast(C.blogConfig.messages.categoryAdded);
+}
+
+function removeCategory(cat) {
+    if (categories.length <= 1) { showToast(C.blogConfig.messages.invalidCategory); return; }
+    categories = categories.filter(c => c !== cat);
+    renderCategories();
+    showToast(C.blogConfig.messages.categoryRemoved);
+}
+
+function renderPosts() {
+    if (!elements.postsGrid) return;
+    let filtered = posts.filter(p => {
+        const clean = (p.content || '').replace(/\{\{img:[^}]+\}\}/g, ' ');
+        const matchesFilter = currentFilter === "all" || p.category === currentFilter;
+        const matchesSearch = !searchQuery ||
+            (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+            clean.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesFilter && matchesSearch;
+    });
+    if (sortValue === "recent") filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    if (filtered.length === 0) {
+        elements.postsGrid.innerHTML = "";
+        if (elements.noResults) elements.noResults.style.display = "block";
+        return;
+    }
+    if (elements.noResults) elements.noResults.style.display = "none";
+
+    elements.postsGrid.innerHTML = filtered.map((post, index) => {
+        const clean = (post.content || '').replace(/\{\{img:[^}]+\}\}/g, ' ');
+        const excerpt = clean ? escapeHtml(clean.substring(0, 120)) + "..." : "";
+        const firstImage = post.images && post.images.length > 0 ? escapeHtml(post.images[0]) : 'https://via.placeholder.com/400x300?text=Sin+Imagen';
+        return `
+        <article class="post-card" data-id="${post.id}" style="animation: fadeInUp 0.6s var(--ease-out-expo) ${index * 0.1}s backwards;" tabindex="0" role="button">
+            <div class="post-image-wrapper">
+                <img src="${firstImage}" alt="${escapeHtml(post.title)}" class="post-image" loading="lazy">
+                <span class="post-category-badge">${escapeHtml(post.category)}</span>
+            </div>
+            <div class="post-info">
+                <h3 class="post-title">${escapeHtml(post.title)}</h3>
+                <p class="post-excerpt">${excerpt}</p>
+                <div class="post-meta">
+                    <span class="post-author">${escapeHtml(post.author)}</span>
+                    <span class="post-date">${formatDate(post.created_at)}</span>
+                </div>
+            </div>
+        </article>`;
+    }).join("");
+
+    setTimeout(() => {
+        $$(".post-card").forEach(card => {
+            card.addEventListener("click", () => openPostModal(card.dataset.id));
+        });
+    }, 100);
+}
+
+// ─── RENDER DE CONTENIDO CON IMÁGENES INLINE (seguro) ───
+function renderPostContent(content, container) {
+    container.innerHTML = '';
+    if (!content) return;
+    const parts = content.split(/(\{\{img:[^}]+\}\})/g);
+    let buffer = '';
+    const flush = () => {
+        if (buffer.trim()) {
+            buffer.split(/\n\n+/).forEach(par => {
+                if (par.trim()) {
+                    const p = document.createElement('p');
+                    p.style.marginBottom = '1.2rem';
+                    p.textContent = par.trim();
+                    container.appendChild(p);
+                }
+            });
+        }
+        buffer = '';
+    };
+    parts.forEach(part => {
+        const m = part.match(/^\{\{img:([^}]+)\}\}$/);
+        if (m) {
+            flush();
+            const url = m[1].trim();
+            if (url.startsWith('https://')) {
+                const fig = document.createElement('div');
+                fig.className = 'content-inline-image';
+                const img = document.createElement('img');
+                img.src = url;
+                img.loading = 'lazy';
+                img.alt = 'Imagen del artículo';
+                fig.appendChild(img);
+                container.appendChild(fig);
+            }
+        } else {
+            buffer += part;
+        }
+    });
+    flush();
+}
+
+// ─── LIKES ───
+async function updateLikeUI(postId) {
+    if (!elements.likeBtn) return;
+    const { count } = await supabase.from('post_likes').select('*', { count: 'exact', head: true }).eq('post_id', postId);
+    elements.likeBtn.querySelector('.like-count').textContent = count || 0;
+    elements.likeBtn.classList.toggle('liked', localStorage.getItem('liked_' + postId) === '1');
+}
+
+async function toggleLike(postId) {
+    const key = 'liked_' + postId;
+    if (localStorage.getItem(key) === '1') {
+        const { data } = await supabase.from('post_likes').select('id').eq('post_id', postId).limit(1);
+        if (data && data[0]) await supabase.from('post_likes').delete().eq('id', data[0].id);
+        localStorage.removeItem(key);
+        showToast(C.blogConfig.messages.likeRemoved);
+    } else {
+        await supabase.from('post_likes').insert({ post_id: postId });
+        localStorage.setItem(key, '1');
+        showToast(C.blogConfig.messages.likeAdded);
+    }
+    updateLikeUI(postId);
+}
+
+// ─── COMENTARIOS ───
+async function loadComments(postId) {
+    if (!elements.commentsList) return;
+    const { data } = await supabase.from('post_comments').select('*').eq('post_id', postId).order('created_at', { ascending: true });
+    elements.commentsList.innerHTML = '';
+    if (!data || data.length === 0) {
+        elements.commentsList.innerHTML = '<p class="comments-empty">Sé el primero en comentar</p>';
+    } else {
+        data.forEach(c => {
+            const item = document.createElement('div');
+            item.className = 'comment-item';
+            const header = document.createElement('div');
+            header.className = 'comment-header';
+            const author = document.createElement('span');
+            author.className = 'comment-author';
+            author.textContent = c.author;
+            const date = document.createElement('span');
+            date.className = 'comment-date';
+            date.textContent = formatDate(c.created_at);
+            header.appendChild(author); header.appendChild(date);
+            const text = document.createElement('p');
+            text.className = 'comment-text';
+            text.textContent = c.content;
+            item.appendChild(header); item.appendChild(text);
+            elements.commentsList.appendChild(item);
+        });
+    }
+    if (elements.commentsCount) elements.commentsCount.textContent = data ? data.length : 0;
+}
+
+async function handleCommentSubmit(e) {
+    e.preventDefault();
+    if (!currentPost) return;
+    const name = elements.commentName.value.trim();
+    const text = elements.commentText.value.trim();
+    if (!name || !text) return;
+    elements.commentSubmit.disabled = true;
+    const { error } = await supabase.from('post_comments').insert({ post_id: currentPost.id, author: name, content: text });
+    elements.commentSubmit.disabled = false;
+    if (error) { showToast('Error al comentar'); return; }
+    elements.commentText.value = '';
+    showToast(C.blogConfig.messages.commentAdded);
+    loadComments(currentPost.id);
+}
+
+// ─── COMPARTIR ───
+function getShareUrl() {
+    return window.location.href.split('#')[0] + '#post-' + (currentPost ? currentPost.id : '');
+}
+
+function sharePost(type) {
+    if (!currentPost) return;
+    const url = getShareUrl();
+    const text = currentPost.title;
+    if (type === 'copy') {
+        navigator.clipboard.writeText(url).then(() => showToast('Enlace copiado'));
+        return;
+    }
+    if (type === 'whatsapp') {
+        window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank');
+        return;
+    }
+    if (navigator.share) {
+        navigator.share({ title: text, url: url });
+    } else {
+        navigator.clipboard.writeText(url).then(() => showToast('Enlace copiado'));
+    }
+}
+
+// ─── MODAL DE LECTURA ───
+function openPostModal(postId) {
+    currentPost = posts.find(p => p.id == postId);
+    if (!currentPost) return;
+
+    if (elements.modalGallery && currentPost.images && currentPost.images.length > 0) {
+        elements.modalGallery.innerHTML = currentPost.images.map((img, i) => `
+            <div class="modal-gallery-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
+                <img src="${escapeHtml(img)}" alt="${escapeHtml(currentPost.title)}" class="modal-gallery-img" loading="lazy">
+            </div>`).join('');
+        elements.modalThumbnails.innerHTML = currentPost.images.map((img, i) => `
+            <button class="modal-thumbnail ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Ver imagen ${i + 1}">
+                <img src="${escapeHtml(img)}" alt="" loading="lazy">
+            </button>`).join('');
+        elements.modalThumbnails.style.display = currentPost.images.length > 1 ? 'flex' : 'none';
+
+        $$('.modal-thumbnail').forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                const i = parseInt(thumb.dataset.index);
+                $$('.modal-thumbnail').forEach(t => t.classList.remove('active'));
+                $$('.modal-gallery-slide').forEach(s => s.classList.remove('active'));
+                thumb.classList.add('active');
+                const slide = $(`.modal-gallery-slide[data-index="${i}"]`);
+                if (slide) slide.classList.add('active');
+            });
+        });
     }
 
-    // ✅ NUEVO: Generar slug a partir del título
-    function generateSlug(title) {
-        return title
-            .toString()
-            .toLowerCase()
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '') // Quitar acentos
-            .replace(/[^a-z0-9\s-]/g, '')    // Solo alfanuméricos
-            .replace(/\s+/g, '-')             // Espacios por guiones
-            .replace(/-+/g, '-')              // Guiones duplicados
-            .trim();
+    if (elements.modalCategory) elements.modalCategory.textContent = currentPost.category || '';
+    if (elements.modalTitle) elements.modalTitle.textContent = currentPost.title || '';
+    if (elements.modalSubtitle) {
+        elements.modalSubtitle.textContent = currentPost.subtitle || '';
+        elements.modalSubtitle.style.display = currentPost.subtitle ? 'block' : 'none';
     }
+    if (elements.modalAuthor) elements.modalAuthor.textContent = currentPost.author || '';
+    if (elements.modalDate) elements.modalDate.textContent = formatDate(currentPost.created_at);
 
-    // ============================================
-    // CONFIGURACIÓN
-    // ============================================
-    const C = typeof SITE_CONFIG !== 'undefined' ? SITE_CONFIG : {};
-    const STORAGE_BUCKET = C.supabase?.storageBucket || 'blog-images';
-    const POSTS_PER_PAGE = 12; // ✅ NUEVO: Paginación
+    renderPostContent(currentPost.content || '', elements.modalDescription);
+    updateLikeUI(currentPost.id);
+    loadComments(currentPost.id);
 
-    // ============================================
-    // ESTADO (sin globals en window)
-    // ============================================
-    const state = {
-        posts: [],
-        categories: C.blogConfig?.categories || ['historias', 'recetas', 'opiniones'],
-        currentFilter: 'all',
-        searchQuery: '',
-        sortValue: 'default',
-        currentPost: null,
-        isAdmin: false,
-        currentPage: 1,
-        pendingImagesUrls: [],  // ✅ Movido de window a state
-        pendingImagePreviews: new Map(), // ✅ NUEVO: Map para trackear previews
-        isLoading: false
+    if (elements.postModal) {
+        elements.postModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    if (window.history && window.history.replaceState) {
+        history.replaceState(null, '', '#post-' + currentPost.id);
+    }
+}
+
+function closePostModal() {
+    if (elements.postModal) {
+        elements.postModal.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    if (window.history && window.history.replaceState) {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+    currentPost = null;
+}
+
+// ─── CREAR POST ───
+async function createNewPost(e) {
+    e.preventDefault();
+    if (!isAdmin) { showToast('Debes iniciar sesión desde el enlace del footer.'); return; }
+
+    const formData = new FormData(elements.newPostForm);
+    if (pendingImagesUrls.length === 0) { showToast(C.blogConfig.messages.needImage); return; }
+
+    const newPost = {
+        title: formData.get('title'),
+        subtitle: formData.get('subtitle') || null,
+        category: formData.get('category'),
+        author: formData.get('author'),
+        content: formData.get('content'),
+        images: pendingImagesUrls,
+        status: 'published',
+        created_at: new Date().toISOString()
     };
 
-    // ============================================
-    // ELEMENTOS DOM (capturados en init)
-    // ============================================
-    let elements = {};
+    const submitBtn = elements.newPostForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = "<span>Publicando...</span>";
+    submitBtn.disabled = true;
 
-    function captureElements() {
-        elements = {
-            postsGrid: $('#postsGrid'),
-            searchInput: $('#searchInput'),
-            sortSelect: $('#sortSelect'),
-            blogFilters: $('#blogFilters'),
-            noResults: $('#noResults'),
-            blogHeader: $('#blogHeader'),
-            loadMoreBtn: $('#loadMoreBtn'),
-            
-            postModal: $('#postModal'),
-            modalOverlay: $('#modalOverlay'),
-            modalClose: $('#modalClose'),
-            modalGallery: $('#modalGallery'),
-            modalThumbnails: $('#modalThumbnails'),
-            modalCategory: $('#modalCategory'),
-            modalTitle: $('#modalTitle'),
-            modalAuthor: $('#modalAuthor'),
-            modalDate: $('#modalDate'),
-            modalDescription: $('#modalDescription'),
-            
-            newPostModal: $('#newPostModal'),
-            newPostOverlay: $('#newPostOverlay'),
-            newPostBtn: $('#newPostBtn'),
-            newPostClose: $('#newPostClose'),
-            newPostForm: $('#newPostForm'),
-            
-            loginModal: $('#loginModal'),
-            loginOverlay: $('#loginOverlay'),
-            loginClose: $('#loginClose'),
-            loginForm: $('#loginForm'),
-            loginEmail: $('#loginEmail'),
-            loginPassword: $('#loginPassword'),
-            loginError: $('#loginError'),
-            loginSubmit: $('#loginSubmit'),
-            
-            categoryList: $('#categoryList'),
-            postCategory: $('#postCategory'),
-            newCategoryInput: $('#newCategoryInput'),
-            addCategoryBtn: $('#addCategoryBtn'),
-            
-            imageUploadArea: $('#imageUploadArea'),
-            imageInput: $('#imageInput'),
-            uploadPlaceholder: $('#uploadPlaceholder'),
-            imagePreviewGrid: $('#imagePreviewGrid'),
-            
-            blogToast: $('#blogToast'),
-            blogStars: $('#blogStars')
-        };
+    const { error } = await supabase.from('posts').insert([newPost]);
+    submitBtn.innerHTML = originalText;
+    submitBtn.disabled = false;
+
+    if (error) { showToast(C.blogConfig.messages.postError + ': ' + error.message); return; }
+    showToast(C.blogConfig.messages.postSuccess);
+    closeNewPostModal();
+    await loadPosts();
+    renderPosts();
+}
+
+function closeNewPostModal() {
+    if (elements.newPostModal) {
+        elements.newPostModal.classList.remove('open');
+        document.body.style.overflow = '';
     }
+    if (elements.newPostForm) elements.newPostForm.reset();
+    pendingImagesUrls = [];
+    if (elements.imagePreviewGrid) elements.imagePreviewGrid.innerHTML = '';
+    if (elements.uploadPlaceholder) elements.uploadPlaceholder.style.display = 'block';
+}
 
-    // ============================================
-    // SUPABASE CLIENT
-    // ============================================
-    let supabase = null;
+// ─── SUBIDA DE IMÁGENES DE PORTADA ───
+function initImageUpload() {
+    const area = elements.imageUploadArea;
+    const input = elements.imageInput;
+    if (!area || !input) return;
 
-    function initSupabase() {
-        if (typeof window.supabase === 'undefined') {
-            console.error('❌ Supabase no está cargado');
-            showToast('Error de conexión con la base de datos');
-            return false;
+    area.addEventListener('click', (e) => {
+        if (e.target === area || e.target.closest('.upload-placeholder')) input.click();
+    });
+    area.addEventListener('dragover', (e) => { e.preventDefault(); area.classList.add('dragover'); });
+    area.addEventListener('dragleave', () => area.classList.remove('dragover'));
+    area.addEventListener('drop', async (e) => { e.preventDefault(); area.classList.remove('dragover'); await handleFiles(e.dataTransfer.files); });
+    input.addEventListener('change', async (e) => { await handleFiles(e.target.files); });
+}
+
+async function handleFiles(files) {
+    const validFiles = Array.from(files).filter(file => {
+        if (!file.type.startsWith('image/')) { showToast(`${file.name} ${C.blogConfig.messages.notImage}`); return false; }
+        if (file.size > 5 * 1024 * 1024) { showToast(`${file.name} ${C.blogConfig.messages.exceedsSize}`); return false; }
+        return true;
+    });
+    if (validFiles.length === 0) return;
+
+    showToast(C.blogConfig.messages.imageUploading);
+
+    for (const file of validFiles) {
+        const preview = document.createElement('div');
+        preview.className = 'image-preview-item';
+        preview.style.opacity = '0.6';
+        const tempUrl = URL.createObjectURL(file);
+        preview.innerHTML = `<img src="${tempUrl}" alt=""><div style="position:absolute;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.7rem;">Subiendo...</div>`;
+        elements.imagePreviewGrid.appendChild(preview);
+        if (elements.uploadPlaceholder) elements.uploadPlaceholder.style.display = 'none';
+
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+        const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+        if (error) {
+            showToast(`${C.blogConfig.messages.imageError}: ${file.name}`);
+            preview.remove();
+            URL.revokeObjectURL(tempUrl);
+            continue;
         }
-        
-        const url = C.supabase?.url;
-        const key = C.supabase?.key;
-        
-        if (!url || !key) {
-            console.error('❌ Configuración de Supabase incompleta');
-            return false;
-        }
-        
-        try {
-            supabase = window.supabase.createClient(url, key);
-            return true;
-        } catch (error) {
-            console.error('❌ Error creando cliente Supabase:', error);
-            return false;
-        }
+
+        const { data: { publicUrl } } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName);
+        pendingImagesUrls.push(publicUrl);
+        preview.style.opacity = '1';
+        preview.innerHTML = `<img src="${publicUrl}" alt=""><button type="button" class="image-preview-remove" aria-label="Quitar imagen">×</button>`;
+        preview.querySelector('.image-preview-remove').addEventListener('click', () => {
+            const idx = pendingImagesUrls.indexOf(publicUrl);
+            if (idx > -1) pendingImagesUrls.splice(idx, 1);
+            preview.remove();
+            if (pendingImagesUrls.length === 0 && elements.uploadPlaceholder) elements.uploadPlaceholder.style.display = 'block';
+        });
+        URL.revokeObjectURL(tempUrl);
     }
+    showToast(C.blogConfig.messages.imageSuccess);
+}
 
-    // ============================================
-    // PERSISTENCIA DE CATEGORÍAS
-    // ============================================
-    function saveCategories() {
-        try {
-            localStorage.setItem('blog_categories', JSON.stringify(state.categories));
-        } catch (e) {
-            console.warn('No se pudieron guardar las categorías');
-        }
-    }
-
-    function loadCategories() {
-        try {
-            const saved = localStorage.getItem('blog_categories');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    state.categories = parsed;
-                }
-            }
-        } catch (e) {
-            console.warn('Error cargando categorías guardadas');
-        }
-    }
-
-    // ============================================
-    // FOCUS TRAP (Accesibilidad)
-    // ============================================
-    function trapFocus(modalElement) {
-        const focusableSelectors = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
-        const focusableElements = Array.from(modalElement.querySelectorAll(focusableSelectors));
-        
-        if (focusableElements.length === 0) return null;
-        
-        const firstFocusable = focusableElements[0];
-        const lastFocusable = focusableElements[focusableElements.length - 1];
-        
-        function handleKeyDown(e) {
-            if (e.key !== 'Tab') return;
-            
-            if (e.shiftKey) {
-                if (document.activeElement === firstFocusable) {
-                    e.preventDefault();
-                    lastFocusable.focus();
-                }
-            } else {
-                if (document.activeElement === lastFocusable) {
-                    e.preventDefault();
-                    firstFocusable.focus();
-                }
-            }
-        }
-        
-        modalElement.addEventListener('keydown', handleKeyDown);
-        firstFocusable.focus();
-        
-        return () => modalElement.removeEventListener('keydown', handleKeyDown);
-    }
-
-    let currentFocusTrapCleanup = null;
-
-    // ============================================
-    // TOAST
-    // ============================================
-    function showToast(message) {
-        if (!elements.blogToast) return;
-        elements.blogToast.textContent = message;
-        elements.blogToast.classList.add('show');
-        setTimeout(() => elements.blogToast.classList.remove('show'), 2500);
-    }
-
-    // ============================================
-    // FECHA
-    // ============================================
-    function formatDate(dateString) {
-        if (!dateString) return '';
-        // ✅ CORREGIDO: es-MX en lugar de es-ES
-        return new Date(dateString).toLocaleDateString('es-MX', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
+// ─── EVENTOS ───
+function initEvents() {
+    if (elements.newPostBtn) {
+        elements.newPostBtn.addEventListener("click", () => {
+            if (!isAdmin) { showToast('Debes iniciar sesión desde el enlace del footer.'); return; }
+            elements.newPostModal.classList.add("open");
+            document.body.style.overflow = "hidden";
         });
     }
+    if (elements.newPostClose) elements.newPostClose.addEventListener("click", closeNewPostModal);
+    if (elements.newPostOverlay) elements.newPostOverlay.addEventListener("click", closeNewPostModal);
+    if (elements.newPostForm) elements.newPostForm.addEventListener("submit", createNewPost);
+    if (elements.modalClose) elements.modalClose.addEventListener("click", closePostModal);
+    if (elements.modalOverlay) elements.modalOverlay.addEventListener("click", closePostModal);
+    if (elements.likeBtn) elements.likeBtn.addEventListener("click", () => currentPost && toggleLike(currentPost.id));
+    if (elements.shareBtn) elements.shareBtn.addEventListener("click", () => sharePost('native'));
+    if (elements.shareWhatsappBtn) elements.shareWhatsappBtn.addEventListener("click", () => sharePost('whatsapp'));
+    if (elements.commentForm) elements.commentForm.addEventListener("submit", handleCommentSubmit);
 
-    function capitalize(str) {
-        return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
-    }
-
-    // ============================================
-    // AUTH
-    // ============================================
-    async function checkAuth() {
-        if (!supabase) return;
-        
-        try {
-            const { data: { session } } = await supabase.auth.getSession();
-            state.isAdmin = !!session;
-            
-            if (elements.newPostBtn) {
-                elements.newPostBtn.style.display = 'flex';
-            }
-            
-            let logoutBtn = $('#logoutBtn');
-            
-            if (state.isAdmin) {
-                if (!logoutBtn) {
-                    logoutBtn = document.createElement('button');
-                    logoutBtn.id = 'logoutBtn';
-                    logoutBtn.className = 'blog-logout';
-                    logoutBtn.setAttribute('aria-label', 'Cerrar sesión');
-                    logoutBtn.innerHTML = `
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                        </svg>
-                    `;
-                    logoutBtn.addEventListener('click', handleLogout);
-                    if (elements.newPostBtn) {
-                        elements.newPostBtn.parentNode.insertBefore(logoutBtn, elements.newPostBtn.nextSibling);
-                    }
-                }
-                logoutBtn.style.display = 'flex';
-            } else {
-                if (logoutBtn) logoutBtn.style.display = 'none';
-            }
-        } catch (error) {
-            console.error('Error verificando sesión:', error);
-        }
-    }
-
-    function showLogin() {
-        if (elements.loginModal) {
-            elements.loginModal.classList.add('open');
-            if (currentFocusTrapCleanup) currentFocusTrapCleanup();
-            currentFocusTrapCleanup = trapFocus(elements.loginModal);
-        }
-    }
-
-    async function handleLogin(e) {
-        e.preventDefault();
-        if (!supabase) return;
-        
-        const email = elements.loginEmail.value;
-        const password = elements.loginPassword.value;
-        
-        // ✅ Estado de carga
-        if (elements.loginSubmit) {
-            elements.loginSubmit.disabled = true;
-            elements.loginSubmit.innerHTML = '<span>Verificando...</span>';
-        }
-        if (elements.loginError) elements.loginError.textContent = '';
-        
-        try {
-            const { error } = await supabase.auth.signInWithPassword({ email, password });
-            
-            if (error) {
-                if (elements.loginError) {
-                    elements.loginError.textContent = 'Credenciales inválidas. Verifica tu email y contraseña.';
-                }
-                return;
-            }
-            
-            state.isAdmin = true;
-            if (elements.loginModal) elements.loginModal.classList.remove('open');
-            if (currentFocusTrapCleanup) {
-                currentFocusTrapCleanup();
-                currentFocusTrapCleanup = null;
-            }
-            if (elements.loginError) elements.loginError.textContent = '';
-            showToast(C.blogConfig?.messages?.loginWelcome || '¡Bienvenido!');
-            await checkAuth();
-        } catch (error) {
-            console.error('Error en login:', error);
-            if (elements.loginError) {
-                elements.loginError.textContent = 'Error de conexión. Intenta de nuevo.';
-            }
-        } finally {
-            if (elements.loginSubmit) {
-                elements.loginSubmit.disabled = false;
-                elements.loginSubmit.innerHTML = '<span>Iniciar Sesión</span>';
-            }
-        }
-    }
-
-    async function handleLogout() {
-        if (!supabase) return;
-        
-        try {
-            await supabase.auth.signOut();
-            state.isAdmin = false;
-            
-            const logoutBtn = $('#logoutBtn');
-            if (logoutBtn) logoutBtn.style.display = 'none';
-            
-            showToast(C.blogConfig?.messages?.sessionClosed || 'Sesión cerrada');
-        } catch (error) {
-            console.error('Error al cerrar sesión:', error);
-            showToast(C.blogConfig?.messages?.logoutError || 'Error al cerrar sesión');
-        }
-    }
-
-    // ============================================
-    // CARGAR POSTS (con paginación)
-    // ============================================
-    async function loadPosts() {
-        if (!supabase || !elements.postsGrid) return;
-        
-        // ✅ Estado de carga
-        state.isLoading = true;
-        elements.postsGrid.innerHTML = `
-            <div class="blog-loading" style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--color-text-muted);">
-                <p>Cargando artículos...</p>
-            </div>
-        `;
-        
-        try {
-            let query = supabase
-                .from('posts')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(POSTS_PER_PAGE * state.currentPage);
-            
-            const { data, error } = await query;
-            
-            if (error) {
-                console.error('Error cargando posts:', error);
-                showToast(C.blogConfig?.messages?.dbError || 'Error al cargar artículos');
-                elements.postsGrid.innerHTML = '';
-                return;
-            }
-            
-            state.posts = data || [];
-            renderPosts();
-        } catch (error) {
-            console.error('Error inesperado:', error);
-            showToast('Error al cargar artículos');
-        } finally {
-            state.isLoading = false;
-        }
-    }
-
-    // ============================================
-    // RENDERIZADO
-    // ============================================
-    function renderCategories() {
-        if (!elements.blogFilters) return;
-        
-        const allBtn = `<button class="filter-btn ${state.currentFilter === 'all' ? 'active' : ''}" data-filter="all">Todos</button>`;
-        const categoryBtns = state.categories.map(cat => 
-            `<button class="filter-btn ${state.currentFilter === cat ? 'active' : ''}" data-filter="${escapeHtml(cat)}">${escapeHtml(capitalize(cat))}</button>`
-        ).join('');
-        
-        elements.blogFilters.innerHTML = allBtn + categoryBtns;
-        
-        if (elements.postCategory) {
-            elements.postCategory.innerHTML = state.categories.map(cat => 
-                `<option value="${escapeHtml(cat)}">${escapeHtml(capitalize(cat))}</option>`
-            ).join('');
-        }
-        
-        // ✅ CORREGIDO: Sin onclick inline
-        if (elements.categoryList) {
-            elements.categoryList.innerHTML = '';
-            state.categories.forEach(cat => {
-                const tag = document.createElement('span');
-                tag.className = 'category-tag';
-                tag.innerHTML = `
-                    ${escapeHtml(capitalize(cat))}
-                    <span class="remove-category" data-category="${escapeHtml(cat)}" role="button" aria-label="Eliminar categoría ${escapeHtml(cat)}" tabindex="0">×</span>
-                `;
-                
-                const removeBtn = tag.querySelector('.remove-category');
-                removeBtn.addEventListener('click', () => removeCategory(cat));
-                removeBtn.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        removeCategory(cat);
-                    }
-                });
-                
-                elements.categoryList.appendChild(tag);
-            });
-        }
-    }
-
-    function addCategory() {
-        const input = elements.newCategoryInput;
-        if (!input) return;
-        
-        const newCat = input.value.trim().toLowerCase();
-        
-        if (!newCat || state.categories.includes(newCat)) {
-            showToast(C.blogConfig?.messages?.categoryExists || 'Categoría inválida o ya existe');
-            return;
-        }
-        
-        state.categories.push(newCat);
-        saveCategories(); // ✅ Persistir
-        input.value = '';
-        renderCategories();
-        showToast(C.blogConfig?.messages?.categoryAdded || 'Categoría agregada');
-    }
-
-    function removeCategory(cat) {
-        if (state.categories.length <= 1) {
-            showToast(C.blogConfig?.messages?.invalidCategory || 'Debe haber al menos una categoría');
-            return;
-        }
-        state.categories = state.categories.filter(c => c !== cat);
-        saveCategories(); // ✅ Persistir
-        renderCategories();
-        showToast(C.blogConfig?.messages?.categoryRemoved || 'Categoría eliminada');
-    }
-
-    function renderPosts() {
-        if (!elements.postsGrid) return;
-        
-        let filtered = state.posts.filter(p => {
-            const matchesFilter = state.currentFilter === 'all' || p.category === state.currentFilter;
-            const matchesSearch = !state.searchQuery || 
-                (p.title && p.title.toLowerCase().includes(state.searchQuery.toLowerCase())) ||
-                (p.content && p.content.toLowerCase().includes(state.searchQuery.toLowerCase()));
-            return matchesFilter && matchesSearch;
-        });
-
-        if (state.sortValue === 'recent') {
-            filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        }
-        
-        if (filtered.length === 0) {
-            elements.postsGrid.innerHTML = '';
-            if (elements.noResults) elements.noResults.style.display = 'block';
-            return;
-        }
-        
-        if (elements.noResults) elements.noResults.style.display = 'none';
-        
-        // ✅ SANITIZADO: escapeHtml en todos los datos dinámicos
-        elements.postsGrid.innerHTML = filtered.map((post, index) => {
-            const excerpt = post.content ? escapeHtml(post.content.substring(0, 120)) + '...' : '';
-            const date = formatDate(post.created_at);
-            const firstImage = post.images && post.images.length > 0 
-                ? escapeHtml(post.images[0]) 
-                : 'https://via.placeholder.com/400x300?text=Sin+Imagen';
-            const title = escapeHtml(post.title || 'Sin título');
-            const category = escapeHtml(post.category || '');
-            const author = escapeHtml(post.author || '');
-            
-            return `
-                <article class="post-card" data-id="${post.id}" style="animation: fadeInUp 0.6s var(--ease-out-expo) ${index * 0.1}s backwards;" tabindex="0" role="button" aria-label="Leer artículo: ${title}">
-                    <div class="post-image-wrapper">
-                        <img src="${firstImage}" alt="${title}" class="post-image" loading="lazy" onerror="this.src='https://via.placeholder.com/400x300?text=Sin+Imagen'">
-                        <span class="post-category-badge">${category}</span>
-                    </div>
-                    <div class="post-info">
-                        <h3 class="post-title">${title}</h3>
-                        <p class="post-excerpt">${excerpt}</p>
-                        <div class="post-meta">
-                            <span class="post-author">${author}</span>
-                            <span class="post-date">${date}</span>
-                        </div>
-                    </div>
-                </article>
-            `;
-        }).join('');
-        
-        // Event listeners
-        setTimeout(() => {
-            $$('.post-card').forEach(card => {
-                const openHandler = (e) => {
-                    if (e.type === 'keypress' && e.key !== 'Enter' && e.key !== ' ') return;
-                    e.preventDefault();
-                    openPostModal(card.dataset.id);
-                };
-                card.addEventListener('click', openHandler);
-                card.addEventListener('keypress', openHandler);
-            });
-        }, 100);
-    }
-
-    function openPostModal(postId) {
-        state.currentPost = state.posts.find(p => p.id == postId);
-        if (!state.currentPost) return;
-        
-        // ✅ SANITIZADO
-        const title = state.currentPost.title || 'Sin título';
-        
-        if (elements.modalGallery && state.currentPost.images && state.currentPost.images.length > 0) {
-            elements.modalGallery.innerHTML = state.currentPost.images.map((img, i) => `
-                <div class="modal-gallery-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
-                    <img src="${escapeHtml(img)}" alt="${escapeHtml(title)}" class="modal-gallery-img" loading="lazy" onerror="this.src='https://via.placeholder.com/800x600?text=Imagen+no+disponible'">
-                </div>
-            `).join('');
-            
-            // ✅ CORREGIDO: Sin onclick inline
-            elements.modalThumbnails.innerHTML = state.currentPost.images.map((img, i) => `
-                <button class="modal-thumbnail ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Ver imagen ${i + 1}">
-                    <img src="${escapeHtml(img)}" alt="${escapeHtml(title)} - imagen ${i + 1}" loading="lazy">
-                </button>
-            `).join('');
-            
-            // Event listeners para thumbnails
-            $$('.modal-thumbnail').forEach(thumb => {
-                thumb.addEventListener('click', () => {
-                    const index = parseInt(thumb.dataset.index);
-                    changeModalImage(index);
-                });
-            });
-        }
-        
-        if (elements.modalCategory) elements.modalCategory.textContent = state.currentPost.category || '';
-        if (elements.modalTitle) elements.modalTitle.textContent = title;
-        if (elements.modalAuthor) elements.modalAuthor.textContent = state.currentPost.author || '';
-        if (elements.modalDate) elements.modalDate.textContent = formatDate(state.currentPost.created_at);
-        if (elements.modalDescription) elements.modalDescription.textContent = state.currentPost.content || 'Sin contenido';
-        
-        if (elements.postModal) {
-            elements.postModal.classList.add('open');
-            document.body.style.overflow = 'hidden';
-            
-            // ✅ Focus trap
-            if (currentFocusTrapCleanup) currentFocusTrapCleanup();
-            currentFocusTrapCleanup = trapFocus(elements.postModal);
-        }
-    }
-
-    function changeModalImage(index) {
-        $$('.modal-gallery-slide').forEach(s => s.classList.remove('active'));
-        $$('.modal-thumbnail').forEach(t => t.classList.remove('active'));
-        const slide = $(`.modal-gallery-slide[data-index="${index}"]`);
-        const thumb = $(`.modal-thumbnail[data-index="${index}"]`);
-        if (slide) slide.classList.add('active');
-        if (thumb) thumb.classList.add('active');
-    }
-
-    function closePostModal() {
-        if (elements.postModal) {
-            elements.postModal.classList.remove('open');
-            document.body.style.overflow = '';
-        }
-        if (currentFocusTrapCleanup) {
-            currentFocusTrapCleanup();
-            currentFocusTrapCleanup = null;
-        }
-        state.currentPost = null;
-    }
-
-    function openNewPostModal() {
-        if (!state.isAdmin) {
-            showLogin();
-            return;
-        }
-        if (elements.newPostModal) {
-            elements.newPostModal.classList.add('open');
-            document.body.style.overflow = 'hidden';
-            if (currentFocusTrapCleanup) currentFocusTrapCleanup();
-            currentFocusTrapCleanup = trapFocus(elements.newPostModal);
-        }
-    }
-
-    function closeNewPostModal() {
-        if (elements.newPostModal) {
-            elements.newPostModal.classList.remove('open');
-            document.body.style.overflow = '';
-        }
-        if (currentFocusTrapCleanup) {
-            currentFocusTrapCleanup();
-            currentFocusTrapCleanup = null;
-        }
-        if (elements.newPostForm) elements.newPostForm.reset();
-        
-        // ✅ Limpiar estado de imágenes pendientes
-        state.pendingImagesUrls = [];
-        state.pendingImagePreviews.clear();
-        if (elements.imagePreviewGrid) elements.imagePreviewGrid.innerHTML = '';
-        if (elements.uploadPlaceholder) elements.uploadPlaceholder.style.display = 'block';
-    }
-
-    async function createNewPost(e) {
-        e.preventDefault();
-        if (!supabase) return;
-        
-        if (!state.isAdmin) {
-            showToast(C.blogConfig?.messages?.needLogin || 'Debes iniciar sesión');
-            showLogin();
-            return;
-        }
-        
-        const formData = new FormData(elements.newPostForm);
-        
-        if (state.pendingImagesUrls.length === 0) {
-            showToast(C.blogConfig?.messages?.needImage || 'Sube al menos una imagen');
-            return;
-        }
-        
-        const title = formData.get('title');
-        
-        const newPost = {
-            title: title,
-            slug: generateSlug(title), // ✅ NUEVO
-            category: formData.get('category'),
-            author: formData.get('author'),
-            content: formData.get('content'),
-            images: state.pendingImagesUrls,
-            created_at: new Date().toISOString()
-        };
-        
-        // ✅ Estado de carga
-        const submitBtn = elements.newPostForm.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerHTML;
-        submitBtn.innerHTML = '<span>Publicando...</span>';
-        submitBtn.disabled = true;
-        
-        try {
-            const { error } = await supabase.from('posts').insert([newPost]);
-            
-            if (error) {
-                console.error('Error creando post:', error);
-                showToast(C.blogConfig?.messages?.postError + ': ' + error.message);
-                return;
-            }
-            
-            showToast(C.blogConfig?.messages?.postSuccess || '¡Post publicado!');
-            closeNewPostModal();
-            state.currentPage = 1; // Reset paginación
-            await loadPosts();
-        } catch (error) {
-            console.error('Error:', error);
-            showToast('Error al publicar el post');
-        } finally {
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-        }
-    }
-
-    // ============================================
-    // SUBIDA DE IMÁGENES (corregida)
-    // ============================================
-    function initImageUpload() {
-        const area = elements.imageUploadArea;
-        const input = elements.imageInput;
-        if (!area || !input) return;
-        
-        area.addEventListener('click', (e) => {
-            if (e.target === area || e.target.closest('.upload-placeholder')) input.click();
-        });
-        
-        area.addEventListener('dragover', (e) => { e.preventDefault(); area.classList.add('dragover'); });
-        area.addEventListener('dragleave', () => { area.classList.remove('dragover'); });
-        area.addEventListener('drop', async (e) => {
-            e.preventDefault();
-            area.classList.remove('dragover');
-            await handleFiles(e.dataTransfer.files);
-        });
-        input.addEventListener('change', async (e) => { await handleFiles(e.target.files); });
-    }
-
-    async function handleFiles(files) {
-        if (!supabase) return;
-        
-        const validFiles = Array.from(files).filter(file => {
-            if (!file.type.startsWith('image/')) {
-                showToast(`${file.name} ${C.blogConfig?.messages?.notImage || 'no es una imagen'}`);
-                return false;
-            }
-            if (file.size > 5 * 1024 * 1024) {
-                showToast(`${file.name} ${C.blogConfig?.messages?.exceedsSize || 'excede 5MB'}`);
-                return false;
-            }
-            return true;
-        });
-        
-        if (validFiles.length === 0) return;
-        showToast(C.blogConfig?.messages?.imageUploading || 'Subiendo imágenes...');
-        
-        for (const file of validFiles) {
-            // ✅ CORREGIDO: Crear ID único para el preview
-            const previewId = `preview-${Date.now()}-${Math.random().toString(36).substring(2)}`;
-            
-            // Crear preview con ID único y mostrar indicador de "subiendo"
-            const preview = document.createElement('div');
-            preview.className = 'image-preview-item';
-            preview.dataset.previewId = previewId;
-            preview.style.opacity = '0.6';
-            preview.style.position = 'relative';
-            
-            const tempUrl = URL.createObjectURL(file);
-            preview.innerHTML = `
-                <img src="${tempUrl}" alt="${escapeHtml(file.name)}">
-                <div class="uploading-indicator" style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;color:white;font-size:0.7rem;">
-                    Subiendo...
-                </div>
-            `;
-            elements.imagePreviewGrid.appendChild(preview);
-            state.pendingImagePreviews.set(previewId, preview);
-            
-            if (elements.uploadPlaceholder) elements.uploadPlaceholder.style.display = 'none';
-            
+    // Insertar imagen dentro del contenido
+    const contentImageInput = document.getElementById('contentImageInput');
+    const insertImageBtn = document.getElementById('insertImageBtn');
+    if (insertImageBtn && contentImageInput) {
+        insertImageBtn.addEventListener('click', () => contentImageInput.click());
+        contentImageInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) { showToast(C.blogConfig.messages.notImage); return; }
+            if (file.size > 5 * 1024 * 1024) { showToast(C.blogConfig.messages.exceedsSize); return; }
+            showToast(C.blogConfig.messages.imageUploading);
             const fileExt = file.name.split('.').pop();
-            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-            
-            try {
-                // ✅ CORREGIDO: Usar STORAGE_BUCKET desde config
-                const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(fileName, file, {
-                    cacheControl: '3600',
-                    upsert: false
-                });
-                
-                if (error) {
-                    console.error('Error subiendo:', error);
-                    showToast(`${C.blogConfig?.messages?.imageError || 'Error al subir'}: ${file.name}`);
-                    
-                    // ✅ CORREGIDO: Eliminar preview si falla la subida
-                    const failedPreview = state.pendingImagePreviews.get(previewId);
-                    if (failedPreview) {
-                        failedPreview.remove();
-                        state.pendingImagePreviews.delete(previewId);
-                    }
-                    URL.revokeObjectURL(tempUrl);
-                    continue;
-                }
-                
-                const { data: { publicUrl } } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName);
-                state.pendingImagesUrls.push(publicUrl);
-                
-                // ✅ Actualizar preview: quitar indicador y habilitar botón eliminar
-                const successPreview = state.pendingImagePreviews.get(previewId);
-                if (successPreview) {
-                    successPreview.style.opacity = '1';
-                    successPreview.innerHTML = `
-                        <img src="${publicUrl}" alt="${escapeHtml(file.name)}">
-                        <button type="button" class="image-preview-remove" aria-label="Eliminar imagen">×</button>
-                    `;
-                    
-                    const removeBtn = successPreview.querySelector('.image-preview-remove');
-                    removeBtn.addEventListener('click', () => {
-                        // Eliminar del array de URLs
-                        const urlIndex = state.pendingImagesUrls.indexOf(publicUrl);
-                        if (urlIndex > -1) state.pendingImagesUrls.splice(urlIndex, 1);
-                        
-                        successPreview.remove();
-                        state.pendingImagePreviews.delete(previewId);
-                        
-                        if (state.pendingImagesUrls.length === 0 && elements.uploadPlaceholder) {
-                            elements.uploadPlaceholder.style.display = 'block';
-                        }
-                    });
-                }
-                
-                URL.revokeObjectURL(tempUrl);
-            } catch (error) {
-                console.error('Error inesperado:', error);
-                const failedPreview = state.pendingImagePreviews.get(previewId);
-                if (failedPreview) {
-                    failedPreview.remove();
-                    state.pendingImagePreviews.delete(previewId);
-                }
-                URL.revokeObjectURL(tempUrl);
-            }
-        }
-        
-        showToast(C.blogConfig?.messages?.imageSuccess || 'Imágenes subidas');
-    }
-
-    // ============================================
-    // ESTRELLAS DEL HERO
-    // ============================================
-    function initBlogStars() {
-        const starsContainer = elements.blogStars;
-        if (!starsContainer) return;
-
-        const isMobile = window.innerWidth < 769;
-        const starCount = isMobile ? 5 : 15;
-        const minSize = isMobile ? 2 : 1;
-        const maxSize = isMobile ? 4 : 2.5;
-
-        for (let i = 0; i < starCount; i++) {
-            const star = document.createElement('div');
-            star.className = 'blog-star';
-
-            const size = Math.random() * (maxSize - minSize) + minSize;
-            const glowSize = size * 3;
-            const duration = Math.random() * 4 + 3;
-            const delay = Math.random() * 5;
-            const minOpacity = Math.random() * 0.3 + 0.2;
-            const maxOpacity = Math.random() * 0.4 + 0.5;
-
-            star.style.cssText = `
-                left: ${Math.random() * 100}%;
-                top: ${Math.random() * 100}%;
-                width: ${size}px;
-                height: ${size}px;
-                --twinkle-duration: ${duration}s;
-                --twinkle-delay: ${delay}s;
-                --min-opacity: ${minOpacity};
-                --max-opacity: ${maxOpacity};
-                --glow-size: ${glowSize}px;
-            `;
-            starsContainer.appendChild(star);
-        }
-    }
-
-    // ============================================
-    // CURSOR PERSONALIZADO
-    // ============================================
-    function initCursor() {
-        if (window.innerWidth < 769) return;
-        
-        const cursor = $('#cursor');
-        const follower = $('#cursorFollower');
-        if (!cursor || !follower) return;
-        
-        let mx = 0, my = 0;
-        let fx = 0, fy = 0;
-        
-        document.addEventListener('mousemove', (e) => {
-            mx = e.clientX;
-            my = e.clientY;
-            cursor.style.left = mx + 'px';
-            cursor.style.top = my + 'px';
-        });
-        
-        function animateFollower() {
-            fx = fx + (mx - fx) * 0.12;
-            fy = fy + (my - fy) * 0.12;
-            follower.style.left = fx + 'px';
-            follower.style.top = fy + 'px';
-            requestAnimationFrame(animateFollower);
-        }
-        animateFollower();
-        
-        const hoverTargets = 'a, button, .post-card, .filter-btn, .blog-toggle, .modal-thumbnail, .category-tag, .image-upload-area';
-        document.addEventListener('mouseover', (e) => {
-            if (e.target.closest(hoverTargets)) {
-                cursor.classList.add('hover');
-                follower.classList.add('hover');
-            }
-        });
-        document.addEventListener('mouseout', (e) => {
-            if (e.target.closest(hoverTargets)) {
-                cursor.classList.remove('hover');
-                follower.classList.remove('hover');
-            }
+            const fileName = `content-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+            const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(fileName, file);
+            if (error) { showToast(C.blogConfig.messages.imageError); return; }
+            const { data: { publicUrl } } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName);
+            const ta = elements.newPostForm.querySelector('textarea[name="content"]');
+            const token = `\n\n{{img:${publicUrl}}}\n\n`;
+            const pos = ta.selectionStart || ta.value.length;
+            ta.value = ta.value.slice(0, pos) + token + ta.value.slice(pos);
+            showToast('Imagen insertada en el contenido');
+            contentImageInput.value = '';
         });
     }
 
-    // ============================================
-    // EVENTOS
-    // ============================================
-    function initEvents() {
-        if (elements.loginClose) elements.loginClose.addEventListener('click', () => {
-            elements.loginModal.classList.remove('open');
-            if (currentFocusTrapCleanup) {
-                currentFocusTrapCleanup();
-                currentFocusTrapCleanup = null;
-            }
+    if (elements.searchInput) {
+        let t;
+        elements.searchInput.addEventListener("input", (e) => {
+            clearTimeout(t);
+            t = setTimeout(() => { searchQuery = e.target.value; renderPosts(); }, 300);
         });
-        if (elements.loginOverlay) elements.loginOverlay.addEventListener('click', () => {
-            elements.loginModal.classList.remove('open');
-            if (currentFocusTrapCleanup) {
-                currentFocusTrapCleanup();
-                currentFocusTrapCleanup = null;
-            }
-        });
-        if (elements.loginForm) elements.loginForm.addEventListener('submit', handleLogin);
-        
-        if (elements.newPostBtn) {
-            elements.newPostBtn.addEventListener('click', openNewPostModal);
-        }
-        
-        if (elements.newPostClose) elements.newPostClose.addEventListener('click', closeNewPostModal);
-        if (elements.newPostOverlay) elements.newPostOverlay.addEventListener('click', closeNewPostModal);
-        if (elements.newPostForm) elements.newPostForm.addEventListener('submit', createNewPost);
-        
-        if (elements.modalClose) elements.modalClose.addEventListener('click', closePostModal);
-        if (elements.modalOverlay) elements.modalOverlay.addEventListener('click', closePostModal);
-        
-        if (elements.searchInput) {
-            let searchTimeout;
-            elements.searchInput.addEventListener('input', (e) => {
-                clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => {
-                    state.searchQuery = e.target.value;
-                    renderPosts();
-                }, 300);
-            });
-        }
-        
-        if (elements.sortSelect) {
-            elements.sortSelect.addEventListener('change', (e) => {
-                state.sortValue = e.target.value;
+    }
+    if (elements.sortSelect) elements.sortSelect.addEventListener("change", (e) => { sortValue = e.target.value; renderPosts(); });
+    if (elements.blogFilters) {
+        elements.blogFilters.addEventListener("click", (e) => {
+            if (e.target.classList.contains('filter-btn')) {
+                $$(".filter-btn").forEach(b => b.classList.remove("active"));
+                e.target.classList.add("active");
+                currentFilter = e.target.dataset.filter;
                 renderPosts();
-            });
-        }
-        
-        if (elements.blogFilters) {
-            elements.blogFilters.addEventListener('click', (e) => {
-                if (e.target.classList.contains('filter-btn')) {
-                    $$('.filter-btn').forEach(b => b.classList.remove('active'));
-                    e.target.classList.add('active');
-                    state.currentFilter = e.target.dataset.filter;
-                    renderPosts();
-                }
-            });
-        }
-        
-        if (elements.addCategoryBtn) elements.addCategoryBtn.addEventListener('click', addCategory);
-        if (elements.newCategoryInput) {
-            elements.newCategoryInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') { e.preventDefault(); addCategory(); }
-            });
-        }
-        
-        initImageUpload();
-        
-        // Escape para cerrar modales
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (elements.postModal?.classList.contains('open')) closePostModal();
-                if (elements.newPostModal?.classList.contains('open')) closeNewPostModal();
-                if (elements.loginModal?.classList.contains('open')) {
-                    elements.loginModal.classList.remove('open');
-                    if (currentFocusTrapCleanup) {
-                        currentFocusTrapCleanup();
-                        currentFocusTrapCleanup = null;
-                    }
-                }
-            }
-        });
-        
-        // Sincronización entre pestañas (categorías)
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'blog_categories') {
-                loadCategories();
-                renderCategories();
             }
         });
     }
+    if (elements.addCategoryBtn) elements.addCategoryBtn.addEventListener("click", addCategory);
+    if (elements.newCategoryInput) elements.newCategoryInput.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); addCategory(); } });
 
-    function initScrollEffects() {
-        window.addEventListener('scroll', () => {
-            if (elements.blogHeader) {
-                elements.blogHeader.classList.toggle('scrolled', window.scrollY > 100);
-            }
-        }, { passive: true });
-    }
+    initImageUpload();
 
-    // ============================================
-    // INIT (único punto de entrada)
-    // ============================================
-    async function init() {
-        captureElements(); // ✅ Capturar DOM DESPUÉS de que esté listo
-        loadCategories();  // ✅ Cargar categorías persistidas
-        
-        if (!initSupabase()) {
-            showToast('Error de conexión con la base de datos');
-            return;
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            if (elements.postModal?.classList.contains("open")) closePostModal();
+            if (elements.newPostModal?.classList.contains("open")) closeNewPostModal();
         }
-        
-        await checkAuth();
-        await loadPosts();
-        renderCategories();
-        initEvents();
-        initScrollEffects();
-        initBlogStars();
-        initCursor();
-    }
+    });
+}
 
-    // ✅ ÚNICO punto de arranque
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
+function initScrollEffects() {
+    window.addEventListener("scroll", () => {
+        if (elements.blogHeader) elements.blogHeader.classList.toggle("scrolled", window.scrollY > 100);
+    }, { passive: true });
+}
+
+function initBlogStars() {
+    const starsContainer = document.getElementById("blogStars");
+    if (!starsContainer) return;
+    const isMobile = window.innerWidth < 769;
+    const starCount = isMobile ? 5 : 15;
+    for (let i = 0; i < starCount; i++) {
+        const star = document.createElement("div");
+        star.className = "blog-star";
+        const size = Math.random() * ((isMobile ? 4 : 2.5) - (isMobile ? 2 : 1)) + (isMobile ? 2 : 1);
+        star.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${size}px;height:${size}px;--twinkle-duration:${Math.random()*4+3}s;--twinkle-delay:${Math.random()*5}s;--min-opacity:${Math.random()*0.3+0.2};--max-opacity:${Math.random()*0.4+0.5};--glow-size:${size*3}px;`;
+        starsContainer.appendChild(star);
     }
+}
+
+function initCursor() {
+    if (window.innerWidth < 769) return;
+    const cursor = document.getElementById("cursor");
+    const follower = document.getElementById("cursorFollower");
+    if (!cursor || !follower) return;
+
+    let mx = 0, my = 0, fx = 0, fy = 0;
+    document.addEventListener("mousemove", (e) => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + "px"; cursor.style.top = my + "px"; });
+    (function animate() {
+        fx += (mx - fx) * 0.12; fy += (my - fy) * 0.12;
+        follower.style.left = fx + "px"; follower.style.top = fy + "px";
+        requestAnimationFrame(animate);
+    })();
+
+    const targets = "a, button, .post-card, .filter-btn, .blog-toggle, .modal-thumbnail, .category-tag, .image-upload-area";
+    document.addEventListener("mouseover", (e) => { if (e.target.closest(targets)) { cursor.classList.add("hover"); follower.classList.add("hover"); } });
+    document.addEventListener("mouseout", (e) => { if (e.target.closest(targets)) { cursor.classList.remove("hover"); follower.classList.remove("hover"); } });
+}
+
+// ─── INIT ÚNICO ───
+async function init() {
+    await checkAuth();
+    await loadPosts();
+    renderCategories();
+    renderPosts();
+    initEvents();
+    initScrollEffects();
+    initBlogStars();
+    initCursor();
+    openPostFromUrl();
+    window.addEventListener('hashchange', openPostFromUrl);
+}
+
+function openPostFromUrl() {
+    const hash = window.location.hash;
+    if (!hash.startsWith('#post-')) return;
+    const postId = hash.replace('#post-', '');
+    const post = posts.find(p => String(p.id) === String(postId));
+    if (post) {
+        setTimeout(() => openPostModal(post.id), 300);
+    }
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+} else {
+    init();
+}
 })();

@@ -1,14 +1,7 @@
 /* ============================================================
-   ██████  ██████  ██████  ██    ██ 
-   ██   ██ ██   ██ ██   ██  ██  ██  
-   ██████  ██████  ██████    ████   
-   ██      ██   ██ ██         ██    
-   ██      ██   ██ ██         ██    
-                                    
    ★ CEREBRO DE LA PÁGINA ★
    Lee SITE_CONFIG y construye + anima todo.
    ============================================================ */
-
 (function () {
   "use strict";
 
@@ -20,12 +13,28 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  // ✅ NUEVO: Detectar si el usuario prefiere movimiento reducido
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function isBlockEnabled(blockName) {
     return C[blockName]?.enabled !== false;
   }
+
+    // ✅ Utilidades para testimonios
+  function escapeHtml(str) {
+      if (!str) return '';
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+  }
+  function initials(name) {
+      return (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  }
+  const SOURCE_ICONS = {
+      instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+      facebook: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>',
+      whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>',
+      google: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 11v3.6h5.1c-.5 2.4-2.6 3.9-5.1 3.9a5.5 5.5 0 1 1 0-11c1.4 0 2.7.5 3.7 1.4l2.7-2.7A9.2 9.2 0 1 0 12 21.2c5.3 0 8.8-3.7 8.8-9 0-.6-.1-1.2-.2-1.2H12z"/></svg>'
+  };
 
   // ─── APLICAR TEMA ───────────────────────
   function applyTheme() {
@@ -45,9 +54,7 @@
   }
 
   // ─── INYECTAR SEO DINÁMICO ──────────────
-  // ✅ CORRECCIÓN PUNTO 10: Hacer más robusto
   function injectSEO() {
-    // Validar que exista contenido para la descripción
     const firstParagraph = C.story?.paragraphs?.[0];
     const description = firstParagraph
       ? firstParagraph.substring(0, 155)
@@ -60,25 +67,17 @@
       document.head.appendChild(metaDesc);
     }
     if (description) metaDesc.content = description;
-    
-    // Validar que exista imagen OG antes de inyectarla
+
     const ogImage = C.hero?.backgroundImage || "";
-    
     const ogTags = {
       'og:title': (C.header?.logo?.text || "") + (C.header?.logo?.highlight || ""),
       'og:description': C.hero?.subtitle || description,
       'og:type': 'website'
     };
-
-    // Solo agregar og:image si existe y no está vacío
-    if (ogImage) {
-      ogTags['og:image'] = ogImage;
-    }
+    if (ogImage) ogTags['og:image'] = ogImage;
 
     for (const [key, value] of Object.entries(ogTags)) {
-      // No insertar contenido vacío
       if (!value) continue;
-
       let tag = document.querySelector(`meta[property="${key}"]`);
       if (!tag) {
         tag = document.createElement('meta');
@@ -89,7 +88,7 @@
     }
   }
 
-  // ─── HERO STARS (Estrellas parpadeantes) ──────────────────────
+  // ─── HERO STARS ──────────────────────────
   function initHeroStars() {
     if (!isBlockEnabled("hero")) return;
     const hero = $("#hero");
@@ -137,30 +136,25 @@
 
     function updateProgress() {
       const h = document.documentElement.scrollHeight - window.innerHeight;
-
       if (h <= 0) {
         bar.style.width = "0%";
         return;
       }
-
       const progress = clamp(window.scrollY / h, 0, 1);
       bar.style.width = (progress * 100) + "%";
     }
 
     window.addEventListener("scroll", updateProgress, { passive: true });
     window.addEventListener("resize", updateProgress, { passive: true });
-
     updateProgress();
   }
 
-  // ─── LOADER CON TÍTULO QUE SE RELLENA ───
-  // ✅ CORRECCIÓN PUNTO 8: Validaciones de elementos
+  // ─── LOADER ──────────────────────────────
   function initLoader() {
     const loader = $("#loader");
     const titleFill = $("#loaderTitleFill");
     const percentage = $("#loaderPercentage");
 
-    // Si no existe el loader, saltar directamente al hero
     if (!loader) {
       if (isBlockEnabled("hero")) animateHero();
       return;
@@ -170,10 +164,10 @@
     const interval = setInterval(() => {
       progress += Math.random() * 8 + 3;
       if (progress > 100) progress = 100;
-      
+
       if (titleFill) titleFill.style.width = progress + "%";
       if (percentage) percentage.textContent = Math.round(progress) + "%";
-      
+
       if (progress >= 100) {
         clearInterval(interval);
         setTimeout(() => {
@@ -187,72 +181,105 @@
   }
 
   // ─── HEADER ──────────────────────────────
-  // ✅ CORRECCIÓN PUNTO 9: Validaciones de existencia
-  function buildHeader() {
-    const nav = $("#nav");
-    if (!nav) return; // ✅ Validar existencia antes de manipular
+function buildHeader() {
+  const nav = $("#nav");
+  if (!nav) return;
+  const h = C.header;
+  if (!h) return;
 
-    const h = C.header;
-    if (!h) return;
-    
-    const visibleLinks = (h.links || []).filter(link => {
-      const href = link.href || "";
-      // Solo filtrar anchors internos a bloques (#hero, #story, etc.)
-      if (href.startsWith("#") && href.length > 1) {
-        const blockId = href.replace("#", "");
-        return isBlockEnabled(blockId);
-      }
-      // Dejar pasar enlaces externos, páginas, mailto, tel, etc.
-      return true;
-    });
-
-    nav.innerHTML = `
-      <a href="#hero" class="nav-logo">${h.logo.text}<span>${h.logo.highlight}</span></a>
-      <ul class="nav-links" id="navLinks">
-        ${visibleLinks.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join("")}
-      </ul>
-      <a href="${h.cta.href}" class="nav-cta">${h.cta.label}</a>
-      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    `;
-  
-    const hamburger = $("#hamburger");
-    const navLinks = $("#navLinks");
-    const header = $("#header");
-    
-    // ✅ Solo registrar listeners si todos los elementos existen
-    if (hamburger && navLinks && header) {
-      hamburger.addEventListener("click", () => {
-        const isOpen = navLinks.classList.contains("open");
-        if (isOpen) {
-          navLinks.classList.remove("open");
-          hamburger.classList.remove("active");
-          header.classList.remove("menu-open");
-          document.body.style.overflow = "";
-        } else {
-          hamburger.classList.add("active");
-          navLinks.classList.add("open");
-          header.classList.add("menu-open");
-          document.body.style.overflow = "hidden";
-        }
-      });
+  const visibleLinks = (h.links || []).filter(link => {
+    const href = link.href || "";
+    if (href.startsWith("#") && href.length > 1) {
+      const blockId = href.replace("#", "");
+      return isBlockEnabled(blockId);
     }
+    return true;
+  });
 
-    $$(".nav-links a").forEach(a => {
-      a.addEventListener("click", () => {
-        if (hamburger) hamburger.classList.remove("active");
-        if (navLinks) navLinks.classList.remove("open");
-        if (header) header.classList.remove("menu-open");
+  // ✅ Límite inteligente: primeros N en línea, resto en "MÁS"
+  const maxLinks = typeof h.maxLinks === "number" ? h.maxLinks : 5;
+  const extraLinks = visibleLinks.slice(maxLinks);
+
+  nav.innerHTML = `
+    <a href="#hero" class="nav-logo">${h.logo.text}<span>${h.logo.highlight}</span></a>
+    <ul class="nav-links" id="navLinks">
+      ${visibleLinks.map((l, i) =>
+        `<li><a href="${l.href}" class="${i >= maxLinks ? "nav-link-extra" : ""}">${l.label}</a></li>`
+      ).join("")}
+      ${extraLinks.length ? `
+      <li class="nav-more" id="navMore">
+        <button class="nav-more-btn" id="navMoreBtn" aria-haspopup="true" aria-expanded="false">
+          Más
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="nav-more-panel" id="navMorePanel">
+          ${extraLinks.map(l => `<a href="${l.href}">${l.label}</a>`).join("")}
+        </div>
+      </li>` : ""}
+    </ul>
+    <a href="${h.cta.href}" class="nav-cta">${h.cta.label}</a>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  `;
+
+  const hamburger = $("#hamburger");
+  const navLinks = $("#navLinks");
+  const header = $("#header");
+  const moreWrap = $("#navMore");
+  const moreBtn = $("#navMoreBtn");
+
+  if (hamburger && navLinks && header) {
+    hamburger.addEventListener("click", () => {
+      const isOpen = navLinks.classList.contains("open");
+      if (isOpen) {
+        navLinks.classList.remove("open");
+        hamburger.classList.remove("active");
+        header.classList.remove("menu-open");
         document.body.style.overflow = "";
-      });
+      } else {
+        hamburger.classList.add("active");
+        navLinks.classList.add("open");
+        header.classList.add("menu-open");
+        document.body.style.overflow = "hidden";
+      }
     });
-
-    window.addEventListener("scroll", () => {
-      const headerEl = $("#header");
-      if (headerEl) headerEl.classList.toggle("scrolled", window.scrollY > 80);
-    }, { passive: true });
   }
+
+  // ✅ Menú "MÁS" (abrir/cerrar)
+  if (moreWrap && moreBtn) {
+    const closeMore = () => {
+      moreWrap.classList.remove("open");
+      moreBtn.setAttribute("aria-expanded", "false");
+    };
+    moreBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = moreWrap.classList.toggle("open");
+      moreBtn.setAttribute("aria-expanded", String(open));
+    });
+    document.addEventListener("click", (e) => {
+      if (moreWrap.classList.contains("open") && !moreWrap.contains(e.target)) closeMore();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeMore();
+    });
+    $$("#navMorePanel a").forEach(a => a.addEventListener("click", closeMore));
+  }
+
+  $$(".nav-links a").forEach(a => {
+    a.addEventListener("click", () => {
+      if (hamburger) hamburger.classList.remove("active");
+      if (navLinks) navLinks.classList.remove("open");
+      if (header) header.classList.remove("menu-open");
+      document.body.style.overflow = "";
+    });
+  });
+
+  window.addEventListener("scroll", () => {
+    const headerEl = $("#header");
+    if (headerEl) headerEl.classList.toggle("scrolled", window.scrollY > 80);
+  }, { passive: true });
+}
 
   // ─── HERO ────────────────────────────────
   function buildHero() {
@@ -333,7 +360,7 @@
     }, 1400);
   }
 
-  // ─── TYPEWRITER EFFECT ───────────────────
+  // ─── TYPEWRITER ──────────────────────────
   function initTypewriter() {
     if (!isBlockEnabled("hero")) return;
     const words = C.hero?.title?.typewriterWords;
@@ -342,7 +369,6 @@
     const wordEl = $("#typewriterWord");
     const wrapperEl = $("#typewriterWrapper");
     const cursorEl = $("#typewriterCursor");
-
     if (!wordEl || !wrapperEl || !cursorEl) return;
 
     const tempSpan = document.createElement("span");
@@ -401,7 +427,7 @@
     }
     setTimeout(() => tick(), 1800);
   }
-  
+
   // ─── BLOQUE 1: HISTORIA ─────────────────
   function buildStory() {
     if (!isBlockEnabled("story")) {
@@ -493,7 +519,6 @@
     const heading = $(".services-header .section-heading");
     const maxParticles = 15;
     const particles = [];
-
     let particleTimer = null;
     let activationTimer = null;
     let particlesActive = false;
@@ -528,9 +553,7 @@
 
     function scheduleNextParticle() {
       if (!particlesActive) return;
-
       const delay = Math.random() * 1500 + 1000;
-
       particleTimer = setTimeout(() => {
         createParticle();
         particleTimer = null;
@@ -540,14 +563,12 @@
 
     function startParticles() {
       if (particlesActive) return;
-
       particlesActive = true;
       scheduleNextParticle();
     }
 
     function stopParticles() {
       particlesActive = false;
-
       if (particleTimer) {
         clearTimeout(particleTimer);
         particleTimer = null;
@@ -558,15 +579,10 @@
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           clearTimeout(activationTimer);
-
           activationTimer = setTimeout(() => {
             lightBeam.classList.add("active");
             ambientGlow.classList.add("active");
-
-            if (heading) {
-              heading.classList.add("glow-active");
-            }
-
+            if (heading) heading.classList.add("glow-active");
             startParticles();
           }, 500);
         } else {
@@ -575,7 +591,6 @@
         }
       });
     }, { threshold: 0.2 });
-
     observer.observe(servicesSection);
 
     document.addEventListener("visibilitychange", () => {
@@ -583,15 +598,12 @@
         stopParticles();
       } else {
         const rect = servicesSection.getBoundingClientRect();
-
-        if (rect.top < window.innerHeight && rect.bottom > 0) {
-          startParticles();
-        }
+        if (rect.top < window.innerHeight && rect.bottom > 0) startParticles();
       }
     });
   }
 
-  // ─── BLOQUE 3: GALERÍA (CARRUSEL) ───────
+  // ─── BLOQUE 3: GALERÍA ──────────────────
   function buildGallery() {
     if (!isBlockEnabled("gallery")) {
       const section = $("#gallery");
@@ -635,7 +647,7 @@
     slides.forEach((slide, index) => {
       const particlesContainer = $(`#galleryParticles-${index}`);
       if (!particlesContainer) return;
-      
+
       for (let i = 0; i < 12; i++) {
         const particle = document.createElement("div");
         particle.className = "gallery-particle";
@@ -644,14 +656,14 @@
         const duration = Math.random() * 3 + 2;
         const delay = Math.random() * 2;
         const driftX = (Math.random() - 0.5) * 40;
-        
+
         particle.style.left = `${x}%`;
         particle.style.top = `${y}%`;
         particle.style.animation = `galleryParticleFloat ${duration}s ease-in-out ${delay}s infinite`;
         particle.style.setProperty("--drift-x", `${driftX}px`);
         particlesContainer.appendChild(particle);
       }
-      
+
       slide.addEventListener("mousemove", (e) => {
         const rect = slide.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -664,7 +676,7 @@
     });
   }
 
-  // ─── CARRUSEL PARALLAX DE GALERÍA ─────────────────
+  // ─── CARRUSEL PARALLAX DE GALERÍA ───────
   function initGalleryCarousel() {
     const wrapper = $("#galleryCarouselWrapper");
     const carousel = $("#galleryCarousel");
@@ -672,7 +684,7 @@
     if (!wrapper || !carousel) return;
 
     const slides = $$(".gallery-slide", carousel);
-    
+
     let isDragging = false;
     let startX = 0;
     let startTranslate = 0;
@@ -705,7 +717,7 @@
 
     function updateVisuals(x, isSnapping = false) {
       const { minTranslate, maxTranslate } = getLimits();
-      
+
       let finalX = x;
       if (!isSnapping) {
         if (x > maxTranslate) finalX = maxTranslate + (x - maxTranslate) * 0.3;
@@ -716,29 +728,26 @@
 
       currentTranslate = finalX;
 
-      if (isSnapping) {
-        carousel.classList.add("is-snapping");
-      } else {
-        carousel.classList.remove("is-snapping");
-      }
+      if (isSnapping) carousel.classList.add("is-snapping");
+      else carousel.classList.remove("is-snapping");
 
       carousel.style.transform = `translate3d(${finalX}px, 0, 0)`;
 
       const wrapperRect = wrapper.getBoundingClientRect();
       const wrapperCenterX = wrapperRect.left + wrapperRect.width / 2;
-      
+
       slides.forEach(slide => {
         const rect = slide.getBoundingClientRect();
         const slideCenterX = rect.left + rect.width / 2;
         const distance = slideCenterX - wrapperCenterX;
         const normalized = distance / (wrapperRect.width / 2);
-        
+
         const img = $(".gallery-slide-img", slide);
         if (img) {
           const parallaxOffset = normalized * 30;
           img.style.transform = `translate3d(${parallaxOffset}px, 0, 0) scale(1.2)`;
         }
-        
+
         const scale = 1 - Math.abs(normalized) * 0.15;
         const opacity = 1 - Math.abs(normalized) * 0.4;
         slide.style.transform = `scale(${clamp(scale, 0.85, 1)})`;
@@ -756,10 +765,7 @@
     }
 
     function onStart(e) {
-      if (e.type === 'mousedown') {
-        e.preventDefault();
-      }
-      
+      if (e.type === 'mousedown') e.preventDefault();
       isDragging = true;
       startX = getX(e);
       startTranslate = currentTranslate;
@@ -774,10 +780,7 @@
 
     function onMove(e) {
       if (!isDragging) return;
-      
-      if (e.type === 'touchmove' && e.cancelable) {
-        e.preventDefault();
-      }
+      if (e.type === 'touchmove' && e.cancelable) e.preventDefault();
 
       const x = getX(e);
       const deltaX = x - startX;
@@ -822,11 +825,9 @@
 
     carousel.addEventListener("transitionend", (e) => {
       if (e.target !== carousel) return;
-
       carousel.classList.remove("is-snapping");
       snapAnimating = false;
       velocity = 0;
-
       clearTimeout(snapFallbackTimer);
     });
 
@@ -868,9 +869,8 @@
       };
 
       images.forEach(img => {
-        if (img.complete) {
-          done();
-        } else {
+        if (img.complete) done();
+        else {
           img.addEventListener("load", done, { once: true });
           img.addEventListener("error", done, { once: true });
         }
@@ -880,7 +880,6 @@
     function getClosestSnap(x) {
       let closest = snapPositions[0] || 0;
       let minDistance = Infinity;
-
       snapPositions.forEach(pos => {
         const dist = Math.abs(x - pos);
         if (dist < minDistance) {
@@ -888,7 +887,6 @@
           closest = pos;
         }
       });
-
       return closest;
     }
 
@@ -900,7 +898,6 @@
     init();
     recalculateWhenImagesLoad();
 
-    // ✅ Recalcular cuando las fuentes terminen de cargar
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
         calculateSnapPositions();
@@ -993,6 +990,7 @@
   function initEcommerceParticles() {
     const section = $("#ecommerce");
     if (!section) return;
+
     const particlesContainer = document.createElement("div");
     particlesContainer.className = "ecommerce-particles";
     section.appendChild(particlesContainer);
@@ -1022,7 +1020,146 @@
     observer.observe(section);
   }
 
-  // ─── BLOQUE 6: BLOG (TINTA DORADA) ──────
+   // ─── BLOQUE: TESTIMONIOS (confianza social + lazy render) ───
+let tAll = [];            // todos los testimonios de la BD
+let tRendered = 0;        // cuántas tarjetas ya se pintaron
+const T_BATCH = 6;        // tarjetas por lote
+
+function buildTestimonials() {
+    const section = $("#testimonials");
+    if (!isBlockEnabled("testimonials") || !C.testimonials) {
+        if (section) section.style.display = "none";
+        return;
+    }
+    const t = C.testimonials;
+    const inner = $("#testimonialsInner");
+    if (!inner) return;
+
+    inner.innerHTML = `
+        <div class="testimonials-header">
+            <span class="section-label reveal">${t.label}</span>
+            <h2 class="section-heading reveal reveal-delay-1">${t.heading}</h2>
+            <hr class="editorial-hr center reveal reveal-delay-2" />
+            <p class="reveal reveal-delay-3">${t.subtitle}</p>
+        </div>
+        <div class="testimonials-carousel reveal reveal-delay-3">
+            <button class="testimonials-nav prev" id="testimonialsPrev" aria-label="Testimonios anteriores">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <div class="testimonials-track" id="testimonialsTrack" aria-live="polite"></div>
+            <button class="testimonials-nav next" id="testimonialsNext" aria-label="Más testimonios">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+        </div>
+    `;
+
+    // ✅ Garantizar visibilidad (el observer de reveal ya pasó)
+    inner.querySelectorAll(".reveal").forEach(el => el.classList.add("visible"));
+
+    const track = $("#testimonialsTrack");
+    const behavior = prefersReducedMotion ? "auto" : "smooth";
+    const prev = $("#testimonialsPrev");
+    const next = $("#testimonialsNext");
+    if (prev) prev.addEventListener("click", () => track.scrollBy({ left: -360, behavior }));
+    if (next) next.addEventListener("click", () => {
+        renderTestimonialBatch(); // asegura que haya tarjetas antes de avanzar
+        track.scrollBy({ left: 360, behavior });
+    });
+
+    // ✅ LAZY #1: no consultar la BD hasta que el bloque entra en pantalla
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                observer.unobserve(entry.target);
+                loadTestimonials();
+            }
+        });
+    }, { threshold: 0.1, rootMargin: "200px 0px" });
+    observer.observe(section);
+
+    // ✅ LAZY #2: pintar más al acercarse al final del carrusel
+    track.addEventListener("scroll", () => {
+        const nearEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 400;
+        if (nearEnd) renderTestimonialBatch();
+    }, { passive: true });
+}
+
+async function loadTestimonials() {
+    const track = $("#testimonialsTrack");
+    if (!track) return;
+    if (typeof window.supabase === "undefined" || !C.supabase?.url) return;
+    try {
+        const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
+        const { data, error } = await sb
+            .from("testimonials")
+            .select("*")
+            .eq("is_active", true)
+            .order("created_at", { ascending: false })
+            .limit(30); // ✅ permite hasta 30 tarjetas (antes 12)
+        if (error) throw error;
+        if (!data || !data.length) {
+            track.innerHTML = '<div class="testimonials-empty">Muy pronto compartiremos opiniones reales de nuestros clientes.</div>';
+            return;
+        }
+        tAll = data;
+        tRendered = 0;
+        renderTestimonialBatch();                  // 1er lote: inmediato al mostrarse
+        setTimeout(renderTestimonialBatch, 2500);  // ✅ 2do lote: a los 2.5 segundos
+    } catch (e) {
+        track.innerHTML = '<div class="testimonials-empty"></div>';
+    }
+}
+
+function renderTestimonialBatch() {
+    const track = $("#testimonialsTrack");
+    if (!track || tRendered >= tAll.length) return;
+    const batch = tAll.slice(tRendered, tRendered + T_BATCH);
+    batch.forEach(item => track.insertAdjacentHTML("beforeend", testimonialCard(item)));
+    tRendered += batch.length;
+    // fallback de imagen solo en las tarjetas nuevas
+    track.querySelectorAll(".testimonial-img:not([data-fb])").forEach(img => {
+        img.dataset.fb = "1";
+        img.addEventListener("error", function () { this.style.display = "none"; });
+    });
+}
+
+  function testimonialCard(t) {
+    const rating = clamp(Number(t.rating) || 5, 1, 5);
+    const photo = (t.images && t.images.length) ? t.images[0] : null;
+
+    // ✅ Si hay foto real → se muestra; si no → placeholder sobrio
+    const photoHTML = photo
+        ? `<div class="testimonial-photo">
+             <img class="testimonial-img" src="${photo}" alt="Foto real de ${escapeHtml(t.author)}" loading="lazy">
+           </div>`
+        : `<div class="testimonial-photo testimonial-photo--default" aria-hidden="true">
+             <span class="testimonial-quote-mark">"</span>
+           </div>`;
+
+    return `<article class="testimonial-card">
+        ${photoHTML}
+              <div class="testimonial-body">
+                  <div class="testimonial-top">
+                      <span class="testimonial-stars" aria-label="${rating} de 5 estrellas">${"★".repeat(rating)}</span>
+                      <span class="testimonial-source" title="Opinión vía ${escapeHtml(t.source || 'redes')}">${SOURCE_ICONS[t.source] || SOURCE_ICONS.instagram}</span>
+                  </div>
+                  <p class="testimonial-text">"${escapeHtml(t.comment)}"</p>
+                  <div class="testimonial-footer">
+                      <div class="testimonial-author">
+                          <span class="testimonial-avatar">${initials(t.author)}</span>
+                          <span>
+                              <span class="testimonial-name">${escapeHtml(t.author)}</span>
+                              ${t.location ? `<span class="testimonial-location">${escapeHtml(t.location)}</span>` : ""}
+                          </span>
+                      </div>
+                      <span class="testimonial-verified">✓ Real</span>
+                  </div>
+              </div>
+          </article>
+      `;
+  }
+
+  // ─── BLOQUE 6: BLOG ─────────────────────
   function buildBlog() {
     if (!isBlockEnabled("blog")) {
       const section = $("#blog");
@@ -1117,8 +1254,7 @@
     }, { passive: true });
   }
 
-  // ─── BLOQUE 7: CONTACTO (FORMULARIO) ────
-  // ✅ CORRECCIÓN PUNTO 12: Honeypot + validación robusta + rate limiting
+  // ─── BLOQUE 7: CONTACTO ─────────────────
   function buildContact() {
     if (!isBlockEnabled("contact")) {
       const section = $("#contact");
@@ -1158,12 +1294,8 @@
         <hr class="editorial-hr center reveal reveal-delay-2" />
         <p class="contact-subtitle reveal reveal-delay-3">${c.subtitle}</p>
         <form class="contact-form reveal reveal-delay-4" id="contactForm" novalidate>
-          <!-- ✅ HONEYPOT: Campo oculto anti-spam (los bots lo rellenan, los humanos no lo ven) -->
           <input type="text" name="website_url" class="contact-honeypot" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;height:0;width:0;" aria-hidden="true">
-          
-          <!-- ✅ Timestamp para validar tiempo de envío -->
           <input type="hidden" name="form_loaded_at" id="formLoadedAt" value="">
-
           <div class="form-group">
             <input type="text" class="form-input" name="name" placeholder="${c.form.namePlaceholder}" required minlength="2" maxlength="100">
           </div>
@@ -1233,13 +1365,11 @@
     const messageEl = $("#formMessage");
     if (!form) return;
 
-    // ✅ Registrar timestamp de carga (para detectar envíos demasiado rápidos = bots)
     const loadedAtInput = $("#formLoadedAt");
     if (loadedAtInput) loadedAtInput.value = Date.now().toString();
 
-    // ✅ Rate limiting: mínimo 3 segundos entre envíos
     let lastSubmitTime = 0;
-    const MIN_SUBMIT_INTERVAL = 3000; // 3 segundos
+    const MIN_SUBMIT_INTERVAL = 3000;
 
     const inputs = $$(".form-input, .form-textarea", form);
     inputs.forEach(input => {
@@ -1250,19 +1380,15 @@
       });
     });
 
-    // ✅ Validación robusta de email
     function isValidEmail(email) {
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
       return re.test(email);
     }
 
-    // ✅ Detección básica de spam (URLs, palabras clave sospechosas)
     function looksLikeSpam(text) {
       if (!text) return false;
       const lower = text.toLowerCase();
-      // URLs sospechosas
       if (/https?:\/\/|www\.|\.[a-z]{2,4}\/[a-z]/i.test(text) && text.length > 50) return true;
-      // Palabras típicas de spam
       const spamWords = ['viagra', 'casino', 'poker', 'lottery', 'winner', 'prize', 'bitcoin', 'crypto investment', 'earn $', 'make money fast'];
       return spamWords.some(word => lower.includes(word));
     }
@@ -1273,28 +1399,23 @@
       const data = Object.fromEntries(formData);
       const submitBtn = $(".contact-submit", form);
       const originalText = submitBtn.querySelector("span").textContent;
-      
-      // ✅ CHECK 1: Honeypot - si está relleno, es bot
+
       if (data.website_url && data.website_url.trim() !== "") {
-        console.warn("🤖 Honeypot detectado - probable bot");
         messageEl.textContent = C.contact.form.errorMessage;
         messageEl.className = "form-message error visible";
         setTimeout(() => messageEl.classList.remove("visible"), 5000);
         return;
       }
 
-      // ✅ CHECK 2: Tiempo mínimo de carga (bots envían en menos de 1s)
       const loadedAt = parseInt(data.form_loaded_at || "0");
       const timeSinceLoad = Date.now() - loadedAt;
       if (timeSinceLoad < 1500) {
-        console.warn("⚡ Envío demasiado rápido - probable bot");
         messageEl.textContent = "Por favor, tómate un momento para leer el formulario antes de enviarlo.";
         messageEl.className = "form-message error visible";
         setTimeout(() => messageEl.classList.remove("visible"), 5000);
         return;
       }
 
-      // ✅ CHECK 3: Rate limiting
       const now = Date.now();
       if (now - lastSubmitTime < MIN_SUBMIT_INTERVAL) {
         const waitSec = Math.ceil((MIN_SUBMIT_INTERVAL - (now - lastSubmitTime)) / 1000);
@@ -1304,45 +1425,37 @@
         return;
       }
 
-      // ✅ CHECK 4: Validación de campos
       if (!data.name || data.name.trim().length < 2) {
         messageEl.textContent = "Por favor, ingresa tu nombre (mínimo 2 caracteres).";
         messageEl.className = "form-message error visible";
         setTimeout(() => messageEl.classList.remove("visible"), 5000);
         return;
       }
-
       if (!data.email || !isValidEmail(data.email)) {
         messageEl.textContent = "Por favor, ingresa un correo electrónico válido.";
         messageEl.className = "form-message error visible";
         setTimeout(() => messageEl.classList.remove("visible"), 5000);
         return;
       }
-
       if (!data.subject || data.subject.trim().length < 3) {
         messageEl.textContent = "Por favor, ingresa un asunto (mínimo 3 caracteres).";
         messageEl.className = "form-message error visible";
         setTimeout(() => messageEl.classList.remove("visible"), 5000);
         return;
       }
-
       if (!data.message || data.message.trim().length < 10) {
         messageEl.textContent = "Por favor, escribe un mensaje de al menos 10 caracteres.";
         messageEl.className = "form-message error visible";
         setTimeout(() => messageEl.classList.remove("visible"), 5000);
         return;
       }
-
-      // ✅ CHECK 5: Detección de spam
       if (looksLikeSpam(data.message) || looksLikeSpam(data.subject)) {
-        console.warn("🚫 Spam detectado en el mensaje");
         messageEl.textContent = "Tu mensaje ha sido marcado como sospechoso. Si es un error, intenta reformularlo.";
         messageEl.className = "form-message error visible";
         setTimeout(() => messageEl.classList.remove("visible"), 5000);
         return;
       }
 
-      // ✅ Estado de carga claro
       submitBtn.querySelector("span").textContent = "Enviando...";
       submitBtn.disabled = true;
       lastSubmitTime = now;
@@ -1366,7 +1479,6 @@
           messageEl.textContent = C.contact.form.successMessage;
           messageEl.className = "form-message success visible";
           form.reset();
-          // ✅ Reiniciar timestamp tras envío exitoso
           if (loadedAtInput) loadedAtInput.value = Date.now().toString();
           setTimeout(() => messageEl.classList.remove("visible"), 5000);
         } else {
@@ -1384,7 +1496,6 @@
   }
 
   // ─── FOOTER ──────────────────────────────
-  // ✅ CORRECCIÓN PUNTO 13: Lógica correcta de enlaces
   function buildFooter() {
     if (!isBlockEnabled("footer")) {
       const section = $("#footer");
@@ -1397,30 +1508,18 @@
     const inner = $("#footerInner");
     if (!inner) return;
 
-    // ✅ Nueva lógica: solo filtrar anchors internos a bloques (#hero, #story, etc.)
-    // Los demás enlaces (mailto:, tel:, legal.html, #, externos) SIEMPRE se muestran
     const visibleColumns = (f.columns || []).map(col => {
       const visibleLinks = (col.links || []).filter(link => {
         const href = link.href || "";
-
-        // Caso 1: Anchor interna a un bloque (#hero, #story, #services, etc.)
         if (href.startsWith("#") && href.length > 1) {
           const blockId = href.replace("#", "");
           return isBlockEnabled(blockId);
         }
-
-        // Caso 2: Cualquier otro enlace SIEMPRE se muestra
-        // - Páginas: legal.html, legal.html#privacy, tienda.html, blog.html
-        // - Externos: https://...
-        // - Mailto: mailto:hola@studio.com
-        // - Tel: tel:+525512345678
-        // - Anchor vacío: # (no filtra, pero tampoco aporta mucho)
         return true;
       });
-
       return { ...col, links: visibleLinks };
     }).filter(col => col.links.length > 0);
-    
+
     inner.innerHTML = `
       <div class="footer-top">
         <div class="footer-brand">
@@ -1438,6 +1537,7 @@
         <span class="footer-copy">${f.copyright}</span>
         <div class="footer-socials">${(C.socials || []).map(s => `<a href="${s.href}" target="_blank" rel="noopener noreferrer">${s.label}</a>`).join("")}</div>
       </div>
+      <div data-admin-link style="margin-top:1.4rem;"></div>
     `;
   }
 
@@ -1457,54 +1557,46 @@
 
   // ─── PARALLAX ENGINE ─────────────────────
   function initParallax() {
-  // ✅ NUEVO: Reducir parallax en móvil automáticamente
-  const isMobile = window.innerWidth < 769;
-  const heroSpeed = isMobile 
-    ? C.effects.parallaxHeroSpeed * 0.3  // Solo 30% en móvil
-    : C.effects.parallaxHeroSpeed;
-  
-  const imageSpeed = isMobile
-    ? C.effects.parallaxImageSpeed * 0.5  // 50% en móvil
-    : C.effects.parallaxImageSpeed;
+    const isMobile = window.innerWidth < 769;
+    const heroSpeed = isMobile ? C.effects.parallaxHeroSpeed * 0.3 : C.effects.parallaxHeroSpeed;
+    const imageSpeed = isMobile ? C.effects.parallaxImageSpeed * 0.5 : C.effects.parallaxImageSpeed;
 
-  // Si el usuario prefiere movimiento reducido, no activar parallax
-  if (prefersReducedMotion) return;
+    if (prefersReducedMotion) return;
 
-  const heroBg = $("#heroBg");
-  const storyImg = $(".story-image");
-  let ticking = false;
+    const heroBg = $("#heroBg");
+    const storyImg = $(".story-image");
+    let ticking = false;
 
-  function updateParallax() {
-    const scrollY = window.scrollY;
-    if (heroBg) heroBg.style.transform = `translate3d(0, ${scrollY * heroSpeed}px, 0) scale(1.1)`;
-    if (storyImg) {
-      const rect = storyImg.getBoundingClientRect();
-      if (rect.top < window.innerHeight && rect.bottom > 0) {
-        const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-        storyImg.style.transform = `translate3d(0, ${(progress - 0.5) * rect.height * imageSpeed}px, 0) scale(1.15)`;
+    function updateParallax() {
+      const scrollY = window.scrollY;
+      if (heroBg) heroBg.style.transform = `translate3d(0, ${scrollY * heroSpeed}px, 0) scale(1.1)`;
+      if (storyImg) {
+        const rect = storyImg.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+          storyImg.style.transform = `translate3d(0, ${(progress - 0.5) * rect.height * imageSpeed}px, 0) scale(1.15)`;
+        }
       }
-    }  
-    const si = $("#scrollIndicator");
-    if (si) si.style.opacity = clamp(1 - scrollY / 300, 0, 1);
-    ticking = false;
-  }
-
-  window.addEventListener("scroll", () => {
-    if (!ticking) {
-      requestAnimationFrame(updateParallax);
-      ticking = true;
+      const si = $("#scrollIndicator");
+      if (si) si.style.opacity = clamp(1 - scrollY / 300, 0, 1);
+      ticking = false;
     }
-  }, { passive: true });
-}
+
+    window.addEventListener("scroll", () => {
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    }, { passive: true });
+  }
 
   // ─── CURSOR PERSONALIZADO ────────────────
   function initCursor() {
     if (!C.effects.cursorEnabled || window.innerWidth < 769) return;
     const cursor = $("#cursor");
     const follower = $("#cursorFollower");
-    
     if (!cursor || !follower) return;
-    
+
     let mx = 0, my = 0, fx = 0, fy = 0;
 
     document.addEventListener("mousemove", (e) => {
@@ -1539,14 +1631,12 @@
   }
 
   // ─── SMOOTH ANCHOR SCROLL ────────────────
-  // ✅ CORRECCIÓN PUNTO 11: Reduced-motion + validaciones + offset dinámico
   function initSmoothScroll() {
     document.addEventListener("click", (e) => {
       const anchor = e.target.closest('a[href^="#"]');
       if (!anchor) return;
 
       const href = anchor.getAttribute("href");
-      // ✅ No procesar anchors vacíos (#)
       if (!href || href === "#") return;
 
       const target = $(href);
@@ -1554,19 +1644,14 @@
 
       e.preventDefault();
 
-      // ✅ Calcular offset dinámico según el header actual
       const headerEl = $("#header");
       const headerHeight = headerEl ? headerEl.offsetHeight : 80;
-      const offset = headerHeight + 20; // +20px de margen
-
+      const offset = headerHeight + 20;
       const targetPosition = target.getBoundingClientRect().top + window.scrollY - offset;
-
-      // ✅ Respetar prefers-reduced-motion
       const behavior = prefersReducedMotion ? "auto" : "smooth";
 
       window.scrollTo({ top: targetPosition, behavior });
 
-      // ✅ Actualizar URL sin saltar (para que se pueda compartir el anchor)
       if (window.history && window.history.pushState) {
         history.pushState(null, "", href);
       }
@@ -1610,11 +1695,8 @@
   }
 
   // ─── MAGNETIC EFFECT ─────────────────────
-  // ✅ CORRECCIÓN PUNTO 14: Respeta prefers-reduced-motion + cleanup mejorado
   function initMagnetic() {
-    // ✅ No aplicar si el usuario prefiere movimiento reducido
     if (prefersReducedMotion) return;
-
     const buttons = $$(".philosophy-cta, .hero-cta, .nav-cta");
     buttons.forEach(btn => {
       btn.addEventListener("mousemove", (e) => {
@@ -1622,17 +1704,13 @@
         btn.style.transform = `translate(${(e.clientX - rect.left - rect.width / 2) * 0.2}px, ${(e.clientY - rect.top - rect.height / 2) * 0.2}px)`;
       });
       btn.addEventListener("mouseleave", () => {
-        // ✅ Cleanup correcto: remover transition DESPUÉS de que termine la animación
         btn.style.transition = "transform 0.5s cubic-bezier(0.16,1,0.3,1)";
         btn.style.transform = "translate(0, 0)";
-        
         const cleanup = () => {
           btn.style.transition = "";
           btn.removeEventListener("transitionend", cleanup);
         };
         btn.addEventListener("transitionend", cleanup);
-        
-        // Fallback por si transitionend no dispara
         setTimeout(() => {
           if (btn.style.transition) btn.style.transition = "";
         }, 600);
@@ -1673,6 +1751,7 @@
     initGalleryParticles();
     initServicesLight();
     setTimeout(initMagnetic, C.loader.duration + 600);
+    buildTestimonials();
   }
 
   if (document.readyState === "loading") {

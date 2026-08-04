@@ -10,6 +10,62 @@
     // Productos desde config
     const PRODUCTS = C.ecommerce.products || [];
 
+    // ★ Cliente exclusivo para órdenes (no choca con el de inventario)
+const supabaseOrders = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
+
+// ★ Guardar orden en la tabla `orders`
+async function saveOrder(orderData) {
+    try {
+        const { error } = await supabaseOrders.from('orders').insert([orderData]);
+        if (error) { console.error('Error guardando orden:', error); return false; }
+        return true;
+    } catch (e) { console.error(e); return false; }
+}
+
+ // ============================================
+ // 💳 MÓDULO DE PAGOS (se activa desde config.js)
+ // ============================================
+ const PAYMENTS_ENABLED = !!(C.payments && C.payments.enabled);
+
+ async function checkoutWithCard() {
+     if (!PAYMENTS_ENABLED) return;
+     if (cart.length === 0) { showToast("Tu carrito está vacío.", "error"); return; }
+     const { subtotal, discount, total } = getCartTotals();
+     const btn = $("#payCardBtn");
+     btn.disabled = true; btn.textContent = "Creando pago...";
+     try {
+         const res = await fetch(`${C.supabase.url}/functions/v1/create-payment`, {
+             method: "POST",
+             headers: { "Content-Type": "application/json", Authorization: `Bearer ${C.supabase.key}` },
+             body: JSON.stringify({
+                 items: cart.map(i => ({ id: i.id, name: i.name, variant: i.variantName, qty: i.quantity, price: i.price })),
+                 subtotal, discount, total,
+                 promo_code: appliedPromoCode ? appliedPromoCode.code : null,
+                 customer_name: "Cliente Web",
+             }),
+         });
+         const data = await res.json();
+         if (!res.ok || data.error) throw new Error(data.error);
+         cart = []; appliedPromoCode = null;
+         saveCart(); updateCart(); updatePromoUI(); closeCart();
+         window.location.href = data.init_point;
+     } catch (e) {
+         showToast("No se pudo crear el pago: " + e.message, "error");
+         btn.disabled = false;
+         btn.textContent = C.payments?.buttonLabel || "💳 Pagar con tarjeta";
+     }
+ }
+
+ function handlePaymentReturn() {
+     const params = new URLSearchParams(window.location.search);
+     const payment = params.get("payment");
+     if (!payment) return;
+     if (payment === "success") showToast("✅ ¡Pago aprobado! Gracias por tu compra.", "success");
+     else if (payment === "pending") showToast("⏳ Pago pendiente. Revisa tu correo.", "info");
+     else showToast("❌ El pago no se completó.", "error");
+     history.replaceState(null, "", window.location.pathname);
+ }
+
     // ============================================
     // ✅ NUEVO: Formateador de moneda MXN
     // ============================================
@@ -141,6 +197,7 @@
         initPromoPopup();
         initWhatsAppButton();
         initStorageSync(); // ✅ NUEVO: Sincronizar entre pestañas
+        handlePaymentReturn();
     }
 
     // ─── CONSTRUIR HEADER DE LA TIENDA ─────────────────
@@ -604,6 +661,11 @@ function triggerCartBounce() {
     }
 
     function updateCart() {
+        if (cart.length === 0 && appliedPromoCode) {
+         appliedPromoCode = null;
+         updatePromoUI();
+         showToast("Cupón retirado: el carrito quedó vacío", "info");
+     }
         const { subtotal, discount, total } = getCartTotals();
 
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -871,93 +933,70 @@ function triggerCartBounce() {
         if (elements.modalClose) elements.modalClose.addEventListener("click", closeProductModal);
         if (elements.modalOverlay) elements.modalOverlay.addEventListener("click", closeProductModal);
 
-        const checkoutBtn = $("#cartCheckout");
-        if (checkoutBtn) {
-            checkoutBtn.addEventListener("click", () => {
-                if (cart.length === 0) {
-                    const emptyAlert = C.shopConfig?.whatsapp?.emptyCartAlert ||
-                        "Tu carrito está vacío. ¡Agrega algunos productos primero!";
-                    showToast(emptyAlert, "error"); // ✅ Reemplazado alert() por toast
-                    return;
-                }
+            const checkoutBtn = $("#cartCheckout");
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener("click", async () => {
+            if (isProcessingCheckout) return;
+             isProcessingCheckout = true;
+             if (cart.length === 0) {
+             isProcessingCheckout = false;
+                showToast("Tu carrito está vacío. ¡Agrega algunos productos primero!");
+                return;
+            }
 
-                // ✅ NUEVO: Prevenir doble click
-                if (isProcessingCheckout) return;
-                isProcessingCheckout = true;
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            let discount = 0;
+            if (appliedPromoCode) {
+                if (appliedPromoCode.type === "percent") discount = subtotal * (appliedPromoCode.value / 100);
+                else if (appliedPromoCode.type === "fixed") discount = appliedPromoCode.value;
+                discount = Math.min(discount, subtotal);
+            }
+            const total = Math.max(0, subtotal - discount);
 
-                const { subtotal, discount, total } = getCartTotals();
+            if (!window.confirm(`¿Confirmas tu pedido por $${total}? Se abrirá WhatsApp para completarlo.`)) return;
 
-                // ✅ NUEVO: Confirmación antes de vaciar el carrito
-                const confirmMsg = `¿Confirmas tu pedido por ${formatCurrency(total)}? Se abrirá WhatsApp para completar la compra.`;
-                const confirmed = window.confirm(confirmMsg);
-
-                if (!confirmed) {
-                    isProcessingCheckout = false;
-                    return;
-                }
-
-                // ✅ Estado de carga visual
-                const originalText = checkoutBtn.textContent;
-                checkoutBtn.disabled = true;
-                checkoutBtn.textContent = "Abriendo WhatsApp...";
-
-                let msg = "¡Hola! Me interesa hacer el siguiente pedido:\n\n";
-
-                cart.forEach(item => {
-                    msg += `▪️ *${item.name}* (${item.variantName || 'Único'}) x${item.quantity} = ${formatCurrency(item.price * item.quantity)}\n`;
-                });
-
-                msg += `\n*Subtotal:* ${formatCurrency(subtotal)}`;
-
-                if (appliedPromoCode && discount > 0) {
-                    msg += `\n*Código:* ${appliedPromoCode.code} (-${formatCurrency(discount)})`;
-                }
-
-                msg += `\n*💰 Total a pagar: ${formatCurrency(total)}*`;
-
-                const encodedMsg = encodeURIComponent(msg);
-                const phoneNumber = (C.tienda && C.tienda.whatsapp)
-                    ? C.tienda.whatsapp
-                    : "521234567890";
-
-                // ✅ Guardar el pedido antes de vaciar (por si el usuario vuelve)
-                const orderSnapshot = {
-                    items: [...cart],
-                    subtotal,
-                    discount,
-                    total,
-                    promoCode: appliedPromoCode ? appliedPromoCode.code : null,
-                    timestamp: Date.now()
-                };
-                
-                try {
-                    sessionStorage.setItem('lastOrder', JSON.stringify(orderSnapshot));
-                } catch (e) {
-                    console.warn("No se pudo guardar snapshot del pedido");
-                }
-
-                // Abrir WhatsApp
-                window.open(`https://wa.me/${phoneNumber}?text=${encodedMsg}`, '_blank');
-
-                // ✅ Vaciar carrito DESPUÉS de la confirmación
-                cart = [];
-                appliedPromoCode = null;
-
-                saveCart();
-                updateCart();
-                updatePromoUI();
-                closeCart();
-
-                showToast("Pedido enviado. Continuamos en WhatsApp.", "success");
-
-                // Restaurar botón
-                setTimeout(() => {
-                    checkoutBtn.disabled = false;
-                    checkoutBtn.textContent = originalText;
-                    isProcessingCheckout = false;
-                }, 1000);
+            let msg = "¡Hola! Me interesa hacer el siguiente pedido:\n\n";
+            cart.forEach(item => {
+                msg += `▪️ *${item.name}* (${item.variantName || 'Único'}) x${item.quantity} = $${item.price * item.quantity}\n`;
             });
-        }
+            msg += `\n*Subtotal:* $${subtotal}`;
+            if (appliedPromoCode && discount > 0) msg += `\n*Código:* ${appliedPromoCode.code} (-$${discount})`;
+            msg += `\n*💰 Total a pagar: $${total}*`;
+
+            // ★ GUARDAR ORDEN EN BASE DE DATOS
+            const saved = await saveOrder({
+                customer_name: "Pedido WhatsApp",
+                customer_phone: null,
+                items: cart.map(i => ({ id: i.id, name: i.name, variant: i.variantName, qty: i.quantity, price: i.price })),
+                subtotal: subtotal,
+                discount: discount,
+                total: total,
+                promo_code: appliedPromoCode ? appliedPromoCode.code : null,
+                status: "pending"
+            });
+            if (!saved) showToast("⚠️ No se registró en el sistema, pero puedes enviarlo por WhatsApp.");
+
+            const encodedMsg = encodeURIComponent(msg);
+            const phoneNumber = (C.tienda && C.tienda.whatsapp) ? C.tienda.whatsapp : "521234567890";
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedMsg}`, '_blank');
+
+            cart = [];
+            appliedPromoCode = null;
+            saveCart();
+            updateCart();
+            updatePromoUI();
+            closeCart();
+            showToast("Pedido enviado. Continuamos en WhatsApp.");
+        });
+    }
+
+         // 💳 Botón de tarjeta: solo visible si el interruptor está en true
+     const payCardBtn = $("#payCardBtn");
+     if (payCardBtn) {
+         payCardBtn.style.display = PAYMENTS_ENABLED ? "block" : "none";
+         if (C.payments?.buttonLabel) payCardBtn.textContent = C.payments.buttonLabel;
+         payCardBtn.addEventListener("click", checkoutWithCard);
+     }
 
         const applyPromoBtn = $("#applyPromoBtn");
         if (applyPromoBtn) applyPromoBtn.addEventListener("click", handleApplyPromo);

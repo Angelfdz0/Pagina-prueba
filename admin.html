@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin | Studio</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+    <!-- LOGIN -->
+    <div class="admin-login" id="adminLogin">
+        <form class="admin-login-card" id="adminLoginForm">
+            <h1>Panel de Administración</h1>
+            <p>🔐 Acceso restringido</p>
+            <label for="adminEmail" class="sr-only">Correo</label>
+            <input type="email" id="adminEmail" placeholder="Correo" required autocomplete="email">
+            <label for="adminPassword" class="sr-only">Contraseña</label>
+            <input type="password" id="adminPassword" placeholder="Contraseña" required autocomplete="current-password">
+            <button type="submit">Entrar</button>
+            <div class="admin-login-error" id="adminLoginError" role="alert"></div>
+            <a href="index.html" class="admin-back">← Volver al sitio</a>
+        </form>
+    </div>
+
+    <!-- APP -->
+    <div class="admin-app" id="adminApp" hidden>
+        <aside class="admin-sidebar">
+        <a href="index.html" class="admin-brand" aria-label="Studio — Volver al inicio">STU<span>DIO</span> · Admin</a>
+            <nav aria-label="Secciones del panel">
+                <button data-view="dashboard" class="active">📊 Dashboard</button>
+                <button data-view="posts">📝 Posts</button>
+                <button data-view="comments">💬 Comentarios</button>
+                <button data-view="orders">🛒 Órdenes</button>
+                <button data-view="coupons">🎟️ Cupones</button>
+                <button data-view="categories">🏷️ Categorías</button>
+                <button data-view="testimonials">🌟 Testimonios</button>
+            </nav>
+            <div class="admin-sidebar-footer">
+    <a href="index.html" class="admin-back-home">← Volver al inicio</a>
+    <a href="blog.html" target="_blank" rel="noopener">Ver blog ↗</a>
+    <button id="adminLogout">Cerrar sesión</button>
+</div>
+        </aside>
+
+        <main class="admin-main">
+            <section id="view-dashboard" class="admin-view active">
+                <h2>Dashboard</h2>
+                <div class="admin-stats" id="adminStats"></div>
+            </section>
+
+            <section id="view-posts" class="admin-view">
+                <h2>Posts</h2>
+                <div id="postsTable"></div>
+            </section>
+
+            <section id="view-comments" class="admin-view">
+                <h2>Comentarios</h2>
+                <div id="commentsTable"></div>
+            </section>
+
+            <section id="view-orders" class="admin-view">
+                <h2>Órdenes</h2>
+                <div id="ordersTable"></div>
+            </section>
+
+            <section id="view-coupons" class="admin-view">
+                <h2>Cupones</h2>
+                <form id="couponForm" class="admin-inline-form">
+                    <input id="couponCode" placeholder="CÓDIGO" required>
+                    <select id="couponType" aria-label="Tipo de cupón">
+                        <option value="percent">%</option>
+                        <option value="fixed">$</option>
+                    </select>
+                    <input id="couponValue" type="number" min="1" placeholder="Valor" required>
+                    <input id="couponUntil" type="date" aria-label="Fecha de vencimiento">
+                    <button type="submit">Agregar</button>
+                </form>
+                <div id="couponsTable"></div>
+            </section>
+
+            <section id="view-categories" class="admin-view">
+                <h2>Categorías</h2>
+                <form id="categoryForm" class="admin-inline-form">
+                    <input id="categoryName" placeholder="Nueva categoría" required>
+                    <button type="submit">Agregar</button>
+                </form>
+                <div id="categoriesTable"></div>
+            </section>
+
+            <section id="view-testimonials" class="admin-view">
+    <h2>Testimonios</h2>
+    <form id="testimonialForm" class="admin-testimonial-form">
+        <input id="tAuthor" placeholder="Nombre del cliente" required>
+        <input id="tLocation" placeholder="Ciudad (opcional)">
+        <div class="admin-editor-row">
+            <div>
+                <select id="tSource" aria-label="Red social de origen">
+                    <option value="instagram">Instagram</option>
+                    <option value="facebook">Facebook</option>
+                    <option value="whatsapp">WhatsApp</option>
+                    <option value="google">Google</option>
+                </select>
+            </div>
+            <div>
+                <select id="tRating" aria-label="Calificación">
+                    <option value="5">★★★★★</option>
+                    <option value="4">★★★★</option>
+                    <option value="3">★★★</option>
+                </select>
+            </div>
+        </div>
+        <textarea id="tComment" rows="3" placeholder="Copia aquí el comentario REAL del cliente (de tus redes)" required></textarea>
+        <div>
+            <button type="button" class="admin-btn txt" id="tAddPhoto">📷 Agregar foto real</button>
+            <input type="file" id="tPhotoInput" accept="image/*" style="display:none">
+            <div class="admin-editor-images" id="tPhotos"></div>
+        </div>
+        <button type="submit" class="admin-btn txt">Publicar testimonio</button>
+    </form>
+    <div id="testimonialsTable"></div>
+</section>
+        </main>
+    </div>
+
+    <!-- EDITOR DE POST (modal) -->
+    <div class="admin-editor" id="postEditor">
+        <form class="admin-editor-card" id="postEditorForm">
+            <div class="admin-editor-head">
+                <h3>Editar Post</h3>
+                <button type="button" class="auth-close" id="postEditorClose" aria-label="Cerrar editor">✕</button>
+            </div>
+            <input type="hidden" id="editPostId">
+            <label for="editTitle">Título</label>
+            <input id="editTitle" required>
+            <label for="editSubtitle">Subtítulo</label>
+            <input id="editSubtitle">
+            <div class="admin-editor-row">
+                <div>
+                    <label for="editCategory">Categoría</label>
+                    <select id="editCategory"></select>
+                </div>
+                <div>
+                    <label for="editStatus">Estado</label>
+                    <select id="editStatus">
+                        <option value="published">Publicado</option>
+                        <option value="draft">Borrador</option>
+                    </select>
+                </div>
+            </div>
+            <label for="editAuthor">Autor</label>
+            <input id="editAuthor" required>
+            <label for="editExcerpt">Extracto (opcional)</label>
+            <textarea id="editExcerpt" rows="2"></textarea>
+            <label for="editContent">Contenido</label>
+            <div class="admin-editor-toolbar">
+                <button type="button" class="admin-btn" id="editInsertImage">📷 Insertar imagen en el texto</button>
+            </div>
+            <input type="file" id="editImageInput" accept="image/*" style="display:none">
+            <textarea id="editContent" rows="10" required></textarea>
+            <label>Imágenes de portada</label>
+            <div class="admin-editor-images" id="editImages"></div>
+            <button type="button" class="admin-btn" id="editAddCover">+ Agregar portada</button>
+            <input type="file" id="editCoverInput" accept="image/*" style="display:none">
+            <button type="submit" class="admin-editor-save">Guardar cambios</button>
+        </form>
+    </div>
+
+    <div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
+
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px; height: 1px;
+            padding: 0; margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+
+    <!-- Scripts (orden importante) -->
+    <script src="config.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>
