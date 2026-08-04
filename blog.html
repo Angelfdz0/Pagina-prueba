@@ -1,64 +1,88 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Blog de Studio Creativo. Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.">
+    <meta name="theme-color" content="#0a0a0a">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Blog | Studio Creativo">
+    <meta property="og:description" content="Historias que inspiran. Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.">
+    <meta property="og:locale" content="es_MX">
+    
     <title>Blog | Studio</title>
+    
+    <!-- Favicon SVG inline -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+    
+    <!-- Supabase CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Estilos -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="blog.css">
+    
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     
     <!-- Grain overlay -->
-    <div class="grain-overlay"></div>
+    <div class="grain-overlay" aria-hidden="true"></div>
 
-    <!-- LOGIN MODAL -->
-    <div class="login-modal" id="loginModal">
+    <!-- ============================================
+         LOGIN MODAL
+         ✅ Accesible: role="dialog", aria-modal, aria-labelledby
+         ============================================ -->
+    <div class="login-modal" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginModalTitle">
         <div class="login-overlay" id="loginOverlay"></div>
         <div class="login-content">
-            <button class="login-close" id="loginClose">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="login-close" id="loginClose" aria-label="Cerrar modal de inicio de sesión">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M18 6L6 18M6 6l12 12"></path>
                 </svg>
             </button>
             <div class="login-header">
                 <span class="login-badge">🔐 Acceso Restringido</span>
-                <h2 class="login-title">Panel de Administración</h2>
+                <h2 class="login-title" id="loginModalTitle">Panel de Administración</h2>
                 <p class="login-subtitle">Ingresa tus credenciales para crear y gestionar contenido</p>
             </div>
-            <form class="login-form" id="loginForm">
+            <form class="login-form" id="loginForm" novalidate>
                 <div class="form-group">
-                    <label>Correo Electrónico</label>
-                    <input type="email" id="loginEmail" required placeholder="admin@tudominio.com">
+                    <label for="loginEmail">Correo Electrónico</label>
+                    <input type="email" id="loginEmail" required placeholder="admin@tudominio.com" autocomplete="email" aria-describedby="loginError">
                 </div>
                 <div class="form-group">
-                    <label>Contraseña</label>
-                    <input type="password" id="loginPassword" required placeholder="••••••••">
+                    <label for="loginPassword">Contraseña</label>
+                    <input type="password" id="loginPassword" required placeholder="••••••••" autocomplete="current-password">
                 </div>
                 <button type="submit" class="login-submit">
                     <span>Iniciar Sesión</span>
                 </button>
-                <div class="login-error" id="loginError"></div>
+                <div class="login-error" id="loginError" role="alert" aria-live="polite"></div>
             </form>
         </div>
     </div>
 
     <!-- Header del Blog -->
-    <header class="blog-header" id="blogHeader">
+    <header class="blog-header" id="blogHeader" role="banner">
         <div class="blog-header-inner">
-            <a href="index.html" class="blog-logo">STU<span>DIO</span></a>
+            <a href="index.html" class="blog-logo" aria-label="Studio - Ir al inicio">STU<span>DIO</span></a>
             <div class="blog-search-bar">
-                <input type="text" id="searchInput" placeholder="Buscar artículos...">
-                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <label for="searchInput" class="sr-only">Buscar artículos</label>
+                <input type="text" id="searchInput" placeholder="Buscar artículos..." aria-label="Buscar artículos">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="M21 21l-4.35-4.35"></path>
                 </svg>
             </div>
             <div class="blog-header-actions">
-                <button class="blog-toggle" id="newPostBtn" aria-label="Nuevo Post">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button class="blog-toggle" id="newPostBtn" aria-label="Crear nuevo post">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <path d="M12 5v14M5 12h14"></path>
                     </svg>
                     <span class="blog-toggle-label">Nuevo Post</span>
@@ -67,61 +91,67 @@
         </div>
     </header>
 
-    <!-- Hero del Blog -->
-    <section class="blog-hero">
-        <div class="blog-hero-bg"></div>
-        <div class="blog-hero-glow"></div>
-        <div class="blog-stars" id="blogStars"></div>
-        <div class="blog-hero-content">
-            <span class="blog-eyebrow">Nuestro Blog</span>
-            <h1 class="blog-title">
-                <span class="line"><span class="line-inner">Historias que</span></span>
-                <span class="line"><span class="line-inner"><em>inspiran</em></span></span>
-            </h1>
-            <p class="blog-subtitle">Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.</p>
-        </div>
-        <div class="blog-hero-wave">
-            <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
-                <path d="M0,50 C360,100 720,0 1080,50 C1260,75 1380,50 1440,50 L1440,100 L0,100 Z" fill="var(--color-bg)"/>
-            </svg>
-        </div>
-    </section>
+    <main role="main">
+        <!-- Hero del Blog -->
+        <section class="blog-hero" aria-label="Inicio del blog">
+            <div class="blog-hero-bg" aria-hidden="true"></div>
+            <div class="blog-hero-glow" aria-hidden="true"></div>
+            <div class="blog-stars" id="blogStars" aria-hidden="true"></div>
+            <div class="blog-hero-content">
+                <span class="blog-eyebrow">Nuestro Blog</span>
+                <h1 class="blog-title">
+                    <span class="line"><span class="line-inner">Historias que</span></span>
+                    <span class="line"><span class="line-inner"><em>inspiran</em></span></span>
+                </h1>
+                <p class="blog-subtitle">Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.</p>
+            </div>
+            <div class="blog-hero-wave" aria-hidden="true">
+                <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+                    <path d="M0,50 C360,100 720,0 1080,50 C1260,75 1380,50 1440,50 L1440,100 L0,100 Z" fill="var(--color-bg)"/>
+                </svg>
+            </div>
+        </section>
 
-    <!-- Filtros -->
-    <section class="blog-filters-section">
-        <div class="blog-filters" id="blogFilters">
-            <button class="filter-btn active" data-filter="all">Todos</button>
-        </div>
-        <div class="blog-sort">
-            <select id="sortSelect">
-                <option value="default">Ordenar por</option>
-                <option value="recent">Más recientes</option>
-                <option value="popular">Más populares</option>
-            </select>
-        </div>
-    </section>
+        <!-- Filtros -->
+        <section class="blog-filters-section" aria-label="Filtros y ordenamiento de artículos">
+            <div class="blog-filters" id="blogFilters" role="tablist" aria-label="Filtrar artículos por categoría">
+                <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">Todos</button>
+            </div>
+            <div class="blog-sort">
+                <label for="sortSelect" class="sr-only">Ordenar artículos</label>
+                <select id="sortSelect" aria-label="Ordenar artículos por">
+                    <option value="default">Ordenar por</option>
+                    <option value="recent">Más recientes</option>
+                    <!-- ✅ ELIMINADO: "Más populares" no está implementado en blog.js -->
+                </select>
+            </div>
+        </section>
 
-    <!-- Grid de Posts -->
-    <section class="blog-posts-section">
-        <div class="blog-posts-grid" id="postsGrid"></div>
-        <div class="blog-no-results" id="noResults" style="display: none;">
-            <p>No se encontraron artículos</p>
-        </div>
-    </section>
+        <!-- Grid de Posts -->
+        <section class="blog-posts-section" aria-label="Lista de artículos del blog">
+            <div class="blog-posts-grid" id="postsGrid" role="tabpanel" aria-live="polite"></div>
+            <div class="blog-no-results" id="noResults" style="display: none;" role="status" aria-live="polite">
+                <p>No se encontraron artículos</p>
+            </div>
+        </section>
+    </main>
 
-    <!-- Modal de Lectura -->
-    <div class="post-modal" id="postModal">
+    <!-- ============================================
+         MODAL DE LECTURA DE POST
+         ✅ Accesible: role="dialog", aria-modal, aria-labelledby
+         ============================================ -->
+    <div class="post-modal" id="postModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
         <div class="modal-overlay" id="modalOverlay"></div>
         <div class="modal-content">
-            <button class="modal-close" id="modalClose">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="modal-close" id="modalClose" aria-label="Cerrar artículo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M18 6L6 18M6 6l12 12"></path>
                 </svg>
             </button>
             <div class="modal-body">
-                <div class="modal-gallery-section">
-                    <div class="modal-gallery" id="modalGallery"></div>
-                    <div class="modal-thumbnails" id="modalThumbnails"></div>
+                <div class="modal-gallery-section" aria-label="Galería de imágenes del artículo">
+                    <div class="modal-gallery" id="modalGallery" role="region" aria-label="Imágenes del artículo"></div>
+                    <div class="modal-thumbnails" id="modalThumbnails" role="tablist" aria-label="Miniaturas de imágenes"></div>
                 </div>
                 <div class="modal-info-section">
                     <div class="modal-info-content">
@@ -129,7 +159,7 @@
                         <h2 class="modal-title" id="modalTitle"></h2>
                         <div class="modal-meta">
                             <span class="modal-author" id="modalAuthor"></span>
-                            <span class="modal-date" id="modalDate"></span>
+                            <time class="modal-date" id="modalDate"></time>
                         </div>
                         <div class="modal-description" id="modalDescription"></div>
                     </div>
@@ -138,64 +168,68 @@
         </div>
     </div>
 
-    <!-- Modal de Nuevo Post (ADMIN) -->
-    <div class="new-post-modal" id="newPostModal">
+    <!-- ============================================
+         MODAL DE NUEVO POST (ADMIN)
+         ✅ Accesible: role="dialog", aria-modal, aria-labelledby
+         ============================================ -->
+    <div class="new-post-modal" id="newPostModal" role="dialog" aria-modal="true" aria-labelledby="newPostTitle">
         <div class="modal-overlay" id="newPostOverlay"></div>
         <div class="new-post-content">
-            <button class="modal-close" id="newPostClose">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="modal-close" id="newPostClose" aria-label="Cerrar formulario de nuevo post">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M18 6L6 18M6 6l12 12"></path>
                 </svg>
             </button>
             <div class="new-post-inner">
-                <h2 class="new-post-title">Crear Nuevo Post</h2>
+                <h2 class="new-post-title" id="newPostTitle">Crear Nuevo Post</h2>
                 
                 <!-- Gestión de Categorías -->
-                <div class="category-manager">
-                    <h4 class="category-title">Categorías</h4>
-                    <div class="category-list" id="categoryList"></div>
+                <div class="category-manager" role="region" aria-labelledby="categoryManagerTitle">
+                    <h4 class="category-title" id="categoryManagerTitle">Categorías</h4>
+                    <div class="category-list" id="categoryList" aria-label="Lista de categorías existentes"></div>
                     <div class="category-add">
-                        <input type="text" id="newCategoryInput" placeholder="Nueva categoría">
-                        <button class="category-add-btn" id="addCategoryBtn">+</button>
+                        <label for="newCategoryInput" class="sr-only">Nueva categoría</label>
+                        <input type="text" id="newCategoryInput" placeholder="Nueva categoría" aria-label="Nombre de la nueva categoría">
+                        <button class="category-add-btn" id="addCategoryBtn" aria-label="Agregar nueva categoría">+</button>
                     </div>
                 </div>
 
-                <form class="new-post-form" id="newPostForm">
+                <form class="new-post-form" id="newPostForm" novalidate>
                     <div class="form-group">
-                        <label>Título</label>
-                        <input type="text" class="form-input" name="title" required>
+                        <label for="postTitle">Título</label>
+                        <input type="text" class="form-input" id="postTitle" name="title" required aria-required="true">
                     </div>
                     
                     <div class="form-group">
-                        <label>Categoría</label>
-                        <select class="form-select" name="category" id="postCategory" required></select>
+                        <label for="postCategory">Categoría</label>
+                        <select class="form-select" name="category" id="postCategory" required aria-required="true"></select>
                     </div>
                     
                     <div class="form-group">
-                        <label>Autor</label>
-                        <input type="text" class="form-input" name="author" required>
+                        <label for="postAuthor">Autor</label>
+                        <input type="text" class="form-input" id="postAuthor" name="author" required aria-required="true">
                     </div>
                     
                     <div class="form-group">
-                        <label>Imágenes</label>
-                        <div class="image-upload-area" id="imageUploadArea">
-                            <input type="file" id="imageInput" multiple accept="image/*" style="display:none">
+                        <label id="imagesLabel">Imágenes</label>
+                        <div class="image-upload-area" id="imageUploadArea" role="button" tabindex="0" aria-labelledby="imagesLabel" aria-describedby="uploadHelp">
+                            <input type="file" id="imageInput" multiple accept="image/*" style="display:none" aria-hidden="true" tabindex="-1">
                             <div class="upload-placeholder" id="uploadPlaceholder">
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
                                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                                     <circle cx="8.5" cy="8.5" r="1.5"></circle>
                                     <polyline points="21 15 16 10 5 21"></polyline>
                                 </svg>
                                 <p>Arrastra imágenes aquí o haz clic para seleccionar</p>
-                                <small>Formatos: JPG, PNG, WebP • Máx. 5MB</small>
+                                <small id="uploadHelp">Formatos: JPG, PNG, WebP • Máx. 5MB</small>
                             </div>
-                            <div class="image-preview-grid" id="imagePreviewGrid"></div>
+                            <div class="image-preview-grid" id="imagePreviewGrid" aria-live="polite" aria-label="Vista previa de imágenes seleccionadas"></div>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label>Contenido</label>
-                        <textarea class="form-textarea" name="content" rows="8" required></textarea>
+                        <label for="postContent">Contenido</label>
+                        <textarea class="form-textarea" id="postContent" name="content" rows="8" required aria-required="true"></textarea>
                     </div>
                     
                     <button type="submit" class="new-post-submit">
@@ -206,13 +240,32 @@
         </div>
     </div>
 
-    <!-- Toast de notificación -->
-    <div class="blog-toast" id="blogToast"></div>
+    <!-- ============================================
+         ✅ TOAST DE NOTIFICACIÓN CON ARIA-LIVE
+         Los lectores de pantalla anunciarán los mensajes
+         ============================================ -->
+    <div class="blog-toast" id="blogToast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-<!-- Cursor personalizado -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-follower" id="cursorFollower"></div>
+    <!-- Cursor personalizado -->
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
 
+    <!-- Clase auxiliar para screen readers -->
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+
+    <!-- Scripts -->
     <script src="config.js"></script>
     <script src="blog.js"></script>
 </body>

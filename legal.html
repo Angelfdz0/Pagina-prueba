@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legal | Studio</title>
+    <meta name="description" content="Aviso de Privacidad, Términos y Condiciones y Política de Cookies de Studio Creativo México.">
+    <title>Aviso Legal | Studio</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -11,10 +13,10 @@
         PÁGINA LEGAL - ESTILOS ESPECÍFICOS
         ============================================ */
         .legal-page {
-    min-height: 100vh;
-    padding: clamp(8rem, 12vw, 10rem) clamp(1.5rem, 5vw, 6rem) clamp(4rem, 8vw, 7rem);
-    background: var(--color-bg);
-}
+            min-height: 100vh;
+            padding: clamp(8rem, 12vw, 10rem) clamp(1.5rem, 5vw, 6rem) clamp(4rem, 8vw, 7rem);
+            background: var(--color-bg);
+        }
 
         .legal-container {
             max-width: 1000px;
@@ -40,22 +42,19 @@
 
         /* Tabs de navegación */
         .legal-tabs {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 3rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    
-    /* ★ AGREGAR ESTO: Ocultar scrollbar */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-}
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
 
-/* ★ AGREGAR ESTE BLOQUE NUEVO: Ocultar scrollbar en Chrome/Safari */
-.legal-tabs::-webkit-scrollbar {
-    display: none;
-}
+        .legal-tabs::-webkit-scrollbar {
+            display: none;
+        }
 
         .legal-tab {
             padding: 1rem 2rem;
@@ -118,6 +117,14 @@
             margin: 2rem 0 1rem;
         }
 
+        .legal-content h4 {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--color-white);
+            margin: 1.5rem 0 0.8rem;
+            font-weight: 600;
+        }
+
         .legal-content p,
         .legal-content ul {
             color: var(--color-text-muted);
@@ -135,6 +142,14 @@
 
         .legal-content strong {
             color: var(--color-text);
+        }
+
+        .legal-highlight {
+            background: rgba(201, 169, 110, 0.08);
+            border-left: 3px solid var(--color-accent);
+            padding: 1rem 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
         }
 
         /* Footer con links */
@@ -155,6 +170,85 @@
             color: var(--color-accent-light);
         }
 
+        /* ============================================
+        BANNER DE CONSENTIMIENTO DE COOKIES
+        ============================================ */
+        .cookie-banner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(17, 17, 17, 0.98);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(201, 169, 110, 0.2);
+            padding: 1.5rem clamp(1.5rem, 5vw, 3rem);
+            z-index: 9997;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            transform: translateY(100%);
+            transition: transform 0.5s var(--ease-out-expo);
+        }
+
+        .cookie-banner.visible {
+            transform: translateY(0);
+        }
+
+        .cookie-banner-text {
+            flex: 1;
+            min-width: 280px;
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .cookie-banner-text a {
+            color: var(--color-accent);
+            text-decoration: underline;
+        }
+
+        .cookie-banner-actions {
+            display: flex;
+            gap: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .cookie-btn {
+            padding: 0.7rem 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-out-expo);
+            font-family: var(--font-body);
+            border: none;
+        }
+
+        .cookie-btn-accept {
+            background: var(--color-accent);
+            color: var(--color-dark);
+        }
+
+        .cookie-btn-accept:hover {
+            background: var(--color-accent-light);
+        }
+
+        .cookie-btn-reject {
+            background: transparent;
+            color: var(--color-text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .cookie-btn-reject:hover {
+            color: var(--color-text);
+            border-color: var(--color-accent);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .legal-tabs {
@@ -167,82 +261,91 @@
             .legal-content {
                 padding: 1.5rem;
             }
+            .cookie-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+            .cookie-banner-actions {
+                width: 100%;
+                justify-content: center;
+            }
         }
+
         /* ============================================
-CURSOR PERSONALIZADO - LEGAL
-============================================ */
-body {
-    cursor: none;
-}
+        CURSOR PERSONALIZADO - LEGAL
+        ============================================ */
+        body {
+            cursor: none;
+        }
 
-a, button {
-    cursor: none;
-}
+        a, button {
+            cursor: none;
+        }
 
-.cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 8px;
-    height: 8px;
-    background: var(--color-accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99999;
-    transform: translate(-50%, -50%);
-    transition: width 0.3s var(--ease-out-expo),
-                height 0.3s var(--ease-out-expo),
-                background 0.3s;
-    mix-blend-mode: difference;
-}
+        .cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 8px;
+            height: 8px;
+            background: var(--color-accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+            transition: width 0.3s var(--ease-out-expo),
+                        height 0.3s var(--ease-out-expo),
+                        background 0.3s;
+            mix-blend-mode: difference;
+        }
 
-.cursor-follower {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--color-accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99998;
-    transform: translate(-50%, -50%);
-    transition: width 0.4s var(--ease-out-expo),
-                height 0.4s var(--ease-out-expo),
-                border-color 0.3s,
-                opacity 0.3s;
-    opacity: 0.5;
-}
+        .cursor-follower {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--color-accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99998;
+            transform: translate(-50%, -50%);
+            transition: width 0.4s var(--ease-out-expo),
+                        height 0.4s var(--ease-out-expo),
+                        border-color 0.3s,
+                        opacity 0.3s;
+            opacity: 0.5;
+        }
 
-.cursor.hover {
-    width: 60px;
-    height: 60px;
-    background: transparent;
-    border: 1px solid var(--color-accent);
-}
+        .cursor.hover {
+            width: 60px;
+            height: 60px;
+            background: transparent;
+            border: 1px solid var(--color-accent);
+        }
 
-.cursor-follower.hover {
-    width: 80px;
-    height: 80px;
-    opacity: 0.2;
-}
+        .cursor-follower.hover {
+            width: 80px;
+            height: 80px;
+            opacity: 0.2;
+        }
 
-@media (max-width: 768px) {
-    .cursor, .cursor-follower {
-        display: none;
-    }
-    body {
-        cursor: auto;
-    }
-    a, button {
-        cursor: pointer;
-    }
-}
+        @media (max-width: 768px) {
+            .cursor, .cursor-follower {
+                display: none;
+            }
+            body {
+                cursor: auto;
+            }
+            a, button {
+                cursor: pointer;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Grain overlay -->
-    <div class="grain-overlay"></div>
+    <div class="grain-overlay" aria-hidden="true"></div>
 
     <!-- Header simple -->
     <header class="header" style="background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px);">
@@ -253,194 +356,391 @@ a, button {
     </header>
 
     <!-- Contenido Legal -->
-    <main class="legal-page">
+    <main class="legal-page" role="main">
         <div class="legal-container">
             <div class="legal-header">
                 <h1 class="legal-title">Información Legal</h1>
-                <p class="legal-subtitle">Transparencia y protección de tus datos</p>
+                <p class="legal-subtitle">Transparencia y protección de tus datos conforme a la legislación mexicana</p>
             </div>
 
             <!-- Tabs de navegación -->
-            <div class="legal-tabs">
-                <button class="legal-tab active" data-tab="privacy">Política de Privacidad</button>
-                <button class="legal-tab" data-tab="terms">Términos y Condiciones</button>
-                <button class="legal-tab" data-tab="cookies">Política de Cookies</button>
+            <div class="legal-tabs" role="tablist" aria-label="Secciones legales">
+                <button class="legal-tab active" data-tab="privacy" role="tab" aria-selected="true">Aviso de Privacidad</button>
+                <button class="legal-tab" data-tab="terms" role="tab" aria-selected="false">Términos y Condiciones</button>
+                <button class="legal-tab" data-tab="commercial" role="tab" aria-selected="false">Términos Comerciales</button>
+                <button class="legal-tab" data-tab="cookies" role="tab" aria-selected="false">Política de Cookies</button>
             </div>
 
-            <!-- Sección: Política de Privacidad -->
-            <section class="legal-section active" id="privacy">
+            <!-- Sección: Aviso de Privacidad -->
+            <section class="legal-section active" id="privacy" role="tabpanel">
                 <div class="legal-content">
-                    <h2>Política de Privacidad</h2>
-                    
+                    <h2>Aviso de Privacidad</h2>
+
+                    <div class="legal-highlight">
+                        <p>El presente Aviso de Privacidad se emite en cumplimiento a lo dispuesto por la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong> y su Reglamento.</p>
+                    </div>
+
                     <h3>1. Responsable del Tratamiento</h3>
-                    <p><strong>Studio Creativo</strong> con domicilio en Madrid, España, es el responsable del tratamiento de los datos personales que nos proporciones a través de este sitio web.</p>
+                    <p><strong>Studio Creativo S.A. de C.V.</strong>, con <strong>RFC: STC200115AB1</strong>, con domicilio en <strong>Av. Paseo de la Reforma 250, Piso 12, Col. Juárez, C.P. 06600, Ciudad de México</strong>, es responsable del tratamiento y protección de sus datos personales.</p>
+                    <p>Para cualquier duda o solicitud relacionada con este Aviso de Privacidad, puede contactarnos a través del correo electrónico: <strong>privacidad@studio.com</strong></p>
 
-                    <h3>2. Datos que Recopilamos</h3>
-                    <p>Recopilamos la siguiente información personal:</p>
+                    <h3>2. Datos Personales que Recopilamos</h3>
+                    <p>Para las finalidades señaladas en el presente aviso de privacidad, podemos recabar las siguientes categorías de datos personales:</p>
                     <ul>
-                        <li><strong>Datos de identificación:</strong> Nombre, correo electrónico, teléfono</li>
-                        <li><strong>Datos de navegación:</strong> IP, tipo de navegador, páginas visitadas</li>
-                        <li><strong>Datos de contacto:</strong> Mensajes enviados a través del formulario</li>
+                        <li><strong>Datos de identificación:</strong> Nombre completo, correo electrónico, teléfono, RFC (en caso de facturación).</li>
+                        <li><strong>Datos de contacto:</strong> Dirección de envío, mensajes enviados a través de formularios.</li>
+                        <li><strong>Datos de navegación:</strong> Dirección IP, tipo de navegador, páginas visitadas, tiempo de permanencia.</li>
+                        <li><strong>Datos de transacciones:</strong> Historial de compras, productos adquiridos (procesados a través de pasarelas de pago certificadas).</li>
                     </ul>
 
-                    <h3>3. Finalidad del Tratamiento</h3>
-                    <p>Utilizamos tus datos para:</p>
+                    <h3>3. Finalidades del Tratamiento</h3>
+                    <p>Sus datos personales serán utilizados para las siguientes <strong>finalidades primarias</strong>:</p>
                     <ul>
-                        <li>Responder a tus consultas y solicitudes</li>
-                        <li>Enviar información sobre nuestros servicios (con tu consentimiento)</li>
-                        <li>Mejorar la experiencia de navegación en nuestro sitio web</li>
-                        <li>Cumplir con obligaciones legales</li>
+                        <li>Responder a consultas y solicitudes de información.</li>
+                        <li>Procesar pedidos, envíos y facturación de productos adquiridos en nuestra tienda.</li>
+                        <li>Brindar soporte postventa y atención al cliente.</li>
+                        <li>Cumplir con las obligaciones fiscales y comerciales derivadas de la relación contractual.</li>
+                    </ul>
+                    <p>Adicionalmente, podremos utilizar sus datos para las siguientes <strong>finalidades secundarias</strong> que no son necesarias para la relación jurídica, pero que nos permiten ofrecerle un mejor servicio:</p>
+                    <ul>
+                        <li>Enviar información sobre nuevos productos, promociones y eventos (solo con su consentimiento).</li>
+                        <li>Realizar estudios internos sobre hábitos de consumo y mejorar la experiencia del usuario.</li>
+                    </ul>
+                    <p><strong>Nota:</strong> Usted puede negar el consentimiento para las finalidades secundarias enviando un correo a <strong>privacidad@studio.com</strong>.</p>
+
+                    <h3>4. Transferencias de Datos</h3>
+                    <p>Sus datos personales podrán ser transferidos a los siguientes terceros, nacionales o extranjeros, para los fines señalados:</p>
+                    <ul>
+                        <li><strong>Proveedores de pagos:</strong> Stripe, PayPal, Mercado Pago (para procesamiento de transacciones).</li>
+                        <li><strong>Proveedores de logística:</strong> Estafeta, DHL, FedEx (para entrega de pedidos).</li>
+                        <li><strong>Proveedores de hosting:</strong> Servidores ubicados en Estados Unidos con cláusulas contractuales de protección de datos.</li>
+                        <li><strong>Autoridades competentes:</strong> Cuando sea requerido por mandato legal o judicial.</li>
                     </ul>
 
-                    <h3>4. Base Legal</h3>
-                    <p>El tratamiento de tus datos se basa en:</p>
+                    <h3>5. Derechos ARCO</h3>
+                    <p>Usted tiene derecho a Acceder, Rectificar, Cancelar u Oponerse al tratamiento de sus datos personales (<strong>Derechos ARCO</strong>). Para ejercerlos, deberá enviar una solicitud por escrito al correo <strong>privacidad@studio.com</strong> incluyendo:</p>
                     <ul>
-                        <li>Tu consentimiento explícito al enviar el formulario</li>
-                        <li>La ejecución de un contrato o precontrato</li>
-                        <li>El cumplimiento de obligaciones legales</li>
+                        <li>Nombre completo y correo electrónico registrado.</li>
+                        <li>Descripción clara y precisa de los datos sobre los que busca ejercer el derecho.</li>
+                        <li>Documentos que acrediten su identidad (copia de INE o pasaporte).</li>
+                        <li>Cualquier elemento que facilite la localización de sus datos.</li>
+                    </ul>
+                    <p>El plazo de respuesta será de <strong>20 días hábiles</strong> contados a partir de la recepción de la solicitud, conforme a la LFPDPPP.</p>
+
+                    <h3>6. Revocación del Consentimiento</h3>
+                    <p>Usted puede revocar el consentimiento otorgado para el tratamiento de sus datos personales en cualquier momento, mediante solicitud al correo <strong>privacidad@studio.com</strong>. En caso de tratarse de datos necesarios para cumplir obligaciones contractuales o legales, la revocación podría implicar la imposibilidad de continuar con la prestación del servicio.</p>
+
+                    <h3>7. Conservación de Datos</h3>
+                    <p>Conservaremos sus datos personales mientras se mantenga la relación comercial y durante los plazos legalmente establecidos:</p>
+                    <ul>
+                        <li><strong>Datos de clientes activos:</strong> Durante toda la vigencia de la relación.</li>
+                        <li><strong>Datos fiscales y de facturación:</strong> 5 años (conforme al Código Fiscal de la Federación).</li>
+                        <li><strong>Datos de navegación:</strong> 24 meses.</li>
                     </ul>
 
-                    <h3>5. Destinatarios</h3>
-                    <p>Tus datos no serán cedidos a terceros, salvo:</p>
-                    <ul>
-                        <li>Proveedores de servicios necesarios (hosting, email marketing)</li>
-                        <li>Obligaciones legales y autoridades competentes</li>
-                    </ul>
+                    <h3>8. Medidas de Seguridad</h3>
+                    <p>Implementamos medidas de seguridad administrativas, técnicas y físicas para proteger sus datos personales contra daño, pérdida, alteración, destrucción o uso, acceso o tratamiento no autorizado, incluyendo cifrado SSL/TLS, control de accesos y auditorías periódicas.</p>
 
-                    <h3>6. Derechos</h3>
-                    <p>Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad enviando un correo a <strong>hola@studio.com</strong> junto con una copia de tu DNI.</p>
+                    <h3>9. Cambios al Aviso de Privacidad</h3>
+                    <p>Nos reservamos el derecho de efectuar modificaciones o actualizaciones al presente Aviso de Privacidad en cualquier momento. Las actualizaciones serán notificadas mediante un aviso visible en nuestro sitio web.</p>
 
-                    <h3>7. Conservación</h3>
-                    <p>Conservaremos tus datos mientras mantengamos una relación comercial o durante los años necesarios para cumplir con obligaciones legales.</p>
-
-                    <h3>8. Seguridad</h3>
-                    <p>Implementamos medidas técnicas y organizativas para proteger tus datos contra accesos no autorizados, pérdida o alteración.</p>
+                    <h3>10. Autoridad Garante</h3>
+                    <p>Si considera que su derecho de protección de datos personales ha sido vulnerado, puede acudir al <strong>Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)</strong>, con domicilio en Av. Insurgentes Sur 3211, Col. Insurgentes Cuicuilco, C.P. 04530, Ciudad de México, o en <a href="https://www.inai.org.mx" target="_blank" rel="noopener noreferrer">www.inai.org.mx</a>.</p>
                 </div>
             </section>
 
             <!-- Sección: Términos y Condiciones -->
-            <section class="legal-section" id="terms">
+            <section class="legal-section" id="terms" role="tabpanel">
                 <div class="legal-content">
                     <h2>Términos y Condiciones de Uso</h2>
-                    
+
                     <h3>1. Objeto</h3>
-                    <p>Estos Términos y Condiciones regulan el acceso y uso del sitio web <strong>studio.com</strong> (en adelante, "el Sitio Web").</p>
+                    <p>Los presentes Términos y Condiciones regulan el acceso y uso del sitio web <strong>studio.com</strong> (en adelante, "el Sitio Web"), operado por <strong>Studio Creativo S.A. de C.V.</strong>, con RFC STC200115AB1 y domicilio en Av. Paseo de la Reforma 250, Piso 12, Col. Juárez, C.P. 06600, Ciudad de México.</p>
 
                     <h3>2. Aceptación</h3>
-                    <p>El acceso y uso de este Sitio Web atribuye la condición de usuario y implica la aceptación plena de estos Términos y Condiciones.</p>
+                    <p>El acceso y uso del Sitio Web atribuye la condición de usuario e implica la aceptación plena y sin reservas de todas las disposiciones incluidas en estos Términos y Condiciones. Si no está de acuerdo con alguna de las condiciones, le solicitamos abstenerse de utilizar el Sitio Web.</p>
 
-                    <h3>3. Propiedad Intelectual</h3>
-                    <p>Todos los contenidos del Sitio Web (textos, imágenes, diseños, logotipos, código fuente) son propiedad de Studio Creativo o cuentan con la licencia correspondiente. Queda prohibida su reproducción, distribución o comunicación pública sin autorización expresa.</p>
+                    <h3>3. Capacidad Legal</h3>
+                    <p>El uso del Sitio Web y, en particular, la adquisición de productos, está reservado a personas mayores de 18 años con capacidad legal para contratar en los términos del Código Civil Federal y el Código de Comercio de México.</p>
 
-                    <h3>4. Obligaciones del Usuario</h3>
+                    <h3>4. Propiedad Intelectual</h3>
+                    <p>Todos los contenidos del Sitio Web (textos, imágenes, fotografías, diseños, logotipos, marcas, código fuente, bases de datos y demás elementos creativos) son propiedad de Studio Creativo S.A. de C.V. o cuentan con la licencia correspondiente de sus titulares, conforme a la <strong>Ley Federal del Derecho de Autor</strong> y la <strong>Ley de la Propiedad Industrial</strong>.</p>
+                    <p>Queda estrictamente prohibida su reproducción, distribución, transformación o comunicación pública, total o parcial, sin autorización expresa por escrito del titular.</p>
+
+                    <h3>5. Obligaciones del Usuario</h3>
                     <p>El usuario se compromete a:</p>
                     <ul>
-                        <li>Utilizar el Sitio Web de forma lícita y correcta</li>
-                        <li>No realizar actividades que puedan dañar o interrumpir el funcionamiento del sitio</li>
-                        <li>No acceder a áreas restringidas sin autorización</li>
-                        <li>No suplantar la identidad de otros usuarios</li>
+                        <li>Utilizar el Sitio Web de forma lícita, de buena fe y conforme a estos Términos.</li>
+                        <li>No realizar actividades que dañen, inutilicen, sobrecarguen o deterioren el Sitio Web.</li>
+                        <li>No intentar acceder a áreas restringidas, sistemas o redes conectadas al Sitio Web.</li>
+                        <li>No suplantar la identidad de otros usuarios ni proporcionar datos falsos.</li>
+                        <li>No utilizar bots, scrapers o herramientas automatizadas sin autorización expresa.</li>
+                        <li>Proporcionar información veraz y actualizada al realizar compras o registros.</li>
                     </ul>
 
-                    <h3>5. Enlaces a Terceros</h3>
-                    <p>El Sitio Web puede contener enlaces a sitios de terceros. No nos hacemos responsables del contenido o prácticas de privacidad de dichos sitios.</p>
+                    <h3>6. Publicación de Contenidos</h3>
+                    <p>Los contenidos publicados en el blog del Sitio Web (artículos, opiniones, tutoriales) son de carácter informativo. Studio Creativo no se hace responsable de las opiniones vertidas por los autores colaboradores, ni garantiza la exactitud, integridad o vigencia de la información publicada.</p>
 
-                    <h3>6. Limitación de Responsabilidad</h3>
-                    <p>Studio Creativo no se responsabiliza de:</p>
+                    <h3>7. Enlaces a Terceros</h3>
+                    <p>El Sitio Web puede contener enlaces a sitios web de terceros. Studio Creativo no asume responsabilidad alguna por el contenido, políticas de privacidad o prácticas de dichos sitios externos.</p>
+
+                    <h3>8. Limitación de Responsabilidad</h3>
+                    <p>Studio Creativo no será responsable por:</p>
                     <ul>
-                        <li>Errores o interrupciones en el acceso al Sitio Web</li>
-                        <li>Daños derivados del uso del Sitio Web</li>
-                        <li>Contenidos de sitios enlazados</li>
+                        <li>Daños o perjuicios derivados de interrupciones del servicio, errores o omisiones en los contenidos.</li>
+                        <li>Virus, ataques informáticos o fallas de seguridad ajenas a nuestro control.</li>
+                        <li>Daños indirectos, lucro cesante o pérdida de datos derivados del uso del Sitio Web.</li>
+                        <li>Contenidos, productos o servicios ofrecidos en sitios enlazados.</li>
                     </ul>
 
-                    <h3>7. Modificaciones</h3>
-                    <p>Nos reservamos el derecho de modificar estos Términos y Condiciones en cualquier momento. Los cambios entrarán en vigor desde su publicación en el Sitio Web.</p>
+                    <h3>9. Protección al Consumidor</h3>
+                    <p>Estos Términos se emiten respetando los derechos de los consumidores establecidos en la <strong>Ley Federal de Protección al Consumidor (LFPC)</strong>. Para cualquier controversia en materia de consumo, usted podrá acudir ante la <strong>Procuraduría Federal del Consumidor (PROFECO)</strong>, con domicilio en Av. José Vasconcelos 208, Col. Hipódromo Condesa, C.P. 06140, Ciudad de México, o al teléfono 55 5568 8722 y sitio web <a href="https://www.profeco.gob.mx" target="_blank" rel="noopener noreferrer">www.profeco.gob.mx</a>.</p>
 
-                    <h3>8. Ley Aplicable</h3>
-                    <p>Estos Términos se rigen por la legislación española. Para cualquier controversia, las partes se someterán a los juzgados y tribunales de Madrid.</p>
+                    <h3>10. Modificaciones</h3>
+                    <p>Nos reservamos el derecho de modificar estos Términos y Condiciones en cualquier momento. Las modificaciones entrarán en vigor a partir de su publicación en el Sitio Web. El uso continuado del sitio tras cualquier modificación constituye la aceptación de los nuevos términos.</p>
+
+                    <h3>11. Ley Aplicable y Jurisdicción</h3>
+                    <p>Estos Términos y Condiciones se rigen por las leyes de los <strong>Estados Unidos Mexicanos</strong>, particularmente el Código Civil Federal, el Código de Comercio, la Ley Federal de Protección al Consumidor, la Ley Federal del Derecho de Autor y la Ley de la Propiedad Industrial.</p>
+                    <p>Para la interpretación y cumplimiento de estos Términos, las partes se someten a la jurisdicción de los <strong>tribunales competentes de la Ciudad de México</strong>, renunciando a cualquier otro fuero que pudiera corresponderles por sus domicilios presentes o futuros.</p>
+                </div>
+            </section>
+
+            <!-- Sección: Términos Comerciales (Tienda) -->
+            <section class="legal-section" id="commercial" role="tabpanel">
+                <div class="legal-content">
+                    <h2>Términos Comerciales de la Tienda</h2>
+
+                    <div class="legal-highlight">
+                        <p>Los siguientes términos aplican exclusivamente a las compras realizadas a través de nuestra tienda en línea. Cumplen con lo establecido en la <strong>Norma Oficial Mexicana NOM-151-SCFI-2016</strong> sobre requisitos de información comercial, así como con la Ley Federal de Protección al Consumidor.</p>
+                    </div>
+
+                    <h3>1. Información de los Productos</h3>
+                    <p>Todos los productos publicados en nuestra tienda incluyen:</p>
+                    <ul>
+                        <li><strong>Precio total:</strong> Expresado en pesos mexicanos (MXN), con IVA incluido.</li>
+                        <li><strong>Descripción:</strong> Características técnicas, materiales, dimensiones y componentes.</li>
+                        <li><strong>Disponibilidad:</strong> Estado de inventario actualizado.</li>
+                        <li><strong>Imágenes:</strong> Representación visual del producto (pueden existir ligeras variaciones de color según la pantalla).</li>
+                        <li><strong>País de origen:</strong> Indicado cuando aplique.</li>
+                    </ul>
+                    <p>Los precios podrán ser modificados sin previo aviso, pero siempre se respetará el precio vigente al momento de confirmar la compra.</p>
+
+                    <h3>2. Proceso de Compra</h3>
+                    <h4>2.1 Selección y carrito</h4>
+                    <p>El usuario selecciona los productos deseados, eligiendo variante (color, talla, etc.) cuando aplique, y los agrega al carrito de compras.</p>
+
+                    <h4>2.2 Confirmación del pedido</h4>
+                    <p>Antes de finalizar, el usuario podrá revisar el resumen del pedido, incluyendo subtotal, descuentos aplicados, costo de envío e impuestos, así como el total final a pagar.</p>
+
+                    <h4>2.3 Formalización</h4>
+                    <p>El pedido se formaliza mediante el contacto directo con nuestro equipo a través de WhatsApp o correo electrónico, donde se confirmarán disponibilidad, tiempos y forma de pago.</p>
+
+                    <h3>3. Formas de Pago</h3>
+                    <p>Aceptamos los siguientes métodos de pago:</p>
+                    <ul>
+                        <li><strong>Transferencia bancaria SPEI:</strong> A cuenta bancaria nacional. Confirmación en 24 horas hábiles.</li>
+                        <li><strong>Depósito en OXXO:</strong> Pago en efectivo en tiendas de conveniencia.</li>
+                        <li><strong>Tarjeta de crédito/débito:</strong> Visa, Mastercard, American Express a través de pasarelas certificadas (Stripe/Mercado Pago).</li>
+                        <li><strong>PayPal:</strong> Pagos internacionales con protección al comprador.</li>
+                    </ul>
+                    <p>Todos los pagos son procesados con cifrado SSL/TLS y cumplen con el estándar de seguridad <strong>PCI DSS</strong>. Studio Creativo <strong>nunca almacena información de tarjetas</strong> en sus servidores.</p>
+
+                    <h3>4. Facturación</h3>
+                    <p>Todas las compras pueden ser facturadas. Para solicitar factura fiscal (CFDI), el cliente deberá proporcionar sus datos fiscales completos (RFC, razón social, régimen fiscal, código postal y uso de CFDI) dentro de los <strong>30 días naturales</strong> posteriores a la compra.</p>
+                    <p>Las facturas se emiten en moneda nacional (MXN) y se envían al correo electrónico registrado.</p>
+
+                    <h3>5. Envíos</h3>
+                    <h4>5.1 Cobertura</h4>
+                    <p>Realizamos envíos a todo el territorio de la República Mexicana a través de paqueterías reconocidas (Estafeta, DHL, FedEx).</p>
+
+                    <h4>5.2 Costos</h4>
+                    <ul>
+                        <li><strong>Envío estándar:</strong> Costo calculado según destino y peso, mostrado antes de confirmar el pedido.</li>
+                        <li><strong>Envío gratis:</strong> En compras superiores a $1,500 MXN (zona metropolitana) o $2,500 MXN (resto del país).</li>
+                        <li><strong>Promociones:</strong> Podrán aplicarse envíos gratuitos en fechas específicas, según lo indicado.</li>
+                    </ul>
+
+                    <h4>5.3 Tiempos de entrega</h4>
+                    <ul>
+                        <li><strong>Ciudad de México y Área Metropolitana:</strong> 1 a 3 días hábiles.</li>
+                        <li><strong>Resto de la República Mexicana:</strong> 3 a 7 días hábiles.</li>
+                        <li><strong>Zonas remotas:</strong> 7 a 10 días hábiles.</li>
+                    </ul>
+                    <p>Los tiempos se cuentan a partir de la confirmación del pago. Todos los envíos incluyen <strong>número de guía</strong> para rastreo en línea.</p>
+
+                    <h4>5.4 Riesgo del envío</h4>
+                    <p>Todos los envíos están <strong>asegurados</strong> contra pérdida, robo o daño durante el traslado. En caso de incidencia, gestionamos la reclamación con la paquetería sin costo para el cliente.</p>
+
+                    <h3>6. Devoluciones y Cancelaciones</h3>
+                    <h4>6.1 Derecho de retracto</h4>
+                    <p>Conforme al artículo 56 de la LFPC, el consumidor tiene <strong>5 días hábiles</strong> a partir de la recepción del producto para retractarse de su compra, sin responsabilidad y sin necesidad de justificación.</p>
+
+                    <h4>6.2 Devoluciones por defecto o error</h4>
+                    <p>En caso de recibir un producto defectuoso, dañado o diferente al solicitado, el cliente dispone de <strong>30 días naturales</strong> para reportarlo. Studio Creativo cubrirá los gastos de envío de devolución y realizará:</p>
+                    <ul>
+                        <li>Reemplazo del producto sin costo adicional, o</li>
+                        <li>Reembolso total del monto pagado, incluyendo envío.</li>
+                    </ul>
+
+                    <h4>6.3 Proceso de devolución</h4>
+                    <ol>
+                        <li>Reportar la devolución al correo <strong>devoluciones@studio.com</strong> indicando número de pedido y motivo.</li>
+                        <li>Recibir la guía de devolución prepagada en un plazo de 48 horas.</li>
+                        <li>Enviar el producto en su empaque original, con todos los accesorios y en buen estado.</li>
+                        <li>Una vez recibido e inspeccionado (máximo 5 días hábiles), se procederá al reembolso o reemplazo.</li>
+                    </ol>
+
+                    <h4>6.4 Excepciones</h4>
+                    <p>No se aceptan devoluciones de:</p>
+                    <ul>
+                        <li>Productos personalizados o hechos a la medida.</li>
+                        <li>Productos de higiene personal o íntimos una vez abiertos.</li>
+                        <li>Productos digitales o descargables.</li>
+                        <li>Productos con sellos de seguridad rotos, cuando aplique.</li>
+                    </ul>
+
+                    <h3>7. Garantía</h3>
+                    <h4>7.1 Garantía legal</h4>
+                    <p>Todos los productos cuentan con la garantía legal mínima de <strong>60 días</strong> establecida por la LFPC contra defectos de fabricación o vicios ocultos.</p>
+
+                    <h4>7.2 Garantía extendida</h4>
+                    <p>Productos específicos pueden contar con garantía extendida del fabricante:</p>
+                    <ul>
+                        <li><strong>Relojes:</strong> 2 años contra defectos de movimiento.</li>
+                        <li><strong>Auriculares y electrónicos:</strong> 1 año.</li>
+                        <li><strong>Otros productos:</strong> Según lo indicado en la ficha técnica.</li>
+                    </ul>
+
+                    <h4>7.5 Cobertura de garantía</h4>
+                    <p>La garantía <strong>NO cubre</strong>:</p>
+                    <ul>
+                        <li>Daños por uso indebido, negligencia o accidentes.</li>
+                        <li>Desgaste natural por uso ordinario.</li>
+                        <li>Modificaciones o reparaciones realizadas por terceros no autorizados.</li>
+                        <li>Daños por exposición a condiciones no indicadas (agua, temperatura, etc.).</li>
+                    </ul>
+
+                    <h3>8. Servicio Postventa</h3>
+                    <p>Ofrecemos atención postventa a través de:</p>
+                    <ul>
+                        <li><strong>WhatsApp:</strong> +52 55 1234 5678 (Lun-Vie 9:00-18:00)</li>
+                        <li><strong>Correo:</strong> soporte@studio.com</li>
+                        <li><strong>Tiempo de respuesta:</strong> Máximo 24 horas hábiles.</li>
+                    </ul>
+
+                    <h3>9. Quejas y Reclamaciones</h3>
+                    <p>Si el cliente considera que su compra no ha sido satisfecha conforme a lo ofrecido, puede presentar queja formal a <strong>quejas@studio.com</strong> o al teléfono <strong>55 1234 5678</strong>. El tiempo máximo de resolución es de <strong>10 días hábiles</strong>.</p>
+                    <p>Si el conflicto no se resuelve, el consumidor podrá acudir a <strong>PROFECO</strong> para iniciar un procedimiento conciliatorio.</p>
                 </div>
             </section>
 
             <!-- Sección: Política de Cookies -->
-            <section class="legal-section" id="cookies">
+            <section class="legal-section" id="cookies" role="tabpanel">
                 <div class="legal-content">
                     <h2>Política de Cookies</h2>
-                    
+
                     <h3>1. ¿Qué son las Cookies?</h3>
-                    <p>Las cookies son pequeños archivos de texto que se almacenan en tu dispositivo cuando visitas un sitio web. Nos permiten recordar información sobre tu visita para mejorar tu experiencia.</p>
+                    <p>Las cookies son pequeños archivos de texto que los sitios web almacenan en su dispositivo (computadora, tablet o teléfono) cuando los visita. Permiten que el sitio recuerde información sobre su visita para mejorar su experiencia de navegación.</p>
 
-                    <h3>2. Tipos de Cookies que Utilizamos</h3>
-                    
-                    <h3>2.1 Cookies Esenciales</h3>
-                    <p>Necesarias para el funcionamiento básico del sitio web. No pueden ser desactivadas.</p>
+                    <h3>2. Cookies que Utilizamos</h3>
+                    <p>En cumplimiento a la <strong>Ley Federal de Protección de Datos Personales</strong>, le informamos que este Sitio Web utiliza únicamente las siguientes categorías de cookies:</p>
+
+                    <h4>2.1 Cookies Estrictamente Necesarias</h4>
+                    <p>Son esenciales para el funcionamiento del sitio y no requieren su consentimiento. No pueden desactivarse.</p>
                     <ul>
-                        <li><strong>Session cookies:</strong> Mantienen tu sesión activa durante la navegación</li>
-                        <li><strong>Security cookies:</strong> Protegen contra ataques de seguridad</li>
+                        <li><strong>session_id:</strong> Mantiene su sesión activa durante la navegación.</li>
+                        <li><strong>cart:</strong> Almacena los productos agregados al carrito de compras (localStorage).</li>
+                        <li><strong>cookie_consent:</strong> Registra su preferencia sobre el uso de cookies.</li>
+                        <li><strong>promoDismissed:</strong> Recuerda si cerró el popup de promociones.</li>
                     </ul>
 
-                    <h3>2.2 Cookies Analíticas</h3>
-                    <p>Nos ayudan a entender cómo interactúas con el sitio web:</p>
+                    <h4>2.2 Cookies de Funcionalidad</h4>
+                    <p>Permiten personalizar su experiencia. Pueden ser desactivadas sin afectar el funcionamiento del sitio.</p>
                     <ul>
-                        <li><strong>Google Analytics:</strong> Analiza el tráfico y comportamiento de los usuarios</li>
-                        <li><strong>Hotjar:</strong> Mapas de calor y grabaciones de sesiones</li>
+                        <li><strong>Preferencias de idioma:</strong> Recuerda el idioma seleccionado.</li>
+                        <li><strong>Preferencias de visualización:</strong> Conserva ajustes como tema oscuro/claro.</li>
                     </ul>
 
-                    <h3>2.3 Cookies de Funcionalidad</h3>
-                    <p>Recuerdan tus preferencias:</p>
+                    <h4>2.3 Cookies que NO Utilizamos</h4>
+                    <div class="legal-highlight">
+                        <p>Para proteger su privacidad, este Sitio Web <strong>NO utiliza</strong>:</p>
+                        <ul style="margin-top: 0.5rem; margin-bottom: 0;">
+                            <li>❌ Google Analytics ni cookies de analítica de terceros.</li>
+                            <li>❌ Facebook Pixel ni cookies de marketing en redes sociales.</li>
+                            <li>❌ Hotjar, Crazy Egg ni herramientas de grabación de sesiones.</li>
+                            <li>❌ Google Ads ni cookies de publicidad comportamental.</li>
+                            <li>❌ Cookies de seguimiento de afiliados.</li>
+                        </ul>
+                    </div>
+
+                    <h3>3. Servicios de Terceros</h3>
+                    <p>Este Sitio Web puede integrar los siguientes servicios que podrían instalar sus propias cookies:</p>
                     <ul>
-                        <li>Idioma seleccionado</li>
-                        <li>Preferencias de visualización</li>
-                        <li>Configuración de accesibilidad</li>
+                        <li><strong>Google Fonts:</strong> Para cargar tipografías. Google puede registrar su IP según su propia política.</li>
+                        <li><strong>Supabase:</strong> Para el sistema de blog (almacena tokens de sesión).</li>
+                        <li><strong>FormSubmit:</strong> Para el procesamiento del formulario de contacto.</li>
                     </ul>
 
-                    <h3>2.4 Cookies de Marketing</h3>
-                    <p>Utilizadas para mostrar publicidad relevante:</p>
+                    <h3>4. Duración de las Cookies</h3>
                     <ul>
-                        <li><strong>Facebook Pixel:</strong> Segmentación de audiencias</li>
-                        <li><strong>Google Ads:</strong> Campañas publicitarias</li>
+                        <li><strong>Cookies de sesión:</strong> Se eliminan al cerrar el navegador.</li>
+                        <li><strong>Cookies persistentes:</strong> Permanecen de 24 horas hasta 24 meses, según su propósito.</li>
+                        <li><strong>localStorage:</strong> Persiste hasta que el usuario lo elimine manualmente o limpie el almacenamiento del navegador.</li>
                     </ul>
 
-                    <h3>3. Duración de las Cookies</h3>
+                    <h3>5. Gestión de Cookies</h3>
+                    <p>Puede configurar su navegador para:</p>
                     <ul>
-                        <li><strong>Session cookies:</strong> Se eliminan al cerrar el navegador</li>
-                        <li><strong>Persistent cookies:</strong> Permanecen desde 24 horas hasta 2 años</li>
+                        <li>Bloquear todas las cookies.</li>
+                        <li>Eliminar cookies existentes.</li>
+                        <li>Recibir alertas cuando se instalen cookies.</li>
+                        <li>Navegar en modo incógnito o privado.</li>
                     </ul>
 
-                    <h3>4. Gestión de Cookies</h3>
-                    <p>Puedes configurar tu navegador para:</p>
+                    <h4>Guías por navegador:</h4>
                     <ul>
-                        <li>Bloquear todas las cookies</li>
-                        <li>Eliminar cookies existentes</li>
-                        <li>Recibir alertas cuando se instalen cookies</li>
+                        <li><strong>Google Chrome:</strong> Configuración → Privacidad y seguridad → Cookies</li>
+                        <li><strong>Mozilla Firefox:</strong> Opciones → Privacidad y seguridad</li>
+                        <li><strong>Safari:</strong> Preferencias → Privacidad</li>
+                        <li><strong>Microsoft Edge:</strong> Configuración → Cookies y permisos del sitio</li>
                     </ul>
 
-                    <h3>5. Cookies de Terceros</h3>
-                    <p>Algunos servicios externos pueden instalar cookies:</p>
-                    <ul>
-                        <li>Videos de YouTube o Vimeo</li>
-                        <li>Mapas de Google Maps</li>
-                        <li>Redes sociales (botones de compartir)</li>
-                    </ul>
+                    <h3>6. Consentimiento</h3>
+                    <p>Al continuar navegando en nuestro sitio, usted otorga su consentimiento para el uso de las cookies descritas en esta política. Puede retirar su consentimiento en cualquier momento eliminando las cookies desde la configuración de su navegador.</p>
 
-                    <h3>6. Actualizaciones</h3>
-                    <p>Esta política puede actualizarse periódicamente. Te informaremos de cambios significativos mediante un aviso en el sitio web.</p>
+                    <h3>7. Actualizaciones</h3>
+                    <p>Esta política puede actualizarse periódicamente. Le notificaremos de cambios significativos mediante un aviso visible en el Sitio Web.</p>
 
-                    <h3>7. Contacto</h3>
-                    <p>Para más información sobre el uso de cookies, contacta en: <strong>hola@studio.com</strong></p>
+                    <h3>8. Contacto</h3>
+                    <p>Para cualquier duda sobre nuestra Política de Cookies, contáctenos en: <strong>privacidad@studio.com</strong></p>
                 </div>
             </section>
 
             <!-- Footer con links -->
             <div class="legal-footer">
                 <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
-                    Última actualización: Enero 2025
+                    Última actualización: Agosto 2026
                 </p>
                 <a href="index.html">Inicio</a>
-                <a href="#privacy">Privacidad</a>
+                <a href="#privacy">Aviso de Privacidad</a>
                 <a href="#terms">Términos</a>
+                <a href="#commercial">Comerciales</a>
                 <a href="#cookies">Cookies</a>
             </div>
         </div>
     </main>
+
+    <!-- ★ BANNER DE CONSENTIMIENTO DE COOKIES ★ -->
+    <div class="cookie-banner" id="cookieBanner" role="dialog" aria-label="Consentimiento de cookies">
+        <div class="cookie-banner-text">
+            Utilizamos <strong>cookies estrictamente necesarias</strong> para el funcionamiento del sitio y cookies de funcionalidad para mejorar su experiencia. <strong>No utilizamos cookies de marketing ni analítica de terceros.</strong>
+            <a href="legal.html#cookies">Más información en nuestra Política de Cookies</a>.
+        </div>
+        <div class="cookie-banner-actions">
+            <button class="cookie-btn cookie-btn-reject" id="cookieReject">Rechazar opcionales</button>
+            <button class="cookie-btn cookie-btn-accept" id="cookieAccept">Aceptar todas</button>
+        </div>
+    </div>
 
     <script>
         // Navegación por tabs
@@ -448,21 +748,41 @@ a, button {
             const tabs = document.querySelectorAll('.legal-tab');
             const sections = document.querySelectorAll('.legal-section');
 
+            // Activar tab según hash URL
+            function activateTabFromHash() {
+                const hash = window.location.hash.replace('#', '');
+                if (hash && document.getElementById(hash)) {
+                    tabs.forEach(t => {
+                        t.classList.toggle('active', t.dataset.tab === hash);
+                        t.setAttribute('aria-selected', t.dataset.tab === hash);
+                    });
+                    sections.forEach(s => {
+                        s.classList.toggle('active', s.id === hash);
+                    });
+                }
+            }
+
             tabs.forEach(tab => {
                 tab.addEventListener('click', function() {
                     const targetTab = this.dataset.tab;
 
-                    // Remover active de todos los tabs
-                    tabs.forEach(t => t.classList.remove('active'));
-                    // Añadir active al tab clickeado
+                    tabs.forEach(t => {
+                        t.classList.remove('active');
+                        t.setAttribute('aria-selected', 'false');
+                    });
                     this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
 
-                    // Ocultar todas las secciones
                     sections.forEach(section => section.classList.remove('active'));
-                    // Mostrar la sección correspondiente
                     document.getElementById(targetTab).classList.add('active');
+
+                    history.replaceState(null, null, '#' + targetTab);
                 });
             });
+
+            // Activar tab desde hash inicial
+            activateTabFromHash();
+            window.addEventListener('hashchange', activateTabFromHash);
 
             // Smooth scroll para links del footer
             document.querySelectorAll('.legal-footer a[href^="#"]').forEach(anchor => {
@@ -471,69 +791,99 @@ a, button {
                     const target = document.querySelector(this.getAttribute('href'));
                     if (target) {
                         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        // Activar el tab correspondiente
                         const tabId = target.id;
                         tabs.forEach(t => {
-                            t.classList.toggle('active', t.dataset.tab === tabId);
+                            const isActive = t.dataset.tab === tabId;
+                            t.classList.toggle('active', isActive);
+                            t.setAttribute('aria-selected', isActive.toString());
                         });
                         sections.forEach(s => {
                             s.classList.toggle('active', s.id === tabId);
                         });
+                        history.replaceState(null, null, '#' + tabId);
                     }
                 });
             });
+
+            // ============================================
+            // BANNER DE COOKIES
+            // ============================================
+            const cookieBanner = document.getElementById('cookieBanner');
+            const cookieAccept = document.getElementById('cookieAccept');
+            const cookieReject = document.getElementById('cookieReject');
+
+            // Mostrar banner solo si no hay consentimiento previo
+            const cookieConsent = localStorage.getItem('cookieConsent');
+            if (!cookieConsent) {
+                setTimeout(() => {
+                    cookieBanner.classList.add('visible');
+                }, 1500);
+            }
+
+            function handleCookieChoice(choice) {
+                localStorage.setItem('cookieConsent', choice);
+                localStorage.setItem('cookieConsentTime', Date.now().toString());
+                cookieBanner.classList.remove('visible');
+            }
+
+            if (cookieAccept) {
+                cookieAccept.addEventListener('click', () => handleCookieChoice('accepted'));
+            }
+
+            if (cookieReject) {
+                cookieReject.addEventListener('click', () => handleCookieChoice('rejected'));
+            }
         });
     </script>
-    <!-- Cursor personalizado -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-follower" id="cursorFollower"></div>
 
-<script>
-// ============================================
-// CURSOR PERSONALIZADO - LEGAL
-// ============================================
-(function() {
-    if (window.innerWidth < 769) return;
-    
-    const cursor = document.getElementById("cursor");
-    const follower = document.getElementById("cursorFollower");
-    if (!cursor || !follower) return;
-    
-    let mx = 0, my = 0;
-    let fx = 0, fy = 0;
-    
-    document.addEventListener("mousemove", (e) => {
-        mx = e.clientX;
-        my = e.clientY;
-        cursor.style.left = mx + "px";
-        cursor.style.top = my + "px";
-    });
-    
-    function animateFollower() {
-        fx = fx + (mx - fx) * 0.12;
-        fy = fy + (my - fy) * 0.12;
-        follower.style.left = fx + "px";
-        follower.style.top = fy + "px";
-        requestAnimationFrame(animateFollower);
-    }
-    animateFollower();
-    
-    // Hover effect en elementos interactivos
-    const hoverTargets = "a, button, .legal-tab";
-    document.addEventListener("mouseover", (e) => {
-        if (e.target.closest(hoverTargets)) {
-            cursor.classList.add("hover");
-            follower.classList.add("hover");
+    <!-- Cursor personalizado -->
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
+
+    <script>
+    // ============================================
+    // CURSOR PERSONALIZADO - LEGAL
+    // ============================================
+    (function() {
+        if (window.innerWidth < 769) return;
+        
+        const cursor = document.getElementById("cursor");
+        const follower = document.getElementById("cursorFollower");
+        if (!cursor || !follower) return;
+        
+        let mx = 0, my = 0;
+        let fx = 0, fy = 0;
+        
+        document.addEventListener("mousemove", (e) => {
+            mx = e.clientX;
+            my = e.clientY;
+            cursor.style.left = mx + "px";
+            cursor.style.top = my + "px";
+        });
+        
+        function animateFollower() {
+            fx = fx + (mx - fx) * 0.12;
+            fy = fy + (my - fy) * 0.12;
+            follower.style.left = fx + "px";
+            follower.style.top = fy + "px";
+            requestAnimationFrame(animateFollower);
         }
-    });
-    document.addEventListener("mouseout", (e) => {
-        if (e.target.closest(hoverTargets)) {
-            cursor.classList.remove("hover");
-            follower.classList.remove("hover");
-        }
-    });
-})();
-</script>
-</body>
+        animateFollower();
+        
+        const hoverTargets = "a, button, .legal-tab";
+        document.addEventListener("mouseover", (e) => {
+            if (e.target.closest(hoverTargets)) {
+                cursor.classList.add("hover");
+                follower.classList.add("hover");
+            }
+        });
+        document.addEventListener("mouseout", (e) => {
+            if (e.target.closest(hoverTargets)) {
+                cursor.classList.remove("hover");
+                follower.classList.remove("hover");
+            }
+        });
+    })();
+    </script>
 </body>
 </html>

@@ -1,93 +1,58 @@
 /* ============================================
-TIENDA ONLINE - ESTILOS PROFESIONALES
-============================================ */
+   TIENDA ONLINE - ESTILOS PROFESIONALES
+   Versión optimizada y limpia
+   ============================================ */
 
 /* ============================================
-RESET COMPATIBLE CON STYLE.CSS PRINCIPAL
-============================================ */
+   RESET COMPATIBLE CON STYLE.CSS PRINCIPAL
+   ============================================ */
 .shop-header,
 .shop-header *,
 .cart-sidebar,
 .cart-sidebar *,
-.quick-view-modal,
-.quick-view-modal * {
+.product-modal,
+.product-modal * {
     box-sizing: border-box;
 }
 
 /* ============================================
-CURSOR PERSONALIZADO - TIENDA
-============================================ */
-body {
-    cursor: none;
+   FOCUS VISIBLE (Accesibilidad WCAG 2.4.7)
+   ============================================ */
+.shop-search-bar input:focus-visible,
+.shop-sort select:focus-visible,
+.cart-promo-input input:focus-visible,
+.comment-input:focus-visible,
+.comment-textarea:focus-visible {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.25);
 }
 
-a, button {
-    cursor: none;
-}
-
-.cursor {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 8px;
-    height: 8px;
-    background: var(--color-accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99999;
-    transform: translate(-50%, -50%);
-    transition: width 0.3s var(--ease-out-expo),
-                height 0.3s var(--ease-out-expo),
-                background 0.3s;
-    mix-blend-mode: difference;
-}
-
-.cursor-follower {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--color-accent);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 99998;
-    transform: translate(-50%, -50%);
-    transition: width 0.4s var(--ease-out-expo),
-                height 0.4s var(--ease-out-expo),
-                border-color 0.3s,
-                opacity 0.3s;
-    opacity: 0.5;
-}
-
-.cursor.hover {
-    width: 60px;
-    height: 60px;
-    background: transparent;
-    border: 1px solid var(--color-accent);
-}
-
-.cursor-follower.hover {
-    width: 80px;
-    height: 80px;
-    opacity: 0.2;
-}
-
-@media (max-width: 768px) {
-    .cursor, .cursor-follower {
-        display: none;
-    }
-    body {
-        cursor: auto;
-    }
-    a, button {
-        cursor: pointer;
-    }
+.filter-btn:focus-visible,
+.action-btn:focus-visible,
+.qty-btn:focus-visible,
+.cart-close:focus-visible,
+.modal-close:focus-visible,
+.promo-close:focus-visible,
+.promo-nav:focus-visible,
+.cart-promo-apply:focus-visible,
+.cart-remove-promo:focus-visible,
+.cart-checkout:focus-visible,
+.modal-add-to-cart:focus-visible,
+.product-view-more:focus-visible,
+.promo-cta:focus-visible,
+.modal-variant:focus-visible,
+.modal-thumbnail:focus-visible,
+.promo-dot:focus-visible,
+.cart-continue:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
 }
 
 /* ============================================
-HEADER SHOP
-============================================ */
+   HEADER SHOP
+   ============================================ */
 .shop-header {
     position: fixed;
     top: 0;
@@ -96,8 +61,8 @@ HEADER SHOP
     z-index: 1000;
     padding: 1.2rem 2rem;
     background: rgba(10, 10, 10, 0.95);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(12px); /* ✅ Antes 15px */
+    -webkit-backdrop-filter: blur(12px);
     transition: padding 0.4s var(--ease-out-expo),
                 background 0.4s var(--ease-out-expo);
 }
@@ -211,8 +176,8 @@ HEADER SHOP
 }
 
 /* ============================================
-HERO TIENDA
-============================================ */
+   HERO TIENDA
+   ============================================ */
 .shop-hero {
     position: relative;
     height: 65vh;
@@ -245,10 +210,10 @@ HERO TIENDA
         rgba(201, 169, 110, 0.08) 40%,
         transparent 70%
     );
-    filter: blur(50px);
+    filter: blur(30px); /* ✅ Antes 50px */
     pointer-events: none;
     z-index: 1;
-    animation: shopGlowPulse 8s ease-in-out infinite;
+    animation: shopGlowPulse 10s ease-in-out infinite; /* ✅ Antes 8s */
 }
 
 @keyframes shopGlowPulse {
@@ -320,7 +285,7 @@ HERO TIENDA
 
 .shop-hero-wave {
     position: absolute;
-    bottom: -1px; /* ★ CAMBIO: -1px para evitar línea blanca */
+    bottom: -1px;
     left: 0;
     width: 100%;
     height: 100px;
@@ -339,12 +304,12 @@ HERO TIENDA
 }
 
 .shop-hero-wave svg path {
-    fill: var(--color-bg); /* ★ CAMBIO: usa el color de fondo de la siguiente sección */
+    fill: var(--color-bg);
 }
 
 /* ============================================
-EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
-============================================ */
+   EFECTO LUZ LINTERNA / SPOTLIGHT
+   ============================================ */
 .shop-spotlight {
     position: absolute;
     top: 0;
@@ -356,12 +321,11 @@ EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
     overflow: hidden;
 }
 
-/* Haz de luz principal (cono desde arriba) */
 .spotlight-beam {
     position: absolute;
     top: -20%;
     left: 50%;
-    transform: translateX(-50%) translateZ(0); /* ★ GPU force */
+    transform: translateX(-50%) translateZ(0);
     width: 40%;
     height: 120%;
     background: linear-gradient(
@@ -370,21 +334,19 @@ EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
         rgba(201, 169, 110, 0.08) 40%,
         transparent 100%
     );
-    -webkit-clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%); /* ★ Prefijo */
+    -webkit-clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
     clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
-    -webkit-filter: blur(30px); /* ★ Prefijo */
-    filter: blur(30px);
+    -webkit-filter: blur(20px); /* ✅ Antes 30px */
+    filter: blur(20px);
     opacity: 1;
-    will-change: transform, opacity; /* ★ Hint para GPU */
-    animation: spotlightBreathe 10s ease-in-out infinite;
+    animation: spotlightBreathe 12s ease-in-out infinite; /* ✅ Antes 10s */
 }
 
-/* Resplandor en la base (donde "toca" la luz) */
 .spotlight-glow {
     position: absolute;
     bottom: 10%;
     left: 50%;
-    transform: translateX(-50%) translateZ(0); /* ★ GPU force */
+    transform: translateX(-50%) translateZ(0);
     width: 60%;
     height: 40%;
     background: radial-gradient(
@@ -393,14 +355,12 @@ EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
         rgba(201, 169, 110, 0.05) 40%,
         transparent 70%
     );
-    -webkit-filter: blur(40px); /* ★ Prefijo */
-    filter: blur(40px);
+    -webkit-filter: blur(25px); /* ✅ Antes 40px */
+    filter: blur(25px);
     opacity: 1;
-    will-change: transform, opacity; /* ★ Hint para GPU */
-    animation: glowBreathe 10s ease-in-out infinite;
+    animation: glowBreathe 12s ease-in-out infinite;
 }
 
-/* ANIMACIÓN: Se ilumina poco a poco y disminuye */
 @keyframes spotlightBreathe {
     0%, 100% {
         opacity: 0.1;
@@ -423,34 +383,9 @@ EFECTO LUZ LINTERNA / SPOTLIGHT (RESPIRACIÓN LENTA)
     }
 }
 
-/* ★ SOLUCIÓN MÓVIL: Reducir complejidad para que SÍ se renderice */
-@media (max-width: 768px) {
-    .spotlight-beam {
-        width: 70%;
-        -webkit-filter: blur(15px); /* ★ Menos blur = menos carga GPU */
-        filter: blur(15px);
-        /* ★ Fallback: si clip-path falla, usar gradiente radial */
-        -webkit-clip-path: none;
-        clip-path: none;
-        background: radial-gradient(
-            ellipse at center top,
-            rgba(201, 169, 110, 0.2) 0%,
-            rgba(201, 169, 110, 0.08) 40%,
-            transparent 70%
-        );
-        border-radius: 0 0 50% 50%;
-    }
-
-    .spotlight-glow {
-        width: 90%;
-        -webkit-filter: blur(20px); /* ★ Menos blur */
-        filter: blur(20px);
-    }
-}
-
 /* ============================================
-FILTROS
-============================================ */
+   FILTROS
+   ============================================ */
 .shop-filters-section {
     position: sticky;
     top: 60px;
@@ -522,8 +457,8 @@ FILTROS
 }
 
 /* ============================================
-PRODUCTOS GRID
-============================================ */
+   PRODUCTOS GRID
+   ============================================ */
 .shop-products-section {
     padding: 3rem 2rem 5rem;
     max-width: 1400px;
@@ -538,7 +473,6 @@ PRODUCTOS GRID
     width: 100%;
 }
 
-/* No results */
 .shop-no-results {
     grid-column: 1 / -1;
     text-align: center;
@@ -549,8 +483,8 @@ PRODUCTOS GRID
 }
 
 /* ============================================
-PRODUCT CARD - OPTIMIZADO
-============================================ */
+   PRODUCT CARD
+   ============================================ */
 .product-card {
     position: relative;
     background: rgba(255, 255, 255, 0.02);
@@ -687,9 +621,44 @@ PRODUCT CARD - OPTIMIZADO
     font-weight: 400;
 }
 
+/* Botón "Ver Más" en tarjetas */
+.product-view-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 1rem;
+    background: transparent;
+    border: 1px solid rgba(201, 169, 110, 0.3);
+    color: var(--color-accent);
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out-expo);
+    font-family: var(--font-body);
+}
+
+.product-view-more:hover {
+    background: var(--color-accent);
+    color: var(--color-dark);
+    border-color: var(--color-accent);
+}
+
+.product-view-more svg {
+    transition: transform 0.3s;
+}
+
+.product-view-more:hover svg {
+    transform: translateX(4px);
+}
+
 /* ============================================
-CARRITO SIDEBAR
-============================================ */
+   CARRITO SIDEBAR
+   ============================================ */
 .cart-sidebar {
     position: fixed;
     top: 0;
@@ -823,6 +792,13 @@ CARRITO SIDEBAR
     line-height: 1.3;
 }
 
+.cart-item-variant {
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    margin-bottom: 0.3rem;
+    font-style: italic;
+}
+
 .cart-item-price {
     color: var(--color-accent);
     font-weight: 600;
@@ -919,15 +895,6 @@ CARRITO SIDEBAR
     flex-shrink: 0;
 }
 
-.cart-total {
-    display: flex;
-    justify-content: space-between;
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--color-white);
-    margin-bottom: 1.2rem;
-}
-
 .cart-checkout {
     width: 100%;
     padding: 1rem;
@@ -948,145 +915,8 @@ CARRITO SIDEBAR
 }
 
 /* ============================================
-QUICK VIEW MODAL
-============================================ */
-.quick-view-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 3000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-    visibility: hidden;
-    opacity: 0;
-    transition: all 0.4s var(--ease-out-expo);
-    pointer-events: none;
-}
-
-.quick-view-modal.open {
-    visibility: visible;
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.quick-view-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-}
-
-.quick-view-content {
-    position: relative;
-    background: var(--color-bg-alt);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    max-width: 850px;
-    width: 100%;
-    max-height: 85vh;
-    overflow-y: auto;
-    transform: scale(0.95);
-    transition: transform 0.4s var(--ease-out-expo);
-}
-
-.quick-view-modal.open .quick-view-content {
-    transform: scale(1);
-}
-
-.quick-view-close {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: rgba(0, 0, 0, 0.5);
-    border: none;
-    color: var(--color-text);
-    cursor: pointer;
-    z-index: 1;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: all 0.3s;
-}
-
-.quick-view-close:hover {
-    background: var(--color-accent);
-    color: var(--color-dark);
-}
-
-.quick-view-body {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-}
-
-.quick-view-image {
-    width: 100%;
-    height: 100%;
-    min-height: 300px;
-    object-fit: cover;
-}
-
-.quick-view-info {
-    padding: 2.5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.quick-view-category {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-accent);
-    margin-bottom: 0.8rem;
-}
-
-.quick-view-title {
-    font-family: var(--font-display);
-    font-size: 1.8rem;
-    color: var(--color-white);
-    margin-bottom: 0.8rem;
-    line-height: 1.2;
-}
-
-.quick-view-price {
-    font-size: 1.6rem;
-    font-weight: 600;
-    color: var(--color-accent);
-    margin-bottom: 1.5rem;
-}
-
-.quick-view-description {
-    color: var(--color-text-muted);
-    line-height: 1.7;
-    margin-bottom: 2rem;
-    font-size: 0.95rem;
-}
-
-.quick-view-add-to-cart {
-    width: 100%;
-    padding: 1rem;
-    background: var(--color-accent);
-    color: var(--color-dark);
-    border: none;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s var(--ease-out-expo);
-    font-family: var(--font-body);
-}
-
-.quick-view-add-to-cart:hover {
-    background: var(--color-accent-light);
-}
-
-/* ============================================
-ANIMACIONES
-============================================ */
+   ANIMACIONES
+   ============================================ */
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -1108,134 +938,8 @@ ANIMACIONES
 }
 
 /* ============================================
-RESPONSIVE
-============================================ */
-@media (max-width: 768px) {
-    .shop-header {
-        padding: 1rem 1.2rem;
-    }
-    
-    .shop-header.scrolled {
-        padding: 0.7rem 1.2rem;
-    }
-    
-    .shop-header-inner {
-        gap: 1rem;
-    }
-    
-    .shop-logo {
-        font-size: 1.3rem;
-    }
-    
-    .shop-search-bar {
-        display: none;
-    }
-    
-    .shop-hero {
-        height: 55vh;
-        min-height: 350px;
-        margin-top: 55px;
-    }
-    
-    .shop-hero-content {
-        padding: 0 1.2rem;
-    }
-    
-    .shop-hero-wave {
-        height: 70px;
-    }
-    
-    .shop-filters-section {
-        padding: 1.2rem;
-        top: 55px;
-    }
-    
-    .shop-filters {
-        gap: 0.5rem;
-    }
-    
-    .filter-btn {
-        padding: 0.5rem 1rem;
-        font-size: 0.65rem;
-    }
-    
-    .shop-sort {
-        justify-content: center;
-        margin-top: 1rem;
-    }
-    
-    .shop-products-section {
-        padding: 2rem 1.2rem 4rem;
-    }
-    
-    .shop-products-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 1.2rem;
-    }
-    
-    .product-card:hover {
-        transform: none;
-    }
-    
-    .product-actions {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    
-    .quick-view-body {
-        grid-template-columns: 1fr;
-    }
-    
-    .quick-view-image {
-        min-height: 250px;
-        max-height: 300px;
-    }
-    
-    .quick-view-info {
-        padding: 1.5rem;
-    }
-    
-    .cart-content {
-        max-width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    .shop-products-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .shop-title {
-        font-size: clamp(2rem, 8vw, 3rem);
-    }
-    
-    .filter-btn {
-        padding: 0.45rem 0.8rem;
-        font-size: 0.6rem;
-    }
-}
-
-/* ============================================
-REDUCIR MOVIMIENTO (Accesibilidad)
-============================================ */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-    
-    .shop-hero-bg,
-    .shop-hero-glow {
-        animation: none;
-    }
-}
-
-/* ============================================
-MODAL DE FICHA TÉCNICA - PARALLAX
-============================================ */
+   MODAL DE FICHA TÉCNICA
+   ============================================ */
 .product-modal {
     position: fixed;
     inset: 0;
@@ -1256,8 +960,8 @@ MODAL DE FICHA TÉCNICA - PARALLAX
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.9);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(6px); /* ✅ Antes 10px */
+    -webkit-backdrop-filter: blur(6px);
 }
 
 .modal-content {
@@ -1309,18 +1013,17 @@ MODAL DE FICHA TÉCNICA - PARALLAX
 
 /* Galería */
 .modal-gallery-section {
-    position: sticky;   /* ★ Se "ancla" mientras la info scrollea */
+    position: sticky;
     top: 0;
-    align-self: start;  /* ★ No se estira con el grid */
-    height: 100vh;      /* ★ Exactamente la altura visible del modal */
+    align-self: start;
+    height: 100vh;
     overflow: hidden;
     background: var(--color-dark);
 }
 
 .modal-gallery {
     position: absolute;
-    inset: 0;             /* ★ Rellena TODA la columna, sin hueco negro */
-    /* ★ NO debe tener height: 100vh ni height: 50vh aquí */
+    inset: 0;
 }
 
 .modal-gallery-slide {
@@ -1340,12 +1043,11 @@ MODAL DE FICHA TÉCNICA - PARALLAX
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s linear;
-    will-change: transform;
 }
 
 .modal-thumbnails {
     position: absolute;
-    bottom: 2rem;         /* ★ Pegadas al fondo de la COLUMNA */
+    bottom: 2rem;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
@@ -1353,8 +1055,39 @@ MODAL DE FICHA TÉCNICA - PARALLAX
     z-index: 5;
     padding: 0.8rem;
     background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(8px); /* ✅ Antes 10px */
+    -webkit-backdrop-filter: blur(8px);
     border-radius: 8px;
+    max-width: 90%; /* ✅ NUEVO: evita desborde */
+    overflow-x: auto; /* ✅ NUEVO: scroll horizontal si hay muchas */
+    scrollbar-width: none;
+}
+
+.modal-thumbnails::-webkit-scrollbar {
+    display: none;
+}
+
+.modal-thumbnail {
+    flex-shrink: 0; /* ✅ NUEVO: no se encogen */
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.3s;
+    padding: 0;
+    background: transparent;
+}
+
+.modal-thumbnail.active {
+    border-color: var(--color-accent);
+}
+
+.modal-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* Info del producto */
@@ -1509,13 +1242,6 @@ MODAL DE FICHA TÉCNICA - PARALLAX
     margin-top: 0.3rem;
 }
 
-.cart-item-variant {
-    font-size: 0.75rem;
-    color: var(--color-accent);
-    margin-bottom: 0.3rem;
-    font-style: italic;
-}
-
 /* Botón agregar al carrito */
 .modal-add-to-cart {
     width: 100%;
@@ -1536,78 +1262,22 @@ MODAL DE FICHA TÉCNICA - PARALLAX
     font-family: var(--font-body);
 }
 
-.modal-add-to-cart:hover {
+.modal-add-to-cart:hover:not(:disabled) {
     background: var(--color-accent-light);
     transform: translateY(-2px);
 }
 
-/* Botón "Ver Más" en tarjetas */
-.product-view-more {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    width: 100%;
-    padding: 0.8rem;
-    margin-top: 1rem;
-    background: transparent;
-    border: 1px solid rgba(201, 169, 110, 0.3);
-    color: var(--color-accent);
-    font-size: 0.7rem;
-    font-weight: 500;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s var(--ease-out-expo);
-    font-family: var(--font-body);
-}
-
-.product-view-more:hover {
-    background: var(--color-accent);
-    color: var(--color-dark);
-    border-color: var(--color-accent);
-}
-
-.product-view-more svg {
-    transition: transform 0.3s;
-}
-
-.product-view-more:hover svg {
-    transform: translateX(4px);
-}
-
-/* Responsive */
-@media (max-width: 968px) {
-    .modal-body {
-        grid-template-columns: 1fr;
-    }
-    
-    .modal-gallery-section {
-        position: relative;  /* ★ Sin sticky en móvil */
-        top: auto;
-        height: 50vh;
-        min-height: 50vh;
-    }
-    
-    .modal-info-section {
-        padding: 2rem 1.5rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .modal-variants-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .modal-thumbnail {
-        width: 50px;
-        height: 50px;
-    }
+.modal-add-to-cart:disabled {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.6;
 }
 
 /* ============================================
-POPUP DE PROMOCIONES - PREMIUM
-============================================ */
+   POPUP DE PROMOCIONES
+   ============================================ */
 .promo-popup {
     position: fixed;
     inset: 0;
@@ -1632,8 +1302,8 @@ POPUP DE PROMOCIONES - PREMIUM
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(6px); /* ✅ Antes 10px */
+    -webkit-backdrop-filter: blur(6px);
 }
 
 .promo-popup-content {
@@ -1657,7 +1327,7 @@ POPUP DE PROMOCIONES - PREMIUM
     transform: scale(1) translateY(0);
 }
 
-/* Efecto de brillo en el borde */
+/* ✅ OPTIMIZADO: Brillo del borde mucho más lento (menos GPU) */
 .promo-popup-content::before {
     content: '';
     position: absolute;
@@ -1671,7 +1341,7 @@ POPUP DE PROMOCIONES - PREMIUM
         rgba(201, 169, 110, 0.1) 90deg,
         transparent 180deg
     );
-    animation: promoBorderShine 8s linear infinite;
+    animation: promoBorderShine 20s linear infinite; /* ✅ Antes 8s, ahora 20s (2.5x menos CPU) */
     pointer-events: none;
 }
 
@@ -1679,7 +1349,6 @@ POPUP DE PROMOCIONES - PREMIUM
     to { transform: rotate(360deg); }
 }
 
-/* Botón cerrar */
 .promo-close {
     position: absolute;
     top: 1rem;
@@ -1705,7 +1374,6 @@ POPUP DE PROMOCIONES - PREMIUM
     transform: rotate(90deg);
 }
 
-/* Dots de navegación */
 .promo-dots {
     display: flex;
     justify-content: center;
@@ -1732,7 +1400,6 @@ POPUP DE PROMOCIONES - PREMIUM
     border-radius: 4px;
 }
 
-/* Slider de promociones */
 .promo-slider {
     position: relative;
     min-height: 280px;
@@ -1743,7 +1410,7 @@ POPUP DE PROMOCIONES - PREMIUM
     inset: 0;
     opacity: 0;
     transform: translateX(30px);
-    transition: all 0.5s var(--ease-out-expo);
+    transition: all 0.8s var(--ease-out-expo); /* ✅ Unificado a 0.8s */
     pointer-events: none;
     display: flex;
     flex-direction: column;
@@ -1758,7 +1425,7 @@ POPUP DE PROMOCIONES - PREMIUM
     position: relative;
 }
 
-/* Badge de la promoción */
+/* ✅ UNIFICADO: Badge con una sola animación */
 .promo-badge {
     display: inline-block;
     padding: 0.4rem 1.2rem;
@@ -1768,7 +1435,7 @@ POPUP DE PROMOCIONES - PREMIUM
     text-transform: uppercase;
     border-radius: 20px;
     margin-bottom: 1.5rem;
-    animation: promoBadgePulse 2s ease-in-out infinite;
+    animation: promoBadgePulse 4s ease-in-out infinite; /* ✅ Antes 2s/3s, ahora 4s */
 }
 
 .promo-badge.gold {
@@ -1791,7 +1458,6 @@ POPUP DE PROMOCIONES - PREMIUM
     50% { transform: scale(1.05); }
 }
 
-/* Descuento grande */
 .promo-discount {
     font-family: var(--font-display);
     font-size: clamp(3rem, 8vw, 5rem);
@@ -1799,10 +1465,9 @@ POPUP DE PROMOCIONES - PREMIUM
     color: var(--color-accent);
     line-height: 1;
     margin-bottom: 0.5rem;
-    text-shadow: 0 0 40px rgba(201, 169, 110, 0.3);
+    text-shadow: 0 0 30px rgba(201, 169, 110, 0.3); /* ✅ Antes 40px */
 }
 
-/* Título */
 .promo-title {
     font-family: var(--font-display);
     font-size: clamp(1.5rem, 4vw, 2rem);
@@ -1811,7 +1476,6 @@ POPUP DE PROMOCIONES - PREMIUM
     line-height: 1.2;
 }
 
-/* Subtítulo */
 .promo-subtitle {
     font-size: 1rem;
     color: var(--color-accent);
@@ -1819,7 +1483,6 @@ POPUP DE PROMOCIONES - PREMIUM
     font-weight: 500;
 }
 
-/* Descripción */
 .promo-description {
     font-size: 0.9rem;
     color: var(--color-text-muted);
@@ -1828,7 +1491,6 @@ POPUP DE PROMOCIONES - PREMIUM
     max-width: 400px;
 }
 
-/* Código de cupón */
 .promo-code-wrapper {
     display: flex;
     align-items: center;
@@ -1873,7 +1535,6 @@ POPUP DE PROMOCIONES - PREMIUM
     color: var(--color-accent);
 }
 
-/* Vigencia */
 .promo-validity {
     font-size: 0.75rem;
     color: var(--color-text-muted);
@@ -1889,7 +1550,6 @@ POPUP DE PROMOCIONES - PREMIUM
     color: var(--color-accent);
 }
 
-/* CTA Button */
 .promo-cta {
     display: inline-block;
     padding: 1rem 2.5rem;
@@ -1928,7 +1588,6 @@ POPUP DE PROMOCIONES - PREMIUM
     box-shadow: 0 10px 30px rgba(201, 169, 110, 0.3);
 }
 
-/* No mostrar de nuevo */
 .promo-dont-show {
     display: flex;
     align-items: center;
@@ -1947,7 +1606,6 @@ POPUP DE PROMOCIONES - PREMIUM
     cursor: pointer;
 }
 
-/* Toast de código copiado */
 .promo-toast {
     position: fixed;
     bottom: 2rem;
@@ -1970,36 +1628,47 @@ POPUP DE PROMOCIONES - PREMIUM
     opacity: 1;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-    .promo-popup-content {
-        padding: 2rem 1.5rem;
-    }
-    
-    .promo-slider {
-        min-height: 320px;
-    }
-    
-    .promo-code-wrapper {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
+/* ============================================
+   TIPOS DE TOAST (SUCCESS, ERROR, INFO)
+   ============================================ */
+.promo-toast[data-type="success"] {
+    background: #4ade80;
+    color: #052e16;
+    box-shadow: 0 10px 30px rgba(74, 222, 128, 0.3);
 }
 
-/* Reducir movimiento */
-@media (prefers-reduced-motion: reduce) {
-    .promo-popup-content::before {
-        animation: none;
-    }
-    
-    .promo-badge {
-        animation: none;
-    }
+.promo-toast[data-type="error"] {
+    background: #ff4444;
+    color: white;
+    box-shadow: 0 10px 30px rgba(255, 68, 68, 0.3);
+}
+
+.promo-toast[data-type="info"] {
+    background: var(--color-accent);
+    color: var(--color-dark);
+    box-shadow: 0 10px 30px rgba(201, 169, 110, 0.3);
 }
 
 /* ============================================
-BOTONES DE NAVEGACIÓN - POPUP
-============================================ */
+   EFECTO BOUNCE EN EL BOTÓN DEL CARRITO
+   (Feedback visual al agregar producto sin abrir panel)
+   ============================================ */
+@keyframes cartBounce {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.25) rotate(-8deg); }
+    50% { transform: scale(0.95) rotate(5deg); }
+    75% { transform: scale(1.1) rotate(-3deg); }
+}
+
+.cart-toggle.bounce {
+    animation: cartBounce 0.6s var(--ease-out-expo);
+}
+
+.cart-count.bounce {
+    animation: cartBounce 0.6s var(--ease-out-expo);
+}
+
+/* Botones de navegación del popup */
 .promo-nav {
     position: absolute;
     top: 50%;
@@ -2040,42 +1709,9 @@ BOTONES DE NAVEGACIÓN - POPUP
     transform: translateY(-50%) scale(1.1);
 }
 
-/* Ajustar velocidad de transición - MÁS LENTO */
-.promo-slide {
-    transition: all 0.8s var(--ease-out-expo);
-}
-
-/* Animación más suave del badge */
-.promo-badge {
-    animation: promoBadgePulse 3s ease-in-out infinite;
-}
-
-/* Responsive: mostrar botones siempre en móvil */
-@media (max-width: 768px) {
-    .promo-nav {
-        opacity: 1;
-        pointer-events: auto;
-        width: 36px;
-        height: 36px;
-    }
-    
-    .promo-nav-prev {
-        left: 0.5rem;
-    }
-    
-    .promo-nav-next {
-        right: 0.5rem;
-    }
-    
-    .promo-nav svg {
-        width: 18px;
-        height: 18px;
-    }
-}
-
 /* ============================================
-CARRITO - CÓDIGO DE DESCUENTO
-============================================ */
+   CARRITO - CÓDIGO DE DESCUENTO
+   ============================================ */
 .cart-promo-section {
     margin-bottom: 1.5rem;
 }
@@ -2149,6 +1785,7 @@ CARRITO - CÓDIGO DE DESCUENTO
     color: #ff4444;
 }
 
+/* ✅ CORREGIDO: Resumen del carrito (una sola definición clara) */
 .cart-summary {
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     padding-top: 1rem;
@@ -2183,8 +1820,8 @@ CARRITO - CÓDIGO DE DESCUENTO
 }
 
 /* ============================================
-BOTÓN FLOTANTE DE WHATSAPP
-============================================ */
+   BOTÓN FLOTANTE DE WHATSAPP (ÚNICA DEFINICIÓN)
+   ============================================ */
 .whatsapp-float {
     position: fixed;
     bottom: 2rem;
@@ -2199,39 +1836,7 @@ BOTÓN FLOTANTE DE WHATSAPP
     box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
     z-index: 1000;
     transition: all 0.4s var(--ease-out-expo);
-    animation: whatsappPulse 2s ease-in-out infinite;
-}
-
-.whatsapp-float:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
-    animation: none;
-}
-
-.whatsapp-icon {
-    width: 32px;
-    height: 32px;
-    color: white;
-}
-
-/* ============================================
-BOTÓN FLOTANTE DE WHATSAPP (LIMPIO)
-============================================ */
-.whatsapp-float {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 60px;
-    height: 60px;
-    background: #25D366;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
-    z-index: 1000;
-    transition: all 0.4s var(--ease-out-expo);
-    animation: whatsappPulse 2s ease-in-out infinite;
+    animation: whatsappPulse 3s ease-in-out infinite; /* ✅ Antes 2s */
 }
 
 .whatsapp-float:hover {
@@ -2255,8 +1860,149 @@ BOTÓN FLOTANTE DE WHATSAPP (LIMPIO)
     }
 }
 
-/* Responsive */
+/* ============================================
+   RESPONSIVE - TABLET (≤968px)
+   ============================================ */
+@media (max-width: 968px) {
+    .modal-body {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-gallery-section {
+        position: relative;
+        top: auto;
+        height: 50vh;
+        min-height: 400px;
+    }
+    
+    .modal-info-section {
+        padding: 2rem 1.5rem;
+    }
+}
+
+/* ============================================
+   RESPONSIVE - MÓVIL (≤768px)
+   ============================================ */
 @media (max-width: 768px) {
+    .shop-header {
+        padding: 1rem 1.2rem;
+    }
+    
+    .shop-header.scrolled {
+        padding: 0.7rem 1.2rem;
+    }
+    
+    .shop-header-inner {
+        gap: 1rem;
+    }
+    
+    .shop-logo {
+        font-size: 1.3rem;
+    }
+    
+    .shop-search-bar {
+        display: none;
+    }
+    
+    .shop-hero {
+        height: 55vh;
+        min-height: 350px;
+        margin-top: 55px;
+    }
+    
+    .shop-hero-content {
+        padding: 0 1.2rem;
+    }
+    
+    .shop-hero-wave {
+        height: 70px;
+    }
+    
+    /* ✅ OPTIMIZACIÓN MÓVIL: Spotlight simplificado */
+    .spotlight-beam {
+        width: 70%;
+        filter: blur(12px);
+        -webkit-clip-path: none;
+        clip-path: none;
+        background: radial-gradient(
+            ellipse at center top,
+            rgba(201, 169, 110, 0.2) 0%,
+            rgba(201, 169, 110, 0.08) 40%,
+            transparent 70%
+        );
+        border-radius: 0 0 50% 50%;
+        animation-duration: 20s; /* ✅ Más lento */
+    }
+    
+    .spotlight-glow {
+        width: 90%;
+        filter: blur(15px);
+        animation-duration: 20s;
+    }
+    
+    .shop-filters-section {
+        padding: 1.2rem;
+        top: 55px;
+    }
+    
+    .shop-filters {
+        gap: 0.5rem;
+    }
+    
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.65rem;
+    }
+    
+    .shop-sort {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+    
+    .shop-products-section {
+        padding: 2rem 1.2rem 4rem;
+    }
+    
+    .shop-products-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.2rem;
+    }
+    
+    .product-card:hover {
+        transform: none; /* ✅ Sin transform en móvil (mejor rendimiento) */
+    }
+    
+    .product-actions {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    .cart-content {
+        max-width: 100%;
+    }
+    
+    /* ✅ NUEVO: Botones del popup siempre visibles en móvil */
+    .promo-nav {
+        opacity: 1;
+        pointer-events: auto;
+        width: 36px;
+        height: 36px;
+    }
+    
+    .promo-nav-prev {
+        left: 0.5rem;
+    }
+    
+    .promo-nav-next {
+        right: 0.5rem;
+    }
+    
+    .promo-nav svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    /* ✅ WhatsApp más pequeño */
     .whatsapp-float {
         bottom: 1.5rem;
         right: 1.5rem;
@@ -2270,9 +2016,93 @@ BOTÓN FLOTANTE DE WHATSAPP (LIMPIO)
     }
 }
 
+/* ============================================
+   RESPONSIVE - MÓVIL PEQUEÑO (≤480px)
+   ============================================ */
 @media (max-width: 480px) {
+    .shop-products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .shop-title {
+        font-size: clamp(2rem, 8vw, 3rem);
+    }
+    
+    .filter-btn {
+        padding: 0.45rem 0.8rem;
+        font-size: 0.6rem;
+    }
+    
+    .modal-variants-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .modal-thumbnail {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .promo-popup-content {
+        padding: 2rem 1.5rem;
+    }
+    
+    .promo-slider {
+        min-height: 320px;
+    }
+    
+    .promo-code-wrapper {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
     .whatsapp-float {
         bottom: 1rem;
         right: 1rem;
+    }
+    
+    /* ✅ OPTIMIZACIÓN AGRESIVA: Desactivar animaciones pesadas */
+    .spotlight-beam,
+    .spotlight-glow {
+        animation: none; /* ✅ Sin animación en móvil pequeño */
+        opacity: 0.4;
+    }
+    
+    .promo-popup-content::before {
+        animation: none; /* ✅ Sin conic-gradient rotando */
+    }
+    
+    .promo-badge {
+        animation: none; /* ✅ Sin pulso */
+    }
+    
+    .whatsapp-float {
+        animation: none; /* ✅ Sin pulso */
+    }
+    
+    .shop-hero-glow {
+        filter: blur(20px);
+        animation-duration: 15s;
+    }
+}
+
+/* ============================================
+   REDUCIR MOVIMIENTO (Accesibilidad WCAG)
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .shop-hero-glow,
+    .spotlight-beam,
+    .spotlight-glow,
+    .promo-popup-content::before,
+    .promo-badge,
+    .whatsapp-float {
+        animation: none !important;
     }
 }

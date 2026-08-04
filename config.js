@@ -32,8 +32,8 @@ const SITE_CONFIG = {
   // ⏳ LOADER
   // ──────────────────────────────────────────
   loader: {
-    text: "Studio",          // Texto que aparece en el loader
-    duration: 2200,          // Duración en ms
+    text: "Studio",
+    duration: 2200,
   },
 
   // ──────────────────────────────────────────
@@ -42,15 +42,14 @@ const SITE_CONFIG = {
   header: {
     enabled: true,
     logo: {
-      text: "STU",           // Primera parte del logo
-      highlight: "DIO",      // Parte resaltada (color accent)
+      text: "STU",
+      highlight: "DIO",
     },
     links: [
       { label: "Inicio",     href: "#hero" },
       { label: "Historia",   href: "#story" },
       { label: "Servicios",  href: "#services" },
       { label: "Galería",    href: "#gallery" },
-      { label: "Filosofía",  href: "#philosophy" },
       { label: "Tienda",     href: "#ecommerce" },
       { label: "Blog",       href: "#blog" },
       { label: "Contacto",   href: "#contact" },
@@ -138,31 +137,11 @@ const SITE_CONFIG = {
     heading: "Trabajo que <em>habla</em> por sí solo",
     subtitle: "Una selección de proyectos donde la creatividad y la estrategia se encuentran.",
     items: [
-      {
-        image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop",
-        caption: "Identidad Visual",
-        parallaxSpeed: 0.08,
-      },
-      {
-        image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2032&auto=format&fit=crop",
-        caption: "Diseño Editorial",
-        parallaxSpeed: -0.05,
-      },
-      {
-        image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?q=80&w=2080&auto=format&fit=crop",
-        caption: "App Design",
-        parallaxSpeed: 0.1,
-      },
-      {
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop",
-        caption: "E-Commerce",
-        parallaxSpeed: -0.07,
-      },
-      {
-        image: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop",
-        caption: "Desarrollo Web",
-        parallaxSpeed: 0.06,
-      },
+      { image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop", caption: "Identidad Visual", parallaxSpeed: 0.08 },
+      { image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2032&auto=format&fit=crop", caption: "Diseño Editorial", parallaxSpeed: -0.05 },
+      { image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?q=80&w=2080&auto=format&fit=crop", caption: "App Design", parallaxSpeed: 0.1 },
+      { image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop", caption: "E-Commerce", parallaxSpeed: -0.07 },
+      { image: "https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop", caption: "Desarrollo Web", parallaxSpeed: 0.06 },
     ],
   },
 
@@ -170,7 +149,7 @@ const SITE_CONFIG = {
   // 💬 BLOQUE 4 — FILOSOFÍA / CTA
   // ──────────────────────────────────────────
   philosophy: {
-    enabled: false,  // ★ true/false para mostrar/ocultar
+    enabled: false,
     label: "Nuestra Filosofía",
     quote: "El diseño no es solo lo que se ve y se siente. El diseño es <em>cómo funciona</em>.",
     author: "— Steve Jobs",
@@ -269,8 +248,8 @@ const SITE_CONFIG = {
         ]
       }
     ],
-  
-    // ★ PROMOCIONES
+
+    // ★ PROMOCIONES - FECHAS ACTUALIZADAS A 2026-2027
     promotions: {
       enabled: true,
       delay: 3000,
@@ -281,33 +260,52 @@ const SITE_CONFIG = {
       dismissDuration: 24,
       items: [
         {
-          id: 1, badge: "🔥 OFERTA LIMITADA", title: "30% de Descuento",
+          id: 1, 
+          badge: "🔥 OFERTA LIMITADA", 
+          title: "30% de Descuento",
           subtitle: "En toda la colección de relojes",
           description: "Solo por tiempo limitado. Aprovecha nuestro descuento especial en productos seleccionados.",
-          code: "RELOJ30", discount: "30%", validUntil: "2025-12-31",
-          cta: "Comprar Ahora", ctaHref: "#products", accent: "gold"
+          code: "RELOJ30", 
+          discount: "30%", 
+          validUntil: "2026-12-31",    // ✅ Fecha futura
+          cta: "Comprar Ahora", 
+          ctaHref: "#products", 
+          accent: "gold"
         },
         {
-          id: 2, badge: "✨ NUEVO", title: "Envío Gratis",
-          subtitle: "En compras mayores a $100",
-          description: "Recibe tus productos sin costo de envío en todo el país. Sin código necesario.",
-          code: "ENVIOGRATIS", discount: "FREE", validUntil: "2025-11-30",
-          cta: "Ver Productos", ctaHref: "#products", accent: "purple"
+          id: 2, 
+          badge: "✨ NUEVO", 
+          title: "$100 de Descuento",        // ✅ Coherente con el promoCode
+          subtitle: "En compras mayores a $500",
+          description: "Obtén $100 MXN de descuento en tu compra total. Aplica en todos los productos.",
+          code: "DESCUENTO100",              // ✅ Nombre coherente
+          discount: "$100", 
+          validUntil: "2026-11-30",           // ✅ Fecha futura
+          cta: "Ver Productos", 
+          ctaHref: "#products", 
+          accent: "purple"
         },
         {
-          id: 3, badge: "🎁 EXCLUSIVO", title: "2x1 en Accesorios",
-          subtitle: "Lleva dos, paga uno",
-          description: "Compra cualquier accesorio y llévate otro completamente gratis. Oferta por tiempo limitado.",
-          code: "2X1ACC", discount: "2x1", validUntil: "2025-10-15",
-          cta: "Aprovechar Oferta", ctaHref: "#products", accent: "red"
+          id: 3, 
+          badge: "🎁 EXCLUSIVO", 
+          title: "50% de Descuento",         // ✅ Coherente con promoCode
+          subtitle: "En accesorios seleccionados",
+          description: "Mitad de precio en accesorios seleccionados. Oferta por tiempo limitado.",
+          code: "MITAD50",                    // ✅ Nombre coherente
+          discount: "50%", 
+          validUntil: "2026-10-31",           // ✅ Fecha futura
+          cta: "Aprovechar Oferta", 
+          ctaHref: "#products", 
+          accent: "red"
         }
       ]
     },
 
+    // ✅ PROMOCODES COHERENTES CON LAS PROMOS
     promoCodes: {
       "RELOJ30": { type: "percent", value: 30, label: "30% de descuento" },
-      "ENVIOGRATIS": { type: "fixed", value: 50, label: "$50 de descuento" },
-      "2X1ACC": { type: "percent", value: 50, label: "50% de descuento" }
+      "DESCUENTO100": { type: "fixed", value: 100, label: "$100 MXN de descuento" },
+      "MITAD50": { type: "percent", value: 50, label: "50% de descuento" }
     }
   },
 
@@ -315,19 +313,19 @@ const SITE_CONFIG = {
   // 📝 BLOQUE 6 — BLOG
   // ──────────────────────────────────────────
   blog: {
-    enabled: true, 
+    enabled: true,
     label: "Nuestro Blog",
     heading: "Historias que <em>inspiran</em>",
     subtitle: "Reflexiones, tendencias y detrás de escena de nuestro proceso creativo. Un espacio para compartir ideas que dejan huella.",
     cta: "Leer Artículos",
-    ctaHref: "blog.html", 
+    ctaHref: "blog.html",
   },
 
   // ──────────────────────────────────────────
   // 📬 BLOQUE 7 — CONTACTO (FORMULARIO)
   // ──────────────────────────────────────────
   contact: {
-    enabled: true, // ★ Cambiado a true para que se muestre
+    enabled: true,
     label: "Contacto",
     heading: "Hablemos de tu <em>próximo proyecto</em>",
     subtitle: "¿Tienes una idea en mente? Cuéntanos sobre ella y juntos la haremos realidad. Estamos listos para escucharte.",
@@ -340,9 +338,9 @@ const SITE_CONFIG = {
       successMessage: "¡Mensaje enviado con éxito! Te contactaremos pronto.",
       errorMessage: "Hubo un error al enviar. Por favor, intenta de nuevo.",
     },
-    email: "hola@studio.com", 
-    phone: "+34 612 345 678", 
-    address: "Madrid, España", 
+    email: "contacto@tudominio.com",              // ★ REEMPLAZAR
+    phone: "+52 55 1234 5678",                    // ★ REEMPLAZAR con tu número real
+    address: "Ciudad de México, México",          // ★ REEMPLAZAR
   },
 
   // ──────────────────────────────────────────
@@ -371,40 +369,43 @@ const SITE_CONFIG = {
       {
         title: "Legal",
         links: [
-          { label: "Política de Privacidad", href: "legal.html#privacy" },
+          { label: "Aviso de Privacidad",  href: "legal.html#privacy" },
           { label: "Términos y Condiciones", href: "legal.html#terms" },
-          { label: "Política de Cookies",    href: "legal.html#cookies" },
+          { label: "Términos Comerciales", href: "legal.html#commercial" },
+          { label: "Política de Cookies",  href: "legal.html#cookies" },
         ],
       },
       {
+        // ✅ CORREGIDO: Enlaces llevan a las secciones reales de servicios
         title: "Servicios",
         links: [
-          { label: "Branding",   href: "#" },
-          { label: "Diseño Web", href: "#" },
-          { label: "Desarrollo", href: "#" },
-          { label: "Estrategia", href: "#" },
+          { label: "Branding & Identidad", href: "#services" },
+          { label: "Diseño Web & UI/UX",   href: "#services" },
+          { label: "Desarrollo a Medida",  href: "#services" },
+          { label: "Estrategia Digital",   href: "#services" },
         ],
       },
       {
+        // ✅ CORREGIDO: Datos reales de contacto de México
         title: "Contacto",
         links: [
-          { label: "hola@studio.com",  href: "mailto:hola@studio.com" },
-          { label: "+34 612 345 678",  href: "tel:+34612345678" },
-          { label: "Madrid, España",   href: "#" },
+          { label: "contacto@tudominio.com",  href: "mailto:contacto@tudominio.com" },  // ★ REEMPLAZAR
+          { label: "+52 55 1234 5678",        href: "tel:+525512345678" },              // ★ REEMPLAZAR
+          { label: "Ciudad de México, MX",    href: "#contact" },                       // ★ REEMPLAZAR
         ],
       },
     ],
-    copyright: "© 2025 Studio. Todos los derechos reservados.",
+    copyright: "© 2026 Studio Creativo S.A. de C.V. Todos los derechos reservados.",  // ✅ 2026 + razón social mexicana
   },
 
   // ──────────────────────────────────────────
   // 🌐 REDES SOCIALES (ÚNICA FUENTE DE VERDAD)
   // ──────────────────────────────────────────
   socials: [
-    { label: "Instagram", href: "https://instagram.com/studio" },
-    { label: "Behance",   href: "https://behance.net/studio" },
-    { label: "LinkedIn",  href: "https://linkedin.com/company/studio" },
-    { label: "Twitter",   href: "https://twitter.com/studio" }
+    { label: "Instagram", href: "https://instagram.com/TU_USUARIO" },    // ★ REEMPLAZAR
+    { label: "Behance",   href: "https://behance.net/TU_USUARIO" },      // ★ REEMPLAZAR
+    { label: "LinkedIn",  href: "https://linkedin.com/company/TU_EMPRESA" },  // ★ REEMPLAZAR
+    { label: "Twitter",   href: "https://twitter.com/TU_USUARIO" }       // ★ REEMPLAZAR
   ],
 
   // ──────────────────────────────────────────
@@ -424,7 +425,7 @@ const SITE_CONFIG = {
   // 🛒 CONFIGURACIÓN DE LA TIENDA (tienda.html)
   // ──────────────────────────────────────────
   tienda: {
-    whatsapp: "521234567890", // ★ TU NÚMERO AQUÍ (sin +, sin espacios)
+    whatsapp: "5215512345678",  // ★ REEMPLAZAR — Formato: 52 + 1 + 10 dígitos (sin +, sin espacios)
     hero: {
       eyebrow: "Tienda Online",
       titleLine1: "Productos que",
@@ -432,13 +433,14 @@ const SITE_CONFIG = {
       subtitle: "Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida."
     }
   },
-  
+
   // ──────────────────────────────────────────
   // 🔐 SUPABASE (Blog)
+  // ⚠️ ADVERTENCIA: Verifica RLS en Supabase
   // ──────────────────────────────────────────
   supabase: {
-    url: "https://ouxfmeugibrpjysjfqso.supabase.co",
-    key: "sb_publishable_jAgXqz1iqlEyveCIFy4eOw_idYvxmoQ",
+    url: "https://ouxfmeugibrpjysjfqso.supabase.co",   // ★ REEMPLAZAR con tu URL real
+    key: "sb_publishable_jAgXqz1iqlEyveCIFy4eOw_idYvxmoQ",                   // ★ REEMPLAZAR con tu anon key real (JWT largo)
     storageBucket: "blog-images",
   },
 
@@ -446,15 +448,16 @@ const SITE_CONFIG = {
   // 📧 EMAIL & FORMULARIOS
   // ──────────────────────────────────────────
   email: {
-    contactForm: "hola@studio.com",
-    formSubmitUrl: "https://formsubmit.co/ajax/hola@studio.com",
+    contactForm: "contacto@tudominio.com",                    // ★ REEMPLAZAR
+    formSubmitUrl: "https://formsubmit.co/ajax/contacto@tudominio.com",  // ★ REEMPLAZAR
   },
 
   // ──────────────────────────────────────────
   // 📝 BLOG CONFIG (Mensajes y categorías)
+  // ✅ Categorías normalizadas con trim() implícito en blog.js
   // ──────────────────────────────────────────
   blogConfig: {
-    categories: ["historias", "recetas", "opiniones", "datos", "tutoriales"],
+    categories: ["historias", "recetas", "opiniones", "datos", "tutoriales"].map(c => c.trim()),
     heroStars: 35,
     messages: {
       postSuccess: "¡Post publicado con éxito!",
@@ -490,7 +493,7 @@ const SITE_CONFIG = {
   // ──────────────────────────────────────────
   shopConfig: {
     whatsapp: {
-      number: "521234567890",
+      number: "5215512345678",  // ★ REEMPLAZAR (mismo que tienda.whatsapp)
       defaultMessage: "¡Hola! Me interesa conocer más sobre sus productos.",
       orderMessage: "¡Hola! Me interesa hacer el siguiente pedido:\n\n",
       orderTotal: "\n*💰 Total a pagar: $",
@@ -510,16 +513,17 @@ const SITE_CONFIG = {
   },
 
   // ──────────────────────────────────────────
-  // 🏢 INFORMACIÓN DEL NEGOCIO
+  // 🏢 INFORMACIÓN DEL NEGOCIO (MÉXICO)
+  // ★ REEMPLAZAR TODOS LOS VALORES CON LOS DATOS REALES
   // ──────────────────────────────────────────
   business: {
-    name: "Studio Creativo",
-    legalName: "Studio Creativo S.L.",
-    taxId: "B12345678",
-    address: "Calle Principal 123, 28001 Madrid, España",
-    phone: "+34 612 345 678",
-    email: "hola@studio.com",
+    name: "Studio Creativo",                           // ★ REEMPLAZAR
+    legalName: "Studio Creativo S.A. de C.V.",         // ★ REEMPLAZAR (S.A. de C.V., S. de R.L., etc.)
+    taxId: "STC200115AB1",                             // ★ REEMPLAZAR con RFC real (12-13 caracteres)
+    address: "Av. Paseo de la Reforma 250, Piso 12, Col. Juárez, C.P. 06600, Ciudad de México",  // ★ REEMPLAZAR
+    phone: "+52 55 1234 5678",                         // ★ REEMPLAZAR
+    email: "contacto@tudominio.com",                   // ★ REEMPLAZAR
     businessHours: "Lun - Vie: 9:00 - 18:00",
-    registryData: "Inscrita en el Registro Mercantil de Madrid",
+    registryData: "Inscrita en el Registro Público de Comercio de la CDMX",  // ★ REEMPLAZAR
   },
 };

@@ -1,92 +1,121 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
+    <!-- ─── META BÁSICOS ─────────────────────────── -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0a0a">
+    <meta name="description" content="Estudio creativo especializado en diseño digital, branding y desarrollo web de alto impacto. Creamos experiencias digitales únicas y memorables.">
+    
+    <!-- ─── OPEN GRAPH BASE ─────────────────────── -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Studio | Estudio Creativo">
+    <meta property="og:description" content="Diseño, estrategia y tecnología fusionados para construir marcas que trascienden lo ordinario.">
+    <meta property="og:locale" content="es_MX">
+    
+    <!-- ─── TWITTER CARD ────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Studio | Estudio Creativo">
+    <meta name="twitter:description" content="Diseño, estrategia y tecnología fusionados para construir marcas que trascienden lo ordinario.">
+    
+    <!-- ─── TÍTULO ──────────────────────────────── -->
     <title>Studio | Estudio Creativo</title>
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- ─── FAVICON SVG INLINE (sin archivo externo) ── -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+    
+    <!-- ─── FUENTES ─────────────────────────────── -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ─── ESTILOS ─────────────────────────────── -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- ★ CURSOR PERSONALIZADO ★ -->
-    <div class="cursor" id="cursor"></div>
-    <div class="cursor-follower" id="cursorFollower"></div>
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
 
     <!-- ★ GRAIN OVERLAY ★ -->
-    <div class="grain-overlay"></div>
+    <div class="grain-overlay" aria-hidden="true"></div>
 
     <!-- ★ LOADER ★ -->
-    <div class="loader" id="loader">
+    <div class="loader" id="loader" role="status" aria-label="Cargando página">
         <div class="loader-inner">
             <div class="loader-title-wrapper">
                 <span class="loader-title-base">STUDIO</span>
                 <span class="loader-title-fill" id="loaderTitleFill">STUDIO</span>
             </div>
-            <div class="loader-percentage" id="loaderPercentage">0%</div>
+            <div class="loader-percentage" id="loaderPercentage" aria-live="polite">0%</div>
         </div>
     </div>
 
     <!-- ★ HEADER ★ -->
-    <header class="header" id="header">
-        <nav class="nav" id="nav"></nav>
+    <header class="header" id="header" role="banner">
+        <nav class="nav" id="nav" role="navigation" aria-label="Navegación principal"></nav>
     </header>
 
-    <!-- ★ HERO ★ -->
-    <section class="hero" id="hero">
-        <div class="hero-bg" id="heroBg"></div>
-        <div class="hero-glow"></div>
-        <div class="hero-content" id="heroContent"></div>
-        <div class="scroll-indicator" id="scrollIndicator">
-            <div class="scroll-indicator-line"></div>
-            <span class="scroll-indicator-text">Scroll</span>
-        </div>
-        <div class="hero-wave">
-            <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
-                <path d="M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z" fill="var(--color-bg)"/>
-            </svg>
-        </div>
-    </section>
+    <!-- ★ MAIN CONTENT ★ -->
+    <main role="main">
+        <!-- ★ HERO ★ -->
+        <section class="hero" id="hero" aria-label="Inicio">
+            <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
+            <div class="hero-glow" aria-hidden="true"></div>
+            <div class="hero-content" id="heroContent"></div>
+            <div class="scroll-indicator" id="scrollIndicator" aria-hidden="true">
+                <div class="scroll-indicator-line"></div>
+                <span class="scroll-indicator-text">Scroll</span>
+            </div>
+            <div class="hero-wave" aria-hidden="true">
+                <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+                    <path d="M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z" fill="var(--color-bg)"/>
+                </svg>
+            </div>
+        </section>
 
-    <!-- ★ BLOQUE 1: HISTORIA ★ -->
-    <section class="section section-story" id="story">
-        <div class="section-inner" id="storyInner"></div>
-    </section>
+        <!-- ★ BLOQUE 1: HISTORIA ★ -->
+        <section class="section section-story" id="story" aria-labelledby="story-heading">
+            <div class="section-inner" id="storyInner"></div>
+        </section>
 
-    <!-- ★ BLOQUE 2: SERVICIOS ★ -->
-    <section class="section section-services" id="services">
-        <div class="section-inner" id="servicesInner"></div>
-    </section>
+        <!-- ★ BLOQUE 2: SERVICIOS ★ -->
+        <section class="section section-services" id="services" aria-labelledby="services-heading">
+            <div class="section-inner" id="servicesInner"></div>
+        </section>
 
-    <!-- ★ BLOQUE 3: GALERÍA ★ -->
-    <section class="section section-gallery" id="gallery">
-        <div class="section-inner" id="galleryInner"></div>
-    </section>
+        <!-- ★ BLOQUE 3: GALERÍA ★ -->
+        <section class="section section-gallery" id="gallery" aria-labelledby="gallery-heading">
+            <div class="section-inner" id="galleryInner"></div>
+        </section>
 
-    <!-- ★ BLOQUE 4: FILOSOFÍA ★ -->
-    <section class="section section-philosophy" id="philosophy">
-        <div class="section-inner" id="philosophyInner"></div>
-    </section>
+        <!-- ★ BLOQUE 4: FILOSOFÍA ★ -->
+        <section class="section section-philosophy" id="philosophy" aria-labelledby="philosophy-heading">
+            <div class="section-inner" id="philosophyInner"></div>
+        </section>
 
-    <!-- ★ BLOQUE 5: E-COMMERCE ★ -->
-    <section class="section section-ecommerce" id="ecommerce">
-        <div class="section-inner" id="ecommerceInner"></div>
-    </section>
+        <!-- ★ BLOQUE 5: E-COMMERCE ★ -->
+        <section class="section section-ecommerce" id="ecommerce" aria-labelledby="ecommerce-heading">
+            <div class="section-inner" id="ecommerceInner"></div>
+        </section>
 
-    <!-- ★ BLOQUE 6: BLOG ★ -->
-    <section class="section section-blog" id="blog">
-        <div class="section-inner" id="blogInner"></div>
-    </section>
+        <!-- ★ BLOQUE 6: BLOG ★ -->
+        <section class="section section-blog" id="blog" aria-labelledby="blog-heading">
+            <div class="section-inner" id="blogInner"></div>
+        </section>
 
-    <!-- ★ BLOQUE 7: CONTACTO ★ -->
-    <section class="section section-contact" id="contact">
-        <div class="section-inner" id="contactInner"></div>
-    </section>
+        <!-- ★ BLOQUE 7: CONTACTO ★ -->
+        <section class="section section-contact" id="contact" aria-labelledby="contact-heading">
+            <div class="section-inner" id="contactInner"></div>
+        </section>
+    </main>
 
     <!-- ★ FOOTER ★ -->
-    <footer class="footer" id="footer">
+    <footer class="footer" id="footer" role="contentinfo">
         <div class="footer-inner" id="footerInner"></div>
     </footer>
 
+    <!-- ★ SCRIPTS (orden correcto: config primero, app después) ★ -->
     <script src="config.js"></script>
     <script src="app.js"></script>
 </body>

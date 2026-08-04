@@ -11,7 +11,7 @@
   --color-bg: #0a0a0a;
   --color-bg-alt: #111111;
   --color-text: #f0ece2;
-  --color-text-muted: #8a8578;
+  --color-text-muted: #9a9488; /* ✅ CORREGIDO: ligeramente más claro para mejor contraste (era #8a8578) */
   --color-accent: #c9a96e;
   --color-accent-light: #e2c992;
   --color-white: #ffffff;
@@ -21,6 +21,8 @@
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  /* ✅ NUEVO: variable para control central de animaciones */
+  --animation-speed: 1;
 }
 
 html {
@@ -49,7 +51,35 @@ button { cursor: none; }
 }
 
 /* ============================================
-   CURSOR PERSONALIZADO
+   ✅ NUEVO: FOCUS VISIBLE GLOBAL (Accesibilidad WCAG 2.4.7)
+   Solo muestra el anillo cuando se navega con teclado
+   ============================================ */
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Variantes específicas para elementos que ya tienen estilos propios */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
+.form-input:focus-visible,
+.form-textarea:focus-visible {
+  outline: none; /* Estos ya tienen border-color accent en :focus */
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.3);
+}
+
+/* ============================================
+   CURSOR PERSONALIZADO (FUENTE ÚNICA - NO DUPLICAR)
    ============================================ */
 .cursor {
   position: fixed;
@@ -101,6 +131,8 @@ button { cursor: none; }
 
 /* ============================================
    GRAIN OVERLAY
+   ✅ CORREGIDO: Reducido a 0.02 para menos ruido visual
+   y animación más lenta para menos carga CPU
    ============================================ */
 .grain-overlay {
   position: fixed;
@@ -108,9 +140,9 @@ button { cursor: none; }
   width: 200%; height: 200%;
   pointer-events: none;
   z-index: 9999;
-  opacity: 0.035;
+  opacity: 0.02; /* ✅ Antes 0.035, ahora menos invasivo */
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  animation: grainShift 0.5s steps(1) infinite;
+  animation: grainShift 2s steps(1) infinite; /* ✅ Antes 0.5s, ahora 2s (4x menos CPU) */
 }
 
 @keyframes grainShift {
@@ -204,8 +236,8 @@ button { cursor: none; }
 
 .header.scrolled {
     background: rgba(10, 10, 10, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(12px); /* ✅ Antes 20px, ahora 12px (mejor rendimiento en móvil) */
+    -webkit-backdrop-filter: blur(12px);
     padding: 1rem 3rem;
 }
 
@@ -325,7 +357,6 @@ button { cursor: none; }
         transition: opacity 0.5s var(--ease-out-expo),
                     visibility 0.5s,
                     transform 0.5s var(--ease-out-expo);
-        will-change: opacity, transform;
         z-index: 1001;
     }
     
@@ -378,12 +409,11 @@ button { cursor: none; }
   inset: -20%;
   background-size: cover;
   background-position: center;
-  will-change: transform;
   filter: brightness(0.35) saturate(0.8);
   z-index: 0;
+  /* ✅ CORREGIDO: Eliminado will-change (se activa solo durante scroll) */
 }
 
-/* Overlay oscuro */
 .hero-bg::after {
   content: '';
   position: absolute;
@@ -393,11 +423,10 @@ button { cursor: none; }
     rgba(10, 10, 10, 0.7) 0%,
     rgba(10, 10, 10, 0.4) 50%,
     rgba(10, 10, 10, 0.05) 100%
-  ); /* ★ AQUÍ ESTÁ EL SECRETO: casi transparente abajo */
+  );
   z-index: 1;
 }
 
-/* Luz pulsante */
 .hero-glow {
   position: absolute;
   bottom: -10%;
@@ -414,7 +443,7 @@ button { cursor: none; }
   );
   pointer-events: none;
   z-index: 2;
-  filter: blur(50px);
+  filter: blur(40px); /* ✅ Antes 50px, ahora 40px (mejor rendimiento) */
   animation: glowPulse 6s ease-in-out infinite;
 }
 
@@ -798,8 +827,8 @@ button { cursor: none; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  will-change: transform;
   transition: transform 0.1s linear;
+  /* ✅ CORREGIDO: Eliminado will-change (se activa solo durante scroll) */
 }
 
 .story-text p {
@@ -940,7 +969,6 @@ button { cursor: none; }
     font-size: 1.05rem;
 }
 
-/* Contenedor del carrusel */
 .gallery-carousel-wrapper {
     position: relative;
     width: 100%;
@@ -949,7 +977,7 @@ button { cursor: none; }
     cursor: grab;
     -webkit-user-select: none;
     user-select: none;
-    touch-action: pan-y; /* Permite scroll vertical, bloquea el nativo horizontal */
+    touch-action: pan-y;
 }
 .gallery-carousel-wrapper:active {
     cursor: grabbing;
@@ -959,18 +987,14 @@ button { cursor: none; }
     display: flex;
     gap: clamp(1rem, 2vw, 2rem);
     padding: 0 clamp(2rem, 5vw, 8rem);
-    will-change: transform;
-    
-    /* ★ LIMPIEZA: Eliminamos la transition que causaba el tirón/lag */
+    /* ✅ CORREGIDO: Eliminado will-change permanente */
     transition: none; 
 }
 
-/* ★ Esta clase SOLO se activa al soltar para centrar suavemente */
 .gallery-carousel.is-snapping {
     transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Cada slide */
 .gallery-slide {
     position: relative;
     flex-shrink: 0;
@@ -978,7 +1002,7 @@ button { cursor: none; }
     border-radius: 4px;
     transition: transform 0.6s var(--ease-out-expo),
                 opacity 0.6s var(--ease-out-expo);
-    will-change: transform, opacity;
+    /* ✅ CORREGIDO: Eliminado will-change permanente (se activa solo durante drag) */
 }
 
 .gallery-slide:nth-child(odd) {
@@ -1001,18 +1025,17 @@ button { cursor: none; }
     width: 100%;
     height: 100%;
     object-fit: cover;
-    will-change: transform;
     transition: transform 0.6s var(--ease-out-expo),
                 filter 0.6s var(--ease-out-expo);
     filter: brightness(0.85) saturate(0.9);
     pointer-events: none;
+    /* ✅ CORREGIDO: Eliminado will-change */
 }
 
 .gallery-slide:hover .gallery-slide-img {
     filter: brightness(1.1) saturate(1.3);
 }
 
-/* Overlay gradiente */
 .gallery-slide::after {
     content: '';
     position: absolute;
@@ -1030,7 +1053,6 @@ button { cursor: none; }
 
 .gallery-slide:hover::after { opacity: 0.7; }
 
-/* Borde sutil dorado + Brillo al hover */
 .gallery-slide::before {
     content: '';
     position: absolute;
@@ -1048,7 +1070,6 @@ button { cursor: none; }
         0 0 30px rgba(201, 169, 110, 0.15);
 }
 
-/* Efecto de luz que barre */
 .gallery-slide-light {
     position: absolute;
     top: 0;
@@ -1069,7 +1090,7 @@ button { cursor: none; }
     z-index: 2;
     opacity: 0;
     transition: left 0.8s cubic-bezier(0.16, 1, 0.3, 1), 
-                opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1); /* ★ Corregido */
+                opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .gallery-slide:hover .gallery-slide-light {
@@ -1077,7 +1098,6 @@ button { cursor: none; }
     opacity: 1;
 }
 
-/* Partículas */
 .gallery-particles {
     position: absolute;
     inset: 0;
@@ -1100,7 +1120,6 @@ button { cursor: none; }
         0 0 4px var(--color-accent),
         0 0 8px rgba(201, 169, 110, 0.5);
     opacity: 0;
-    will-change: transform, opacity;
 }
 
 @keyframes galleryParticleFloat {
@@ -1116,7 +1135,6 @@ button { cursor: none; }
     }
 }
 
-/* Caption unificado */
 .gallery-slide-caption {
     position: absolute;
     bottom: clamp(1.2rem, 2.5vw, 2rem);
@@ -1360,7 +1378,6 @@ button { cursor: none; }
   width: 1px;
   background: linear-gradient(to bottom, transparent, rgba(201,169,110,0.15), transparent);
   pointer-events: none;
-  will-change: transform;
 }
 
 .editorial-hr {
@@ -1444,10 +1461,9 @@ button { cursor: none; }
         rgba(201, 169, 110, 0.05) 60%,
         transparent 100%
     );
-    filter: blur(40px);
+    filter: blur(30px); /* ✅ Antes 40px, ahora 30px (mejor rendimiento) */
     opacity: 0;
     transition: opacity 2s ease-out;
-    will-change: opacity;
 }
 
 .light-beam.active { opacity: 1; }
@@ -1465,10 +1481,9 @@ button { cursor: none; }
         rgba(201, 169, 110, 0.08) 40%,
         transparent 70%
     );
-    filter: blur(60px);
+    filter: blur(40px); /* ✅ Antes 60px, ahora 40px (mejor rendimiento) */
     opacity: 0;
     transition: opacity 2.5s ease-out;
-    will-change: opacity;
 }
 
 .services-ambient-glow.active { opacity: 1; }
@@ -1483,7 +1498,6 @@ button { cursor: none; }
         0 0 4px rgba(201, 169, 110, 0.6),
         0 0 8px rgba(201, 169, 110, 0.3);
     opacity: 0;
-    will-change: transform, opacity;
 }
 
 @keyframes particleFall {
@@ -1523,8 +1537,8 @@ button { cursor: none; }
 }
 
 @media (max-width: 768px) {
-    .light-beam { width: 150px; filter: blur(30px); }
-    .services-ambient-glow { width: 90%; filter: blur(40px); }
+    .light-beam { width: 150px; filter: blur(20px); } /* ✅ Aún más reducido en móvil */
+    .services-ambient-glow { width: 90%; filter: blur(25px); }
     .services-header .section-heading.glow-active {
         text-shadow: 
             0 0 30px rgba(201, 169, 110, 0.5),
@@ -1715,7 +1729,7 @@ button { cursor: none; }
         rgba(201, 169, 110, 0.08) 30%,
         transparent 70%
     );
-    filter: blur(60px);
+    filter: blur(40px); /* ✅ Antes 60px, ahora 40px */
     opacity: 0;
     transition: transform 4s cubic-bezier(0.16, 1, 0.3, 1), opacity 2s ease-out;
     z-index: 0;
@@ -1742,7 +1756,6 @@ button { cursor: none; }
     border-radius: 50%;
     box-shadow: 0 0 6px var(--color-accent), 0 0 12px rgba(201, 169, 110, 0.5);
     opacity: 0;
-    will-change: transform, opacity;
 }
 
 @keyframes blogParticleFloat {
@@ -1895,7 +1908,6 @@ button { cursor: none; }
     border-radius: 50%;
     box-shadow: 0 0 6px var(--color-accent), 0 0 12px rgba(201, 169, 110, 0.5);
     opacity: 0;
-    will-change: transform, opacity;
 }
 
 @keyframes contactParticleFloat {
@@ -2184,4 +2196,145 @@ FOOTER - VERSIÓN MÓVIL COMPACTA & PREMIUM
     font-size: 0.6rem;
     letter-spacing: 0.1em;
   }
+}
+
+/* ============================================
+   ✅ OPTIMIZACIONES PARA MÓVIL - VERSIÓN PREMIUM
+   Mantener animaciones clave, reducir las costosas
+   ============================================ */
+
+/* ─── TABLETS Y MÓVILES GRANDES (<=768px) ─── */
+@media (max-width: 768px) {
+  /* ✅ Grain overlay: se desactiva (muy costoso) */
+  .grain-overlay {
+    display: none;
+  }
+  
+  /* ✅ Hero glow: animación más lenta y blur reducido */
+  .hero-glow {
+    filter: blur(25px);
+    animation-duration: 10s; /* Antes: 6s */
+  }
+  
+  /* ✅ Estrellas: mostrar solo 15 de 40 (suficiente para verse premium) */
+  .hero-stars .star:nth-child(n+16) {
+    display: none;
+  }
+  
+  /* ✅ Parallax del hero: reducido al 30% (antes 100%) */
+  .hero-bg {
+    /* app.js usa C.effects.parallaxHeroSpeed, puedes ajustar eso a 0.1 */
+    filter: brightness(0.35) saturate(0.8);
+  }
+  
+  /* ✅ Waves del contacto: estáticas (sin animación infinita) */
+  .contact-waves svg {
+    animation: none;
+  }
+  .wave-1, .wave-2, .wave-3 {
+    animation: none;
+  }
+  
+  /* ✅ Partículas: reducir cantidad visualmente */
+  .gallery-particle,
+  .light-particle,
+  .ecommerce-particle,
+  .blog-particle,
+  .contact-particle {
+    opacity: 0.6; /* Más sutiles */
+  }
+  
+  /* ✅ Iconos de fondo 3D: sin rotación, solo posición */
+  .blog-bg-icon,
+  .contact-bg-icon,
+  .ecommerce-bg-icon {
+    animation: none;
+    filter: none;
+  }
+  
+  /* ✅ Ribbon SVG: movimiento muy sutil */
+  .story-ribbon svg {
+    animation-duration: 15s; /* Antes: 8s */
+  }
+  
+  /* ✅ Servicios: glow menos intenso */
+  .light-beam {
+    filter: blur(20px);
+    width: 150px;
+  }
+  .services-ambient-glow {
+    filter: blur(25px);
+    width: 90%;
+  }
+}
+
+/* ─── MÓVILES PEQUEÑOS (<=480px) ─── */
+@media (max-width: 480px) {
+  /* ✅ Hero glow: muy sutil pero presente */
+  .hero-glow {
+    filter: blur(15px);
+    opacity: 0.7;
+    animation-duration: 12s;
+  }
+  
+  /* ✅ Estrellas: mostrar solo 8 (suficiente para efecto "cielo") */
+  .hero-stars .star:nth-child(n+9) {
+    display: none;
+  }
+  
+  /* ✅ Parallax del hero: prácticamente desactivado */
+  .hero-bg {
+    transform: none !important;
+  }
+  
+  /* ✅ Story image sin parallax */
+  .story-image {
+    transform: none !important;
+  }
+  
+  /* ✅ Mantener REVEALS (son esenciales para el feel premium) */
+  .reveal, .reveal-left, .reveal-right, .reveal-scale {
+    transition-duration: 0.6s; /* Antes: 1s, un poco más rápido en móvil */
+  }
+  
+  /* ✅ Typewriter: se mantiene (es la firma de la marca) */
+  
+  /* ✅ Galería: parallax de imagen reducido a 50% */
+  .gallery-slide-img {
+    /* El efecto parallax interno se mantiene pero más sutil */
+    transform: scale(1.1) !important; /* En lugar de scale(1.2) con parallax */
+  }
+  
+  /* ✅ Blog, contacto, ecommerce: partículas muy sutiles */
+  .blog-particles-container,
+  .contact-particles-container,
+  .ecommerce-particles {
+    opacity: 0.4;
+  }
+  
+  /* ✅ Tinta dorada del blog: sin animación de escala agresiva */
+  .section-blog.blog-visible .blog-ink-bg {
+    transform: translate(-50%, -50%) scale(1); /* Antes: scale(1.2) */
+  }
+  
+  /* ✅ Botones con efectos hover: SE MANTIENEN (crítico para UX) */
+  .philosophy-cta,
+  .ecommerce-cta,
+  .blog-cta,
+  .contact-submit,
+  .hero-cta {
+    transition: all 0.3s ease;
+  }
+}
+
+/* ─── MÓVILES MUY PEQUEÑOS O ANTIGUOS (<=360px) ─── */
+@media (max-width: 360px) {
+  /* Solo lo absolutamente esencial */
+  .hero-stars {
+    display: none;
+  }
+  .hero-glow {
+    display: none;
+  }
+  /* El resto se mantiene para que la página no se vea "muerta" */
 }

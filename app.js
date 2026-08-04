@@ -20,7 +20,9 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
-  // ★ NUEVA FUNCIÓN: Verifica si un bloque está habilitado
+  // ✅ NUEVO: Detectar si el usuario prefiere movimiento reducido
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   function isBlockEnabled(blockName) {
     return C[blockName]?.enabled !== false;
   }
@@ -43,22 +45,40 @@
   }
 
   // ─── INYECTAR SEO DINÁMICO ──────────────
+  // ✅ CORRECCIÓN PUNTO 10: Hacer más robusto
   function injectSEO() {
+    // Validar que exista contenido para la descripción
+    const firstParagraph = C.story?.paragraphs?.[0];
+    const description = firstParagraph
+      ? firstParagraph.substring(0, 155)
+      : C.hero?.subtitle || "Estudio creativo especializado en diseño digital, branding y desarrollo web.";
+
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) {
       metaDesc = document.createElement('meta');
       metaDesc.name = 'description';
       document.head.appendChild(metaDesc);
     }
-    metaDesc.content = C.story.paragraphs[0].substring(0, 155);
+    if (description) metaDesc.content = description;
+    
+    // Validar que exista imagen OG antes de inyectarla
+    const ogImage = C.hero?.backgroundImage || "";
     
     const ogTags = {
-      'og:title': C.header.logo.text + C.header.logo.highlight,
-      'og:description': C.hero.subtitle,
-      'og:image': C.hero.backgroundImage,
+      'og:title': (C.header?.logo?.text || "") + (C.header?.logo?.highlight || ""),
+      'og:description': C.hero?.subtitle || description,
       'og:type': 'website'
     };
+
+    // Solo agregar og:image si existe y no está vacío
+    if (ogImage) {
+      ogTags['og:image'] = ogImage;
+    }
+
     for (const [key, value] of Object.entries(ogTags)) {
+      // No insertar contenido vacío
+      if (!value) continue;
+
       let tag = document.querySelector(`meta[property="${key}"]`);
       if (!tag) {
         tag = document.createElement('meta');
@@ -110,20 +130,41 @@
   // ─── BARRA DE PROGRESO ──────────────────
   function initProgressBar() {
     if (!C.effects.progressBarEnabled) return;
+
     const bar = document.createElement("div");
     bar.className = "scroll-progress";
     document.body.prepend(bar);
-    window.addEventListener("scroll", () => {
+
+    function updateProgress() {
       const h = document.documentElement.scrollHeight - window.innerHeight;
-      bar.style.width = (window.scrollY / h) * 100 + "%";
-    }, { passive: true });
+
+      if (h <= 0) {
+        bar.style.width = "0%";
+        return;
+      }
+
+      const progress = clamp(window.scrollY / h, 0, 1);
+      bar.style.width = (progress * 100) + "%";
+    }
+
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress, { passive: true });
+
+    updateProgress();
   }
 
   // ─── LOADER CON TÍTULO QUE SE RELLENA ───
+  // ✅ CORRECCIÓN PUNTO 8: Validaciones de elementos
   function initLoader() {
     const loader = $("#loader");
     const titleFill = $("#loaderTitleFill");
     const percentage = $("#loaderPercentage");
+
+    // Si no existe el loader, saltar directamente al hero
+    if (!loader) {
+      if (isBlockEnabled("hero")) animateHero();
+      return;
+    }
 
     let progress = 0;
     const interval = setInterval(() => {
@@ -146,13 +187,23 @@
   }
 
   // ─── HEADER ──────────────────────────────
+  // ✅ CORRECCIÓN PUNTO 9: Validaciones de existencia
   function buildHeader() {
     const nav = $("#nav");
+    if (!nav) return; // ✅ Validar existencia antes de manipular
+
     const h = C.header;
+    if (!h) return;
     
-    const visibleLinks = h.links.filter(link => {
-      const blockId = link.href.replace("#", "");
-      return isBlockEnabled(blockId);
+    const visibleLinks = (h.links || []).filter(link => {
+      const href = link.href || "";
+      // Solo filtrar anchors internos a bloques (#hero, #story, etc.)
+      if (href.startsWith("#") && href.length > 1) {
+        const blockId = href.replace("#", "");
+        return isBlockEnabled(blockId);
+      }
+      // Dejar pasar enlaces externos, páginas, mailto, tel, etc.
+      return true;
     });
 
     nav.innerHTML = `
@@ -170,32 +221,36 @@
     const navLinks = $("#navLinks");
     const header = $("#header");
     
-    hamburger.addEventListener("click", () => {
-      const isOpen = navLinks.classList.contains("open");
-      if (isOpen) {
-        navLinks.classList.remove("open");
-        hamburger.classList.remove("active");
-        header.classList.remove("menu-open");
-        document.body.style.overflow = "";
-      } else {
-        hamburger.classList.add("active");
-        navLinks.classList.add("open");
-        header.classList.add("menu-open");
-        document.body.style.overflow = "hidden";
-      }
-    });
+    // ✅ Solo registrar listeners si todos los elementos existen
+    if (hamburger && navLinks && header) {
+      hamburger.addEventListener("click", () => {
+        const isOpen = navLinks.classList.contains("open");
+        if (isOpen) {
+          navLinks.classList.remove("open");
+          hamburger.classList.remove("active");
+          header.classList.remove("menu-open");
+          document.body.style.overflow = "";
+        } else {
+          hamburger.classList.add("active");
+          navLinks.classList.add("open");
+          header.classList.add("menu-open");
+          document.body.style.overflow = "hidden";
+        }
+      });
+    }
 
     $$(".nav-links a").forEach(a => {
       a.addEventListener("click", () => {
-        hamburger.classList.remove("active");
-        navLinks.classList.remove("open");
-        header.classList.remove("menu-open");
+        if (hamburger) hamburger.classList.remove("active");
+        if (navLinks) navLinks.classList.remove("open");
+        if (header) header.classList.remove("menu-open");
         document.body.style.overflow = "";
       });
     });
 
     window.addEventListener("scroll", () => {
-      $("#header").classList.toggle("scrolled", window.scrollY > 80);
+      const headerEl = $("#header");
+      if (headerEl) headerEl.classList.toggle("scrolled", window.scrollY > 80);
     }, { passive: true });
   }
 
@@ -210,7 +265,8 @@
     const bg = $("#heroBg");
     const content = $("#heroContent");
 
-    bg.style.backgroundImage = `url(${h.backgroundImage})`;
+    if (bg) bg.style.backgroundImage = `url(${h.backgroundImage})`;
+    if (!content) return;
 
     content.innerHTML = `
       <p class="hero-eyebrow">${h.eyebrow}</p>
@@ -243,36 +299,46 @@
 
     setTimeout(() => {
       const eyebrow = $(".hero-eyebrow");
-      eyebrow.style.transition = "opacity 1s, transform 1s cubic-bezier(0.16,1,0.3,1)";
-      eyebrow.style.opacity = "1";
-      eyebrow.style.transform = "translateY(0)";
+      if (eyebrow) {
+        eyebrow.style.transition = "opacity 1s, transform 1s cubic-bezier(0.16,1,0.3,1)";
+        eyebrow.style.opacity = "1";
+        eyebrow.style.transform = "translateY(0)";
+      }
     }, 100);
 
     setTimeout(() => {
       const sub = $(".hero-subtitle");
-      sub.style.transition = "opacity 1s, transform 1s cubic-bezier(0.16,1,0.3,1)";
-      sub.style.opacity = "1";
-      sub.style.transform = "translateY(0)";
+      if (sub) {
+        sub.style.transition = "opacity 1s, transform 1s cubic-bezier(0.16,1,0.3,1)";
+        sub.style.opacity = "1";
+        sub.style.transform = "translateY(0)";
+      }
     }, 700);
 
     setTimeout(() => {
       const cta = $(".hero-cta");
-      cta.style.transition = "opacity 1s, transform 1s cubic-bezier(0.16,1,0.3,1)";
-      cta.style.opacity = "1";
-      cta.style.transform = "translateY(0)";
+      if (cta) {
+        cta.style.transition = "opacity 1s, transform 1s cubic-bezier(0.16,1,0.3,1)";
+        cta.style.opacity = "1";
+        cta.style.transform = "translateY(0)";
+      }
     }, 900);
 
     setTimeout(() => {
       const si = $("#scrollIndicator");
-      si.style.transition = "opacity 1s";
-      si.style.opacity = "1";
+      if (si) {
+        si.style.transition = "opacity 1s";
+        si.style.opacity = "1";
+      }
     }, 1400);
   }
 
   // ─── TYPEWRITER EFFECT ───────────────────
   function initTypewriter() {
     if (!isBlockEnabled("hero")) return;
-    const words = C.hero.title.typewriterWords;
+    const words = C.hero?.title?.typewriterWords;
+    if (!words || !Array.isArray(words) || words.length === 0) return;
+
     const wordEl = $("#typewriterWord");
     const wrapperEl = $("#typewriterWrapper");
     const cursorEl = $("#typewriterCursor");
@@ -345,6 +411,8 @@
     }
     const s = C.story;
     const inner = $("#storyInner");
+    if (!inner) return;
+
     inner.innerHTML = `
       <div class="story-ribbon" id="storyRibbon">
         <svg viewBox="0 0 400 800" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -383,6 +451,8 @@
     }
     const s = C.services;
     const inner = $("#servicesInner");
+    if (!inner) return;
+
     inner.innerHTML = `
       <div class="services-header">
         <span class="section-label reveal">${s.label}</span>
@@ -424,6 +494,10 @@
     const maxParticles = 15;
     const particles = [];
 
+    let particleTimer = null;
+    let activationTimer = null;
+    let particlesActive = false;
+
     function createParticle() {
       if (particles.length >= maxParticles) return;
       const particle = document.createElement("div");
@@ -453,28 +527,68 @@
     }
 
     function scheduleNextParticle() {
+      if (!particlesActive) return;
+
       const delay = Math.random() * 1500 + 1000;
-      setTimeout(() => {
+
+      particleTimer = setTimeout(() => {
         createParticle();
+        particleTimer = null;
         scheduleNextParticle();
       }, delay);
+    }
+
+    function startParticles() {
+      if (particlesActive) return;
+
+      particlesActive = true;
+      scheduleNextParticle();
+    }
+
+    function stopParticles() {
+      particlesActive = false;
+
+      if (particleTimer) {
+        clearTimeout(particleTimer);
+        particleTimer = null;
+      }
     }
 
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
+          clearTimeout(activationTimer);
+
+          activationTimer = setTimeout(() => {
             lightBeam.classList.add("active");
             ambientGlow.classList.add("active");
-            if (heading) heading.classList.add("glow-active");
-            scheduleNextParticle();
+
+            if (heading) {
+              heading.classList.add("glow-active");
+            }
+
+            startParticles();
           }, 500);
-          observer.unobserve(entry.target);
+        } else {
+          clearTimeout(activationTimer);
+          stopParticles();
         }
       });
     }, { threshold: 0.2 });
-    
+
     observer.observe(servicesSection);
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        stopParticles();
+      } else {
+        const rect = servicesSection.getBoundingClientRect();
+
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          startParticles();
+        }
+      }
+    });
   }
 
   // ─── BLOQUE 3: GALERÍA (CARRUSEL) ───────
@@ -486,6 +600,8 @@
     }
     const g = C.gallery;
     const inner = $("#galleryInner");
+    if (!inner) return;
+
     inner.innerHTML = `
       <div class="gallery-header">
         <span class="section-label reveal">${g.label}</span>
@@ -512,7 +628,6 @@
       </div>
       <div class="gallery-drag-hint">← Arrastra para explorar →</div>
     `;
-    setTimeout(() => initGalleryParticles(), 100);
   }
 
   function initGalleryParticles() {
@@ -549,8 +664,8 @@
     });
   }
 
-  // ─── CARRUSEL PARALLAX DE GALERÍA (SNAP AUTOMÁTICO & CERO TEMBLOR) ─────────────────
-function initGalleryCarousel() {
+  // ─── CARRUSEL PARALLAX DE GALERÍA ─────────────────
+  function initGalleryCarousel() {
     const wrapper = $("#galleryCarouselWrapper");
     const carousel = $("#galleryCarousel");
     const progressFill = $("#galleryProgressFill");
@@ -566,163 +681,155 @@ function initGalleryCarousel() {
     let lastX = 0;
     let lastTime = 0;
     let rafId = null;
-    let snapPositions = []; // Almacena la posición exacta para centrar cada tarjeta
+    let snapPositions = [];
+    let snapAnimating = false;
+    let snapFallbackTimer = null;
 
-    // 1. Calcular posiciones exactas de "Snap" (Centrado matemático)
     function calculateSnapPositions() {
-        snapPositions = [];
-        const wrapperCenter = wrapper.offsetWidth / 2;
-        const paddingLeft = parseFloat(getComputedStyle(carousel).paddingLeft) || 0;
+      snapPositions = [];
+      const wrapperCenter = wrapper.offsetWidth / 2;
+      const paddingLeft = parseFloat(getComputedStyle(carousel).paddingLeft) || 0;
 
-        slides.forEach(slide => {
-            // Centro visual de la tarjeta respecto al contenedor
-            const slideVisualCenter = paddingLeft + slide.offsetLeft + (slide.offsetWidth / 2);
-            // Cuánto debemos mover el carrusel para alinear ese centro con el centro del wrapper
-            let targetX = wrapperCenter - slideVisualCenter;
-            snapPositions.push(targetX);
-        });
+      slides.forEach(slide => {
+        const slideVisualCenter = paddingLeft + slide.offsetLeft + (slide.offsetWidth / 2);
+        let targetX = wrapperCenter - slideVisualCenter;
+        snapPositions.push(targetX);
+      });
     }
 
-    // 2. Obtener límites físicos del carrusel
     function getLimits() {
-        const maxTranslate = 0; // Tope izquierdo
-        const minTranslate = -(carousel.scrollWidth - wrapper.offsetWidth); // Tope derecho
-        return { minTranslate, maxTranslate };
+      const maxTranslate = 0;
+      const minTranslate = -(carousel.scrollWidth - wrapper.offsetWidth);
+      return { minTranslate, maxTranslate };
     }
 
-    // 3. Actualizar DOM (Posición + Efectos Visuales Originales)
     function updateVisuals(x, isSnapping = false) {
-        const { minTranslate, maxTranslate } = getLimits();
+      const { minTranslate, maxTranslate } = getLimits();
+      
+      let finalX = x;
+      if (!isSnapping) {
+        if (x > maxTranslate) finalX = maxTranslate + (x - maxTranslate) * 0.3;
+        else if (x < minTranslate) finalX = minTranslate + (x - minTranslate) * 0.3;
+      } else {
+        finalX = Math.max(minTranslate, Math.min(maxTranslate, x));
+      }
+
+      currentTranslate = finalX;
+
+      if (isSnapping) {
+        carousel.classList.add("is-snapping");
+      } else {
+        carousel.classList.remove("is-snapping");
+      }
+
+      carousel.style.transform = `translate3d(${finalX}px, 0, 0)`;
+
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const wrapperCenterX = wrapperRect.left + wrapperRect.width / 2;
+      
+      slides.forEach(slide => {
+        const rect = slide.getBoundingClientRect();
+        const slideCenterX = rect.left + rect.width / 2;
+        const distance = slideCenterX - wrapperCenterX;
+        const normalized = distance / (wrapperRect.width / 2);
         
-        // Efecto "goma" si se arrastra más allá de los límites
-        let finalX = x;
-        if (!isSnapping) {
-            if (x > maxTranslate) finalX = maxTranslate + (x - maxTranslate) * 0.3;
-            else if (x < minTranslate) finalX = minTranslate + (x - minTranslate) * 0.3;
-        } else {
-            finalX = Math.max(minTranslate, Math.min(maxTranslate, x));
+        const img = $(".gallery-slide-img", slide);
+        if (img) {
+          const parallaxOffset = normalized * 30;
+          img.style.transform = `translate3d(${parallaxOffset}px, 0, 0) scale(1.2)`;
         }
-
-        currentTranslate = finalX;
-
-        // Activar/Desactivar transición CSS solo para el Snap
-        if (isSnapping) {
-            carousel.classList.add("is-snapping");
-        } else {
-            carousel.classList.remove("is-snapping");
-        }
-
-        carousel.style.transform = `translate3d(${finalX}px, 0, 0)`;
-
-        // Efectos internos (Parallax, Escala, Opacidad) - Se mantienen intactos
-        const wrapperRect = wrapper.getBoundingClientRect();
-        const wrapperCenterX = wrapperRect.left + wrapperRect.width / 2;
         
-        slides.forEach(slide => {
-            const rect = slide.getBoundingClientRect();
-            const slideCenterX = rect.left + rect.width / 2;
-            const distance = slideCenterX - wrapperCenterX;
-            const normalized = distance / (wrapperRect.width / 2);
-            
-            const img = $(".gallery-slide-img", slide);
-            if (img) {
-                const parallaxOffset = normalized * 30;
-                img.style.transform = `translate3d(${parallaxOffset}px, 0, 0) scale(1.2)`;
-            }
-            
-            const scale = 1 - Math.abs(normalized) * 0.15;
-            const opacity = 1 - Math.abs(normalized) * 0.4;
-            slide.style.transform = `scale(${clamp(scale, 0.85, 1)})`;
-            slide.style.opacity = clamp(opacity, 0.5, 1);
-        });
+        const scale = 1 - Math.abs(normalized) * 0.15;
+        const opacity = 1 - Math.abs(normalized) * 0.4;
+        slide.style.transform = `scale(${clamp(scale, 0.85, 1)})`;
+        slide.style.opacity = clamp(opacity, 0.5, 1);
+      });
 
-        // Barra de progreso
-        if (progressFill && minTranslate !== 0) {
-            const progress = Math.abs(finalX) / Math.abs(minTranslate);
-            progressFill.style.width = (clamp(progress, 0, 1) * 100) + "%";
-        }
+      if (progressFill && minTranslate !== 0) {
+        const progress = Math.abs(finalX) / Math.abs(minTranslate);
+        progressFill.style.width = (clamp(progress, 0, 1) * 100) + "%";
+      }
     }
 
-        // --- EVENTOS DE ARRASTRE (BLINDADOS) ---
     function getX(e) {
-        return e.type.includes("mouse") ? e.clientX : e.touches[0].clientX;
+      return e.type.includes("mouse") ? e.clientX : e.touches[0].clientX;
     }
 
     function onStart(e) {
-        // ★ CLAVE: Evitar que el navegador inicie el arrastre nativo de la imagen al hacer clic sostenido
-        if (e.type === 'mousedown') {
-            e.preventDefault();
-        }
-        
-        isDragging = true;
-        startX = getX(e);
-        startTranslate = currentTranslate;
-        lastX = startX;
-        lastTime = Date.now();
-        velocity = 0;
-        if (rafId) cancelAnimationFrame(rafId);
-        carousel.classList.remove("is-snapping");
+      if (e.type === 'mousedown') {
+        e.preventDefault();
+      }
+      
+      isDragging = true;
+      startX = getX(e);
+      startTranslate = currentTranslate;
+      lastX = startX;
+      lastTime = Date.now();
+      velocity = 0;
+      if (rafId) cancelAnimationFrame(rafId);
+      carousel.classList.remove("is-snapping");
+      snapAnimating = false;
+      clearTimeout(snapFallbackTimer);
     }
 
     function onMove(e) {
-        if (!isDragging) return;
-        
-        // ★ Solo prevenir default en táctil para no bloquear el scroll vertical de la página
-        if (e.type === 'touchmove' && e.cancelable) {
-            e.preventDefault();
-        }
+      if (!isDragging) return;
+      
+      if (e.type === 'touchmove' && e.cancelable) {
+        e.preventDefault();
+      }
 
-        const x = getX(e);
-        const deltaX = x - startX;
-        const now = Date.now();
-        const dt = now - lastTime;
+      const x = getX(e);
+      const deltaX = x - startX;
+      const now = Date.now();
+      const dt = now - lastTime;
 
-        if (dt > 0) {
-            velocity = (x - lastX) / dt * 16;
-            velocity = clamp(velocity, -50, 50); // Limitar velocidad máxima
-        }
+      if (dt > 0) {
+        velocity = (x - lastX) / dt * 16;
+        velocity = clamp(velocity, -50, 50);
+      }
 
-        lastX = x;
-        lastTime = now;
+      lastX = x;
+      lastTime = now;
 
-        // ★ USAR requestAnimationFrame para agrupar lecturas/escrituras y evitar el temblor
-        if (!rafId) {
-            rafId = requestAnimationFrame(() => {
-                updateVisuals(startTranslate + deltaX, false);
-                rafId = null;
-            });
-        }
+      if (!rafId) {
+        rafId = requestAnimationFrame(() => {
+          updateVisuals(startTranslate + deltaX, false);
+          rafId = null;
+        });
+      }
     }
 
     function onEnd() {
-        if (!isDragging) return;
-        isDragging = false;
+      if (!isDragging) return;
+      isDragging = false;
 
-        // Proyección de inercia: ¿Hacia dónde iba el dedo?
-        let projected = currentTranslate + (velocity * 15);
-        
-        // Buscar el punto de Snap más cercano a esa proyección
-        let closestSnap = snapPositions[0];
-        let minDistance = Infinity;
+      const projected = currentTranslate + (velocity * 15);
+      const closestSnap = getClosestSnap(projected);
 
-        snapPositions.forEach(pos => {
-            const dist = Math.abs(projected - pos);
-            if (dist < minDistance) {
-                minDistance = dist;
-                closestSnap = pos;
-            }
-        });
+      snapAnimating = true;
+      updateVisuals(closestSnap, true);
 
-        // Ejecutar animación de centrado automático
-        updateVisuals(closestSnap, true);
+      clearTimeout(snapFallbackTimer);
+      snapFallbackTimer = setTimeout(() => {
+        if (snapAnimating) {
+          carousel.classList.remove("is-snapping");
+          snapAnimating = false;
+          velocity = 0;
+        }
+      }, 900);
     }
 
-    // Limpiar clase de transición cuando termine la animación CSS
-    carousel.addEventListener("transitionend", () => {
-        carousel.classList.remove("is-snapping");
+    carousel.addEventListener("transitionend", (e) => {
+      if (e.target !== carousel) return;
+
+      carousel.classList.remove("is-snapping");
+      snapAnimating = false;
+      velocity = 0;
+
+      clearTimeout(snapFallbackTimer);
     });
 
-    // Bind Events
     wrapper.addEventListener("mousedown", onStart);
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onEnd);
@@ -732,43 +839,86 @@ function initGalleryCarousel() {
     wrapper.addEventListener("touchmove", onMove, { passive: false });
     wrapper.addEventListener("touchend", onEnd);
 
-    // Evitar clicks accidentales tras arrastrar
     slides.forEach(slide => {
-        slide.addEventListener("click", (e) => {
-            if (Math.abs(velocity) > 2) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        });
+      slide.addEventListener("click", (e) => {
+        if (isDragging || snapAnimating || Math.abs(velocity) > 2) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }, true);
     });
 
-    // Inicializar
+    function recalculateWhenImagesLoad() {
+      const images = $$(".gallery-slide-img", carousel);
+      if (!images.length) return;
+
+      let remaining = images.length;
+      let finished = false;
+
+      const done = () => {
+        if (finished) return;
+        remaining -= 1;
+        if (remaining <= 0) {
+          finished = true;
+          calculateSnapPositions();
+          if (!isDragging && !snapAnimating) {
+            updateVisuals(getClosestSnap(currentTranslate), true);
+          }
+        }
+      };
+
+      images.forEach(img => {
+        if (img.complete) {
+          done();
+        } else {
+          img.addEventListener("load", done, { once: true });
+          img.addEventListener("error", done, { once: true });
+        }
+      });
+    }
+
+    function getClosestSnap(x) {
+      let closest = snapPositions[0] || 0;
+      let minDistance = Infinity;
+
+      snapPositions.forEach(pos => {
+        const dist = Math.abs(x - pos);
+        if (dist < minDistance) {
+          minDistance = dist;
+          closest = pos;
+        }
+      });
+
+      return closest;
+    }
+
     function init() {
-        calculateSnapPositions();
-        updateVisuals(snapPositions[0] || 0, true);
+      calculateSnapPositions();
+      updateVisuals(snapPositions[0] || 0, true);
     }
 
     init();
+    recalculateWhenImagesLoad();
 
-    // Recalcular en resize
+    // ✅ Recalcular cuando las fuentes terminen de cargar
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        calculateSnapPositions();
+        if (!isDragging && !snapAnimating) {
+          updateVisuals(getClosestSnap(currentTranslate), true);
+        }
+      });
+    }
+
     let resizeTimer;
     window.addEventListener("resize", () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            calculateSnapPositions();
-            // Encontrar el snap más cercano a la posición actual y reajustar
-            let closest = snapPositions[0];
-            let min = Infinity;
-            snapPositions.forEach(pos => {
-                if (Math.abs(currentTranslate - pos) < min) {
-                    min = Math.abs(currentTranslate - pos);
-                    closest = pos;
-                }
-            });
-            updateVisuals(closest, true);
-        }, 200);
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        calculateSnapPositions();
+        updateVisuals(getClosestSnap(currentTranslate), true);
+      }, 200);
     });
-}
+  }
 
   // ─── BLOQUE 4: FILOSOFÍA ────────────────
   function buildPhilosophy() {
@@ -786,6 +936,8 @@ function initGalleryCarousel() {
     if (section) section.style.display = "flex";
 
     const inner = $("#philosophyInner");
+    if (!inner) return;
+
     inner.innerHTML = `
       <div class="philosophy-inner">
         <span class="section-label reveal">${p.label}</span>
@@ -813,6 +965,8 @@ function initGalleryCarousel() {
     if (section) section.style.display = "flex";
 
     const inner = $("#ecommerceInner");
+    if (!inner) return;
+
     inner.innerHTML = `
       <div class="ecommerce-bg-icon">
         <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
@@ -880,6 +1034,8 @@ function initGalleryCarousel() {
     if (section) section.style.display = "flex";
 
     const inner = $("#blogInner");
+    if (!inner) return;
+
     inner.innerHTML = `
       <div class="blog-ink-bg"></div>
       <div class="blog-particles-container" id="blogParticles"></div>
@@ -962,6 +1118,7 @@ function initGalleryCarousel() {
   }
 
   // ─── BLOQUE 7: CONTACTO (FORMULARIO) ────
+  // ✅ CORRECCIÓN PUNTO 12: Honeypot + validación robusta + rate limiting
   function buildContact() {
     if (!isBlockEnabled("contact")) {
       const section = $("#contact");
@@ -973,6 +1130,8 @@ function initGalleryCarousel() {
     if (section) section.style.display = "flex";
 
     const inner = $("#contactInner");
+    if (!inner) return;
+
     inner.innerHTML = `
       <div class="contact-waves">
         <svg viewBox="0 0 1440 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -998,18 +1157,24 @@ function initGalleryCarousel() {
         <h2 class="section-heading reveal reveal-delay-1">${c.heading}</h2>
         <hr class="editorial-hr center reveal reveal-delay-2" />
         <p class="contact-subtitle reveal reveal-delay-3">${c.subtitle}</p>
-        <form class="contact-form reveal reveal-delay-4" id="contactForm">
+        <form class="contact-form reveal reveal-delay-4" id="contactForm" novalidate>
+          <!-- ✅ HONEYPOT: Campo oculto anti-spam (los bots lo rellenan, los humanos no lo ven) -->
+          <input type="text" name="website_url" class="contact-honeypot" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;height:0;width:0;" aria-hidden="true">
+          
+          <!-- ✅ Timestamp para validar tiempo de envío -->
+          <input type="hidden" name="form_loaded_at" id="formLoadedAt" value="">
+
           <div class="form-group">
-            <input type="text" class="form-input" name="name" placeholder="${c.form.namePlaceholder}" required>
+            <input type="text" class="form-input" name="name" placeholder="${c.form.namePlaceholder}" required minlength="2" maxlength="100">
           </div>
           <div class="form-group">
-            <input type="email" class="form-input" name="email" placeholder="${c.form.emailPlaceholder}" required>
+            <input type="email" class="form-input" name="email" placeholder="${c.form.emailPlaceholder}" required maxlength="150">
           </div>
           <div class="form-group">
-            <input type="text" class="form-input" name="subject" placeholder="${c.form.subjectPlaceholder}" required>
+            <input type="text" class="form-input" name="subject" placeholder="${c.form.subjectPlaceholder}" required minlength="3" maxlength="150">
           </div>
           <div class="form-group">
-            <textarea class="form-textarea" name="message" placeholder="${c.form.messagePlaceholder}" required></textarea>
+            <textarea class="form-textarea" name="message" placeholder="${c.form.messagePlaceholder}" required minlength="10" maxlength="2000"></textarea>
           </div>
           <button type="submit" class="contact-submit"><span>${c.form.submitText}</span></button>
         </form>
@@ -1068,6 +1233,14 @@ function initGalleryCarousel() {
     const messageEl = $("#formMessage");
     if (!form) return;
 
+    // ✅ Registrar timestamp de carga (para detectar envíos demasiado rápidos = bots)
+    const loadedAtInput = $("#formLoadedAt");
+    if (loadedAtInput) loadedAtInput.value = Date.now().toString();
+
+    // ✅ Rate limiting: mínimo 3 segundos entre envíos
+    let lastSubmitTime = 0;
+    const MIN_SUBMIT_INTERVAL = 3000; // 3 segundos
+
     const inputs = $$(".form-input, .form-textarea", form);
     inputs.forEach(input => {
       input.addEventListener("input", () => {
@@ -1077,26 +1250,112 @@ function initGalleryCarousel() {
       });
     });
 
+    // ✅ Validación robusta de email
+    function isValidEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+      return re.test(email);
+    }
+
+    // ✅ Detección básica de spam (URLs, palabras clave sospechosas)
+    function looksLikeSpam(text) {
+      if (!text) return false;
+      const lower = text.toLowerCase();
+      // URLs sospechosas
+      if (/https?:\/\/|www\.|\.[a-z]{2,4}\/[a-z]/i.test(text) && text.length > 50) return true;
+      // Palabras típicas de spam
+      const spamWords = ['viagra', 'casino', 'poker', 'lottery', 'winner', 'prize', 'bitcoin', 'crypto investment', 'earn $', 'make money fast'];
+      return spamWords.some(word => lower.includes(word));
+    }
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(form);
       const data = Object.fromEntries(formData);
-      
       const submitBtn = $(".contact-submit", form);
       const originalText = submitBtn.querySelector("span").textContent;
+      
+      // ✅ CHECK 1: Honeypot - si está relleno, es bot
+      if (data.website_url && data.website_url.trim() !== "") {
+        console.warn("🤖 Honeypot detectado - probable bot");
+        messageEl.textContent = C.contact.form.errorMessage;
+        messageEl.className = "form-message error visible";
+        setTimeout(() => messageEl.classList.remove("visible"), 5000);
+        return;
+      }
+
+      // ✅ CHECK 2: Tiempo mínimo de carga (bots envían en menos de 1s)
+      const loadedAt = parseInt(data.form_loaded_at || "0");
+      const timeSinceLoad = Date.now() - loadedAt;
+      if (timeSinceLoad < 1500) {
+        console.warn("⚡ Envío demasiado rápido - probable bot");
+        messageEl.textContent = "Por favor, tómate un momento para leer el formulario antes de enviarlo.";
+        messageEl.className = "form-message error visible";
+        setTimeout(() => messageEl.classList.remove("visible"), 5000);
+        return;
+      }
+
+      // ✅ CHECK 3: Rate limiting
+      const now = Date.now();
+      if (now - lastSubmitTime < MIN_SUBMIT_INTERVAL) {
+        const waitSec = Math.ceil((MIN_SUBMIT_INTERVAL - (now - lastSubmitTime)) / 1000);
+        messageEl.textContent = `Por favor espera ${waitSec} segundo(s) antes de enviar otro mensaje.`;
+        messageEl.className = "form-message error visible";
+        setTimeout(() => messageEl.classList.remove("visible"), 5000);
+        return;
+      }
+
+      // ✅ CHECK 4: Validación de campos
+      if (!data.name || data.name.trim().length < 2) {
+        messageEl.textContent = "Por favor, ingresa tu nombre (mínimo 2 caracteres).";
+        messageEl.className = "form-message error visible";
+        setTimeout(() => messageEl.classList.remove("visible"), 5000);
+        return;
+      }
+
+      if (!data.email || !isValidEmail(data.email)) {
+        messageEl.textContent = "Por favor, ingresa un correo electrónico válido.";
+        messageEl.className = "form-message error visible";
+        setTimeout(() => messageEl.classList.remove("visible"), 5000);
+        return;
+      }
+
+      if (!data.subject || data.subject.trim().length < 3) {
+        messageEl.textContent = "Por favor, ingresa un asunto (mínimo 3 caracteres).";
+        messageEl.className = "form-message error visible";
+        setTimeout(() => messageEl.classList.remove("visible"), 5000);
+        return;
+      }
+
+      if (!data.message || data.message.trim().length < 10) {
+        messageEl.textContent = "Por favor, escribe un mensaje de al menos 10 caracteres.";
+        messageEl.className = "form-message error visible";
+        setTimeout(() => messageEl.classList.remove("visible"), 5000);
+        return;
+      }
+
+      // ✅ CHECK 5: Detección de spam
+      if (looksLikeSpam(data.message) || looksLikeSpam(data.subject)) {
+        console.warn("🚫 Spam detectado en el mensaje");
+        messageEl.textContent = "Tu mensaje ha sido marcado como sospechoso. Si es un error, intenta reformularlo.";
+        messageEl.className = "form-message error visible";
+        setTimeout(() => messageEl.classList.remove("visible"), 5000);
+        return;
+      }
+
+      // ✅ Estado de carga claro
       submitBtn.querySelector("span").textContent = "Enviando...";
       submitBtn.disabled = true;
+      lastSubmitTime = now;
 
       try {
-        // ★ IMPORTANTE: Reemplaza "TU_EMAIL@ejemplo.com" con tu correo real
         const response = await fetch(C.email?.formSubmitUrl || "https://formsubmit.co/ajax/hola@studio.com", {
           method: "POST",
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
           body: JSON.stringify({
-            name: data.name,
-            email: data.email,
-            subject: data.subject,
-            message: data.message,
+            name: data.name.trim(),
+            email: data.email.trim(),
+            subject: data.subject.trim(),
+            message: data.message.trim(),
             _subject: `Nuevo mensaje de ${data.name} - ${data.subject}`,
             _template: "table"
           })
@@ -1107,6 +1366,8 @@ function initGalleryCarousel() {
           messageEl.textContent = C.contact.form.successMessage;
           messageEl.className = "form-message success visible";
           form.reset();
+          // ✅ Reiniciar timestamp tras envío exitoso
+          if (loadedAtInput) loadedAtInput.value = Date.now().toString();
           setTimeout(() => messageEl.classList.remove("visible"), 5000);
         } else {
           throw new Error("Error en el envío");
@@ -1123,6 +1384,7 @@ function initGalleryCarousel() {
   }
 
   // ─── FOOTER ──────────────────────────────
+  // ✅ CORRECCIÓN PUNTO 13: Lógica correcta de enlaces
   function buildFooter() {
     if (!isBlockEnabled("footer")) {
       const section = $("#footer");
@@ -1130,9 +1392,32 @@ function initGalleryCarousel() {
       return;
     }
     const f = C.footer;
+    if (!f) return;
+
     const inner = $("#footerInner");
-    const visibleColumns = f.columns.map(col => {
-      const visibleLinks = col.links.filter(link => isBlockEnabled(link.href.replace("#", "")));
+    if (!inner) return;
+
+    // ✅ Nueva lógica: solo filtrar anchors internos a bloques (#hero, #story, etc.)
+    // Los demás enlaces (mailto:, tel:, legal.html, #, externos) SIEMPRE se muestran
+    const visibleColumns = (f.columns || []).map(col => {
+      const visibleLinks = (col.links || []).filter(link => {
+        const href = link.href || "";
+
+        // Caso 1: Anchor interna a un bloque (#hero, #story, #services, etc.)
+        if (href.startsWith("#") && href.length > 1) {
+          const blockId = href.replace("#", "");
+          return isBlockEnabled(blockId);
+        }
+
+        // Caso 2: Cualquier otro enlace SIEMPRE se muestra
+        // - Páginas: legal.html, legal.html#privacy, tienda.html, blog.html
+        // - Externos: https://...
+        // - Mailto: mailto:hola@studio.com
+        // - Tel: tel:+525512345678
+        // - Anchor vacío: # (no filtra, pero tampoco aporta mucho)
+        return true;
+      });
+
       return { ...col, links: visibleLinks };
     }).filter(col => col.links.length > 0);
     
@@ -1151,7 +1436,7 @@ function initGalleryCarousel() {
       </div>
       <div class="footer-bottom">
         <span class="footer-copy">${f.copyright}</span>
-        <div class="footer-socials">${C.socials.map(s => `<a href="${s.href}" target="_blank" rel="noopener noreferrer">${s.label}</a>`).join("")}</div>
+        <div class="footer-socials">${(C.socials || []).map(s => `<a href="${s.href}" target="_blank" rel="noopener noreferrer">${s.label}</a>`).join("")}</div>
       </div>
     `;
   }
@@ -1172,38 +1457,54 @@ function initGalleryCarousel() {
 
   // ─── PARALLAX ENGINE ─────────────────────
   function initParallax() {
-    const heroBg = $("#heroBg");
-    const storyImg = $(".story-image");
-    let ticking = false;
+  // ✅ NUEVO: Reducir parallax en móvil automáticamente
+  const isMobile = window.innerWidth < 769;
+  const heroSpeed = isMobile 
+    ? C.effects.parallaxHeroSpeed * 0.3  // Solo 30% en móvil
+    : C.effects.parallaxHeroSpeed;
+  
+  const imageSpeed = isMobile
+    ? C.effects.parallaxImageSpeed * 0.5  // 50% en móvil
+    : C.effects.parallaxImageSpeed;
 
-    function updateParallax() {
-      const scrollY = window.scrollY;
-      if (heroBg) heroBg.style.transform = `translate3d(0, ${scrollY * C.effects.parallaxHeroSpeed}px, 0) scale(1.1)`;
-      if (storyImg) {
-        const rect = storyImg.getBoundingClientRect();
-        if (rect.top < window.innerHeight && rect.bottom > 0) {
-          const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-          storyImg.style.transform = `translate3d(0, ${(progress - 0.5) * rect.height * C.effects.parallaxImageSpeed}px, 0) scale(1.15)`;
-        }
-      }  
-      const si = $("#scrollIndicator");
-      if (si) si.style.opacity = clamp(1 - scrollY / 300, 0, 1);
-      ticking = false;
-    }
+  // Si el usuario prefiere movimiento reducido, no activar parallax
+  if (prefersReducedMotion) return;
 
-    window.addEventListener("scroll", () => {
-      if (!ticking) {
-        requestAnimationFrame(updateParallax);
-        ticking = true;
+  const heroBg = $("#heroBg");
+  const storyImg = $(".story-image");
+  let ticking = false;
+
+  function updateParallax() {
+    const scrollY = window.scrollY;
+    if (heroBg) heroBg.style.transform = `translate3d(0, ${scrollY * heroSpeed}px, 0) scale(1.1)`;
+    if (storyImg) {
+      const rect = storyImg.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+        storyImg.style.transform = `translate3d(0, ${(progress - 0.5) * rect.height * imageSpeed}px, 0) scale(1.15)`;
       }
-    }, { passive: true });
+    }  
+    const si = $("#scrollIndicator");
+    if (si) si.style.opacity = clamp(1 - scrollY / 300, 0, 1);
+    ticking = false;
   }
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      requestAnimationFrame(updateParallax);
+      ticking = true;
+    }
+  }, { passive: true });
+}
 
   // ─── CURSOR PERSONALIZADO ────────────────
   function initCursor() {
     if (!C.effects.cursorEnabled || window.innerWidth < 769) return;
     const cursor = $("#cursor");
     const follower = $("#cursorFollower");
+    
+    if (!cursor || !follower) return;
+    
     let mx = 0, my = 0, fx = 0, fy = 0;
 
     document.addEventListener("mousemove", (e) => {
@@ -1238,14 +1539,37 @@ function initGalleryCarousel() {
   }
 
   // ─── SMOOTH ANCHOR SCROLL ────────────────
+  // ✅ CORRECCIÓN PUNTO 11: Reduced-motion + validaciones + offset dinámico
   function initSmoothScroll() {
     document.addEventListener("click", (e) => {
       const anchor = e.target.closest('a[href^="#"]');
       if (!anchor) return;
-      e.preventDefault();
-      const target = $(anchor.getAttribute("href"));
+
+      const href = anchor.getAttribute("href");
+      // ✅ No procesar anchors vacíos (#)
+      if (!href || href === "#") return;
+
+      const target = $(href);
       if (!target) return;
-      window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
+
+      e.preventDefault();
+
+      // ✅ Calcular offset dinámico según el header actual
+      const headerEl = $("#header");
+      const headerHeight = headerEl ? headerEl.offsetHeight : 80;
+      const offset = headerHeight + 20; // +20px de margen
+
+      const targetPosition = target.getBoundingClientRect().top + window.scrollY - offset;
+
+      // ✅ Respetar prefers-reduced-motion
+      const behavior = prefersReducedMotion ? "auto" : "smooth";
+
+      window.scrollTo({ top: targetPosition, behavior });
+
+      // ✅ Actualizar URL sin saltar (para que se pueda compartir el anchor)
+      if (window.history && window.history.pushState) {
+        history.pushState(null, "", href);
+      }
     });
   }
 
@@ -1286,7 +1610,11 @@ function initGalleryCarousel() {
   }
 
   // ─── MAGNETIC EFFECT ─────────────────────
+  // ✅ CORRECCIÓN PUNTO 14: Respeta prefers-reduced-motion + cleanup mejorado
   function initMagnetic() {
+    // ✅ No aplicar si el usuario prefiere movimiento reducido
+    if (prefersReducedMotion) return;
+
     const buttons = $$(".philosophy-cta, .hero-cta, .nav-cta");
     buttons.forEach(btn => {
       btn.addEventListener("mousemove", (e) => {
@@ -1294,9 +1622,20 @@ function initGalleryCarousel() {
         btn.style.transform = `translate(${(e.clientX - rect.left - rect.width / 2) * 0.2}px, ${(e.clientY - rect.top - rect.height / 2) * 0.2}px)`;
       });
       btn.addEventListener("mouseleave", () => {
-        btn.style.transform = "translate(0, 0)";
+        // ✅ Cleanup correcto: remover transition DESPUÉS de que termine la animación
         btn.style.transition = "transform 0.5s cubic-bezier(0.16,1,0.3,1)";
-        setTimeout(() => btn.style.transition = "", 500);
+        btn.style.transform = "translate(0, 0)";
+        
+        const cleanup = () => {
+          btn.style.transition = "";
+          btn.removeEventListener("transitionend", cleanup);
+        };
+        btn.addEventListener("transitionend", cleanup);
+        
+        // Fallback por si transitionend no dispara
+        setTimeout(() => {
+          if (btn.style.transition) btn.style.transition = "";
+        }, 600);
       });
     });
   }
@@ -1357,6 +1696,7 @@ function initGalleryCarousel() {
         }
       });
     }, { threshold: 0.3 });
-    observer.observe($("#story"));
+    const storyEl = $("#story");
+    if (storyEl) observer.observe(storyEl);
   }
 })();

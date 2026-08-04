@@ -1,77 +1,101 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es-MX">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tienda online de Studio Creativo. Productos premium seleccionados con envío a todo México.">
+    <meta name="theme-color" content="#0a0a0a">
+    
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Tienda | Studio Creativo">
+    <meta property="og:description" content="Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida.">
+    <meta property="og:locale" content="es_MX">
+    
     <title>Tienda | Studio</title>
-    <!-- Tus estilos -->
+    
+    <!-- Favicon SVG inline -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+    
+    <!-- Estilos -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="shop.css">
-    <!-- Fuentes (ajusta si usas otras) -->
+    
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <!-- ★ HEADER (Lo construye shop.js) -->
-    <header class="shop-header" id="shopHeader"></header>
+    <header class="shop-header" id="shopHeader" role="banner"></header>
 
-    <!-- ★ HERO (Lo construye shop.js) -->
-    <section class="shop-hero">
-        <div class="shop-hero-bg"></div>
-        <div class="shop-hero-glow"></div>
-        <!-- Efecto de luz linterna desde arriba -->
-<div class="shop-spotlight" id="shopSpotlight">
-    <div class="spotlight-beam"></div>
-    <div class="spotlight-glow"></div>
-</div>
-        <div class="shop-hero-content">
-            <!-- JS inyecta aquí el eyebrow, title y subtitle -->
-        </div>
-        <div class="shop-hero-wave">
-            <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
-                <path d="M0,50 C360,100 1080,0 1440,50 L1440,100 L0,100 Z"></path>
-            </svg>
-        </div>
-    </section>
+    <main role="main">
+        <!-- ★ HERO (Lo construye shop.js) -->
+        <section class="shop-hero" aria-label="Inicio de la tienda">
+            <div class="shop-hero-bg" aria-hidden="true"></div>
+            <div class="shop-hero-glow" aria-hidden="true"></div>
+            
+            <!-- Efecto de luz linterna desde arriba -->
+            <div class="shop-spotlight" id="shopSpotlight" aria-hidden="true">
+                <div class="spotlight-beam"></div>
+                <div class="spotlight-glow"></div>
+            </div>
+            
+            <div class="shop-hero-content">
+                <!-- JS inyecta aquí el eyebrow, title y subtitle -->
+            </div>
+            
+            <div class="shop-hero-wave" aria-hidden="true">
+                <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+                    <path d="M0,50 C360,100 1080,0 1440,50 L1440,100 L0,100 Z" fill="var(--color-bg)"></path>
+                </svg>
+            </div>
+        </section>
 
-    <!-- FILTROS -->
-    <section class="shop-filters-section">
-        <div class="shop-filters">
-            <button class="filter-btn active" data-filter="all">Todos</button>
-            <button class="filter-btn" data-filter="destacado">Destacados</button>
-            <button class="filter-btn" data-filter="nuevo">Nuevos</button>
-            <button class="filter-btn" data-filter="popular">Populares</button>
-        </div>
-        <div class="shop-sort">
-            <select id="sortSelect">
-                <option value="default">Ordenar por</option>
-                <option value="price-asc">Precio: Menor a Mayor</option>
-                <option value="price-desc">Precio: Mayor a Menor</option>
-                <option value="name-asc">Nombre: A-Z</option>
-            </select>
-        </div>
-    </section>
+        <!-- FILTROS -->
+        <section class="shop-filters-section" aria-label="Filtros y ordenamiento de productos">
+            <div class="shop-filters" role="tablist" aria-label="Filtrar productos por categoría">
+                <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true" aria-label="Mostrar todos los productos">Todos</button>
+                <button class="filter-btn" data-filter="destacado" role="tab" aria-selected="false" aria-label="Mostrar productos destacados">Destacados</button>
+                <button class="filter-btn" data-filter="nuevo" role="tab" aria-selected="false" aria-label="Mostrar productos nuevos">Nuevos</button>
+                <button class="filter-btn" data-filter="popular" role="tab" aria-selected="false" aria-label="Mostrar productos populares">Populares</button>
+            </div>
+            <div class="shop-sort">
+                <label for="sortSelect" class="sr-only">Ordenar productos</label>
+                <select id="sortSelect" aria-label="Ordenar productos por">
+                    <option value="default">Ordenar por</option>
+                    <option value="price-asc">Precio: Menor a Mayor</option>
+                    <option value="price-desc">Precio: Mayor a Menor</option>
+                    <option value="name-asc">Nombre: A-Z</option>
+                </select>
+            </div>
+        </section>
 
-    <!-- PRODUCTOS -->
-    <section class="shop-products-section">
-        <div class="shop-products-grid" id="productsGrid"></div>
-        <div class="shop-no-results" id="noResults" style="display: none;">
-            No se encontraron productos
-        </div>
-    </section>
+        <!-- PRODUCTOS -->
+        <section class="shop-products-section" aria-label="Catálogo de productos">
+            <div class="shop-products-grid" id="productsGrid" role="tabpanel" aria-live="polite"></div>
+            <div class="shop-no-results" id="noResults" style="display: none;" role="status" aria-live="polite">
+                No se encontraron productos
+            </div>
+        </section>
+    </main>
 
     <!-- CARRITO SIDEBAR -->
-    <aside class="cart-sidebar" id="cartSidebar">
+    <aside class="cart-sidebar" id="cartSidebar" role="dialog" aria-modal="true" aria-label="Carrito de compras" aria-labelledby="cartTitle">
         <div class="cart-overlay" id="cartOverlay"></div>
         <div class="cart-content">
             <div class="cart-header">
-                <h2>Tu Carrito</h2>
-                <button class="cart-close" id="cartClose">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+                <h2 id="cartTitle">Tu Carrito</h2>
+                <button class="cart-close" id="cartClose" aria-label="Cerrar carrito">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <path d="M18 6L6 18M6 6l12 12"></path>
+                    </svg>
                 </button>
             </div>
             <div class="cart-items" id="cartItems">
-                <div class="cart-empty" id="cartEmpty">
+                <div class="cart-empty" id="cartEmpty" role="status">
                     <p>Tu carrito está vacío</p>
                     <a href="#productsGrid" class="cart-continue">Continuar comprando</a>
                 </div>
@@ -79,58 +103,65 @@
             <div class="cart-footer">
                 <div class="cart-promo-section">
                     <div class="cart-promo-input" id="promoInputContainer">
-                        <input type="text" id="promoCodeInput" placeholder="Código de descuento">
-                        <button class="cart-promo-apply" id="applyPromoBtn">Aplicar</button>
+                        <label for="promoCodeInput" class="sr-only">Código de descuento</label>
+                        <input type="text" id="promoCodeInput" placeholder="Código de descuento" aria-label="Ingresa tu código de descuento">
+                        <button class="cart-promo-apply" id="applyPromoBtn" aria-label="Aplicar código de descuento">Aplicar</button>
                     </div>
-                    <div id="promoApplied" style="display: none; align-items: center; justify-content: space-between; background: rgba(201,169,110,0.1); padding: 0.7rem 1rem; border-radius: 4px; border: 1px solid var(--color-accent);">
+                    <div id="promoApplied" style="display: none; align-items: center; justify-content: space-between; background: rgba(201,169,110,0.1); padding: 0.7rem 1rem; border-radius: 4px; border: 1px solid var(--color-accent);" role="status" aria-live="polite">
                         <span style="color: var(--color-accent); font-weight: 600; font-size: 0.85rem;">Código: <span id="promoCodeDisplay"></span></span>
-                        <button class="cart-remove-promo" id="removePromoBtn">Quitar</button>
+                        <button class="cart-remove-promo" id="removePromoBtn" aria-label="Quitar código de descuento">Quitar</button>
                     </div>
                 </div>
-                <div class="cart-summary">
+                <div class="cart-summary" aria-label="Resumen del carrito">
                     <div class="cart-summary-row">
                         <span>Subtotal:</span>
-                        <span id="cartSubtotal">$0</span>
+                        <span id="cartSubtotal" aria-live="polite">$0</span>
                     </div>
                     <div class="cart-summary-row cart-discount-row" id="cartDiscountRow" style="display: none;">
                         <span class="cart-discount-text">Descuento:</span>
-                        <span id="cartDiscountAmount">-$0</span>
+                        <span id="cartDiscountAmount" aria-live="polite">-$0</span>
                     </div>
                     <div class="cart-total">
                         <span>Total:</span>
-                        <span id="cartTotal">$0</span>
+                        <span id="cartTotal" aria-live="polite">$0</span>
                     </div>
                 </div>
-                <button class="cart-checkout" id="cartCheckout">Finalizar Compra</button>
+                <button class="cart-checkout" id="cartCheckout" aria-label="Finalizar compra por WhatsApp">Finalizar Compra</button>
             </div>
         </div>
     </aside>
 
     <!-- MODAL DE FICHA TÉCNICA -->
-    <div class="product-modal" id="productModal">
+    <div class="product-modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDescription">
         <div class="modal-overlay" id="modalOverlay"></div>
         <div class="modal-content">
-            <button class="modal-close" id="modalClose">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+            <button class="modal-close" id="modalClose" aria-label="Cerrar modal de producto">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
             </button>
             <div class="modal-body">
-                <div class="modal-gallery-section">
-                    <div class="modal-gallery" id="modalGallery"></div>
-                    <div class="modal-thumbnails" id="modalThumbnails"></div>
+                <div class="modal-gallery-section" aria-label="Galería de imágenes del producto">
+                    <div class="modal-gallery" id="modalGallery" role="region" aria-label="Imágenes del producto"></div>
+                    <div class="modal-thumbnails" id="modalThumbnails" role="tablist" aria-label="Miniaturas de imágenes"></div>
                 </div>
                 <div class="modal-info-section">
                     <div class="modal-info-content">
                         <span class="modal-category" id="modalCategory"></span>
                         <h2 class="modal-title" id="modalTitle"></h2>
-                        <div class="modal-price" id="modalPrice"></div>
+                        <div class="modal-price" id="modalPrice" aria-label="Precio del producto"></div>
                         <p class="modal-description" id="modalDescription"></p>
                         <div class="modal-features-section">
                             <h4 class="modal-features-title">Características</h4>
-                            <ul class="modal-features-list" id="modalFeatures"></ul>
+                            <ul class="modal-features-list" id="modalFeatures" aria-label="Lista de características del producto"></ul>
                         </div>
-                        <div class="modal-variants-section" id="modalVariants"></div>
-                        <button class="modal-add-to-cart" id="modalAddToCart">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-12z"></path><circle cx="9" cy="20" r="1"></circle><circle cx="18" cy="20" r="1"></circle></svg>
+                        <div class="modal-variants-section" id="modalVariants" role="radiogroup" aria-label="Selecciona una variante del producto"></div>
+                        <button class="modal-add-to-cart" id="modalAddToCart" aria-label="Agregar producto al carrito">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M6 6h15l-1.5 9h-12z"></path>
+                                <circle cx="9" cy="20" r="1"></circle>
+                                <circle cx="18" cy="20" r="1"></circle>
+                            </svg>
                             Agregar al Carrito
                         </button>
                     </div>
@@ -140,40 +171,61 @@
     </div>
 
     <!-- POPUP DE PROMOCIONES -->
-    <div class="promo-popup" id="promoPopup">
+    <div class="promo-popup" id="promoPopup" role="dialog" aria-modal="true" aria-label="Promociones especiales" aria-labelledby="promoTitle">
         <div class="promo-popup-overlay" id="promoOverlay"></div>
         <div class="promo-popup-content">
-            <button class="promo-close" id="promoClose">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+            <h2 id="promoTitle" class="sr-only">Promociones Especiales</h2>
+            <button class="promo-close" id="promoClose" aria-label="Cerrar popup de promociones">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
             </button>
-            <div class="promo-dots" id="promoDots"></div>
-            <div class="promo-slider" id="promoSlider"></div>
-            <button class="promo-nav promo-nav-prev" id="promoPrev">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"></path></svg>
+            <div class="promo-dots" id="promoDots" role="tablist" aria-label="Navegación de promociones"></div>
+            <div class="promo-slider" id="promoSlider" role="tabpanel" aria-live="polite"></div>
+            <button class="promo-nav promo-nav-prev" id="promoPrev" aria-label="Promoción anterior">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
             </button>
-            <button class="promo-nav promo-nav-next" id="promoNext">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"></path></svg>
+            <button class="promo-nav promo-nav-next" id="promoNext" aria-label="Siguiente promoción">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6"></path>
+                </svg>
             </button>
             <label class="promo-dont-show">
-                <input type="checkbox" id="promoDontShow"> No mostrar de nuevo
+                <input type="checkbox" id="promoDontShow" aria-label="No mostrar este popup de promociones nuevamente"> No mostrar de nuevo
             </label>
         </div>
     </div>
 
     <!-- BOTÓN FLOTANTE DE WHATSAPP -->
-<a href="#" class="whatsapp-float" id="whatsappFloat" aria-label="Contactar por WhatsApp" target="_blank" rel="noopener">
-    <svg class="whatsapp-icon" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-    </svg>
-</a>
+    <a href="#" class="whatsapp-float" id="whatsappFloat" aria-label="Contactar por WhatsApp" target="_blank" rel="noopener noreferrer">
+        <svg class="whatsapp-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+    </a>
 
-<!-- Cursor personalizado -->
-<div class="cursor" id="cursor"></div>
-<div class="cursor-follower" id="cursorFollower"></div>
+    <!-- Cursor personalizado -->
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
 
-    <!-- TUS SCRIPTS -->
+    <!-- Clase auxiliar para screen readers -->
+    <style>
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
+    </style>
+
+    <!-- Scripts -->
     <script src="config.js"></script>
-    <script src="app.js"></script> <!-- Si necesitas que el cursor/grain funcionen aquí también -->
     <script src="shop.js"></script>
 </body>
 </html>
