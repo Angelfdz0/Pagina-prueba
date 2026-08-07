@@ -1,6 +1,7 @@
 /* ============================================================
    ★ CEREBRO DE LA PÁGINA ★
    Lee SITE_CONFIG y construye + anima todo.
+   ✅ Iconos Font Awesome (juvenil-premium) integrados
    ============================================================ */
 (function () {
   "use strict";
@@ -19,7 +20,7 @@
     return C[blockName]?.enabled !== false;
   }
 
-    // ✅ Utilidades para testimonios
+  // ✅ Utilidades para testimonios
   function escapeHtml(str) {
       if (!str) return '';
       const div = document.createElement('div');
@@ -29,11 +30,14 @@
   function initials(name) {
       return (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
   }
+
+  // ✅ FA: Iconos de redes sociales (Font Awesome Brands — monocromáticos, escalables, profesionales)
   const SOURCE_ICONS = {
-      instagram: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
-      facebook: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>',
-      whatsapp: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>',
-      google: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 11v3.6h5.1c-.5 2.4-2.6 3.9-5.1 3.9a5.5 5.5 0 1 1 0-11c1.4 0 2.7.5 3.7 1.4l2.7-2.7A9.2 9.2 0 1 0 12 21.2c5.3 0 8.8-3.7 8.8-9 0-.6-.1-1.2-.2-1.2H12z"/></svg>'
+      instagram: '<i class="fa-brands fa-instagram"></i>',
+      facebook:  '<i class="fa-brands fa-facebook-f"></i>',
+      whatsapp:  '<i class="fa-brands fa-whatsapp"></i>',
+      google:    '<i class="fa-brands fa-google"></i>',
+      tiktok:    '<i class="fa-brands fa-tiktok"></i>'
   };
 
   // ─── APLICAR TEMA ───────────────────────
@@ -45,6 +49,7 @@
     r.setProperty("--color-text", t.text);
     r.setProperty("--color-text-muted", t.textMuted);
     r.setProperty("--color-accent", t.accent);
+    r.setProperty("--accent-rgb", t.accentRGB || "201, 169, 110");
     r.setProperty("--color-accent-light", t.accentLight);
     r.setProperty("--color-white", t.white);
     r.setProperty("--color-dark", t.dark);
@@ -196,16 +201,30 @@ function buildHeader() {
     return true;
   });
 
-  // ✅ Límite inteligente: primeros N en línea, resto en "MÁS"
+  // ✅ Límites inteligentes: escritorio = 5 + "Más" | móvil = 4 + "Más"
   const maxLinks = typeof h.maxLinks === "number" ? h.maxLinks : 5;
+  const mobileMax = 4;
   const extraLinks = visibleLinks.slice(maxLinks);
+
+  const linkLis = visibleLinks.map((l, i) =>
+    `<li class="${i >= mobileMax ? "m-extra" : ""}">
+       <a href="${l.href}" class="${i >= maxLinks ? "nav-link-extra" : ""}">${l.label}</a>
+     </li>`
+  );
+  // ✅ Botón "Más" del menú móvil (se inserta como 5º elemento)
+  if (visibleLinks.length > mobileMax) {
+    linkLis.splice(mobileMax, 0, `
+      <li class="nav-more-mobile" id="navMoreMobile">
+        <button class="nav-more-btn" id="navMoreMobileBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="mm-label">Más<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+        </button>
+      </li>`);
+  }
 
   nav.innerHTML = `
     <a href="#hero" class="nav-logo">${h.logo.text}<span>${h.logo.highlight}</span></a>
     <ul class="nav-links" id="navLinks">
-      ${visibleLinks.map((l, i) =>
-        `<li><a href="${l.href}" class="${i >= maxLinks ? "nav-link-extra" : ""}">${l.label}</a></li>`
-      ).join("")}
+      ${linkLis.join("")}
       ${extraLinks.length ? `
       <li class="nav-more" id="navMore">
         <button class="nav-more-btn" id="navMoreBtn" aria-haspopup="true" aria-expanded="false">
@@ -228,6 +247,12 @@ function buildHeader() {
   const header = $("#header");
   const moreWrap = $("#navMore");
   const moreBtn = $("#navMoreBtn");
+  const moreMobileBtn = $("#navMoreMobileBtn");
+
+  const closeMobileMore = () => {
+    if (navLinks) navLinks.classList.remove("more-open");
+    if (moreMobileBtn) moreMobileBtn.setAttribute("aria-expanded", "false");
+  };
 
   if (hamburger && navLinks && header) {
     hamburger.addEventListener("click", () => {
@@ -237,16 +262,26 @@ function buildHeader() {
         hamburger.classList.remove("active");
         header.classList.remove("menu-open");
         document.body.style.overflow = "";
+        closeMobileMore();
       } else {
-        hamburger.classList.add("active");
         navLinks.classList.add("open");
+        hamburger.classList.add("active");
         header.classList.add("menu-open");
         document.body.style.overflow = "hidden";
       }
     });
   }
 
-  // ✅ Menú "MÁS" (abrir/cerrar)
+  // ✅ "Más" del MÓVIL: despliega el resto de enlaces
+  if (moreMobileBtn && navLinks) {
+    moreMobileBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = navLinks.classList.toggle("more-open");
+      moreMobileBtn.setAttribute("aria-expanded", String(open));
+    });
+  }
+
+  // "Más" del ESCRITORIO (abrir/cerrar)
   if (moreWrap && moreBtn) {
     const closeMore = () => {
       moreWrap.classList.remove("open");
@@ -272,6 +307,7 @@ function buildHeader() {
       if (navLinks) navLinks.classList.remove("open");
       if (header) header.classList.remove("menu-open");
       document.body.style.overflow = "";
+      closeMobileMore();
     });
   });
 
@@ -295,6 +331,7 @@ function buildHeader() {
     if (bg) bg.style.backgroundImage = `url(${h.backgroundImage})`;
     if (!content) return;
 
+    // ✅ FA: icono flecha abajo en el scroll indicator
     content.innerHTML = `
       <p class="hero-eyebrow">${h.eyebrow}</p>
       <h1 class="hero-title">
@@ -311,7 +348,10 @@ function buildHeader() {
         </span>
       </h1>
       <p class="hero-subtitle">${h.subtitle}</p>
-      <a href="${h.ctaHref}" class="hero-cta">${h.cta}</a>
+      <a href="${h.ctaHref}" class="hero-cta">
+        <span>${h.cta}</span>
+        <i class="fa-solid fa-arrow-right hero-cta-arrow" aria-hidden="true"></i>
+      </a>
     `;
   }
 
@@ -428,75 +468,261 @@ function buildHeader() {
     setTimeout(() => tick(), 1800);
   }
 
-  // ─── BLOQUE 1: HISTORIA ─────────────────
-  function buildStory() {
-    if (!isBlockEnabled("story")) {
-      const section = $("#story");
-      if (section) section.style.display = "none";
-      return;
-    }
-    const s = C.story;
-    const inner = $("#storyInner");
-    if (!inner) return;
-
-    inner.innerHTML = `
-      <div class="story-ribbon" id="storyRibbon">
-        <svg viewBox="0 0 400 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path class="ribbon-path" d="M380,0 C350,100 320,200 340,300 C360,400 300,500 280,600 C260,700 300,750 320,800" stroke="var(--color-accent)" stroke-width="2" fill="none" opacity="0.3"/>
-          <path class="ribbon-path-shadow" d="M380,0 C350,100 320,200 340,300 C360,400 300,500 280,600 C260,700 300,750 320,800" stroke="var(--color-accent)" stroke-width="8" fill="none" opacity="0.08"/>
-        </svg>
-      </div>
-      <div class="story-grid">
-        <div class="story-image-wrapper reveal-left">
-          <img class="story-image" src="${s.image}" alt="${s.label}" loading="lazy" />
-        </div>
-        <div class="story-text">
-          <span class="section-label reveal">${s.label}</span>
-          <h2 class="section-heading reveal reveal-delay-1">${s.heading}</h2>
-          <hr class="editorial-hr reveal reveal-delay-2" />
-          ${s.paragraphs.map((p, i) => `<p class="reveal reveal-delay-${i + 3}">${p}</p>`).join("")}
-          <div class="story-stat-row">
-            ${s.stats.map((st, i) => `
-              <div class="reveal reveal-delay-${i + 4}">
-                <div class="story-stat-number">${st.number}</div>
-                <div class="story-stat-label">${st.label}</div>
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      </div>
-    `;
+ // ─── BLOQUE 1: HISTORIA (+ PATROCINADORES/CONVENIOS opcional) ───
+function buildStory() {
+  if (!isBlockEnabled("story")) {
+    const section = $("#story");
+    if (section) section.style.display = "none";
+    return;
   }
+  const s = C.story;
+  const inner = $("#storyInner");
+  if (!inner) return;
 
-  // ─── BLOQUE 2: SERVICIOS ────────────────
-  function buildServices() {
-    if (!isBlockEnabled("services")) {
-      const section = $("#services");
-      if (section) section.style.display = "none";
-      return;
-    }
-    const s = C.services;
-    const inner = $("#servicesInner");
-    if (!inner) return;
+  const partnersOn = s.partners?.enabled && (s.partners.logos || []).length > 0;
+  const logosHTML = partnersOn ? s.partners.logos.map(l => `
+    <span class="partner-logo" title="${escapeHtml(l.name)}">
+      ${l.img
+        ? `<img src="${l.img}" alt="${escapeHtml(l.name)}" loading="lazy">`
+        : `<span class="partner-name">${escapeHtml(l.name)}</span>`}
+    </span>`).join("") : "";
 
-    inner.innerHTML = `
-      <div class="services-header">
+  inner.innerHTML = `
+    <div class="story-ribbon" id="storyRibbon">
+      <svg viewBox="0 0 400 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path class="ribbon-path" d="M380,0 C350,100 320,200 340,300 C360,400 300,500 280,600 C260,700 300,750 320,800" stroke="var(--color-accent)" stroke-width="2" fill="none" opacity="0.3"/>
+        <path class="ribbon-path-shadow" d="M380,0 C350,100 320,200 340,300 C360,400 300,500 280,600 C260,700 300,750 320,800" stroke="var(--color-accent)" stroke-width="8" fill="none" opacity="0.08"/>
+      </svg>
+    </div>
+    <div class="story-grid">
+      <div class="story-image-wrapper reveal-left">
+        <img class="story-image" src="${s.image}" alt="${s.label}" loading="lazy" />
+      </div>
+      <div class="story-text">
         <span class="section-label reveal">${s.label}</span>
         <h2 class="section-heading reveal reveal-delay-1">${s.heading}</h2>
-        <hr class="editorial-hr center reveal reveal-delay-2" />
-        <p class="reveal reveal-delay-3">${s.subtitle}</p>
+        <hr class="editorial-hr reveal reveal-delay-2" />
+        ${s.paragraphs.map((p, i) => `<p class="reveal reveal-delay-${i + 3}">${p}</p>`).join("")}
+        <div class="story-stat-row">
+          ${s.stats.map((st, i) => `
+            <div class="reveal reveal-delay-${i + 4}">
+              <div class="story-stat-number">${st.number}</div>
+              <div class="story-stat-label">${st.label}</div>
+            </div>
+          `).join("")}
+        </div>
       </div>
-      <div class="services-grid">
+    </div>
+    ${partnersOn ? `
+    <div class="partners-strip reveal reveal-delay-4">
+      <h3 class="partners-title">${escapeHtml(s.partners.title || "Patrocinadores y Convenios")}</h3>
+      <div class="partners-marquee">
+        <div class="partners-track">
+          <div class="partners-group">${logosHTML}</div>
+          <div class="partners-group" aria-hidden="true">${logosHTML}</div>
+        </div>
+      </div>
+    </div>` : ""}
+  `;
+}
+
+// ─── ✅ SERVICIOS desde BD (con formato markdown seguro) ───
+async function loadServicesFromDB() {
+  try {
+    const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
+    const { data, error } = await sb.from('services').select('*')
+      .eq('is_active', true)
+      .order('sort', { ascending: true })
+      .order('created_at', { ascending: true });
+    if (error) throw error;
+    if (data && data.length) {
+      C.services.items = data.map(r => ({
+        number: r.number || '01', title: r.title,
+        intro: r.intro || '', desc: r.content || '', image: r.image || ''
+      }));
+    }
+  } catch (e) { /* respaldo: servicios de config.js */ }
+}
+function svcPlain(text) {
+  return (text || '')
+    .replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1')
+    .replace(/_([^_]+)_/g, '$1').replace(/^##\s+/gm, '')
+    .replace(/^[-•]\s+/gm, '').replace(/^>\s?/gm, '');
+}
+function svcInline(text) {
+  let s = escapeHtml(text || '');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>');
+  s = s.replace(/_([^_]+)_/g, '<em>$1</em>');
+  return s;
+}
+function renderServiceContent(text) {
+  if (!text) return '';
+  return String(text).split(/\n\n+/).map(par => {
+    const t = par.trim();
+    if (!t) return '';
+    if (/^##\s/.test(t)) return `<h4 class="svc-h2">${svcInline(t.replace(/^##\s+/, ''))}</h4>`;
+    if (/^[-•]\s/.test(t)) return `<ul class="svc-ul">${t.split('\n').map(l => l.trim()).filter(l => /^[-•]\s/.test(l)).map(l => `<li>${svcInline(l.replace(/^[-•]\s+/, ''))}</li>`).join('')}</ul>`;
+    if (/^>\s?/.test(t)) return `<blockquote class="svc-quote">${svcInline(t.replace(/^>\s?/gm, ''))}</blockquote>`;
+    return `<p>${svcInline(t).replace(/\n/g, '<br>')}</p>`;
+  }).join('');
+}
+
+  // ─── BLOQUE 2: SERVICIOS (carrusel wow + flip) ───
+function buildServices() {
+  if (!isBlockEnabled("services")) {
+    const section = $("#services");
+    if (section) section.style.display = "none";
+    return;
+  }
+  const s = C.services;
+  const inner = $("#servicesInner");
+  if (!inner) return;
+
+  inner.innerHTML = `
+    <div class="services-header">
+      <span class="section-label reveal">${s.label}</span>
+      <h2 class="section-heading reveal reveal-delay-1">${s.heading}</h2>
+      <hr class="editorial-hr center reveal reveal-delay-2" />
+      <p class="reveal reveal-delay-3">${s.subtitle}</p>
+    </div>
+    <div class="services-carousel reveal reveal-delay-2">
+      <div class="services-ghost" id="servicesGhost" aria-hidden="true">01</div>
+      <div class="services-track" id="servicesTrack">
         ${s.items.map((item, i) => `
-          <div class="service-card reveal reveal-delay-${i + 1}">
-            <div class="service-number">${item.number}</div>
-            <h3 class="service-title">${item.title}</h3>
-            <p class="service-desc">${item.desc}</p>
+          <div class="service-card">
+            <div class="service-flip">
+              <div class="service-face service-front">
+                ${item.image ? `<div class="service-bg-img" style="background-image:url('${item.image}')" aria-hidden="true"></div>` : ""}
+                <div class="service-number">${item.number}</div>
+                <h3 class="service-title">${item.title}</h3>
+                <p class="service-desc">${escapeHtml(item.intro || svcPlain(item.desc))}</p>
+                <button class="service-more" type="button" data-flip="open" aria-expanded="false">Ver más</button>
+              </div>
+              <div class="service-face service-back">
+                ${item.image ? `<div class="service-bg-img" style="background-image:url('${item.image}')" aria-hidden="true"></div>` : ""}
+                <div class="service-back-head">
+                  <span class="service-number-sm">${item.number}</span>
+                  <h3 class="service-title">${item.title}</h3>
+                </div>
+                <div class="service-desc-full">${renderServiceContent(item.desc)}</div>
+                <button class="service-more service-back-btn" type="button" data-flip="close">← Volver</button>
+              </div>
+            </div>
           </div>
         `).join("")}
       </div>
-    `;
+    </div>
+    <div class="services-meta">
+      <div class="services-progress"><div class="services-progress-fill" id="servicesProgressFill"></div></div>
+      <div class="services-count" id="servicesCount"></div>
+      <div class="services-nav">
+        <button class="services-arrow services-arrow-prev" id="servicesPrev" aria-label="Servicios anteriores">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="services-arrow services-arrow-next" id="servicesNext" aria-label="Más servicios">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="services-hint" id="servicesHint">← desliza →</div>
+  `;
+
+   // ✅ Flip de tarjetas (solo una girada a la vez)
+  const unflipAll = (except = null) => {
+    inner.querySelectorAll(".service-card.flipped").forEach(c => {
+      if (c !== except) {
+        c.classList.remove("flipped");
+        const ob = c.querySelector('[data-flip="open"]');
+        if (ob) ob.setAttribute("aria-expanded", "false");
+      }
+    });
+  };
+
+  inner.querySelectorAll("[data-flip]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".service-card");
+      const willOpen = !card.classList.contains("flipped");
+      unflipAll(card); // ✅ las demás vuelven a la normalidad
+      card.classList.toggle("flipped", willOpen);
+      btn.setAttribute("aria-expanded", String(willOpen));
+    });
+  });
+
+  // ✅ Carrusel + HUD (flechas, contador, progreso, número fantasma)
+  const track = inner.querySelector("#servicesTrack");
+  const prev = inner.querySelector("#servicesPrev");
+  const next = inner.querySelector("#servicesNext");
+  const counter = inner.querySelector("#servicesCount");
+  const progressFill = inner.querySelector("#servicesProgressFill");
+  const ghost = inner.querySelector("#servicesGhost");
+  const hint = inner.querySelector("#servicesHint");
+
+  if (track && prev && next) {
+    const pad = n => String(n).padStart(2, "0");
+    const cardStep = () => {
+      const card = track.querySelector(".service-card");
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 2;
+      return card ? card.getBoundingClientRect().width + gap : 300;
+    };
+        prev.addEventListener("click", () => { unflipAll(); track.scrollBy({ left: -cardStep(), behavior: "smooth" }); });
+    next.addEventListener("click", () => { unflipAll(); track.scrollBy({ left: cardStep(), behavior: "smooth" }); });
+
+    // ✅ Clic sobre cualquier zona de otra tarjeta endereza la girada
+    track.addEventListener("click", (e) => {
+      const card = e.target.closest(".service-card");
+      if (card) unflipAll(card);
+    });
+
+    const updateHUD = () => {
+      const total = s.items.length;
+      const stepW = cardStep();
+      const scrollable = track.scrollWidth > track.clientWidth + 1;
+
+      // Flechas y hint solo si hay desplazamiento
+      prev.style.display = scrollable ? "" : "none";
+      next.style.display = scrollable ? "" : "none";
+      if (hint) hint.style.display = scrollable ? "" : "none";
+
+      if (!scrollable) {
+        if (counter) counter.innerHTML = `<span class="sc-now">${pad(total)}</span> / ${pad(total)}`;
+        if (progressFill) progressFill.style.transform = "scaleX(1)";
+        return;
+      }
+
+      const max = track.scrollWidth - track.clientWidth - 1;
+      prev.disabled = track.scrollLeft <= 0;
+      next.disabled = track.scrollLeft >= max;
+
+      // ✅ Contador inteligente: "02 / 08" si cabe 1 tarjeta, "01–03 / 08" si caben varias
+      const idx = Math.max(0, Math.round(track.scrollLeft / stepW));
+      const perView = Math.max(1, Math.round(track.clientWidth / stepW));
+      const from = idx + 1;
+      const to = Math.min(idx + perView, total);
+      if (counter) counter.innerHTML = `<span class="sc-now">${from === to ? pad(from) : pad(from) + "–" + pad(to)}</span> / ${pad(total)}`;
+
+      // Línea de progreso
+      if (progressFill) progressFill.style.transform = `scaleX(${max > 0 ? track.scrollLeft / max : 0})`;
+
+      // Número fantasma con tick animado
+      const num = (s.items[Math.min(idx, total - 1)] || {}).number || pad(idx + 1);
+      if (ghost && ghost.dataset.num !== num) {
+        ghost.dataset.num = num;
+        ghost.textContent = num;
+        ghost.classList.remove("tick");
+        void ghost.offsetWidth;
+        ghost.classList.add("tick");
+      }
+    };
+
+    track.addEventListener("scroll", () => {
+      if (hint) hint.classList.add("hide");
+      requestAnimationFrame(updateHUD);
+    }, { passive: true });
+    window.addEventListener("resize", updateHUD);
+    updateHUD();
   }
+}
 
   // ─── LUZ QUE CAE EN SERVICIOS ───────────
   function initServicesLight() {
@@ -670,7 +896,8 @@ function buildHeader() {
         const y = ((e.clientY - rect.top) / rect.height) * 100;
         const light = $(".gallery-slide-light", slide);
         if (light) {
-          light.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(201, 169, 110, 0.3) 0%, rgba(201, 169, 110, 0.1) 30%, transparent 60%)`;
+          const rgb = getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim() || '201, 169, 110';
+           light.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(${rgb}, 0.3) 0%, rgba(${rgb}, 0.1) 30%, transparent 60%)`;
         }
       });
     });
@@ -964,25 +1191,20 @@ function buildHeader() {
     const inner = $("#ecommerceInner");
     if (!inner) return;
 
+    // ✅ FA: icono shopping-bag como fondo decorativo (reemplaza SVG gigante)
     inner.innerHTML = `
-      <div class="ecommerce-bg-icon">
-        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-          <path d="M100,140 L100,360 Q100,380 120,380 L280,380 Q300,380 300,360 L300,140 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M140,140 L140,100 Q140,60 200,60 Q260,60 260,100 L260,140" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-          <line x1="100" y1="180" x2="300" y2="180" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-          <circle cx="160" cy="240" r="8" fill="currentColor" opacity="0.3"/>
-          <circle cx="240" cy="280" r="6" fill="currentColor" opacity="0.25"/>
-          <circle cx="200" cy="320" r="10" fill="currentColor" opacity="0.2"/>
-          <line x1="150" y1="260" x2="180" y2="260" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-          <line x1="220" y1="300" x2="260" y2="300" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-        </svg>
+      <div class="ecommerce-bg-icon" aria-hidden="true">
+        <i class="fa-solid fa-bag-shopping"></i>
       </div>
       <div class="ecommerce-inner">
         <span class="section-label reveal">${e.label}</span>
         <h2 class="section-heading reveal reveal-delay-1">${e.heading}</h2>
         <hr class="editorial-hr center reveal reveal-delay-2" />
         <p class="ecommerce-subtitle reveal reveal-delay-3">${e.subtitle}</p>
-        <a href="${e.ctaHref}" class="ecommerce-cta reveal reveal-delay-4"><span>${e.cta}</span></a>
+        <a href="${e.ctaHref}" class="ecommerce-cta reveal reveal-delay-4">
+          <span>${e.cta}</span>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
       </div>
     `;
   }
@@ -1020,40 +1242,40 @@ function buildHeader() {
     observer.observe(section);
   }
 
-   // ─── BLOQUE: TESTIMONIOS (confianza social + lazy render) ───
-let tAll = [];            // todos los testimonios de la BD
-let tRendered = 0;        // cuántas tarjetas ya se pintaron
-const T_BATCH = 6;        // tarjetas por lote
+  // ─── BLOQUE: TESTIMONIOS ───
+  let tAll = [];
+  let tRendered = 0;
+  const T_BATCH = 6;
 
-function buildTestimonials() {
+  function buildTestimonials() {
     const section = $("#testimonials");
     if (!isBlockEnabled("testimonials") || !C.testimonials) {
-        if (section) section.style.display = "none";
-        return;
+      if (section) section.style.display = "none";
+      return;
     }
     const t = C.testimonials;
     const inner = $("#testimonialsInner");
     if (!inner) return;
 
+    // ✅ FA: flechas de navegación del carrusel
     inner.innerHTML = `
-        <div class="testimonials-header">
-            <span class="section-label reveal">${t.label}</span>
-            <h2 class="section-heading reveal reveal-delay-1">${t.heading}</h2>
-            <hr class="editorial-hr center reveal reveal-delay-2" />
-            <p class="reveal reveal-delay-3">${t.subtitle}</p>
-        </div>
-        <div class="testimonials-carousel reveal reveal-delay-3">
-            <button class="testimonials-nav prev" id="testimonialsPrev" aria-label="Testimonios anteriores">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-            </button>
-            <div class="testimonials-track" id="testimonialsTrack" aria-live="polite"></div>
-            <button class="testimonials-nav next" id="testimonialsNext" aria-label="Más testimonios">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-        </div>
+      <div class="testimonials-header">
+        <span class="section-label reveal">${t.label}</span>
+        <h2 class="section-heading reveal reveal-delay-1">${t.heading}</h2>
+        <hr class="editorial-hr center reveal reveal-delay-2" />
+        <p class="reveal reveal-delay-3">${t.subtitle}</p>
+      </div>
+      <div class="testimonials-carousel reveal reveal-delay-3">
+        <button class="testimonials-nav prev" id="testimonialsPrev" aria-label="Testimonios anteriores">
+          <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+        </button>
+        <div class="testimonials-track" id="testimonialsTrack" aria-live="polite"></div>
+        <button class="testimonials-nav next" id="testimonialsNext" aria-label="Más testimonios">
+          <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+        </button>
+      </div>
     `;
 
-    // ✅ Garantizar visibilidad (el observer de reveal ya pasó)
     inner.querySelectorAll(".reveal").forEach(el => el.classList.add("visible"));
 
     const track = $("#testimonialsTrack");
@@ -1062,101 +1284,97 @@ function buildTestimonials() {
     const next = $("#testimonialsNext");
     if (prev) prev.addEventListener("click", () => track.scrollBy({ left: -360, behavior }));
     if (next) next.addEventListener("click", () => {
-        renderTestimonialBatch(); // asegura que haya tarjetas antes de avanzar
-        track.scrollBy({ left: 360, behavior });
+      renderTestimonialBatch();
+      track.scrollBy({ left: 360, behavior });
     });
 
-    // ✅ LAZY #1: no consultar la BD hasta que el bloque entra en pantalla
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                observer.unobserve(entry.target);
-                loadTestimonials();
-            }
-        });
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          observer.unobserve(entry.target);
+          loadTestimonials();
+        }
+      });
     }, { threshold: 0.1, rootMargin: "200px 0px" });
     observer.observe(section);
 
-    // ✅ LAZY #2: pintar más al acercarse al final del carrusel
     track.addEventListener("scroll", () => {
-        const nearEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 400;
-        if (nearEnd) renderTestimonialBatch();
+      const nearEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 400;
+      if (nearEnd) renderTestimonialBatch();
     }, { passive: true });
-}
+  }
 
-async function loadTestimonials() {
+  async function loadTestimonials() {
     const track = $("#testimonialsTrack");
     if (!track) return;
     if (typeof window.supabase === "undefined" || !C.supabase?.url) return;
     try {
-        const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
-        const { data, error } = await sb
-            .from("testimonials")
-            .select("*")
-            .eq("is_active", true)
-            .order("created_at", { ascending: false })
-            .limit(30); // ✅ permite hasta 30 tarjetas (antes 12)
-        if (error) throw error;
-        if (!data || !data.length) {
-            track.innerHTML = '<div class="testimonials-empty">Muy pronto compartiremos opiniones reales de nuestros clientes.</div>';
-            return;
-        }
-        tAll = data;
-        tRendered = 0;
-        renderTestimonialBatch();                  // 1er lote: inmediato al mostrarse
-        setTimeout(renderTestimonialBatch, 2500);  // ✅ 2do lote: a los 2.5 segundos
+      const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
+      const { data, error } = await sb
+        .from("testimonials")
+        .select("*")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(30);
+      if (error) throw error;
+      if (!data || !data.length) {
+        track.innerHTML = '<div class="testimonials-empty">Muy pronto compartiremos opiniones reales de nuestros clientes.</div>';
+        return;
+      }
+      tAll = data;
+      tRendered = 0;
+      renderTestimonialBatch();
+      setTimeout(renderTestimonialBatch, 2500);
     } catch (e) {
-        track.innerHTML = '<div class="testimonials-empty"></div>';
+      track.innerHTML = '<div class="testimonials-empty"></div>';
     }
-}
+  }
 
-function renderTestimonialBatch() {
+  function renderTestimonialBatch() {
     const track = $("#testimonialsTrack");
     if (!track || tRendered >= tAll.length) return;
     const batch = tAll.slice(tRendered, tRendered + T_BATCH);
     batch.forEach(item => track.insertAdjacentHTML("beforeend", testimonialCard(item)));
     tRendered += batch.length;
-    // fallback de imagen solo en las tarjetas nuevas
     track.querySelectorAll(".testimonial-img:not([data-fb])").forEach(img => {
-        img.dataset.fb = "1";
-        img.addEventListener("error", function () { this.style.display = "none"; });
+      img.dataset.fb = "1";
+      img.addEventListener("error", function () { this.style.display = "none"; });
     });
-}
+  }
 
   function testimonialCard(t) {
     const rating = clamp(Number(t.rating) || 5, 1, 5);
     const photo = (t.images && t.images.length) ? t.images[0] : null;
 
-    // ✅ Si hay foto real → se muestra; si no → placeholder sobrio
     const photoHTML = photo
-        ? `<div class="testimonial-photo">
-             <img class="testimonial-img" src="${photo}" alt="Foto real de ${escapeHtml(t.author)}" loading="lazy">
-           </div>`
-        : `<div class="testimonial-photo testimonial-photo--default" aria-hidden="true">
-             <span class="testimonial-quote-mark">"</span>
-           </div>`;
+      ? `<div class="testimonial-photo">
+           <img class="testimonial-img" src="${photo}" alt="Foto real de ${escapeHtml(t.author)}" loading="lazy">
+         </div>`
+      : `<div class="testimonial-photo testimonial-photo--default" aria-hidden="true">
+           <span class="testimonial-quote-mark">"</span>
+         </div>`;
 
+    // ✅ FA: check-circle como sello "Real" (juvenil y confiable)
     return `<article class="testimonial-card">
-        ${photoHTML}
-              <div class="testimonial-body">
-                  <div class="testimonial-top">
-                      <span class="testimonial-stars" aria-label="${rating} de 5 estrellas">${"★".repeat(rating)}</span>
-                      <span class="testimonial-source" title="Opinión vía ${escapeHtml(t.source || 'redes')}">${SOURCE_ICONS[t.source] || SOURCE_ICONS.instagram}</span>
-                  </div>
-                  <p class="testimonial-text">"${escapeHtml(t.comment)}"</p>
-                  <div class="testimonial-footer">
-                      <div class="testimonial-author">
-                          <span class="testimonial-avatar">${initials(t.author)}</span>
-                          <span>
-                              <span class="testimonial-name">${escapeHtml(t.author)}</span>
-                              ${t.location ? `<span class="testimonial-location">${escapeHtml(t.location)}</span>` : ""}
-                          </span>
-                      </div>
-                      <span class="testimonial-verified">✓ Real</span>
-                  </div>
-              </div>
-          </article>
-      `;
+      ${photoHTML}
+      <div class="testimonial-body">
+        <div class="testimonial-top">
+          <span class="testimonial-stars" aria-label="${rating} de 5 estrellas">${"★".repeat(rating)}</span>
+          <span class="testimonial-source" title="Opinión vía ${escapeHtml(t.source || 'redes')}">${SOURCE_ICONS[t.source] || SOURCE_ICONS.instagram}</span>
+        </div>
+        <p class="testimonial-text">"${escapeHtml(t.comment)}"</p>
+        <div class="testimonial-footer">
+          <div class="testimonial-author">
+            <span class="testimonial-avatar">${initials(t.author)}</span>
+            <span>
+              <span class="testimonial-name">${escapeHtml(t.author)}</span>
+              ${t.location ? `<span class="testimonial-location">${escapeHtml(t.location)}</span>` : ""}
+            </span>
+          </div>
+          <span class="testimonial-verified"><i class="fa-solid fa-circle-check"></i> Real</span>
+        </div>
+      </div>
+    </article>`;
   }
 
   // ─── BLOQUE 6: BLOG ─────────────────────
@@ -1173,29 +1391,22 @@ function renderTestimonialBatch() {
     const inner = $("#blogInner");
     if (!inner) return;
 
+    // ✅ FA: icono libro abierto como fondo decorativo del blog (reemplaza SVG)
     inner.innerHTML = `
       <div class="blog-ink-bg"></div>
       <div class="blog-particles-container" id="blogParticles"></div>
-      <div class="blog-bg-icon" id="blogBgIcon">
-        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-          <path d="M200,320 L200,100 C160,80 120,90 100,100 L100,300 C120,290 160,280 200,320 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-          <path d="M200,320 L200,100 C240,80 280,90 300,100 L300,300 C280,290 240,280 200,320 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-          <line x1="130" y1="150" x2="180" y2="160" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-          <line x1="130" y1="190" x2="170" y2="200" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-          <line x1="130" y1="230" x2="180" y2="240" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-          <line x1="220" y1="160" x2="270" y2="150" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-          <line x1="230" y1="200" x2="270" y2="190" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-          <circle cx="150" cy="280" r="3" fill="currentColor" opacity="0.5"/>
-          <circle cx="250" cy="270" r="4" fill="currentColor" opacity="0.3"/>
-          <path d="M140,270 Q150,260 160,275" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
-        </svg>
+      <div class="blog-bg-icon" id="blogBgIcon" aria-hidden="true">
+        <i class="fa-solid fa-book-open"></i>
       </div>
       <div class="blog-inner">
         <span class="section-label reveal">${b.label}</span>
         <h2 class="section-heading reveal reveal-delay-1">${b.heading}</h2>
         <hr class="editorial-hr center reveal reveal-delay-2" />
         <p class="blog-subtitle reveal reveal-delay-3">${b.subtitle}</p>
-        <a href="${b.ctaHref}" class="blog-cta reveal reveal-delay-4"><span>${b.cta}</span></a>
+        <a href="${b.ctaHref}" class="blog-cta reveal reveal-delay-4">
+          <span>${b.cta}</span>
+          <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </a>
       </div>
     `;
   }
@@ -1268,6 +1479,7 @@ function renderTestimonialBatch() {
     const inner = $("#contactInner");
     if (!inner) return;
 
+    // ✅ FA: icono sobre como fondo decorativo (reemplaza SVG)
     inner.innerHTML = `
       <div class="contact-waves">
         <svg viewBox="0 0 1440 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -1277,16 +1489,8 @@ function renderTestimonialBatch() {
         </svg>
       </div>
       <div class="contact-particles-container" id="contactParticles"></div>
-      <div class="contact-bg-icon" id="contactBgIcon">
-        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
-          <rect x="80" y="120" width="240" height="160" rx="8" fill="none" stroke="currentColor" stroke-width="2.5"/>
-          <path d="M80,120 L200,220 L320,120" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-          <line x1="120" y1="200" x2="280" y2="200" stroke="currentColor" stroke-width="1.5" opacity="0.4"/>
-          <line x1="120" y1="220" x2="240" y2="220" stroke="currentColor" stroke-width="1.5" opacity="0.3"/>
-          <line x1="120" y1="240" x2="260" y2="240" stroke="currentColor" stroke-width="1.5" opacity="0.2"/>
-          <circle cx="280" cy="240" r="15" fill="currentColor" opacity="0.3"/>
-          <path d="M275,240 L280,245 L288,235" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-        </svg>
+      <div class="contact-bg-icon" id="contactBgIcon" aria-hidden="true">
+        <i class="fa-solid fa-envelope"></i>
       </div>
       <div class="contact-inner">
         <span class="section-label reveal">${c.label}</span>
@@ -1308,7 +1512,10 @@ function renderTestimonialBatch() {
           <div class="form-group">
             <textarea class="form-textarea" name="message" placeholder="${c.form.messagePlaceholder}" required minlength="10" maxlength="2000"></textarea>
           </div>
-          <button type="submit" class="contact-submit"><span>${c.form.submitText}</span></button>
+          <button type="submit" class="contact-submit">
+            <span>${c.form.submitText}</span>
+            <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+          </button>
         </form>
         <div class="form-message" id="formMessage"></div>
       </div>
@@ -1496,50 +1703,95 @@ function renderTestimonialBatch() {
   }
 
   // ─── FOOTER ──────────────────────────────
-  function buildFooter() {
-    if (!isBlockEnabled("footer")) {
-      const section = $("#footer");
-      if (section) section.style.display = "none";
-      return;
-    }
-    const f = C.footer;
-    if (!f) return;
+function buildFooter() {
+  if (!isBlockEnabled("footer")) {
+    const section = $("#footer");
+    if (section) section.style.display = "none";
+    return;
+  }
+  const f = C.footer;
+  if (!f) return;
+  const inner = $("#footerInner");
+  if (!inner) return;
 
-    const inner = $("#footerInner");
-    if (!inner) return;
+  const visibleColumns = (f.columns || []).map(col => {
+    const visibleLinks = (col.links || []).filter(link => {
+      const href = link.href || "";
+      if (href.startsWith("#") && href.length > 1) {
+        const blockId = href.replace("#", "");
+        return isBlockEnabled(blockId);
+      }
+      return true;
+    });
+    return { ...col, links: visibleLinks };
+  }).filter(col => col.links.length > 0);
 
-    const visibleColumns = (f.columns || []).map(col => {
-      const visibleLinks = (col.links || []).filter(link => {
-        const href = link.href || "";
-        if (href.startsWith("#") && href.length > 1) {
-          const blockId = href.replace("#", "");
-          return isBlockEnabled(blockId);
-        }
-        return true;
-      });
-      return { ...col, links: visibleLinks };
-    }).filter(col => col.links.length > 0);
+  // ✅ Colapso "Más": primeros 3 enlaces visibles; el resto detrás de "Más"
+  const FOOTER_VISIBLE = 3;
 
-    inner.innerHTML = `
-      <div class="footer-top">
-        <div class="footer-brand">
-          <div class="footer-brand-name">${f.brand.name}<span>${f.brand.highlight}</span></div>
-          <p class="footer-brand-desc">${f.brand.desc}</p>
-        </div>
-        ${visibleColumns.map(col => `
+  inner.innerHTML = `
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-brand-name">${f.brand.name}<span>${f.brand.highlight}</span></div>
+        <p class="footer-brand-desc">${f.brand.desc}</p>
+      </div>
+      ${visibleColumns.map(col => {
+        const hasMore = col.links.length > FOOTER_VISIBLE + 1;
+        const shown   = hasMore ? col.links.slice(0, FOOTER_VISIBLE) : col.links;
+        const hidden  = hasMore ? col.links.slice(FOOTER_VISIBLE) : [];
+        return `
           <div class="footer-col">
             <h4 class="footer-col-title">${col.title}</h4>
-            <ul>${col.links.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join("")}</ul>
-          </div>
-        `).join("")}
-      </div>
-      <div class="footer-bottom">
-        <span class="footer-copy">${f.copyright}</span>
-        <div class="footer-socials">${(C.socials || []).map(s => `<a href="${s.href}" target="_blank" rel="noopener noreferrer">${s.label}</a>`).join("")}</div>
-      </div>
-      <div data-admin-link style="margin-top:1.4rem;"></div>
-    `;
-  }
+            <ul>
+              ${shown.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join("")}
+              ${hasMore ? `
+                <li class="footer-more-wrap">
+                  <button class="footer-more-btn" aria-haspopup="true" aria-expanded="false">
+                    Más
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                  </button>
+                  <ul class="footer-more-panel">
+                    ${hidden.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join("")}
+                  </ul>
+                </li>` : ""}
+            </ul>
+          </div>`;
+      }).join("")}
+    </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">${f.copyright}</span>
+      <div class="footer-socials">${(C.socials || []).map(s => `<a href="${s.href}" target="_blank" rel="noopener noreferrer">${s.label}</a>`).join("")}</div>
+    </div>
+        <div data-admin-link style="margin-top:1.4rem;">
+      <a href="admin.html" class="footer-admin-link" title="Acceso administrativo">
+        <i class="fa-solid fa-user-shield" aria-hidden="true"></i> Acceso administrativo
+      </a>
+    </div>
+  `;
+
+  // ✅ Comportamiento del "Más" (abrir/cerrar, clic fuera, Escape)
+  const closeAllMore = () => {
+    $$(".footer-more-wrap.open", inner).forEach(w => {
+      w.classList.remove("open");
+      w.querySelector(".footer-more-btn").setAttribute("aria-expanded", "false");
+    });
+  };
+  $$(".footer-more-btn", inner).forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const wrap = btn.closest(".footer-more-wrap");
+      const open = wrap.classList.toggle("open");
+      btn.setAttribute("aria-expanded", String(open));
+    });
+  });
+  inner.addEventListener("click", (e) => {
+    if (e.target.closest(".footer-more-panel a")) closeAllMore();
+    else if (!e.target.closest(".footer-more-wrap")) closeAllMore();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeAllMore();
+  });
+}
 
   // ─── SCROLL REVEAL ───────────────────────
   function initReveal() {
@@ -1615,7 +1867,8 @@ function renderTestimonialBatch() {
     }
     animateFollower();
 
-    const hoverTargets = "a, button, .service-card, .gallery-item, .philosophy-cta";
+    // ✅ FA: ahora los botones con iconos FA también se enganchan al cursor magnético
+    const hoverTargets = "a, button, .service-card, .gallery-item, .philosophy-cta, .footer-social-icon, .testimonials-nav, .testimonials-source";
     document.addEventListener("mouseover", (e) => {
       if (e.target.closest(hoverTargets)) {
         cursor.classList.add("hover");
@@ -1697,7 +1950,7 @@ function renderTestimonialBatch() {
   // ─── MAGNETIC EFFECT ─────────────────────
   function initMagnetic() {
     if (prefersReducedMotion) return;
-    const buttons = $$(".philosophy-cta, .hero-cta, .nav-cta");
+    const buttons = $$(".philosophy-cta, .hero-cta, .nav-cta, .blog-cta, .ecommerce-cta, .contact-submit");
     buttons.forEach(btn => {
       btn.addEventListener("mousemove", (e) => {
         const rect = btn.getBoundingClientRect();
@@ -1718,14 +1971,286 @@ function renderTestimonialBatch() {
     });
   }
 
+  // ─── BLOQUE: UBICACIÓN (mapa + dirección + horario) ───
+function buildLocation() {
+  if (!isBlockEnabled("location")) {
+    const section = $("#location");
+    if (section) section.style.display = "none";
+    return;
+  }
+  const L = C.location;
+  const inner = $("#locationInner");
+  if (!inner) return;
+  const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(L.mapsQuery)}&output=embed`;
+  const dirHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(L.mapsQuery)}`;
+  inner.innerHTML = `
+    <div class="location-header">
+      <span class="section-label reveal">${L.label}</span>
+      <h2 class="section-heading reveal reveal-delay-1">${L.heading}</h2>
+      <hr class="editorial-hr center reveal reveal-delay-2" />
+      <p class="reveal reveal-delay-3">${L.subtitle}</p>
+    </div>
+    <div class="location-grid">
+      <div class="location-map reveal-left">
+        <iframe src="${mapSrc}" title="Mapa de ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
+      <div class="location-info reveal-right">
+        <div class="location-card">
+          <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+          <h4>Dirección</h4>
+          <p>${L.address}</p>
+        </div>
+        <div class="location-card">
+          <i class="fa-solid fa-clock" aria-hidden="true"></i>
+          <h4>Horario</h4>
+          <ul>${L.hours.map(h => `<li><span>${h.d}</span><span>${h.h}</span></li>`).join("")}</ul>
+        </div>
+        <div class="location-card">
+          <i class="fa-solid fa-phone" aria-hidden="true"></i>
+          <h4>Teléfono</h4>
+          <p><a href="${L.phoneHref}">${L.phone}</a></p>
+        </div>
+        <a class="location-directions" href="${dirHref}" target="_blank" rel="noopener">
+          <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i> Cómo llegar
+        </a>
+      </div>
+    </div>
+  `;
+}
+
+// ─── BLOQUE: CITAS (formulario → BD + WhatsApp) ───
+function buildAppointments() {
+  if (!isBlockEnabled("appointments")) {
+    const section = $("#appointments");
+    if (section) section.style.display = "none";
+    return;
+  }
+  const A = C.appointments;
+  const inner = $("#appointmentsInner");
+  if (!inner) return;
+  inner.innerHTML = `
+    <div class="appt-header">
+      <span class="section-label reveal">${A.label}</span>
+      <h2 class="section-heading reveal reveal-delay-1">${A.heading}</h2>
+      <hr class="editorial-hr center reveal reveal-delay-2" />
+      <p class="reveal reveal-delay-3">${A.subtitle}</p>
+    </div>
+    <form class="appt-form reveal reveal-delay-3" id="apptForm" novalidate>
+      <input type="text" name="website_url" class="contact-honeypot" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;height:0;width:0;" aria-hidden="true">
+      <div class="appt-row">
+        <div class="form-group"><input type="text" class="form-input" name="name" placeholder="Nombre completo" required minlength="2" maxlength="100"></div>
+        <div class="form-group"><input type="tel" class="form-input" name="phone" placeholder="WhatsApp (55 1234 5678)" required minlength="8" maxlength="20"></div>
+      </div>
+      <div class="appt-row">
+        <div class="form-group"><input type="date" class="form-input" name="date" required></div>
+        <div class="form-group">
+          <select class="form-input" name="slot" required>
+            <option value="" disabled selected>Horario preferido</option>
+            ${A.slots.map(s => `<option value="${s}">${s}</option>`).join("")}
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><textarea class="form-textarea" name="reason" placeholder="Motivo de la cita (opcional)" maxlength="300"></textarea></div>
+      <button type="submit" class="contact-submit"><span>Solicitar Cita</span></button>
+      <div class="form-message" id="apptMessage"></div>
+    </form>
+  `;
+  setTimeout(initAppointmentForm, 100);
+}
+
+function initAppointmentForm() {
+  const form = $("#apptForm");
+  const msg = $("#apptMessage");
+  if (!form) return;
+  const dateInput = form.querySelector('input[name="date"]');
+  if (dateInput) dateInput.min = new Date().toISOString().split("T")[0];
+
+  function showApptMsg(text, type) {
+    if (!msg) return;
+    msg.textContent = text;
+    msg.className = "form-message " + type + " visible";
+    setTimeout(() => msg.classList.remove("visible"), 6000);
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form));
+    if (data.website_url && data.website_url.trim()) return; // honeypot anti-spam
+    if (!data.name || data.name.trim().length < 2)  return showApptMsg("Escribe tu nombre.", "error");
+    if (!data.phone || data.phone.trim().length < 8) return showApptMsg("Escribe un teléfono válido.", "error");
+    if (!data.date) return showApptMsg("Elige una fecha.", "error");
+    if (!data.slot) return showApptMsg("Elige un horario.", "error");
+
+    const btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+
+    // 1) Guardar en Supabase (si falla, seguimos con WhatsApp)
+    let saved = false;
+    try {
+      const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
+      const { error } = await sb.from("appointments").insert([{
+        name: data.name.trim(),
+        phone: data.phone.trim(),
+        date: data.date,
+        slot: data.slot,
+        reason: (data.reason || "").trim() || null,
+        status: "pending"
+      }]);
+      saved = !error;
+      if (error) console.warn("No se guardó la cita:", error.message);
+    } catch (err) { console.warn(err); }
+
+    // 2) WhatsApp con el resumen pre-llenado
+    const wa = (C.tienda && C.tienda.whatsapp) || "521234567890";
+    let m = `📅 *Solicitud de cita*\n\n▪️ *Nombre:* ${data.name}\n▪️ *Teléfono:* ${data.phone}\n▪️ *Fecha:* ${data.date}\n▪️ *Horario:* ${data.slot}\n`;
+    if (data.reason) m += `▪️ *Motivo:* ${data.reason}\n`;
+    m += `\n_Enviado desde el sitio web_`;
+    window.open(`https://wa.me/${wa}?text=${encodeURIComponent(m)}`, "_blank");
+
+    btn.disabled = false;
+    form.reset();
+    showApptMsg(saved ? (C.appointments.successMessage || "¡Solicitud enviada!") : "Te llevamos a WhatsApp para completar tu cita.", "success");
+  });
+}
+
+// ─── BLOQUE: EQUIPO MÉDICO (tarjetas flotantes + flip) ───
+function buildTeam() {
+  if (!isBlockEnabled("team") || !C.team) {
+    const section = $("#team");
+    if (section) section.style.display = "none";
+    return;
+  }
+  const T = C.team;
+  const inner = $("#teamInner");
+  if (!inner) return;
+
+  inner.innerHTML = `
+    <div class="team-header">
+      <span class="section-label reveal">${T.label}</span>
+      <h2 class="section-heading reveal reveal-delay-1">${T.heading}</h2>
+      <hr class="editorial-hr center reveal reveal-delay-2" />
+      <p class="reveal reveal-delay-3">${T.subtitle}</p>
+    </div>
+    <div class="team-carousel reveal reveal-delay-2">
+      <div class="services-track team-track" id="teamTrack">
+        ${T.items.map(d => `
+        <div class="team-card">
+          <div class="team-flip">
+            <div class="team-face team-front">
+              <div class="team-photo"><img src="${d.photo}" alt="${escapeHtml(d.name)}" loading="lazy"></div>
+              <div class="team-front-info">
+                <h3 class="team-name">${escapeHtml(d.name)}</h3>
+                <span class="team-cedula"><i class="fa-solid fa-id-badge" aria-hidden="true"></i>${escapeHtml(d.cedula)}</span>
+                <span class="team-specialty">${escapeHtml(d.specialty)}</span>
+                <button class="team-more" type="button" data-tflip="open" aria-expanded="false">Ver ficha</button>
+              </div>
+            </div>
+            <div class="team-face team-back">
+              <div class="team-back-head">
+                <h3 class="team-name">${escapeHtml(d.name)}</h3>
+                <span class="team-specialty">${escapeHtml(d.specialty)}</span>
+              </div>
+              <p class="team-bio">${escapeHtml(d.bio)}</p>
+              <ul class="team-contact">
+                ${d.phone ? `<li><a href="tel:${String(d.phone).replace(/\s/g, "")}"><i class="fa-solid fa-phone" aria-hidden="true"></i>${escapeHtml(d.phone)}</a></li>` : ""}
+                ${d.whatsapp ? `<li><a href="https://wa.me/${d.whatsapp}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i>Escribir por WhatsApp</a></li>` : ""}
+                ${d.email ? `<li><a href="mailto:${d.email}"><i class="fa-solid fa-envelope" aria-hidden="true"></i>${escapeHtml(d.email)}</a></li>` : ""}
+                ${d.schedule ? `<li><span><i class="fa-solid fa-clock" aria-hidden="true"></i>${escapeHtml(d.schedule)}</span></li>` : ""}
+              </ul>
+              <button class="team-more team-back-btn" type="button" data-tflip="close">← Volver</button>
+            </div>
+          </div>
+        </div>`).join("")}
+      </div>
+    </div>
+    <div class="services-meta">
+      <div class="services-progress"><div class="services-progress-fill" id="teamFill"></div></div>
+      <div class="services-count" id="teamCount"></div>
+      <div class="services-nav">
+        <button class="services-arrow" id="teamPrev" aria-label="Doctores anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <button class="services-arrow" id="teamNext" aria-label="Más doctores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+    </div>
+    <div class="services-hint" id="teamHint">← desliza →</div>
+  `;
+
+  // ✅ Flip (solo una tarjeta girada a la vez)
+  const unflipTeam = (except = null) => {
+    inner.querySelectorAll(".team-card.flipped").forEach(c => {
+      if (c !== except) {
+        c.classList.remove("flipped");
+        const ob = c.querySelector('[data-tflip="open"]');
+        if (ob) ob.setAttribute("aria-expanded", "false");
+      }
+    });
+  };
+  inner.querySelectorAll("[data-tflip]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const card = btn.closest(".team-card");
+      const willOpen = !card.classList.contains("flipped");
+      unflipTeam(card);
+      card.classList.toggle("flipped", willOpen);
+      btn.setAttribute("aria-expanded", String(willOpen));
+    });
+  });
+
+  // ✅ Carrusel + HUD (reutiliza el motor visual de servicios)
+  const track = inner.querySelector("#teamTrack");
+  const prev = inner.querySelector("#teamPrev");
+  const next = inner.querySelector("#teamNext");
+  const counter = inner.querySelector("#teamCount");
+  const fill = inner.querySelector("#teamFill");
+  const hint = inner.querySelector("#teamHint");
+  if (track && prev && next) {
+    const pad = n => String(n).padStart(2, "0");
+    const stepW = () => {
+      const c = track.querySelector(".team-card");
+      const g = parseFloat(getComputedStyle(track).columnGap) || 24;
+      return c ? c.getBoundingClientRect().width + g : 320;
+    };
+    prev.addEventListener("click", () => { unflipTeam(); track.scrollBy({ left: -stepW(), behavior: "smooth" }); });
+    next.addEventListener("click", () => { unflipTeam(); track.scrollBy({ left: stepW(), behavior: "smooth" }); });
+    track.addEventListener("click", (e) => {
+      const card = e.target.closest(".team-card");
+      if (card) unflipTeam(card);
+    });
+    const updateHUD = () => {
+      const total = T.items.length;
+      const w = stepW();
+      const scrollable = track.scrollWidth > track.clientWidth + 1;
+      prev.style.display = scrollable ? "" : "none";
+      next.style.display = scrollable ? "" : "none";
+      if (hint) hint.style.display = scrollable ? "" : "none";
+      if (!scrollable) {
+        if (counter) counter.innerHTML = `<span class="sc-now">${pad(total)}</span> / ${pad(total)}`;
+        if (fill) fill.style.transform = "scaleX(1)";
+        return;
+      }
+      const max = track.scrollWidth - track.clientWidth - 1;
+      prev.disabled = track.scrollLeft <= 0;
+      next.disabled = track.scrollLeft >= max;
+      const idx = Math.max(0, Math.round(track.scrollLeft / w));
+      const perView = Math.max(1, Math.round(track.clientWidth / w));
+      const from = idx + 1, to = Math.min(idx + perView, total);
+      if (counter) counter.innerHTML = `<span class="sc-now">${from === to ? pad(from) : pad(from) + "–" + pad(to)}</span> / ${pad(total)}`;
+      if (fill) fill.style.transform = `scaleX(${max > 0 ? track.scrollLeft / max : 0})`;
+    };
+    track.addEventListener("scroll", () => { if (hint) hint.classList.add("hide"); requestAnimationFrame(updateHUD); }, { passive: true });
+    window.addEventListener("resize", updateHUD);
+    updateHUD();
+  }
+}
+
   // ─── INIT ────────────────────────────────
-  function init() {
+  async function init() {
     applyTheme();
     injectSEO();
     buildHeader();
     buildHero();
     buildStory();
+    await loadServicesFromDB();
     buildServices();
+    buildTeam();
     buildGallery();
     buildPhilosophy();
     buildEcommerce();
@@ -1734,6 +2259,8 @@ function renderTestimonialBatch() {
     initBlogInkEffect();
     initBlogParticles();
     initBlogParallax();
+    buildLocation();
+    buildAppointments();
     buildContact();
     buildFooter();
     initGrain();

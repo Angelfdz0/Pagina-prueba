@@ -29,7 +29,7 @@
 .category-add input:focus-visible {
     outline: none;
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.25);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.25);
 }
 
 .filter-btn:focus-visible,
@@ -210,8 +210,8 @@
     height: 70%;
     background: radial-gradient(
         ellipse at center bottom,
-        rgba(201, 169, 110, 0.25) 0%,
-        rgba(201, 169, 110, 0.08) 40%,
+        rgba(var(--accent-rgb), 0.25) 0%,
+        rgba(var(--accent-rgb), 0.08) 40%,
         transparent 70%
     );
     filter: blur(30px); /* ✅ Antes 50px */
@@ -395,7 +395,7 @@
 .filter-btn.active {
     border-color: var(--color-accent);
     color: var(--color-accent);
-    background: rgba(201, 169, 110, 0.05);
+    background: rgba(var(--accent-rgb), 0.05);
 }
 
 .blog-sort {
@@ -471,7 +471,7 @@
 .post-card:hover {
     background: rgba(255, 255, 255, 0.04);
     transform: translateY(-6px);
-    border-color: rgba(201, 169, 110, 0.25);
+    border-color: rgba(var(--accent-rgb), 0.25);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
@@ -780,7 +780,7 @@
 .form-input:focus,
 .form-select:focus,
 .form-textarea:focus {
-    background: rgba(201, 169, 110, 0.05);
+    background: rgba(var(--accent-rgb), 0.05);
     border-color: var(--color-accent);
 }
 
@@ -905,7 +905,7 @@
     width: 100%;
     max-width: 450px;
     background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 100%);
-    border: 1px solid rgba(201, 169, 110, 0.3);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
     border-radius: 12px;
     padding: 3rem;
     transform: scale(0.9) translateY(30px);
@@ -949,8 +949,8 @@
 .login-badge {
     display: inline-block;
     padding: 0.4rem 1.2rem;
-    background: rgba(201, 169, 110, 0.1);
-    border: 1px solid rgba(201, 169, 110, 0.3);
+    background: rgba(var(--accent-rgb), 0.1);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
     border-radius: 20px;
     font-size: 0.7rem;
     font-weight: 600;
@@ -1002,7 +1002,7 @@
 
 .login-form .form-group input:focus {
     outline: none;
-    background: rgba(201, 169, 110, 0.05);
+    background: rgba(var(--accent-rgb), 0.05);
     border-color: var(--color-accent);
 }
 
@@ -1065,8 +1065,8 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: rgba(201, 169, 110, 0.1);
-    border: 1px solid rgba(201, 169, 110, 0.3);
+    background: rgba(var(--accent-rgb), 0.1);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
     border-radius: 4px;
     font-size: 0.8rem;
     color: var(--color-text);
@@ -1075,7 +1075,7 @@
 }
 
 .category-tag:hover {
-    background: rgba(201, 169, 110, 0.2);
+    background: rgba(var(--accent-rgb), 0.2);
     border-color: var(--color-accent);
 }
 
@@ -1142,7 +1142,7 @@
 .image-upload-area {
     position: relative;
     min-height: 200px;
-    border: 2px dashed rgba(201, 169, 110, 0.3);
+    border: 2px dashed rgba(var(--accent-rgb), 0.3);
     border-radius: 8px;
     padding: 2rem;
     transition: all 0.3s;
@@ -1151,7 +1151,7 @@
 
 .image-upload-area.dragover {
     border-color: var(--color-accent);
-    background: rgba(201, 169, 110, 0.05);
+    background: rgba(var(--accent-rgb), 0.05);
 }
 
 .upload-placeholder {
@@ -1523,7 +1523,7 @@
 .content-toolbar { margin-bottom: 0.6rem; }
 .toolbar-btn {
     padding: 0.6rem 1rem;
-    background: rgba(201, 169, 110, 0.1);
+    background: rgba(var(--accent-rgb), 0.1);
     border: 1px dashed var(--color-accent);
     color: var(--color-accent);
     font-size: 0.75rem;
@@ -1532,7 +1532,7 @@
     font-family: var(--font-body);
     transition: all 0.3s;
 }
-.toolbar-btn:hover { background: rgba(201, 169, 110, 0.2); }
+.toolbar-btn:hover { background: rgba(var(--accent-rgb), 0.2); }
 .content-inline-image {
     margin: 1.5rem 0;
     border-radius: 6px;
@@ -1561,7 +1561,7 @@
     gap: 0.55rem;
     padding: 0.75rem 1.4rem;
     background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(201, 169, 110, 0.35);
+    border: 1px solid rgba(var(--accent-rgb), 0.35);
     color: var(--color-text);
     font-family: var(--font-body);
     font-size: 0.72rem;
@@ -1583,7 +1583,7 @@
 
 .modal-like-btn:hover,
 .modal-save-btn:hover {
-    background: rgba(201, 169, 110, 0.12);
+    background: rgba(var(--accent-rgb), 0.12);
     border-color: var(--color-accent);
     color: var(--color-accent);
     transform: translateY(-2px);
@@ -1638,7 +1638,7 @@
 }
 .comments-list::-webkit-scrollbar { width: 4px; }
 .comments-list::-webkit-scrollbar-thumb {
-    background: rgba(201, 169, 110, 0.3);
+    background: rgba(var(--accent-rgb), 0.3);
     border-radius: 2px;
 }
 
@@ -1704,7 +1704,7 @@
 .comment-input:focus,
 .comment-textarea:focus {
     border-color: var(--color-accent);
-    background: rgba(201, 169, 110, 0.06);
+    background: rgba(var(--accent-rgb), 0.06);
 }
 
 .comment-input::placeholder,
@@ -1759,4 +1759,346 @@
         width: 100%;
         text-align: center;
     }
+}
+
+/* ============================================
+   ✅ FORMATO DE CONTENIDO (BARRA MD + RENDERIZADO)
+   ============================================ */
+
+/* Barra de herramientas de formato */
+.md-toolbar {
+    display: flex;
+    gap: .4rem;
+    flex-wrap: wrap;
+    margin-bottom: .4rem;
+}
+.md-toolbar button {
+    padding: .45rem .85rem;
+    background: rgba(var(--accent-rgb), .08);
+    border: 1px solid rgba(var(--accent-rgb), .3);
+    border-radius: 6px;
+    color: var(--color-accent);
+    font-size: .72rem;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 600;
+    transition: all .2s var(--ease-out-expo);
+}
+.md-toolbar button:hover {
+    background: rgba(var(--accent-rgb), .18);
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+}
+
+/* Citas bloque en el contenido */
+.content-quote {
+    border-left: 3px solid var(--color-accent);
+    padding: .6rem 1.2rem;
+    margin: 1rem 0 1.5rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    background: rgba(var(--accent-rgb), .04);
+    border-radius: 0 6px 6px 0;
+}
+
+/* Subtítulos (H2) en el contenido */
+.modal-description h3 {
+    font-family: var(--font-display);
+    color: var(--color-white);
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 1.8rem 0 .8rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+}
+
+/* Listas en el contenido */
+.modal-description ul {
+    padding-left: 1.5rem;
+    list-style: none;
+    margin: 1rem 0 1.5rem;
+}
+.modal-description ul li {
+    position: relative;
+    padding-left: .3rem;
+    margin-bottom: .5rem;
+    color: var(--color-text);
+    line-height: 1.7;
+}
+.modal-description ul li::before {
+    content: '•';
+    position: absolute;
+    left: -1.2rem;
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+/* Negrita y cursiva en el contenido */
+.modal-description strong {
+    color: var(--color-white);
+    font-weight: 700;
+}
+.modal-description em {
+    color: var(--color-accent);
+    font-style: italic;
+}
+
+/* ============================================
+✅ FONT AWESOME EN BLOG (juvenil-premium)
+============================================ */
+
+/* ─── Icono de búsqueda (lupa) ─── */
+.blog-search-bar .search-icon {
+    position: absolute;
+    right: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    pointer-events: none;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+.blog-search-bar input:focus + .search-icon {
+    color: var(--color-accent);
+}
+
+/* ─── Botón cerrar modal (X de FA) ─── */
+.modal-close i[class*="fa-"] {
+    font-size: 18px;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.modal-close:hover i[class*="fa-"] {
+    transform: rotate(90deg);
+}
+
+/* ─── Botones de acción (like, compartir, whatsapp) ─── */
+.modal-like-btn i[class*="fa-"],
+.modal-save-btn i[class*="fa-"] {
+    font-size: 14px;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+
+/* ✅ Efecto "pop" al dar like (corazón se llena y rebota) */
+.modal-like-btn.liked i.fa-heart {
+    color: var(--color-accent);
+    animation: likePopFA 0.5s var(--ease-out-expo);
+}
+@keyframes likePopFA {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.4); }
+    60% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+/* WhatsApp con hover verde juvenil */
+.whatsapp-btn i.fa-whatsapp {
+    color: #25D366;
+}
+.whatsapp-btn:hover {
+    background: rgba(37, 211, 102, 0.12);
+    border-color: #25D366;
+    color: #25D366;
+}
+.whatsapp-btn:hover i.fa-whatsapp {
+    transform: scale(1.15) rotate(-8deg);
+}
+
+/* ─── Botón comentar con flecha animada ─── */
+.comment-submit i[class*="fa-"] {
+    margin-left: 0.5rem;
+    font-size: 0.8rem;
+    transition: transform 0.4s var(--ease-out-expo);
+}
+.comment-submit:hover i[class*="fa-"] {
+    transform: translateX(4px);
+}
+
+/* ─── Botón Publicar Post con flecha animada ─── */
+.new-post-submit i[class*="fa-"] {
+    margin-left: 0.6rem;
+    font-size: 0.85rem;
+    transition: transform 0.4s var(--ease-out-expo);
+}
+.new-post-submit:hover i[class*="fa-"] {
+    transform: translateX(5px);
+}
+
+/* ─── Barra de herramientas Markdown (FA icons) ─── */
+.md-toolbar button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    background: rgba(var(--accent-rgb), 0.08);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
+    border-radius: 6px;
+    color: var(--color-accent);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.25s var(--ease-out-expo);
+}
+.md-toolbar button:hover {
+    background: rgba(var(--accent-rgb), 0.2);
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.2);
+}
+.md-toolbar button:active {
+    transform: translateY(0);
+}
+
+/* ─── Icono de área de subida (FA image) ─── */
+.upload-icon {
+    font-size: 2.5rem;
+    color: var(--color-accent);
+    opacity: 0.6;
+    margin-bottom: 1rem;
+    transition: all 0.3s var(--ease-out-expo);
+}
+.image-upload-area:hover .upload-icon,
+.image-upload-area.dragover .upload-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* ─── Botón "Insertar imagen" con icono cámara ─── */
+.toolbar-btn i[class*="fa-"] {
+    margin-right: 0.5rem;
+    font-size: 0.85rem;
+}
+
+/* ─── Botón agregar categoría (FA plus) ─── */
+.category-add-btn i[class*="fa-"] {
+    font-size: 1rem;
+}
+.category-add-btn:hover i[class*="fa-"] {
+    transform: rotate(90deg);
+    transition: transform 0.4s var(--ease-out-expo);
+}
+
+/* ─── Responsive ajustes ─── */
+@media (max-width: 480px) {
+    .md-toolbar button {
+        width: 34px;
+        height: 34px;
+        font-size: 0.8rem;
+    }
+    .modal-like-btn i[class*="fa-"],
+    .modal-save-btn i[class*="fa-"] {
+        font-size: 12px;
+    }
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+    .modal-like-btn.liked i.fa-heart,
+    .modal-close:hover i[class*="fa-"],
+    .comment-submit:hover i[class*="fa-"],
+    .new-post-submit:hover i[class*="fa-"],
+    .whatsapp-btn:hover i.fa-whatsapp,
+    .category-add-btn:hover i[class*="fa-"] {
+        animation: none !important;
+        transform: none !important;
+    }
+}
+
+/* ============================================
+✅ TARJETAS DE POSTS REDISEÑADAS (vistosas + premium)
+============================================ */
+.blog-posts-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2.2rem; }
+.post-card {
+    display: flex; flex-direction: column;
+    background: linear-gradient(165deg, rgba(255,255,255,.04), rgba(255,255,255,.015) 55%);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 14px;
+}
+.post-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(var(--accent-rgb), .4);
+    box-shadow: 0 22px 45px rgba(0,0,0,.45), 0 0 0 1px rgba(var(--accent-rgb), .12);
+}
+.post-image-wrapper { aspect-ratio: 16/10; }
+.post-image { filter: brightness(.9) saturate(.95); }
+.post-card:hover .post-image { transform: scale(1.07); filter: brightness(1.05) saturate(1.1); }
+.post-image-overlay {
+    position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(to top, rgba(10,10,10,.55), transparent 45%);
+}
+/* Badge de categoría estilo "pill" con blur */
+.post-category-badge {
+    top: .9rem; left: .9rem;
+    padding: .38rem .9rem;
+    background: rgba(10,10,10,.55);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(var(--accent-rgb), .45);
+    color: var(--color-accent);
+    font-size: .6rem; font-weight: 700; letter-spacing: .14em;
+    border-radius: 50px;
+}
+/* Chip de tiempo de lectura */
+.post-read-time {
+    position: absolute; top: .9rem; right: .9rem; z-index: 2;
+    display: inline-flex; align-items: center; gap: .4rem;
+    padding: .32rem .75rem;
+    background: rgba(10,10,10,.55);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 50px;
+    color: var(--color-text); font-size: .62rem; letter-spacing: .08em;
+}
+.post-read-time i { font-size: .6rem; color: var(--color-accent); }
+.post-info { padding: 1.6rem 1.5rem 1.4rem; display: flex; flex-direction: column; flex: 1; }
+.post-title { font-size: 1.35rem; transition: color .3s; }
+.post-card:hover .post-title { color: var(--color-accent-light); }
+.post-meta { margin-top: auto; align-items: center; }
+/* Avatar del autor */
+.post-author-chip { display: inline-flex; align-items: center; gap: .55rem; min-width: 0; }
+.post-avatar {
+    width: 30px; height: 30px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: rgba(var(--accent-rgb), .15);
+    border: 1px solid rgba(var(--accent-rgb), .4);
+    color: var(--color-accent);
+    font-size: .62rem; font-weight: 700; letter-spacing: .05em;
+}
+.post-author { font-size: .76rem; color: var(--color-text); font-weight: 600; }
+/* CTA "Leer artículo" con flecha animada */
+.post-cta {
+    margin-top: 1.1rem;
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-size: .68rem; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--color-accent);
+}
+.post-cta i { font-size: .65rem; transition: transform .35s var(--ease-out-expo); }
+.post-card:hover .post-cta i { transform: translateX(6px); }
+
+/* ============================================
+✅ MODAL DE LECTURA: pantalla completa + sin doble scroll
+============================================ */
+.modal-content { max-width: 100%; overscroll-behavior: contain; }
+/* Autor con avatar en el modal */
+.modal-author { display: inline-flex; align-items: center; gap: .6rem; }
+.modal-author-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(var(--accent-rgb), .15);
+    border: 1px solid rgba(var(--accent-rgb), .4);
+    color: var(--color-accent);
+    font-size: .68rem; font-weight: 700;
+}
+.modal-meta { align-items: center; }
+/* Letra capital editorial en el primer párrafo */
+.modal-description > p:first-of-type::first-letter {
+    font-family: var(--font-display);
+    font-size: 3.2em; float: left; line-height: .85;
+    margin-right: .12em; margin-top: .04em;
+    color: var(--color-accent);
 }

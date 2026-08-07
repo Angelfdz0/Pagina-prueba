@@ -1,8 +1,11 @@
 /* ============================================================
-   BLOG ONLINE - SUPABASE + SUBTÍTULO + IMÁGENES EN CONTENIDO +
-   COMENTARIOS + LIKES + COMPARTIR + DEEP LINKING
-   (El login se gestiona desde el footer con admin-auth.js)
-   ============================================================ */
+BLOG ONLINE - SUPABASE + SUBTÍTULO + IMÁGENES EN CONTENIDO +
+COMENTARIOS + LIKES + COMPARTIR + DEEP LINKING + FORMATO
+✅ MEJORAS:
+- Modal de lectura pantalla completa SIN doble scroll
+- Tarjetas de posts rediseñadas (más vistosas y premium)
+- Barra de formato + renderizado con formato seguro
+============================================================ */
 (function() {
 "use strict";
 
@@ -77,11 +80,60 @@ function formatDate(d) {
     if (!d) return "";
     return new Date(d).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
 }
+function initials(name) {
+    return (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+}
+function readingTime(text) {
+    const words = (text || '').trim().split(/\s+/).length;
+    return Math.max(1, Math.round(words / 200));
+}
 function showToast(message) {
     if (!elements.blogToast) return;
     elements.blogToast.textContent = message;
     elements.blogToast.classList.add("show");
     setTimeout(() => elements.blogToast.classList.remove("show"), 2500);
+}
+
+// ─── ✅ BLOQUEO DE SCROLL (body + html = elimina la doble barra) ───
+function lockScroll() {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+}
+function unlockScroll() {
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+}
+
+// ─── ✅ BARRA DE FORMATO (markdown ligero y seguro) ───
+const MD_TOOLBAR_HTML = `<div class="md-toolbar">
+    <button type="button" data-md="bold" title="Negrita"><b>N</b></button>
+    <button type="button" data-md="italic" title="Cursiva"><i>C</i></button>
+    <button type="button" data-md="h2" title="Subtítulo">H2</button>
+    <button type="button" data-md="list" title="Lista">• Lista</button>
+    <button type="button" data-md="quote" title="Cita">❝ Cita</button>
+</div>`;
+function attachMdToolbar(textarea) {
+    const actions = {
+        bold:   { before: '**', after: '**', ph: 'texto en negrita' },
+        italic: { before: '*',  after: '*',  ph: 'texto en cursiva' },
+        h2:     { line: '## ' },
+        list:   { line: '- ' },
+        quote:  { line: '> ' }
+    };
+    const scope = textarea.closest('form, .admin-editor-card, .new-post-inner');
+    const toolbar = scope && scope.querySelector('.md-toolbar');
+    if (!toolbar) return;
+    toolbar.addEventListener('click', e => {
+        const btn = e.target.closest('[data-md]');
+        if (!btn) return;
+        e.preventDefault();
+        const a = actions[btn.dataset.md];
+        const s = textarea.selectionStart, en = textarea.selectionEnd;
+        const sel = textarea.value.slice(s, en) || (a.ph || 'texto');
+        const insert = a.line ? ('\n' + a.line + sel) : (a.before + sel + a.after);
+        textarea.setRangeText(insert, s, en, 'end');
+        textarea.focus();
+    });
 }
 
 // ─── AUTH (solo estado; el login vive en el footer) ───
@@ -146,6 +198,7 @@ function removeCategory(cat) {
     showToast(C.blogConfig.messages.categoryRemoved);
 }
 
+// ─── ✅ TARJETAS DE POSTS REDISEÑADAS (más vistosas) ───
 function renderPosts() {
     if (!elements.postsGrid) return;
     let filtered = posts.filter(p => {
@@ -167,21 +220,28 @@ function renderPosts() {
 
     elements.postsGrid.innerHTML = filtered.map((post, index) => {
         const clean = (post.content || '').replace(/\{\{img:[^}]+\}\}/g, ' ');
-        const excerpt = clean ? escapeHtml(clean.substring(0, 120)) + "..." : "";
+        const excerpt = clean ? escapeHtml(clean.substring(0, 110)) + "…" : "";
         const firstImage = post.images && post.images.length > 0 ? escapeHtml(post.images[0]) : 'https://via.placeholder.com/400x300?text=Sin+Imagen';
+        const mins = readingTime(clean);
         return `
-        <article class="post-card" data-id="${post.id}" style="animation: fadeInUp 0.6s var(--ease-out-expo) ${index * 0.1}s backwards;" tabindex="0" role="button">
+        <article class="post-card" data-id="${post.id}" style="animation: fadeInUp 0.6s var(--ease-out-expo) ${index * 0.08}s backwards;" tabindex="0" role="button">
             <div class="post-image-wrapper">
                 <img src="${firstImage}" alt="${escapeHtml(post.title)}" class="post-image" loading="lazy">
-                <span class="post-category-badge">${escapeHtml(post.category)}</span>
+                <div class="post-image-overlay" aria-hidden="true"></div>
+                <span class="post-category-badge">${escapeHtml(capitalize(post.category))}</span>
+                <span class="post-read-time"><i class="fa-regular fa-clock" aria-hidden="true"></i>${mins} min</span>
             </div>
             <div class="post-info">
                 <h3 class="post-title">${escapeHtml(post.title)}</h3>
                 <p class="post-excerpt">${excerpt}</p>
                 <div class="post-meta">
-                    <span class="post-author">${escapeHtml(post.author)}</span>
+                    <span class="post-author-chip">
+                        <span class="post-avatar" aria-hidden="true">${initials(post.author)}</span>
+                        <span class="post-author">${escapeHtml(post.author)}</span>
+                    </span>
                     <span class="post-date">${formatDate(post.created_at)}</span>
                 </div>
+                <span class="post-cta">Leer artículo<i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
             </div>
         </article>`;
     }).join("");
@@ -193,7 +253,14 @@ function renderPosts() {
     }, 100);
 }
 
-// ─── RENDER DE CONTENIDO CON IMÁGENES INLINE (seguro) ───
+// ─── ✅ RENDER DE CONTENIDO CON FORMATO (seguro contra XSS) ───
+function inlineFormat(text) {
+    let s = escapeHtml(text);
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>');
+    s = s.replace(/_([^_]+)_/g, '<em>$1</em>');
+    return s;
+}
 function renderPostContent(content, container) {
     container.innerHTML = '';
     if (!content) return;
@@ -202,12 +269,32 @@ function renderPostContent(content, container) {
     const flush = () => {
         if (buffer.trim()) {
             buffer.split(/\n\n+/).forEach(par => {
-                if (par.trim()) {
-                    const p = document.createElement('p');
-                    p.style.marginBottom = '1.2rem';
-                    p.textContent = par.trim();
-                    container.appendChild(p);
+                const t = par.trim();
+                if (!t) return;
+                let el;
+                if (/^##\s/.test(t)) {
+                    el = document.createElement('h3');
+                    el.innerHTML = inlineFormat(t.replace(/^##\s+/, ''));
+                } else if (/^>\s?/.test(t)) {
+                    el = document.createElement('blockquote');
+                    el.className = 'content-quote';
+                    el.innerHTML = inlineFormat(t.replace(/^>\s?/gm, ''));
+                } else if (/^[-•]\s/.test(t)) {
+                    el = document.createElement('ul');
+                    t.split('\n').forEach(line => {
+                        const m = line.trim();
+                        if (/^[-•]\s/.test(m)) {
+                            const li = document.createElement('li');
+                            li.innerHTML = inlineFormat(m.replace(/^[-•]\s+/, ''));
+                            el.appendChild(li);
+                        }
+                    });
+                } else {
+                    el = document.createElement('p');
+                    el.innerHTML = inlineFormat(t).replace(/\n/g, '<br>');
                 }
+                el.style.marginBottom = '1.2rem';
+                container.appendChild(el);
             });
         }
         buffer = '';
@@ -227,9 +314,7 @@ function renderPostContent(content, container) {
                 fig.appendChild(img);
                 container.appendChild(fig);
             }
-        } else {
-            buffer += part;
-        }
+        } else { buffer += part; }
     });
     flush();
 }
@@ -240,8 +325,9 @@ async function updateLikeUI(postId) {
     const { count } = await supabase.from('post_likes').select('*', { count: 'exact', head: true }).eq('post_id', postId);
     elements.likeBtn.querySelector('.like-count').textContent = count || 0;
     elements.likeBtn.classList.toggle('liked', localStorage.getItem('liked_' + postId) === '1');
+    const icon = elements.likeBtn.querySelector('i');
+    if (icon) icon.className = localStorage.getItem('liked_' + postId) === '1' ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
 }
-
 async function toggleLike(postId) {
     const key = 'liked_' + postId;
     if (localStorage.getItem(key) === '1') {
@@ -306,7 +392,6 @@ async function handleCommentSubmit(e) {
 function getShareUrl() {
     return window.location.href.split('#')[0] + '#post-' + (currentPost ? currentPost.id : '');
 }
-
 function sharePost(type) {
     if (!currentPost) return;
     const url = getShareUrl();
@@ -326,7 +411,7 @@ function sharePost(type) {
     }
 }
 
-// ─── MODAL DE LECTURA ───
+// ─── MODAL DE LECTURA (✅ pantalla completa + scroll bloqueado) ───
 function openPostModal(postId) {
     currentPost = posts.find(p => p.id == postId);
     if (!currentPost) return;
@@ -354,13 +439,16 @@ function openPostModal(postId) {
         });
     }
 
-    if (elements.modalCategory) elements.modalCategory.textContent = currentPost.category || '';
+    if (elements.modalCategory) elements.modalCategory.textContent = capitalize(currentPost.category || '');
     if (elements.modalTitle) elements.modalTitle.textContent = currentPost.title || '';
     if (elements.modalSubtitle) {
         elements.modalSubtitle.textContent = currentPost.subtitle || '';
         elements.modalSubtitle.style.display = currentPost.subtitle ? 'block' : 'none';
     }
-    if (elements.modalAuthor) elements.modalAuthor.textContent = currentPost.author || '';
+    // ✅ Autor con avatar de iniciales
+    if (elements.modalAuthor) {
+        elements.modalAuthor.innerHTML = `<span class="modal-author-avatar" aria-hidden="true">${initials(currentPost.author)}</span>${escapeHtml(currentPost.author)}`;
+    }
     if (elements.modalDate) elements.modalDate.textContent = formatDate(currentPost.created_at);
 
     renderPostContent(currentPost.content || '', elements.modalDescription);
@@ -369,7 +457,7 @@ function openPostModal(postId) {
 
     if (elements.postModal) {
         elements.postModal.classList.add('open');
-        document.body.style.overflow = 'hidden';
+        lockScroll();
     }
     if (window.history && window.history.replaceState) {
         history.replaceState(null, '', '#post-' + currentPost.id);
@@ -379,7 +467,7 @@ function openPostModal(postId) {
 function closePostModal() {
     if (elements.postModal) {
         elements.postModal.classList.remove('open');
-        document.body.style.overflow = '';
+        unlockScroll();
     }
     if (window.history && window.history.replaceState) {
         history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -425,7 +513,7 @@ async function createNewPost(e) {
 function closeNewPostModal() {
     if (elements.newPostModal) {
         elements.newPostModal.classList.remove('open');
-        document.body.style.overflow = '';
+        unlockScroll();
     }
     if (elements.newPostForm) elements.newPostForm.reset();
     pendingImagesUrls = [];
@@ -499,7 +587,7 @@ function initEvents() {
         elements.newPostBtn.addEventListener("click", () => {
             if (!isAdmin) { showToast('Debes iniciar sesión desde el enlace del footer.'); return; }
             elements.newPostModal.classList.add("open");
-            document.body.style.overflow = "hidden";
+            lockScroll();
         });
     }
     if (elements.newPostClose) elements.newPostClose.addEventListener("click", closeNewPostModal);
@@ -558,6 +646,13 @@ function initEvents() {
     if (elements.addCategoryBtn) elements.addCategoryBtn.addEventListener("click", addCategory);
     if (elements.newCategoryInput) elements.newCategoryInput.addEventListener("keypress", (e) => { if (e.key === "Enter") { e.preventDefault(); addCategory(); } });
 
+    // ✅ Barra de formato en el textarea del nuevo post
+    const contentTa = elements.newPostForm ? elements.newPostForm.querySelector('textarea[name="content"]') : null;
+    if (contentTa) {
+        contentTa.insertAdjacentHTML('beforebegin', MD_TOOLBAR_HTML);
+        attachMdToolbar(contentTa);
+    }
+
     initImageUpload();
 
     document.addEventListener("keydown", (e) => {
@@ -607,10 +702,18 @@ function initCursor() {
     document.addEventListener("mouseout", (e) => { if (e.target.closest(targets)) { cursor.classList.remove("hover"); follower.classList.remove("hover"); } });
 }
 
+async function loadCategoriesFromDB() {
+    try {
+        const { data } = await supabase.from('categories').select('slug').order('name');
+        if (data && data.length) categories = data.map(c => c.slug);
+    } catch (e) { /* mantiene las de config.js */ }
+}
+
 // ─── INIT ÚNICO ───
 async function init() {
     await checkAuth();
     await loadPosts();
+    await loadCategoriesFromDB();
     renderCategories();
     renderPosts();
     initEvents();

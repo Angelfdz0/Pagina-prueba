@@ -7,7 +7,24 @@
     <title>Aviso Legal | Studio</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- ✅ NUEVO: Tema dinámico desde config.js (antes esta página usaba el dorado fijo) -->
+    <script src="config.js"></script>
+    <script src="theme.js"></script>
+    <script>
+        // ✅ NUEVO: Favicon dinámico con el color del tema (sin dorado quemado)
+        (function () {
+            const C = typeof SITE_CONFIG !== 'undefined' ? SITE_CONFIG : null;
+            if (!C || !C.theme) return;
+            const bg = C.theme.bg || '#0a0a0a';
+            const accent = C.theme.accent || '#c9a96e';
+            const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='" + bg + "'/><text x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='" + accent + "' text-anchor='middle'>S</text></svg>";
+            let link = document.querySelector("link[rel='icon']");
+            if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+            link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
+        })();
+    </script>
+
     <style>
         /* ============================================
         PÁGINA LEGAL - ESTILOS ESPECÍFICOS
@@ -38,6 +55,14 @@
         .legal-subtitle {
             color: var(--color-text-muted);
             font-size: 1rem;
+        }
+
+        /* ✅ NUEVO: Header fijo con fondo dinámico (reemplaza el rgba(10,10,10) inline) */
+        .header.legal-header-bar {
+            background: var(--color-bg);
+            background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
         }
 
         /* Tabs de navegación */
@@ -145,7 +170,7 @@
         }
 
         .legal-highlight {
-            background: rgba(201, 169, 110, 0.08);
+            background: rgba(var(--accent-rgb), 0.08);
             border-left: 3px solid var(--color-accent);
             padding: 1rem 1.2rem;
             margin: 1.5rem 0;
@@ -178,10 +203,12 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: rgba(17, 17, 17, 0.98);
+            /* ✅ NUEVO: fondo dinámico (reemplaza rgba(17,17,17,.98) quemado) */
+            background: var(--color-bg-alt);
+            background: color-mix(in srgb, var(--color-bg-alt) 97%, transparent);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(201, 169, 110, 0.2);
+            border-top: 1px solid rgba(var(--accent-rgb), 0.2);
             padding: 1.5rem clamp(1.5rem, 5vw, 3rem);
             z-index: 9997;
             display: flex;
@@ -347,8 +374,8 @@
     <!-- Grain overlay -->
     <div class="grain-overlay" aria-hidden="true"></div>
 
-    <!-- Header simple -->
-    <header class="header" style="background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(20px);">
+    <!-- Header simple (✅ sin estilos inline quemados) -->
+    <header class="header legal-header-bar">
         <nav class="nav">
             <a href="index.html" class="nav-logo">STU<span>DIO</span></a>
             <a href="index.html" class="nav-cta">Volver al Inicio</a>
@@ -487,7 +514,7 @@
                     <h3>8. Limitación de Responsabilidad</h3>
                     <p>Studio Creativo no será responsable por:</p>
                     <ul>
-                        <li>Daños o perjuicios derivados de interrupciones del servicio, errores o omisiones en los contenidos.</li>
+                        <li>Daños o perjuicios derivados de interrupciones del servicio, errores u omisiones en los contenidos.</li>
                         <li>Virus, ataques informáticos o fallas de seguridad ajenas a nuestro control.</li>
                         <li>Daños indirectos, lucro cesante o pérdida de datos derivados del uso del Sitio Web.</li>
                         <li>Contenidos, productos o servicios ofrecidos en sitios enlazados.</li>
@@ -846,21 +873,21 @@
     // ============================================
     (function() {
         if (window.innerWidth < 769) return;
-        
+
         const cursor = document.getElementById("cursor");
         const follower = document.getElementById("cursorFollower");
         if (!cursor || !follower) return;
-        
+
         let mx = 0, my = 0;
         let fx = 0, fy = 0;
-        
+
         document.addEventListener("mousemove", (e) => {
             mx = e.clientX;
             my = e.clientY;
             cursor.style.left = mx + "px";
             cursor.style.top = my + "px";
         });
-        
+
         function animateFollower() {
             fx = fx + (mx - fx) * 0.12;
             fy = fy + (my - fy) * 0.12;
@@ -869,7 +896,7 @@
             requestAnimationFrame(animateFollower);
         }
         animateFollower();
-        
+
         const hoverTargets = "a, button, .legal-tab";
         document.addEventListener("mouseover", (e) => {
             if (e.target.closest(hoverTargets)) {

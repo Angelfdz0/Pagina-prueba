@@ -25,7 +25,7 @@
 .comment-textarea:focus-visible {
     outline: none;
     border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.25);
+    box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.25);
 }
 
 .filter-btn:focus-visible,
@@ -206,8 +206,8 @@
     height: 70%;
     background: radial-gradient(
         ellipse at center bottom,
-        rgba(201, 169, 110, 0.25) 0%,
-        rgba(201, 169, 110, 0.08) 40%,
+        rgba(var(--accent-rgb), 0.25) 0%,
+        rgba(var(--accent-rgb), 0.08) 40%,
         transparent 70%
     );
     filter: blur(30px); /* ✅ Antes 50px */
@@ -330,8 +330,8 @@
     height: 120%;
     background: linear-gradient(
         to bottom,
-        rgba(201, 169, 110, 0.2) 0%,
-        rgba(201, 169, 110, 0.08) 40%,
+        rgba(var(--accent-rgb), 0.2) 0%,
+        rgba(var(--accent-rgb), 0.08) 40%,
         transparent 100%
     );
     -webkit-clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
@@ -351,8 +351,8 @@
     height: 40%;
     background: radial-gradient(
         ellipse at center,
-        rgba(201, 169, 110, 0.15) 0%,
-        rgba(201, 169, 110, 0.05) 40%,
+        rgba(var(--accent-rgb), 0.15) 0%,
+        rgba(var(--accent-rgb), 0.05) 40%,
         transparent 70%
     );
     -webkit-filter: blur(25px); /* ✅ Antes 40px */
@@ -424,7 +424,7 @@
 .filter-btn.active {
     border-color: var(--color-accent);
     color: var(--color-accent);
-    background: rgba(201, 169, 110, 0.05);
+    background: rgba(var(--accent-rgb), 0.05);
 }
 
 .shop-sort {
@@ -501,7 +501,7 @@
 .product-card:hover {
     background: rgba(255, 255, 255, 0.04);
     transform: translateY(-6px);
-    border-color: rgba(201, 169, 110, 0.25);
+    border-color: rgba(var(--accent-rgb), 0.25);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
 }
 
@@ -631,7 +631,7 @@
     padding: 0.8rem;
     margin-top: 1rem;
     background: transparent;
-    border: 1px solid rgba(201, 169, 110, 0.3);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
     color: var(--color-accent);
     font-size: 0.7rem;
     font-weight: 500;
@@ -829,7 +829,7 @@
 }
 
 .qty-btn:hover {
-    background: rgba(201, 169, 110, 0.1);
+    background: rgba(var(--accent-rgb), 0.1);
     border-color: var(--color-accent);
     color: var(--color-accent);
 }
@@ -1197,13 +1197,13 @@
 }
 
 .modal-variant:hover {
-    border-color: rgba(201, 169, 110, 0.3);
+    border-color: rgba(var(--accent-rgb), 0.3);
     background: rgba(255, 255, 255, 0.04);
 }
 
 .modal-variant.active {
     border-color: var(--color-accent);
-    background: rgba(201, 169, 110, 0.05);
+    background: rgba(var(--accent-rgb), 0.05);
 }
 
 .modal-variant.out-of-stock {
@@ -1311,14 +1311,14 @@
     width: 100%;
     max-width: 520px;
     background: linear-gradient(145deg, #1a1a1a 0%, #0f0f0f 100%);
-    border: 1px solid rgba(201, 169, 110, 0.3);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
     border-radius: 12px;
     padding: clamp(2rem, 4vw, 3rem);
     transform: scale(0.9) translateY(30px);
     transition: transform 0.6s var(--ease-out-expo);
     box-shadow: 
         0 25px 50px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(201, 169, 110, 0.1),
+        0 0 0 1px rgba(var(--accent-rgb), 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.05);
     overflow: hidden;
 }
@@ -1338,7 +1338,7 @@
     background: conic-gradient(
         from 0deg,
         transparent 0deg,
-        rgba(201, 169, 110, 0.1) 90deg,
+        rgba(var(--accent-rgb), 0.1) 90deg,
         transparent 180deg
     );
     animation: promoBorderShine 20s linear infinite; /* ✅ Antes 8s, ahora 20s (2.5x menos CPU) */
@@ -1439,8 +1439,8 @@
 }
 
 .promo-badge.gold {
-    background: linear-gradient(135deg, #c9a96e 0%, #e2c992 100%);
-    color: #0a0a0a;
+    background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-light) 100%);
+    color: var(--color-dark);
 }
 
 .promo-badge.red {
@@ -1465,7 +1465,7 @@
     color: var(--color-accent);
     line-height: 1;
     margin-bottom: 0.5rem;
-    text-shadow: 0 0 30px rgba(201, 169, 110, 0.3); /* ✅ Antes 40px */
+    text-shadow: 0 0 30px rgba(var(--accent-rgb), 0.3); /* ✅ Antes 40px */
 }
 
 .promo-title {
@@ -1496,7 +1496,7 @@
     align-items: center;
     gap: 0.5rem;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px dashed rgba(201, 169, 110, 0.4);
+    border: 1px dashed rgba(var(--accent-rgb), 0.4);
     border-radius: 6px;
     padding: 0.8rem 1.2rem;
     margin-bottom: 1.5rem;
@@ -1505,7 +1505,7 @@
 }
 
 .promo-code-wrapper:hover {
-    background: rgba(201, 169, 110, 0.05);
+    background: rgba(var(--accent-rgb), 0.05);
     border-color: var(--color-accent);
 }
 
@@ -1585,7 +1585,7 @@
 .promo-cta:hover {
     background: var(--color-accent-light);
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(201, 169, 110, 0.3);
+    box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.3);
 }
 
 .promo-dont-show {
@@ -1646,7 +1646,7 @@
 .promo-toast[data-type="info"] {
     background: var(--color-accent);
     color: var(--color-dark);
-    box-shadow: 0 10px 30px rgba(201, 169, 110, 0.3);
+    box-shadow: 0 10px 30px rgba(var(--accent-rgb), 0.3);
 }
 
 /* ============================================
@@ -1676,7 +1676,7 @@
     width: 44px;
     height: 44px;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(201, 169, 110, 0.3);
+    border: 1px solid rgba(var(--accent-rgb), 0.3);
     border-radius: 50%;
     color: var(--color-accent);
     cursor: pointer;
@@ -1751,7 +1751,7 @@
 
 .cart-promo-apply {
     padding: 0.7rem 1.2rem;
-    background: rgba(201, 169, 110, 0.1);
+    background: rgba(var(--accent-rgb), 0.1);
     border: 1px solid var(--color-accent);
     color: var(--color-accent);
     font-size: 0.7rem;
@@ -1837,6 +1837,8 @@
     z-index: 1000;
     transition: all 0.4s var(--ease-out-expo);
     animation: whatsappPulse 3s ease-in-out infinite; /* ✅ Antes 2s */
+    opacity: 0;
+    transform: scale(0);
 }
 
 .whatsapp-float:hover {
@@ -1845,10 +1847,14 @@
     animation: none;
 }
 
-.whatsapp-icon {
-    width: 32px;
-    height: 32px;
-    color: white;
+/* ✅ Icono FA centrado y a tamaño correcto */
+.whatsapp-float i[class*="fa-"] {
+    width: auto;
+    height: auto;
+    font-size: 30px;
+    line-height: 1;
+    color: #fff;
+    display: block;
 }
 
 @keyframes whatsappPulse {
@@ -1926,8 +1932,8 @@
         clip-path: none;
         background: radial-gradient(
             ellipse at center top,
-            rgba(201, 169, 110, 0.2) 0%,
-            rgba(201, 169, 110, 0.08) 40%,
+            rgba(var(--accent-rgb), 0.2) 0%,
+            rgba(var(--accent-rgb), 0.08) 40%,
             transparent 70%
         );
         border-radius: 0 0 50% 50%;
@@ -2010,10 +2016,7 @@
         height: 55px;
     }
     
-    .whatsapp-icon {
-        width: 28px;
-        height: 28px;
-    }
+    .whatsapp-float i[class*="fa-"] { font-size: 26px; }
 }
 
 /* ============================================
@@ -2106,3 +2109,190 @@
         animation: none !important;
     }
 }
+
+/* ============================================
+✅ ICONOS FONT AWESOME (tamaños + look juvenil)
+============================================ */
+.search-icon { width: auto; height: auto; font-size: 15px; }
+.cart-toggle i[class*="fa-"] { font-size: 20px; }
+.action-btn i[class*="fa-"] { font-size: 16px; }
+.product-view-more i[class*="fa-"] { transition: transform .3s; }
+.product-view-more:hover i[class*="fa-"] { transform: translateX(4px); }
+.modal-feature-item i[class*="fa-"] { color: var(--color-accent); flex-shrink: 0; font-size: 15px; }
+.cart-item-remove i[class*="fa-"] { font-size: 16px; }
+/* Badge tipo "pill" con estrella (juvenil pero elegante) */
+.product-badge { display: inline-flex; align-items: center; gap: .4rem; border-radius: 50px; padding: .4rem .9rem; }
+.product-badge i { font-size: .55rem; }
+/* Carrito vacío con icono */
+.cart-empty i[class*="fa-"] { font-size: 2.5rem; color: var(--color-accent); opacity: .5; margin-bottom: 1rem; }
+/* WhatsApp flotante */
+.whatsapp-float i[class*="fa-"] { font-size: 28px; color: #fff; }
+@media (max-width: 768px) { .whatsapp-float i[class*="fa-"] { font-size: 24px; } }
+
+/* ============================================
+✅ FONT AWESOME EN TIENDA (juvenil-premium)
+============================================ */
+
+/* ─── Iconos de búsqueda y carrito en header ─── */
+.shop-search-bar .search-icon {
+    position: absolute;
+    right: 0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    pointer-events: none;
+    font-size: 16px;
+    transition: color 0.3s var(--ease-out-expo);
+}
+.shop-search-bar input:focus + .search-icon {
+    color: var(--color-accent);
+}
+
+.cart-toggle i[class*="fa-"] {
+    font-size: 20px;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.cart-toggle:hover i[class*="fa-"] {
+    transform: scale(1.1);
+}
+
+/* ─── Iconos en product cards ─── */
+.product-badge i[class*="fa-"] {
+    font-size: 0.7rem;
+    margin-right: 0.3rem;
+}
+
+.action-btn i[class*="fa-"] {
+    font-size: 16px;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.action-btn:hover i[class*="fa-"] {
+    transform: scale(1.15) rotate(-8deg);
+}
+
+.product-view-more i[class*="fa-"] {
+    margin-left: 0.5rem;
+    font-size: 0.75rem;
+    transition: transform 0.4s var(--ease-out-expo);
+}
+.product-view-more:hover i[class*="fa-"] {
+    transform: translateX(5px);
+}
+
+/* ─── Modal de producto ─── */
+.modal-close i[class*="fa-"] {
+    font-size: 20px;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.modal-close:hover i[class*="fa-"] {
+    transform: rotate(90deg);
+}
+
+.modal-feature-item i[class*="fa-"] {
+    color: var(--color-accent);
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.modal-add-to-cart i[class*="fa-"] {
+    font-size: 16px;
+    margin-right: 0.6rem;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.modal-add-to-cart:hover:not(:disabled) i[class*="fa-"] {
+    transform: scale(1.15);
+}
+
+/* ─── Carrito sidebar ─── */
+.cart-item-remove i[class*="fa-"] {
+    font-size: 14px;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.cart-item-remove:hover i[class*="fa-"] {
+    transform: scale(1.2) rotate(90deg);
+}
+
+/* ─── Popup de promociones ─── */
+.promo-close i[class*="fa-"] {
+    font-size: 16px;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.promo-close:hover i[class*="fa-"] {
+    transform: rotate(90deg);
+}
+
+.promo-nav i[class*="fa-"] {
+    font-size: 18px;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.promo-nav:hover i[class*="fa-"] {
+    transform: scale(1.2);
+}
+
+.promo-code-copy i[class*="fa-"] {
+    margin-right: 0.3rem;
+    font-size: 14px;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.promo-code-wrapper:hover .promo-code-copy i[class*="fa-"] {
+    transform: scale(1.1);
+}
+
+.promo-validity i[class*="fa-"] {
+    margin-right: 0.4rem;
+    font-size: 14px;
+    color: var(--color-accent);
+}
+
+.promo-cta i[class*="fa-"] {
+    margin-left: 0.5rem;
+    font-size: 14px;
+    transition: transform 0.4s var(--ease-out-expo);
+}
+.promo-cta:hover i[class*="fa-"] {
+    transform: translateX(5px);
+}
+
+/* ─── Botón flotante de WhatsApp ─── */
+.whatsapp-icon {
+    font-size: 32px;
+    color: white;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+.whatsapp-float:hover .whatsapp-icon {
+    transform: scale(1.15) rotate(-8deg);
+}
+
+/* ─── Responsive ajustes ─── */
+@media (max-width: 768px) {
+    .cart-toggle i[class*="fa-"] {
+        font-size: 18px;
+    }
+    .modal-close i[class*="fa-"] {
+        font-size: 18px;
+    }
+    .whatsapp-icon {
+        font-size: 28px;
+    }
+}
+
+/* ─── Reduced motion ─── */
+@media (prefers-reduced-motion: reduce) {
+    .cart-toggle:hover i[class*="fa-"],
+    .action-btn:hover i[class*="fa-"],
+    .product-view-more:hover i[class*="fa-"],
+    .modal-close:hover i[class*="fa-"],
+    .modal-add-to-cart:hover:not(:disabled) i[class*="fa-"],
+    .cart-item-remove:hover i[class*="fa-"],
+    .promo-close:hover i[class*="fa-"],
+    .promo-nav:hover i[class*="fa-"],
+    .promo-code-wrapper:hover .promo-code-copy i[class*="fa-"],
+    .promo-cta:hover i[class*="fa-"],
+    .whatsapp-float:hover .whatsapp-icon {
+        transform: none !important;
+    }
+}
+
+/* ✅ FIX: una sola barra de scroll en el modal de producto */
+.product-modal .modal-info-section { overflow-y: visible; }
+.product-modal .modal-content { overflow-y: auto; overscroll-behavior: contain; }

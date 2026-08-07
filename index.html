@@ -20,10 +20,8 @@
     <!-- Supabase CDN (necesario para el login discreto del footer) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Fuentes -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Configuracion -->
+    <script src="config.js"></script>
 
     <!-- Estilos -->
     <link rel="stylesheet" href="style.css">
@@ -80,6 +78,11 @@
             <div class="section-inner" id="servicesInner"></div>
         </section>
 
+        <!-- BLOQUE: EQUIPO MÉDICO (opcional) -->
+<section class="section section-team" id="team">
+  <div class="section-inner" id="teamInner"></div>
+</section>
+
         <!-- Bloque 3: Galería -->
         <section class="section section-gallery" id="gallery">
             <div class="section-inner" id="galleryInner"></div>
@@ -105,6 +108,16 @@
             <div class="section-inner" id="testimonialsInner"></div>
         </section>
 
+        <!-- BLOQUE: UBICACIÓN (opcional) -->
+<section class="section section-location" id="location">
+  <div class="section-inner" id="locationInner"></div>
+</section>
+
+<!-- BLOQUE: CITAS (opcional) -->
+<section class="section section-appointments" id="appointments">
+  <div class="section-inner" id="appointmentsInner"></div>
+</section>
+
         <!-- Bloque 7: Contacto -->
         <section class="section section-contact" id="contact">
             <div class="section-inner" id="contactInner"></div>
@@ -117,7 +130,7 @@
     </footer>
 
     <!-- Scripts (orden importante) -->
-    <script src="config.js"></script>
+    <script src="theme.js"></script>
     <script src="app.js"></script>
     <script src="admin-auth.js"></script>
 </body>

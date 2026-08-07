@@ -6,9 +6,9 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Admin | Studio</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="admin.css">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="admin-body">
 
@@ -34,15 +34,18 @@
             <nav aria-label="Secciones del panel">
                 <button data-view="dashboard" class="active">📊 Dashboard</button>
                 <button data-view="posts">📝 Posts</button>
+                <button data-view="services">🛠️ Servicios</button>
+                <button data-view="products">📦 Productos</button>
                 <button data-view="comments">💬 Comentarios</button>
                 <button data-view="orders">🛒 Órdenes</button>
                 <button data-view="coupons">🎟️ Cupones</button>
                 <button data-view="categories">🏷️ Categorías</button>
                 <button data-view="testimonials">🌟 Testimonios</button>
+                <button data-view="appointments">📅 Citas</button>
             </nav>
             <div class="admin-sidebar-footer">
     <a href="index.html" class="admin-back-home">← Volver al inicio</a>
-    <a href="blog.html" target="_blank" rel="noopener">Ver blog ↗</a>
+    <a href="#" id="adminShortcut" class="admin-back-home admin-shortcut" target="_blank" rel="noopener" hidden>Ver blog ↗</a>
     <button id="adminLogout">Cerrar sesión</button>
 </div>
         </aside>
@@ -55,8 +58,58 @@
 
             <section id="view-posts" class="admin-view">
                 <h2>Posts</h2>
-                <div id="postsTable"></div>
+                <div class="admin-inline-form">
+        <button type="button" id="newPostAdminBtn">＋ Nuevo post</button>
+    </div>
+    <div id="postsTable"></div>
             </section>
+
+            <section id="view-services" class="admin-view">
+  <h2>Servicios</h2>
+  <button id="newServiceBtn" class="admin-btn primary">＋ Nuevo servicio</button>
+  <div id="servicesTable"></div>
+
+  <div id="serviceEditor" class="admin-editor-card" hidden>
+    <h3 id="serviceEditorTitle">Nuevo Servicio</h3>
+    <div class="admin-editor-row">
+      <div>
+        <label for="serviceNumber">Número</label>
+        <input id="serviceNumber" maxlength="4" placeholder="01">
+      </div>
+      <div>
+        <label for="serviceTitle">Título *</label>
+        <input id="serviceTitle" maxlength="80" placeholder="Consulta General" required>
+      </div>
+    </div>
+    <label for="serviceIntro">Frase corta (frente de la tarjeta)</label>
+    <input id="serviceIntro" maxlength="160" placeholder="Valoración completa y plan de tratamiento en una sola visita.">
+    <label for="serviceContent">Descripción completa (reverso) — con formato</label>
+    <div class="md-toolbar" id="serviceMdToolbar">
+      <button type="button" data-md="bold" title="Negrita"><b>N</b></button>
+      <button type="button" data-md="italic" title="Cursiva"><i>C</i></button>
+      <button type="button" data-md="h2" title="Subtítulo">H2</button>
+      <button type="button" data-md="list" title="Lista">• Lista</button>
+      <button type="button" data-md="quote" title="Cita">❝ Cita</button>
+    </div>
+    <textarea id="serviceContent" rows="7" placeholder="En esta consulta realizamos **historia clínica completa**...&#10;&#10;## Incluye&#10;- Receta digital&#10;- Seguimiento por WhatsApp"></textarea>
+    <div class="admin-editor-row">
+      <div>
+        <label for="serviceImage">URL de imagen (marca de agua, opcional)</label>
+        <input id="serviceImage" placeholder="https://...">
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <button type="button" id="serviceImgBtn" class="admin-btn">📷 Subir imagen</button>
+        <input type="file" id="serviceImgInput" accept="image/*" hidden>
+      </div>
+    </div>
+    <label class="admin-check"><input type="checkbox" id="serviceActive" checked> Activo (visible en el sitio)</label>
+    <div class="admin-editor-actions">
+      <button id="serviceSave" class="admin-btn primary">Guardar servicio</button>
+      <button id="serviceCancel" class="admin-btn">Cancelar</button>
+    </div>
+  </div>
+</section>
 
             <section id="view-comments" class="admin-view">
                 <h2>Comentarios</h2>
@@ -69,19 +122,43 @@
             </section>
 
             <section id="view-coupons" class="admin-view">
-                <h2>Cupones</h2>
-                <form id="couponForm" class="admin-inline-form">
-                    <input id="couponCode" placeholder="CÓDIGO" required>
-                    <select id="couponType" aria-label="Tipo de cupón">
-                        <option value="percent">%</option>
-                        <option value="fixed">$</option>
-                    </select>
-                    <input id="couponValue" type="number" min="1" placeholder="Valor" required>
-                    <input id="couponUntil" type="date" aria-label="Fecha de vencimiento">
-                    <button type="submit">Agregar</button>
-                </form>
-                <div id="couponsTable"></div>
-            </section>
+  <h2>Cupones</h2>
+
+  <form id="couponForm" class="coupon-form">
+    <!-- ── Datos del cupón ── -->
+    <div class="coupon-section">
+      <h4 class="coupon-section-title">🎟️ Datos del cupón</h4>
+      <div class="coupon-grid coupon-grid--main">
+        <input id="couponCode" placeholder="Código (ej. VERANO25)" required>
+        <select id="couponType" title="Tipo de descuento"><option value="percent">%</option><option value="fixed">$</option></select>
+        <input id="couponValue" type="number" min="1" required placeholder="Valor">
+        <input id="couponUntil" type="date" title="Fecha de vigencia">
+      </div>
+    </div>
+    <!-- ── Popup visual (opcional) ── -->
+    <div class="coupon-section">
+      <h4 class="coupon-section-title">📣 Popup visual (opcional)</h4>
+      <div class="coupon-grid">
+        <input id="couponTitle" placeholder="Título (ej. 10% de Descuento)">
+        <input id="couponSubtitle" placeholder="Subtítulo (ej. En toda la tienda)">
+        <input id="couponDesc" class="span-2" placeholder="Descripción corta">
+        <input id="couponBadge" placeholder="Badge" value="🔥 OFERTA">
+        <select id="couponAccent">
+          <option value="gold">Dorado</option>
+          <option value="red">Rojo</option>
+          <option value="purple">Morado</option>
+        </select>
+      </div>
+    </div>
+    <!-- ── Pie: checkbox + botón ── -->
+    <div class="coupon-footer">
+      <label class="admin-check"><input type="checkbox" id="couponPopup"> Mostrar en popup</label>
+      <button type="submit" class="coupon-submit">Agregar cupón</button>
+    </div>
+  </form>
+
+  <div id="couponsTable"></div>
+</section>
 
             <section id="view-categories" class="admin-view">
                 <h2>Categorías</h2>
@@ -124,6 +201,19 @@
     </form>
     <div id="testimonialsTable"></div>
 </section>
+
+<section id="view-appointments" class="admin-view">
+  <h2>Citas</h2>
+  <div id="appointmentsTable"></div>
+</section>
+
+<section class="admin-view" id="view-products">
+    <h2>Productos</h2>
+    <div class="admin-inline-form">
+        <button type="button" class="admin-btn txt" id="newProductBtn">＋ Nuevo producto</button>
+    </div>
+    <div id="productsTable"></div>
+</section>
         </main>
     </div>
 
@@ -143,8 +233,15 @@
                 <div>
                     <label for="editCategory">Categoría</label>
                     <select id="editCategory"></select>
-                </div>
-                <div>
+                <div class="cat-quick">
+            <button type="button" class="admin-btn txt" id="catQuickToggle">＋ Nueva categoría</button>
+            <div class="cat-quick-form" id="catQuickForm" hidden>
+                <input id="catQuickName" placeholder="Nombre de la categoría" maxlength="40">
+                <button type="button" class="admin-btn txt" id="catQuickSave">Crear</button>
+            </div>
+        </div>
+    </div>
+    <div>
                     <label for="editStatus">Estado</label>
                     <select id="editStatus">
                         <option value="published">Publicado</option>
@@ -172,6 +269,34 @@
 
     <div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
 
+    <div class="admin-editor" id="productEditor">
+  <form class="admin-editor-card" id="productEditorForm">
+    <div class="admin-editor-head"><h3 id="productEditorTitle">Nuevo producto</h3><button type="button" id="productEditorClose">✕</button></div>
+    <input type="hidden" id="prodId">
+    <label>Nombre</label><input id="prodName" required>
+    <div class="admin-editor-row">
+      <div><label>Categoría</label><input id="prodCategory" value="destacado"></div>
+      <div><label>Badge (opcional)</label><input id="prodBadge" placeholder="Destacado / Nuevo"></div>
+    </div>
+    <div class="admin-editor-row">
+      <div><label>Precio (MXN)</label><input id="prodPrice" type="number" min="0" required></div>
+      <div><label>Precio original (opcional)</label><input id="prodPriceOrig" type="number" min="0"></div>
+    </div>
+    <label>Descripción</label><textarea id="prodDesc"></textarea>
+    <label>Características (una por línea)</label><textarea id="prodFeatures"></textarea>
+    <label>Imágenes de portada</label>
+    <div class="admin-editor-toolbar"><button type="button" id="prodAddImg">📷 Agregar imagen</button></div>
+    <input type="file" id="prodImgInput" accept="image/*" hidden>
+    <div class="admin-editor-images" id="prodImages"></div>
+    <label>Variantes</label>
+    <div id="prodVariants"></div>
+    <div class="admin-editor-toolbar"><button type="button" id="prodAddVariant">🧩 Agregar variante</button></div>
+    <input type="file" id="prodVarImgInput" accept="image/*" hidden>
+    <label class="admin-check"><input type="checkbox" id="prodActive" checked> Activo en la tienda</label>
+    <button class="admin-editor-save" type="submit">Guardar producto</button>
+  </form>
+</div>
+
     <style>
         .sr-only {
             position: absolute;
@@ -185,7 +310,7 @@
     </style>
 
     <!-- Scripts (orden importante) -->
-    <script src="config.js"></script>
+    <script src="theme.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>

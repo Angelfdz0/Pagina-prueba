@@ -21,13 +21,18 @@ const SITE_CONFIG = {
     bgAlt:        "#111111",
     text:         "#f0ece2",
     textMuted:    "#9a9488",
-    accent:       "#c9a96e",   // ★ Color principal de la marca
-    accentLight:  "#e2c992",
+    accent:       "#4a90d9",   // ★ Color principal de la marca
+    accentRGB:   "74, 144, 217",
+    accentLight:  "#7ab0e8",
     white:        "#ffffff",
     dark:         "#0a0a0a",
-    fontDisplay:  "'Playfair Display', Georgia, serif",
-    fontBody:     "'Inter', -apple-system, sans-serif",
-  },
+    fontDisplay: "'Playfair Display', Georgia, serif",
+    fontBody: "'Inter', -apple-system, sans-serif",
+    googleFontsUrl: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap",
+    fontAwesomeUrl: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css",
+    personality: "editorial",   // "editorial" | "minimal" | "bold"
+    heroLayout:  "center",      // "center" | "center" | "split"
+},
 
   loader: {
     text: "Studio",          // ★ Texto del loader (puede ser el nombre corto)
@@ -47,6 +52,7 @@ const SITE_CONFIG = {
     links: [
       { label: "Inicio",     href: "#hero" },
       { label: "Historia",   href: "#story" },
+      { label: "Equipo",     href: "#team" },
       { label: "Servicios",  href: "#services" },
       { label: "Galería",    href: "#gallery" },
       { label: "Tienda",     href: "#ecommerce" },
@@ -93,23 +99,78 @@ const SITE_CONFIG = {
       { number: "12",   label: "Premios" },
       { number: "98%",  label: "Satisfacción" },
     ],
-  },
+  partners: {
+        enabled: true,   // ← true para mostrar el carrusel
+        title: "Patrocinadores y Convenios",
+        logos: [          // ★ CLIENTE: sus marcas reales
+            { name: "GNP Seguros",      img: "" },  // si img va vacío, se muestra el nombre como texto elegante
+            { name: "Laboratorios Roma", img: "https://.../logo-roma.png" },
+            { name: "UNAM",             img: "" },
+            { name: "MetLife",          img: "" },
+            { name: "Farmacias Similar", img: "" },
+            { name: "AXA",              img: "" },
+        ],
+    },
+},
 
   // ──────────────────────────────────────────
   // ⚙️ SERVICIOS
   // ★ CLIENTE: los servicios reales que ofrece
   // ──────────────────────────────────────────
   services: {
-    enabled: true,
-    label: "Lo Que Hacemos",
-    heading: "Servicios que <em>transforman</em>",
-    subtitle: "Cada servicio está diseñado para elevar tu marca al siguiente nivel.",
-    items: [
-      { number: "01", title: "Servicio Uno",   desc: "Descripción del servicio 1..." }, // ★
-      { number: "02", title: "Servicio Dos",   desc: "Descripción del servicio 2..." }, // ★
-      { number: "03", title: "Servicio Tres",  desc: "Descripción del servicio 3..." }, // ★
-    ],
+  enabled: true,
+  label: "Especialidades",
+  heading: "Atención médica <em>integral</em>",
+  subtitle: "Cada consulta está diseñada para brindarte un diagnóstico preciso y un trato humano.",
+  visibleCount: 6,   // ✅ tarjetas visibles al inicio; el resto tras "Ver todos"
+  items: [
+  { 
+    number: "01", 
+    title: "Consulta General",
+    intro: "Valoración completa y plan de tratamiento personalizado en una sola visita.",  // ✍️ FRENTE (corto y atractivo)
+    desc: "En esta consulta realizamos historia clínica completa, exploración física, interpretación de estudios recientes y diseñamos un plan de tratamiento paso a paso. Incluye receta digital, indicaciones por escrito y seguimiento por WhatsApp durante 7 días.",  // ✍️ REVERSO (largo y detallado)
+    image: "https://..." 
   },
+  { 
+    number: "02", 
+    title: "Consulta General",
+    intro: "Valoración completa y plan de tratamiento personalizado en una sola visita.",  // ✍️ FRENTE (corto y atractivo)
+    desc: "En esta consulta realizamos historia clínica completa, exploración física, interpretación de estudios recientes y diseñamos un plan de tratamiento paso a paso. Incluye receta digital, indicaciones por escrito y seguimiento por WhatsApp durante 7 días.",  // ✍️ REVERSO (largo y detallado)
+    image: "https://..." 
+  },
+  { 
+    number: "03", 
+    title: "Consulta General",
+    intro: "Valoración completa y plan de tratamiento personalizado en una sola visita.",  // ✍️ FRENTE (corto y atractivo)
+    desc: "En esta consulta realizamos historia clínica completa, exploración física, interpretación de estudios recientes y diseñamos un plan de tratamiento paso a paso. Incluye receta digital, indicaciones por escrito y seguimiento por WhatsApp durante 7 días.",  // ✍️ REVERSO (largo y detallado)
+    image: "https://..." 
+  },
+],
+},
+
+// ──────────────────────────────────────────
+// 👩‍⚕️ EQUIPO MÉDICO (tarjetas flotantes + ficha técnica)
+// ──────────────────────────────────────────
+team: {
+  enabled: true,   // ← true para activar
+  label: "Equipo Médico",
+  heading: "Especialistas que <em>te cuidan</em>",
+  subtitle: "Profesionales certificados con vocación de servicio.",
+  items: [
+    {
+      photo: "https://.../dra-lopez.jpg",          // ★ foto del doctor
+      name: "Dra. María López",
+      cedula: "Céd. Prof. 1234567",
+      specialty: "Cardiología",
+      bio: "Más de 12 años de experiencia en cardiología clínica y ecocardiografía. Certificada por el Consejo Mexicano de Cardiología.",
+      phone: "+52 55 1234 5678",
+      whatsapp: "5215512345678",
+      email: "dra.lopez@clinica.com",
+      schedule: "Lun–Vie · 9:00–17:00",
+    },
+    { /* más doctores… */ },
+  ],
+},
 
   // ──────────────────────────────────────────
   // 🖼️ GALERÍA / PORTAFOLIO
@@ -150,25 +211,7 @@ const SITE_CONFIG = {
     subtitle: "Descubre nuestra colección curada de productos.",
     cta: "Ver Catálogo Completo",
     ctaHref: "tienda.html",
-    products: [
-      {
-        id: 1,
-        name: "Producto Uno",                 // ★
-        category: "destacado",
-        price: 299,                          // ★ Precio en MXN
-        originalPrice: null,
-        badge: "Destacado",
-        description: "Descripción del producto...",
-        features: ["Característica 1", "Característica 2"],
-        images: [
-          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1200&auto=format&fit=crop", // ★ Fotos reales
-        ],
-        variants: [
-          { name: "Variante A", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop", price: 299, inStock: true },
-          { name: "Variante B", image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?q=80&w=400&auto=format&fit=crop", price: 329, inStock: false }, // inStock: false = agotado
-        ]
-      },
-    ],
+    products: [],
 
     // ★ PROMOCIONES — actualiza fechas de vigencia por cliente
     promotions: {
@@ -179,21 +222,8 @@ const SITE_CONFIG = {
       showCloseButton: true,
       rememberDismiss: true,
       dismissDuration: 24,
-      items: [
-        {
-          id: 1, badge: "🔥 OFERTA", title: "10% de Descuento",
-          subtitle: "En toda la tienda",
-          description: "Aprovecha nuestro descuento de bienvenida.",
-          code: "BIENVENIDA10", discount: "10%", validUntil: "2026-12-31", // ★ Fecha futura
-          cta: "Comprar Ahora", ctaHref: "#products", accent: "gold"
-        },
-      ]
+      items: []
     },
-
-    // ★ Debe coincidir con las promos de arriba (misma semántica)
-    promoCodes: {
-      "BIENVENIDA10": { type: "percent", value: 10, label: "10% de descuento" },
-    }
   },
 
   // ──────────────────────────────────────────
@@ -247,6 +277,7 @@ const SITE_CONFIG = {
         links: [
           { label: "Inicio",    href: "#hero" },
           { label: "Historia",  href: "#story" },
+          { label: "Equipo",    href: "#team" },
           { label: "Servicios", href: "#services" },
           { label: "Galería",   href: "#gallery" },
           { label: "Tienda",    href: "#ecommerce" },
@@ -338,7 +369,7 @@ const SITE_CONFIG = {
   // 📝 BLOG CONFIG (mensajes del sistema)
   // ──────────────────────────────────────────
   blogConfig: {
-    categories: ["historias", "recetas", "opiniones", "datos", "tutoriales"], // ★ Categorías iniciales
+    categories: [], // ★ Categorías iniciales
     heroStars: 35,
     messages: {
       postSuccess: "¡Post publicado con éxito!",
@@ -407,6 +438,37 @@ const SITE_CONFIG = {
     businessHours: "Lun - Vie: 9:00 - 18:00",
     registryData: "Inscrita en el Registro Público de Comercio", // ★
   },
+
+  // ──────────────────────────────────────────
+// 📍 UBICACIÓN (bloque opcional: mapa + datos)
+// ★ CLIENTE: dirección, horario y teléfono reales
+// ──────────────────────────────────────────
+location: {
+  enabled: true,   // ← true para activar el bloque
+  label: "Ubicación",
+  heading: "Visítanos <em>hoy</em>",
+  subtitle: "Estamos para atenderte en el corazón de la ciudad.",
+  address: "Av. Siempre Viva 123, Col. Centro, C.P. 06000, Ciudad de México",
+  phone: "+52 55 1234 5678",
+  phoneHref: "tel:+525512345678",
+  hours: [
+    { d: "Lunes a Viernes", h: "9:00 – 19:00" },
+    { d: "Sábado",          h: "10:00 – 14:00" },
+    { d: "Domingo",         h: "Cerrado" }
+  ],
+  mapsQuery: "Av. Siempre Viva 123, Col. Centro, Ciudad de México", // ← lo que busca Google Maps
+},
+// ──────────────────────────────────────────
+// 📅 CITAS (bloque opcional: solicitud → WhatsApp + BD)
+// ──────────────────────────────────────────
+appointments: {
+  enabled: true,   // ← true para activar el bloque
+  label: "Agenda tu cita",
+  heading: "Reserva tu <em>momento</em>",
+  subtitle: "Déjanos tus datos y te confirmamos por WhatsApp en menos de 24 horas.",
+  slots: ["Mañana (9:00–13:00)", "Tarde (14:00–18:00)", "Noche (18:00–21:00)"],
+  successMessage: "¡Solicitud enviada! Te confirmaremos por WhatsApp.",
+},
 
     // ──────────────────────────────────────────
   // 💳 PAGOS CON TARJETA (módulo listo para activar)
