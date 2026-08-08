@@ -107,6 +107,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   width: 0%; overflow: hidden; white-space: nowrap;
   transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 .loader-percentage { font-family: var(--font-body); font-size: 0.75rem; letter-spacing: 0.3em; color: var(--color-text-muted); opacity: 0.6; }
 
 /* ============ 06 HEADER / NAV + MENÚ "MÁS" ============ */

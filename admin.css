@@ -406,3 +406,10 @@ html[data-theme="light"] .admin-btn { background: #fff; border-color: var(--A-li
 html[data-theme="light"] .admin-btn:hover { border-color: var(--color-accent); }
 html[data-theme="light"] .image-preview-item { border-color: var(--A-line-strong); }
 html[data-theme="light"] .image-upload-area { background: rgba(15,42,63,.03); }
+
+/* Nombres en tablas (categorías, clientes, autores) → tinta legible */
+html[data-theme="light"] .cell-author { color: var(--color-text); }
+
+/* Logo del panel visible sobre la sidebar blanca */
+html[data-theme="light"] .admin-brand { color: var(--color-text); }
+html[data-theme="light"] .admin-brand span { color: var(--color-accent); }
