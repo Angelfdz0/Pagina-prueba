@@ -1081,7 +1081,7 @@ function initLoader() {
     });
   }
 
-  // ─── CARRUSEL "LIBRERÍA" v4: sin desfase + loop infinito sin retroceso ───
+  // ─── CARRUSEL "LIBRERÍA" v5: loop infinito sin retroceso (clones a ambos lados) ───
 function initGalleryCarousel() {
     const wrapper = $("#galleryCarouselWrapper");
     const carousel = $("#galleryCarousel");
@@ -1089,18 +1089,34 @@ function initGalleryCarousel() {
     if (!wrapper || !carousel) return;
 
     const realSlides = $$(".gallery-slide", carousel);
-    const realCount = realSlides.length;
-    if (!realCount) return;
+    const n = realSlides.length;
+    if (!n) return;
 
-    // 📚 Clona los slides para loop infinito (avance siempre "hacia adelante")
-    realSlides.forEach(s => carousel.appendChild(s.cloneNode(true)));
-    const slides = $$(".gallery-slide", carousel);   // reales + clones
+    // 📚 Clona a AMBOS lados → nunca hay bordes vacíos → loop invisible
+    const beforeFrag = document.createDocumentFragment();
+    const afterFrag = document.createDocumentFragment();
+    realSlides.forEach(s => { beforeFrag.appendChild(s.cloneNode(true)); afterFrag.appendChild(s.cloneNode(true)); });
+    carousel.insertBefore(beforeFrag, realSlides[0]);
+    carousel.appendChild(afterFrag);
+
+    const slides = $$(".gallery-slide", carousel);   // [clones][reales][clones] = 3n
+    const START = n;                                  // índice del 1er slide real
+
+        // 🖼️ Pre-decodifica TODAS las imágenes (reales + clones) para que el
+    //    salto del loop sea instantáneo y NO parpadee
+    slides.forEach(s => {
+        const img = s.querySelector(".gallery-slide-img");
+        if (img) {
+            img.loading = "eager";              // quita lazy en el carrusel
+            if (img.decode) img.decode().catch(() => {}); // fuerza decodificado
+        }
+    });
 
     let isDragging = false, startX = 0, startTranslate = 0, currentTranslate = 0,
         velocity = 0, lastX = 0, lastTime = 0, rafId = null,
         snapPositions = [], slideCenters = [], snapAnimating = false, snapFallbackTimer = null;
 
-    let autoTimer = null, idleTimer = null, autoIndex = 0;
+    let autoTimer = null, idleTimer = null, autoIndex = START;
     const autoOn = () => C.effects?.galleryAuto !== false && !prefersReducedMotion;
     const autoEvery = C.effects?.galleryAutoInterval || 4000;
 
@@ -1124,8 +1140,7 @@ function initGalleryCarousel() {
     }
     function getClosestSnap(x) { return snapPositions[getClosestIndex(x)] ?? 0; }
 
-    // ✅ Sin desfase: calcula la inclinación con la posición OBJETIVO (finalX),
-    // no con getBoundingClientRect (que llega una transición tarde).
+    // Sin desfase: inclinación/resaltado con la posición OBJETIVO
     function updateVisuals(x, isSnapping = false) {
         const { minTranslate, maxTranslate } = getLimits();
         let finalX = x;
@@ -1138,19 +1153,17 @@ function initGalleryCarousel() {
         carousel.classList.toggle("is-snapping", isSnapping);
         carousel.style.transform = `translate3d(${finalX}px, 0, 0)`;
 
-        const wrapperCenter = wrapper.offsetWidth / 2;
-        const halfW = wrapper.offsetWidth / 2;
-
+        const wrapperCenter = wrapper.offsetWidth / 2, halfW = wrapper.offsetWidth / 2;
         slides.forEach((slide, i) => {
-            const n = ((slideCenters[i] + finalX) - wrapperCenter) / halfW;
+            const norm = ((slideCenters[i] + finalX) - wrapperCenter) / halfW;
             const img = $(".gallery-slide-img", slide);
-            if (img) img.style.transform = `translate3d(${n * 30}px, 0, 0) scale(1.2)`;
-            const scale = clamp(1 - Math.abs(n) * 0.15, 0.85, 1);
-            const opacity = clamp(1 - Math.abs(n) * 0.4, 0.5, 1);
-            const rot = clamp(n * -8, -8, 8);
+            if (img) img.style.transform = `translate3d(${norm * 30}px, 0, 0) scale(1.2)`;
+            const scale = clamp(1 - Math.abs(norm) * 0.15, 0.85, 1);
+            const opacity = clamp(1 - Math.abs(norm) * 0.4, 0.5, 1);
+            const rot = clamp(norm * -8, -8, 8);
             slide.style.transform = `scale(${scale}) rotate(${rot}deg)`;
             slide.style.opacity = opacity;
-            slide.style.zIndex = String(20 - Math.round(Math.abs(n) * 10));
+            slide.style.zIndex = String(20 - Math.round(Math.abs(norm) * 10));
         });
 
         if (progressFill && minTranslate !== 0)
@@ -1166,23 +1179,30 @@ function initGalleryCarousel() {
         snapFallbackTimer = setTimeout(settle, 900);
     }
 
-    // Al asentarse: si caímos en un clon, salto INVISIBLE al slide real
+        // Al asentarse: remapea al slide real con salto 100% instantáneo (sin parpadeo)
     function settle() {
         carousel.classList.remove("is-snapping");
         snapAnimating = false; velocity = 0;
-        if (autoIndex >= realCount) {
-            autoIndex -= realCount;
-            updateVisuals(snapPositions[autoIndex], false); // sin transición (idéntico píxel a píxel)
+
+        let changed = false;
+        if (autoIndex >= 2 * n) { autoIndex -= n; changed = true; }
+        else if (autoIndex < n) { autoIndex += n; changed = true; }
+
+        if (changed) {
+            // 1) Congela transiciones, 2) salta, 3) aplica en ESTE frame, 4) reactiva
+            carousel.classList.add("no-anim");
+            updateVisuals(snapPositions[autoIndex], false);
+            void carousel.offsetWidth;                       // fuerza repaint inmediato
+            requestAnimationFrame(() => carousel.classList.remove("no-anim"));
         }
     }
 
-    // 🤖 auto-avance siempre "hacia adelante" (real → clon → remap)
     function startAuto() {
-        if (!autoOn() || realCount < 2) return;
+        if (!autoOn() || n < 2) return;
         stopAuto();
         autoTimer = setInterval(() => {
             if (isDragging || snapAnimating) return;
-            goToSlide(autoIndex + 1);
+            goToSlide(autoIndex + 1);      // siempre avanza "hacia adelante"
         }, autoEvery);
     }
     function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
@@ -1217,10 +1237,7 @@ function initGalleryCarousel() {
         snapFallbackTimer = setTimeout(settle, 900);
     }
 
-    carousel.addEventListener("transitionend", e => {
-        if (e.target !== carousel) return;
-        settle();
-    });
+    carousel.addEventListener("transitionend", e => { if (e.target === carousel) settle(); });
 
     wrapper.addEventListener("mousedown", onStart);
     window.addEventListener("mousemove", onMove);
@@ -1230,7 +1247,6 @@ function initGalleryCarousel() {
     wrapper.addEventListener("touchmove", onMove, { passive: false });
     wrapper.addEventListener("touchend", onEnd);
 
-    // Clic/tap en un libro → lo centra (y pausa el auto)
     slides.forEach((slide, i) => {
         slide.addEventListener("click", () => {
             if (!isDragging && Math.abs(velocity) <= 2) { pauseAuto(); goToSlide(i); }
@@ -1253,7 +1269,7 @@ function initGalleryCarousel() {
     }
 
     calculateSnapPositions();
-    updateVisuals(snapPositions[0], true);   // ✅ la 1ª ya nace centrada y resaltada
+    updateVisuals(snapPositions[START], true);   // arranca en el 1er slide REAL, ya resaltado
     recalculateWhenImagesLoad();
     startAuto();
 
@@ -2210,6 +2226,10 @@ function initGalleryCarousel() {
     const L = C.location;
     const inner = $("#locationInner");
     if (!inner) return;
+
+      // 🏥 Fachada discreta de fondo (watermark no invasivo)
+  const section = document.getElementById("location");
+  if (section && L.image) section.style.setProperty("--location-img", `url("${L.image}")`);
     
     // Generar URLs de Google Maps
     const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(L.mapsQuery)}&output=embed`;

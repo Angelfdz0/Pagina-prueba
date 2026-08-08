@@ -214,7 +214,7 @@ html[data-theme="light"] .team-card::after {
   /* Oscurece la imagen (anula el filter:none del split) */
   html[data-theme="light"] .hero-bg,
   html[data-theme="light"][data-hero-layout="split"] .hero-bg {
-    filter: brightness(.25) saturate(.9) blur(4px);
+    filter: brightness(.55) saturate(.9) blur(5px);
     border-radius: 0;
     border: none;
     box-shadow: none;
@@ -248,6 +248,14 @@ html[data-theme="light"] .post-modal .modal-close {
 
 html[data-theme="light"] .footer-brand-name { color: #F5F2EA; }
 html[data-theme="light"] .footer-brand-name span { color: var(--color-accent-light); }
+
+/* Badge "X min" legible sobre la imagen (fondo oscuro + texto blanco) */
+html[data-theme="light"] .post-read-time {
+  color: #ffffff;
+  background: rgba(15, 42, 63, .55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
 
 /* ============ LOADER (telón premium) ============ */
 /* El loader conserva el telón oscuro (contraste de entrada elegante). */

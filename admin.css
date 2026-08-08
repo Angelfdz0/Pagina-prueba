@@ -320,3 +320,89 @@ a.admin-brand:hover span { color: var(--color-white); }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
   .admin-stat:hover, .admin-btn:hover, .admin-inline-form button:hover { transform: none; }
 }
+
+/* ============================================================
+   🏥 PANEL ADMIN EN TEMA CLARO — textos y bordes legibles
+   (corrige títulos blancos y inputs invisibles en modo light)
+   ============================================================ */
+html[data-theme="light"] {
+  --A-card: #ffffff;
+  --A-line: rgba(15, 42, 63, .14);
+  --A-line-strong: rgba(15, 42, 63, .24);
+  --A-shadow: 0 18px 40px rgba(15, 42, 63, .10);
+  color-scheme: light;
+}
+
+/* — Textos que eran blancos → tinta azul-noche — */
+html[data-theme="light"] .admin-view h2,
+html[data-theme="light"] .admin-editor-head h3,
+html[data-theme="light"] .admin-login-card h1,
+html[data-theme="light"] .new-post-title,
+html[data-theme="light"] .cell-title .t,
+html[data-theme="light"] .admin-stat .num,
+html[data-theme="light"] .admin-confirm-card h3,
+html[data-theme="light"] .admin-table td { color: var(--color-text); }
+
+/* — Superficies → blancas con borde y sombra suaves — */
+html[data-theme="light"] .admin-editor-card,
+html[data-theme="light"] .admin-login-card,
+html[data-theme="light"] .new-post-content,
+html[data-theme="light"] .admin-confirm-card,
+html[data-theme="light"] .admin-stat,
+html[data-theme="light"] .category-manager {
+  background: var(--A-card);
+  border-color: var(--A-line);
+  box-shadow: var(--A-shadow);
+}
+html[data-theme="light"] .admin-sidebar { background: var(--A-card); border-right-color: var(--A-line); }
+
+/* — Tablas — */
+html[data-theme="light"] #postsTable,
+html[data-theme="light"] #commentsTable,
+html[data-theme="light"] #ordersTable,
+html[data-theme="light"] #couponsTable,
+html[data-theme="light"] #categoriesTable,
+html[data-theme="light"] #testimonialsTable,
+html[data-theme="light"] #productsTable,
+html[data-theme="light"] #servicesTable,
+html[data-theme="light"] #appointmentsTable {
+  background: var(--A-card);
+  border-color: var(--A-line);
+  box-shadow: var(--A-shadow);
+}
+html[data-theme="light"] .admin-table td { border-bottom-color: var(--A-line); }
+html[data-theme="light"] .admin-table th { background: rgba(15, 42, 63, .05); }
+
+/* — Inputs: fondo blanco + borde VISIBLE — */
+html[data-theme="light"] .admin-editor-card input,
+html[data-theme="light"] .admin-editor-card select,
+html[data-theme="light"] .admin-editor-card textarea,
+html[data-theme="light"] .admin-login-card input,
+html[data-theme="light"] .admin-inline-form input,
+html[data-theme="light"] .admin-inline-form select,
+html[data-theme="light"] #couponForm input,
+html[data-theme="light"] #couponForm select,
+html[data-theme="light"] .category-add input,
+html[data-theme="light"] .cat-quick-form input,
+html[data-theme="light"] .admin-testimonial-form input,
+html[data-theme="light"] .admin-testimonial-form select,
+html[data-theme="light"] .admin-testimonial-form textarea,
+html[data-theme="light"] .admin-variant-row input,
+html[data-theme="light"] .admin-variant-row select,
+html[data-theme="light"] .admin-select {
+  background: #ffffff;
+  border: 1px solid var(--A-line-strong);
+  color: var(--color-text);
+}
+html[data-theme="light"] .admin-editor-card input:focus,
+html[data-theme="light"] .admin-editor-card textarea:focus,
+html[data-theme="light"] .admin-login-card input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .15);
+}
+
+/* — Botones de icono y piezas sueltas — */
+html[data-theme="light"] .admin-btn { background: #fff; border-color: var(--A-line-strong); }
+html[data-theme="light"] .admin-btn:hover { border-color: var(--color-accent); }
+html[data-theme="light"] .image-preview-item { border-color: var(--A-line-strong); }
+html[data-theme="light"] .image-upload-area { background: rgba(15,42,63,.03); }

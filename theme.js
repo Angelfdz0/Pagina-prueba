@@ -94,10 +94,6 @@
         addLink('stylesheet', t.fontAwesomeUrl);
           // ✅ MODO DE TEMA: "dark" (default) | "light" (clínicas/premium claro)
   root.setAttribute('data-theme', t.mode || 'dark');
-
-  // Carga el skin claro. (No afecta a clientes "dark": sus reglas
-  // solo aplican bajo html[data-theme="light"]).
-  addLink('stylesheet', 'light.css');
     }
 
   // ✅ Logo dinámico en todas las páginas (blog / tienda / legal)

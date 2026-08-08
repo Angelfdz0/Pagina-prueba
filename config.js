@@ -562,6 +562,9 @@ const SITE_CONFIG = {
       { d: "Domingo",         h: "Solo Urgencias" },
       { d: "Urgencias",       h: "24 horas" },
     ],
+
+     image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2000&auto=format&fit=crop",
+  // ↑ Fachada de la clínica (reemplázala por la foto real del cliente)
     
     mapsQuery: "Av. Paseo de la Reforma 222, Juárez, Cuauhtémoc, 06600 Ciudad de México, CDMX",
   },
