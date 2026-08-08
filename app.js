@@ -1,49 +1,82 @@
 /* ============================================================
-   ★ CEREBRO DE LA PÁGINA ★
-   Lee SITE_CONFIG y construye + anima todo.
-   ✅ Iconos Font Awesome (juvenil-premium) integrados
+   APP.JS — CEREBRO DE LA PÁGINA
+   ============================================================
+   Lee SITE_CONFIG y construye + anima todo el sitio.
+   
+   ARQUITECTURA:
+   1. Utilidades globales (escapeHtml, clamp, lerp, etc.)
+   2. Sistema de tema y SEO dinámico
+   3. Loader y barra de progreso
+   4. Header con navegación inteligente
+   5. Hero con efecto typewriter
+   6. Bloques de contenido (11 secciones)
+   7. Formularios (contacto + citas)
+   8. Footer con colapso "Más"
+   9. Efectos visuales (parallax, cursor, reveal, magnetic)
+   10. Sistema de inicialización
+   
+   ✅ Iconos Font Awesome integrados
+   ✅ Supabase para testimonios y servicios
+   ✅ FormSubmit.co para formulario de contacto
    ============================================================ */
+
 (function () {
   "use strict";
 
   const C = SITE_CONFIG;
 
-  // ─── UTILIDADES ──────────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🧰 UTILIDADES GLOBALES
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  
+  // Selectores DOM optimizados
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+  
+  // Interpolación lineal (para animaciones suaves)
   const lerp = (a, b, t) => a + (b - a) * t;
+  
+  // Limitar valor entre min y max
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 
+  // Detectar preferencia de movimiento reducido (accesibilidad)
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Verificar si un bloque está habilitado en config.js
   function isBlockEnabled(blockName) {
     return C[blockName]?.enabled !== false;
   }
 
-  // ✅ Utilidades para testimonios
+  // Escape HTML para prevenir XSS
   function escapeHtml(str) {
-      if (!str) return '';
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
+  
+  // Generar iniciales de un nombre (para avatares)
   function initials(name) {
-      return (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
+    return (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
   }
 
-  // ✅ FA: Iconos de redes sociales (Font Awesome Brands — monocromáticos, escalables, profesionales)
+  // Iconos de redes sociales (Font Awesome Brands)
   const SOURCE_ICONS = {
-      instagram: '<i class="fa-brands fa-instagram"></i>',
-      facebook:  '<i class="fa-brands fa-facebook-f"></i>',
-      whatsapp:  '<i class="fa-brands fa-whatsapp"></i>',
-      google:    '<i class="fa-brands fa-google"></i>',
-      tiktok:    '<i class="fa-brands fa-tiktok"></i>'
+    instagram: '<i class="fa-brands fa-instagram"></i>',
+    facebook:  '<i class="fa-brands fa-facebook-f"></i>',
+    whatsapp:  '<i class="fa-brands fa-whatsapp"></i>',
+    google:    '<i class="fa-brands fa-google"></i>',
+    tiktok:    '<i class="fa-brands fa-tiktok"></i>'
   };
 
-  // ─── APLICAR TEMA ───────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🎨 APLICAR TEMA (variables CSS desde config.js)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function applyTheme() {
     const r = document.documentElement.style;
     const t = C.theme;
+    
+    // Colores
     r.setProperty("--color-bg", t.bg);
     r.setProperty("--color-bg-alt", t.bgAlt);
     r.setProperty("--color-text", t.text);
@@ -53,13 +86,20 @@
     r.setProperty("--color-accent-light", t.accentLight);
     r.setProperty("--color-white", t.white);
     r.setProperty("--color-dark", t.dark);
+    
+    // Tipografías
     r.setProperty("--font-display", t.fontDisplay);
     r.setProperty("--font-body", t.fontBody);
+    
+    // Título de la pestaña
     document.title = C.header.logo.text + C.header.logo.highlight;
   }
 
-  // ─── INYECTAR SEO DINÁMICO ──────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 📊 INYECTAR SEO DINÁMICO
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function injectSEO() {
+    // Meta description desde el primer párrafo de la historia
     const firstParagraph = C.story?.paragraphs?.[0];
     const description = firstParagraph
       ? firstParagraph.substring(0, 155)
@@ -73,6 +113,7 @@
     }
     if (description) metaDesc.content = description;
 
+    // Open Graph tags para redes sociales
     const ogImage = C.hero?.backgroundImage || "";
     const ogTags = {
       'og:title': (C.header?.logo?.text || "") + (C.header?.logo?.highlight || ""),
@@ -93,29 +134,46 @@
     }
   }
 
-  // ─── HERO STARS ──────────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ⭐ HERO STARS (estrellas parpadeantes)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initHeroStars() {
     if (!isBlockEnabled("hero")) return;
     const hero = $("#hero");
     if (!hero) return;
 
+    // Crear contenedor de estrellas
     const starsContainer = document.createElement("div");
     starsContainer.className = "hero-stars";
     hero.appendChild(starsContainer);
 
+    // Generar 40 estrellas con propiedades aleatorias
     const starCount = 40;
     for (let i = 0; i < starCount; i++) {
       const star = document.createElement("div");
       star.className = "star";
+      
+      // Posición aleatoria
       const x = Math.random() * 100;
       const y = Math.random() * 100;
+      
+      // Tamaño aleatorio (1-3px)
       const size = Math.random() * 2 + 1;
+      
+      // Duración de parpadeo (2-6 segundos)
       const duration = Math.random() * 4 + 2;
+      
+      // Delay antes de empezar (0-5 segundos)
       const delay = Math.random() * 5;
+      
+      // Opacidad mínima y máxima
       const minOpacity = Math.random() * 0.3 + 0.1;
       const maxOpacity = Math.random() * 0.5 + 0.5;
+      
+      // Tamaño del glow (3x el tamaño de la estrella)
       const glowSize = size * 3;
 
+      // Aplicar propiedades como variables CSS
       star.style.cssText = `
         left: ${x}%;
         top: ${y}%;
@@ -131,48 +189,61 @@
     }
   }
 
-  // ─── BARRA DE PROGRESO ──────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 📏 BARRA DE PROGRESO (scroll)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initProgressBar() {
     if (!C.effects.progressBarEnabled) return;
 
+    // Crear barra en el top de la página
     const bar = document.createElement("div");
     bar.className = "scroll-progress";
     document.body.prepend(bar);
 
     function updateProgress() {
+      // Calcular altura total scrolleable
       const h = document.documentElement.scrollHeight - window.innerHeight;
       if (h <= 0) {
         bar.style.width = "0%";
         return;
       }
+      // Calcular progreso (0 a 1)
       const progress = clamp(window.scrollY / h, 0, 1);
       bar.style.width = (progress * 100) + "%";
     }
 
+    // Actualizar en scroll y resize
     window.addEventListener("scroll", updateProgress, { passive: true });
     window.addEventListener("resize", updateProgress, { passive: true });
     updateProgress();
   }
 
-  // ─── LOADER ──────────────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ⏳ LOADER (pantalla de carga)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initLoader() {
     const loader = $("#loader");
     const titleFill = $("#loaderTitleFill");
     const percentage = $("#loaderPercentage");
 
+    // Si no hay loader, animar hero directamente
     if (!loader) {
       if (isBlockEnabled("hero")) animateHero();
       return;
     }
 
     let progress = 0;
+    // Incrementar progreso cada (duración / 8) milisegundos
     const interval = setInterval(() => {
       progress += Math.random() * 8 + 3;
       if (progress > 100) progress = 100;
 
+      // Actualizar barra de progreso del título
       if (titleFill) titleFill.style.width = progress + "%";
+      // Actualizar porcentaje
       if (percentage) percentage.textContent = Math.round(progress) + "%";
 
+      // Cuando llega al 100%, ocultar loader
       if (progress >= 100) {
         clearInterval(interval);
         setTimeout(() => {
@@ -185,139 +256,155 @@
     }, C.loader.duration / 8);
   }
 
-  // ─── HEADER ──────────────────────────────
-function buildHeader() {
-  const nav = $("#nav");
-  if (!nav) return;
-  const h = C.header;
-  if (!h) return;
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🧭 HEADER / NAVEGACIÓN
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  function buildHeader() {
+    const nav = $("#nav");
+    if (!nav) return;
+    const h = C.header;
+    if (!h) return;
 
-  const visibleLinks = (h.links || []).filter(link => {
-    const href = link.href || "";
-    if (href.startsWith("#") && href.length > 1) {
-      const blockId = href.replace("#", "");
-      return isBlockEnabled(blockId);
+    // Filtrar enlaces según bloques habilitados
+    const visibleLinks = (h.links || []).filter(link => {
+      const href = link.href || "";
+      if (href.startsWith("#") && href.length > 1) {
+        const blockId = href.replace("#", "");
+        return isBlockEnabled(blockId);
+      }
+      return true;
+    });
+
+    // Límites: escritorio = maxLinks + "Más" | móvil = 4 + "Más"
+    const maxLinks = typeof h.maxLinks === "number" ? h.maxLinks : 5;
+    const mobileMax = 4;
+    const extraLinks = visibleLinks.slice(maxLinks);
+
+    // Construir lista de enlaces
+    const linkLis = visibleLinks.map((l, i) =>
+      `<li class="${i >= mobileMax ? "m-extra" : ""}">
+         <a href="${l.href}" class="${i >= maxLinks ? "nav-link-extra" : ""}">${l.label}</a>
+       </li>`
+    );
+    
+    // Insertar botón "Más" en móvil (como 5º elemento)
+    if (visibleLinks.length > mobileMax) {
+      linkLis.splice(mobileMax, 0, `
+        <li class="nav-more-mobile" id="navMoreMobile">
+          <button class="nav-more-btn" id="navMoreMobileBtn" aria-haspopup="true" aria-expanded="false">
+            <span class="mm-label">Más<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
+          </button>
+        </li>`);
     }
-    return true;
-  });
 
-  // ✅ Límites inteligentes: escritorio = 5 + "Más" | móvil = 4 + "Más"
-  const maxLinks = typeof h.maxLinks === "number" ? h.maxLinks : 5;
-  const mobileMax = 4;
-  const extraLinks = visibleLinks.slice(maxLinks);
+    // Renderizar header completo
+    nav.innerHTML = `
+      <a href="#hero" class="nav-logo">${h.logo.text}<span>${h.logo.highlight}</span></a>
+      <ul class="nav-links" id="navLinks">
+        ${linkLis.join("")}
+        ${extraLinks.length ? `
+        <li class="nav-more" id="navMore">
+          <button class="nav-more-btn" id="navMoreBtn" aria-haspopup="true" aria-expanded="false">
+            Más
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="nav-more-panel" id="navMorePanel">
+            ${extraLinks.map(l => `<a href="${l.href}">${l.label}</a>`).join("")}
+          </div>
+        </li>` : ""}
+      </ul>
+      <a href="${h.cta.href}" class="nav-cta">${h.cta.label}</a>
+      <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    `;
 
-  const linkLis = visibleLinks.map((l, i) =>
-    `<li class="${i >= mobileMax ? "m-extra" : ""}">
-       <a href="${l.href}" class="${i >= maxLinks ? "nav-link-extra" : ""}">${l.label}</a>
-     </li>`
-  );
-  // ✅ Botón "Más" del menú móvil (se inserta como 5º elemento)
-  if (visibleLinks.length > mobileMax) {
-    linkLis.splice(mobileMax, 0, `
-      <li class="nav-more-mobile" id="navMoreMobile">
-        <button class="nav-more-btn" id="navMoreMobileBtn" aria-haspopup="true" aria-expanded="false">
-          <span class="mm-label">Más<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>
-        </button>
-      </li>`);
-  }
+    // Referencias a elementos
+    const hamburger = $("#hamburger");
+    const navLinks = $("#navLinks");
+    const header = $("#header");
+    const moreWrap = $("#navMore");
+    const moreBtn = $("#navMoreBtn");
+    const moreMobileBtn = $("#navMoreMobileBtn");
 
-  nav.innerHTML = `
-    <a href="#hero" class="nav-logo">${h.logo.text}<span>${h.logo.highlight}</span></a>
-    <ul class="nav-links" id="navLinks">
-      ${linkLis.join("")}
-      ${extraLinks.length ? `
-      <li class="nav-more" id="navMore">
-        <button class="nav-more-btn" id="navMoreBtn" aria-haspopup="true" aria-expanded="false">
-          Más
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="nav-more-panel" id="navMorePanel">
-          ${extraLinks.map(l => `<a href="${l.href}">${l.label}</a>`).join("")}
-        </div>
-      </li>` : ""}
-    </ul>
-    <a href="${h.cta.href}" class="nav-cta">${h.cta.label}</a>
-    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  `;
+    // Función para cerrar menú "Más" en móvil
+    const closeMobileMore = () => {
+      if (navLinks) navLinks.classList.remove("more-open");
+      if (moreMobileBtn) moreMobileBtn.setAttribute("aria-expanded", "false");
+    };
 
-  const hamburger = $("#hamburger");
-  const navLinks = $("#navLinks");
-  const header = $("#header");
-  const moreWrap = $("#navMore");
-  const moreBtn = $("#navMoreBtn");
-  const moreMobileBtn = $("#navMoreMobileBtn");
+    // Toggle menú hamburguesa
+    if (hamburger && navLinks && header) {
+      hamburger.addEventListener("click", () => {
+        const isOpen = navLinks.classList.contains("open");
+        if (isOpen) {
+          navLinks.classList.remove("open");
+          hamburger.classList.remove("active");
+          header.classList.remove("menu-open");
+          document.body.style.overflow = "";
+          closeMobileMore();
+        } else {
+          navLinks.classList.add("open");
+          hamburger.classList.add("active");
+          header.classList.add("menu-open");
+          document.body.style.overflow = "hidden";
+        }
+      });
+    }
 
-  const closeMobileMore = () => {
-    if (navLinks) navLinks.classList.remove("more-open");
-    if (moreMobileBtn) moreMobileBtn.setAttribute("aria-expanded", "false");
-  };
+    // "Más" del MÓVIL: despliega el resto de enlaces
+    if (moreMobileBtn && navLinks) {
+      moreMobileBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = navLinks.classList.toggle("more-open");
+        moreMobileBtn.setAttribute("aria-expanded", String(open));
+      });
+    }
 
-  if (hamburger && navLinks && header) {
-    hamburger.addEventListener("click", () => {
-      const isOpen = navLinks.classList.contains("open");
-      if (isOpen) {
-        navLinks.classList.remove("open");
-        hamburger.classList.remove("active");
-        header.classList.remove("menu-open");
+    // "Más" del ESCRITORIO (dropdown)
+    if (moreWrap && moreBtn) {
+      const closeMore = () => {
+        moreWrap.classList.remove("open");
+        moreBtn.setAttribute("aria-expanded", "false");
+      };
+      moreBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const open = moreWrap.classList.toggle("open");
+        moreBtn.setAttribute("aria-expanded", String(open));
+      });
+      // Cerrar al hacer clic fuera
+      document.addEventListener("click", (e) => {
+        if (moreWrap.classList.contains("open") && !moreWrap.contains(e.target)) closeMore();
+      });
+      // Cerrar con Escape
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeMore();
+      });
+      // Cerrar al hacer clic en un enlace
+      $$("#navMorePanel a").forEach(a => a.addEventListener("click", closeMore));
+    }
+
+    // Cerrar menú al hacer clic en un enlace
+    $$(".nav-links a").forEach(a => {
+      a.addEventListener("click", () => {
+        if (hamburger) hamburger.classList.remove("active");
+        if (navLinks) navLinks.classList.remove("open");
+        if (header) header.classList.remove("menu-open");
         document.body.style.overflow = "";
         closeMobileMore();
-      } else {
-        navLinks.classList.add("open");
-        hamburger.classList.add("active");
-        header.classList.add("menu-open");
-        document.body.style.overflow = "hidden";
-      }
+      });
     });
+
+    // Agregar clase "scrolled" al hacer scroll
+    window.addEventListener("scroll", () => {
+      const headerEl = $("#header");
+      if (headerEl) headerEl.classList.toggle("scrolled", window.scrollY > 80);
+    }, { passive: true });
   }
 
-  // ✅ "Más" del MÓVIL: despliega el resto de enlaces
-  if (moreMobileBtn && navLinks) {
-    moreMobileBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const open = navLinks.classList.toggle("more-open");
-      moreMobileBtn.setAttribute("aria-expanded", String(open));
-    });
-  }
-
-  // "Más" del ESCRITORIO (abrir/cerrar)
-  if (moreWrap && moreBtn) {
-    const closeMore = () => {
-      moreWrap.classList.remove("open");
-      moreBtn.setAttribute("aria-expanded", "false");
-    };
-    moreBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const open = moreWrap.classList.toggle("open");
-      moreBtn.setAttribute("aria-expanded", String(open));
-    });
-    document.addEventListener("click", (e) => {
-      if (moreWrap.classList.contains("open") && !moreWrap.contains(e.target)) closeMore();
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeMore();
-    });
-    $$("#navMorePanel a").forEach(a => a.addEventListener("click", closeMore));
-  }
-
-  $$(".nav-links a").forEach(a => {
-    a.addEventListener("click", () => {
-      if (hamburger) hamburger.classList.remove("active");
-      if (navLinks) navLinks.classList.remove("open");
-      if (header) header.classList.remove("menu-open");
-      document.body.style.overflow = "";
-      closeMobileMore();
-    });
-  });
-
-  window.addEventListener("scroll", () => {
-    const headerEl = $("#header");
-    if (headerEl) headerEl.classList.toggle("scrolled", window.scrollY > 80);
-  }, { passive: true });
-}
-
-  // ─── HERO ────────────────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🏠 HERO (sección principal)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildHero() {
     if (!isBlockEnabled("hero")) {
       const section = $("#hero");
@@ -328,10 +415,11 @@ function buildHeader() {
     const bg = $("#heroBg");
     const content = $("#heroContent");
 
+    // Aplicar imagen de fondo
     if (bg) bg.style.backgroundImage = `url(${h.backgroundImage})`;
     if (!content) return;
 
-    // ✅ FA: icono flecha abajo en el scroll indicator
+    // Construir contenido del hero
     content.innerHTML = `
       <p class="hero-eyebrow">${h.eyebrow}</p>
       <h1 class="hero-title">
@@ -355,8 +443,10 @@ function buildHeader() {
     `;
   }
 
+  // Animar elementos del hero después del loader
   function animateHero() {
     const lines = $$(".hero-title .line-inner");
+    // Animar líneas del título con delay escalonado
     lines.forEach((line, i) => {
       setTimeout(() => {
         line.style.transition = `transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)`;
@@ -364,6 +454,7 @@ function buildHeader() {
       }, 200 + i * 150);
     });
 
+    // Animar eyebrow (texto pequeño arriba)
     setTimeout(() => {
       const eyebrow = $(".hero-eyebrow");
       if (eyebrow) {
@@ -373,6 +464,7 @@ function buildHeader() {
       }
     }, 100);
 
+    // Animar subtítulo
     setTimeout(() => {
       const sub = $(".hero-subtitle");
       if (sub) {
@@ -382,6 +474,7 @@ function buildHeader() {
       }
     }, 700);
 
+    // Animar botón CTA
     setTimeout(() => {
       const cta = $(".hero-cta");
       if (cta) {
@@ -391,6 +484,7 @@ function buildHeader() {
       }
     }, 900);
 
+    // Animar indicador de scroll
     setTimeout(() => {
       const si = $("#scrollIndicator");
       if (si) {
@@ -400,7 +494,9 @@ function buildHeader() {
     }, 1400);
   }
 
-  // ─── TYPEWRITER ──────────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ⌨️ TYPEWRITER (efecto máquina de escribir)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initTypewriter() {
     if (!isBlockEnabled("hero")) return;
     const words = C.hero?.title?.typewriterWords;
@@ -411,6 +507,7 @@ function buildHeader() {
     const cursorEl = $("#typewriterCursor");
     if (!wordEl || !wrapperEl || !cursorEl) return;
 
+    // Calcular ancho máximo de las palabras para evitar saltos
     const tempSpan = document.createElement("span");
     tempSpan.style.cssText = `
       position: absolute;
@@ -431,20 +528,25 @@ function buildHeader() {
     });
     document.body.removeChild(tempSpan);
 
+    // Aplicar ancho mínimo al wrapper
     wrapperEl.style.minWidth = (maxWidth + 12) + "px";
 
+    // Estado del typewriter
     let wordIndex = 0;
     let charIndex = 0;
     let isDeleting = false;
     let currentText = "";
 
-    const typeSpeed = 120;
-    const deleteSpeed = 60;
-    const pauseEnd = 2200;
-    const pauseStart = 400;
+    // Velocidades de escritura
+    const typeSpeed = 120;      // ms por carácter al escribir
+    const deleteSpeed = 60;     // ms por carácter al borrar
+    const pauseEnd = 2200;      // pausa después de escribir palabra completa
+    const pauseStart = 400;     // pausa antes de empezar nueva palabra
 
     function tick() {
       const currentWord = words[wordIndex];
+      
+      // Escribir o borrar según el estado
       if (isDeleting) {
         currentText = currentWord.substring(0, charIndex - 1);
         charIndex--;
@@ -452,292 +554,345 @@ function buildHeader() {
         currentText = currentWord.substring(0, charIndex + 1);
         charIndex++;
       }
+      
       wordEl.textContent = currentText;
       let speed = isDeleting ? deleteSpeed : typeSpeed;
 
+      // Pausar al completar palabra
       if (!isDeleting && charIndex === currentWord.length) {
         speed = pauseEnd;
         isDeleting = true;
-      } else if (isDeleting && charIndex === 0) {
+      } 
+      // Cambiar a siguiente palabra al borrar todo
+      else if (isDeleting && charIndex === 0) {
         isDeleting = false;
         wordIndex = (wordIndex + 1) % words.length;
         speed = pauseStart;
       }
+      
       setTimeout(tick, speed);
     }
+    
+    // Iniciar después de 1.8 segundos
     setTimeout(() => tick(), 1800);
   }
 
- // ─── BLOQUE 1: HISTORIA (+ PATROCINADORES/CONVENIOS opcional) ───
-function buildStory() {
-  if (!isBlockEnabled("story")) {
-    const section = $("#story");
-    if (section) section.style.display = "none";
-    return;
-  }
-  const s = C.story;
-  const inner = $("#storyInner");
-  if (!inner) return;
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 📖 BLOQUE 1: HISTORIA (+ PATROCINADORES)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  function buildStory() {
+    if (!isBlockEnabled("story")) {
+      const section = $("#story");
+      if (section) section.style.display = "none";
+      return;
+    }
+    const s = C.story;
+    const inner = $("#storyInner");
+    if (!inner) return;
 
-  const partnersOn = s.partners?.enabled && (s.partners.logos || []).length > 0;
-  const logosHTML = partnersOn ? s.partners.logos.map(l => `
-    <span class="partner-logo" title="${escapeHtml(l.name)}">
-      ${l.img
-        ? `<img src="${l.img}" alt="${escapeHtml(l.name)}" loading="lazy">`
-        : `<span class="partner-name">${escapeHtml(l.name)}</span>`}
-    </span>`).join("") : "";
+    // Verificar si hay patrocinadores
+    const partnersOn = s.partners?.enabled && (s.partners.logos || []).length > 0;
+    
+    // Generar HTML de logos
+    const logosHTML = partnersOn ? s.partners.logos.map(l => `
+      <span class="partner-logo" title="${escapeHtml(l.name)}">
+        ${l.img
+          ? `<img src="${l.img}" alt="${escapeHtml(l.name)}" loading="lazy">`
+          : `<span class="partner-name">${escapeHtml(l.name)}</span>`}
+      </span>`).join("") : "";
 
-  inner.innerHTML = `
-    <div class="story-ribbon" id="storyRibbon">
-      <svg viewBox="0 0 400 800" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path class="ribbon-path" d="M380,0 C350,100 320,200 340,300 C360,400 300,500 280,600 C260,700 300,750 320,800" stroke="var(--color-accent)" stroke-width="2" fill="none" opacity="0.3"/>
-        <path class="ribbon-path-shadow" d="M380,0 C350,100 320,200 340,300 C360,400 300,500 280,600 C260,700 300,750 320,800" stroke="var(--color-accent)" stroke-width="8" fill="none" opacity="0.08"/>
-      </svg>
-    </div>
-    <div class="story-grid">
-      <div class="story-image-wrapper reveal-left">
-        <img class="story-image" src="${s.image}" alt="${s.label}" loading="lazy" />
+    // Renderizar bloque de historia
+    inner.innerHTML = `
+      <div class="story-ribbon" id="storyRibbon">
+        <svg viewBox="0 0 400 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="ribbon-path" d="M380,0 C350,100 320,200 340,300 C360,400 300,500 280,600 C260,700 300,750 320,800" stroke="var(--color-accent)" stroke-width="2" fill="none" opacity="0.3"/>
+          <path class="ribbon-path-shadow" d="M380,0 C350,100 320,200 340,300 C360,400 300,500 280,600 C260,700 300,750 320,800" stroke="var(--color-accent)" stroke-width="8" fill="none" opacity="0.08"/>
+        </svg>
       </div>
-      <div class="story-text">
+      <div class="story-grid">
+        <div class="story-image-wrapper reveal-left">
+          <img class="story-image" src="${s.image}" alt="${s.label}" loading="lazy" />
+        </div>
+        <div class="story-text">
+          <span class="section-label reveal">${s.label}</span>
+          <h2 class="section-heading reveal reveal-delay-1">${s.heading}</h2>
+          <hr class="editorial-hr reveal reveal-delay-2" />
+          ${s.paragraphs.map((p, i) => `<p class="reveal reveal-delay-${i + 3}">${p}</p>`).join("")}
+          <div class="story-stat-row">
+            ${s.stats.map((st, i) => `
+              <div class="reveal reveal-delay-${i + 4}">
+                <div class="story-stat-number">${st.number}</div>
+                <div class="story-stat-label">${st.label}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      </div>
+      ${partnersOn ? `
+      <div class="partners-strip reveal reveal-delay-4">
+        <h3 class="partners-title">${escapeHtml(s.partners.title || "Patrocinadores y Convenios")}</h3>
+        <div class="partners-marquee">
+          <div class="partners-track">
+            <div class="partners-group">${logosHTML}</div>
+            <div class="partners-group" aria-hidden="true">${logosHTML}</div>
+          </div>
+        </div>
+      </div>` : ""}
+    `;
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ⚙️ SERVICIOS (carga desde Supabase + markdown)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  
+  // Cargar servicios desde base de datos
+  async function loadServicesFromDB() {
+    try {
+      const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
+      const { data, error } = await sb.from('services').select('*')
+        .eq('is_active', true)
+        .order('sort', { ascending: true })
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      if (data && data.length) {
+        C.services.items = data.map(r => ({
+          number: r.number || '01', 
+          title: r.title,
+          intro: r.intro || '', 
+          desc: r.content || '', 
+          image: r.image || ''
+        }));
+      }
+    } catch (e) { 
+      // Si falla, usar servicios de config.js como respaldo
+    }
+  }
+  
+  // Convertir markdown a texto plano (para previews)
+  function svcPlain(text) {
+    return (text || '')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/\*([^*]+)\*/g, '$1')
+      .replace(/_([^_]+)_/g, '$1')
+      .replace(/^##\s+/gm, '')
+      .replace(/^[-•]\s+/gm, '')
+      .replace(/^>\s?/gm, '');
+  }
+  
+  // Convertir markdown a HTML (para renderizado)
+  function svcInline(text) {
+    let s = escapeHtml(text || '');
+    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>');
+    s = s.replace(/_([^_]+)_/g, '<em>$1</em>');
+    return s;
+  }
+  
+  // Renderizar contenido con formato markdown
+  function renderServiceContent(text) {
+    if (!text) return '';
+    return String(text).split(/\n\n+/).map(par => {
+      const t = par.trim();
+      if (!t) return '';
+      // Subtítulos (##)
+      if (/^##\s/.test(t)) return `<h4 class="svc-h2">${svcInline(t.replace(/^##\s+/, ''))}</h4>`;
+      // Listas (- o •)
+      if (/^[-•]\s/.test(t)) return `<ul class="svc-ul">${t.split('\n').map(l => l.trim()).filter(l => /^[-•]\s/.test(l)).map(l => `<li>${svcInline(l.replace(/^[-•]\s+/, ''))}</li>`).join('')}</ul>`;
+      // Citas (>)
+      if (/^>\s?/.test(t)) return `<blockquote class="svc-quote">${svcInline(t.replace(/^>\s?/gm, ''))}</blockquote>`;
+      // Párrafos normales
+      return `<p>${svcInline(t).replace(/\n/g, '<br>')}</p>`;
+    }).join('');
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🔄 BLOQUE 2: SERVICIOS (carrusel + flip cards)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  function buildServices() {
+    if (!isBlockEnabled("services")) {
+      const section = $("#services");
+      if (section) section.style.display = "none";
+      return;
+    }
+    const s = C.services;
+    const inner = $("#servicesInner");
+    if (!inner) return;
+
+    // Renderizar tarjetas de servicios
+    inner.innerHTML = `
+      <div class="services-header">
         <span class="section-label reveal">${s.label}</span>
         <h2 class="section-heading reveal reveal-delay-1">${s.heading}</h2>
-        <hr class="editorial-hr reveal reveal-delay-2" />
-        ${s.paragraphs.map((p, i) => `<p class="reveal reveal-delay-${i + 3}">${p}</p>`).join("")}
-        <div class="story-stat-row">
-          ${s.stats.map((st, i) => `
-            <div class="reveal reveal-delay-${i + 4}">
-              <div class="story-stat-number">${st.number}</div>
-              <div class="story-stat-label">${st.label}</div>
+        <hr class="editorial-hr center reveal reveal-delay-2" />
+        <p class="reveal reveal-delay-3">${s.subtitle}</p>
+      </div>
+      <div class="services-carousel reveal reveal-delay-2">
+        <div class="services-ghost" id="servicesGhost" aria-hidden="true">01</div>
+        <div class="services-track" id="servicesTrack">
+          ${s.items.map((item, i) => `
+            <div class="service-card">
+              <div class="service-flip">
+                <div class="service-face service-front">
+                  ${item.image ? `<div class="service-bg-img" style="background-image:url('${item.image}')" aria-hidden="true"></div>` : ""}
+                  <div class="service-number">${item.number}</div>
+                  <h3 class="service-title">${item.title}</h3>
+                  <p class="service-desc">${escapeHtml(item.intro || svcPlain(item.desc))}</p>
+                  <button class="service-more" type="button" data-flip="open" aria-expanded="false">Ver más</button>
+                </div>
+                <div class="service-face service-back">
+                  ${item.image ? `<div class="service-bg-img" style="background-image:url('${item.image}')" aria-hidden="true"></div>` : ""}
+                  <div class="service-back-head">
+                    <span class="service-number-sm">${item.number}</span>
+                    <h3 class="service-title">${item.title}</h3>
+                  </div>
+                  <div class="service-desc-full">${renderServiceContent(item.desc)}</div>
+                  <button class="service-more service-back-btn" type="button" data-flip="close">← Volver</button>
+                </div>
+              </div>
             </div>
           `).join("")}
         </div>
       </div>
-    </div>
-    ${partnersOn ? `
-    <div class="partners-strip reveal reveal-delay-4">
-      <h3 class="partners-title">${escapeHtml(s.partners.title || "Patrocinadores y Convenios")}</h3>
-      <div class="partners-marquee">
-        <div class="partners-track">
-          <div class="partners-group">${logosHTML}</div>
-          <div class="partners-group" aria-hidden="true">${logosHTML}</div>
+      <div class="services-meta">
+        <div class="services-progress"><div class="services-progress-fill" id="servicesProgressFill"></div></div>
+        <div class="services-count" id="servicesCount"></div>
+        <div class="services-nav">
+          <button class="services-arrow services-arrow-prev" id="servicesPrev" aria-label="Servicios anteriores">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="services-arrow services-arrow-next" id="servicesNext" aria-label="Más servicios">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
         </div>
       </div>
-    </div>` : ""}
-  `;
-}
+      <div class="services-hint" id="servicesHint">← desliza →</div>
+    `;
 
-// ─── ✅ SERVICIOS desde BD (con formato markdown seguro) ───
-async function loadServicesFromDB() {
-  try {
-    const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
-    const { data, error } = await sb.from('services').select('*')
-      .eq('is_active', true)
-      .order('sort', { ascending: true })
-      .order('created_at', { ascending: true });
-    if (error) throw error;
-    if (data && data.length) {
-      C.services.items = data.map(r => ({
-        number: r.number || '01', title: r.title,
-        intro: r.intro || '', desc: r.content || '', image: r.image || ''
-      }));
+    // Flip de tarjetas (solo una girada a la vez)
+    const unflipAll = (except = null) => {
+      inner.querySelectorAll(".service-card.flipped").forEach(c => {
+        if (c !== except) {
+          c.classList.remove("flipped");
+          const ob = c.querySelector('[data-flip="open"]');
+          if (ob) ob.setAttribute("aria-expanded", "false");
+        }
+      });
+    };
+
+    // Event listeners para botones de flip
+    inner.querySelectorAll("[data-flip]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const card = btn.closest(".service-card");
+        const willOpen = !card.classList.contains("flipped");
+        unflipAll(card); // Cerrar las demás tarjetas
+        card.classList.toggle("flipped", willOpen);
+        btn.setAttribute("aria-expanded", String(willOpen));
+      });
+    });
+
+    // Carrusel + HUD (flechas, contador, progreso, número fantasma)
+    const track = inner.querySelector("#servicesTrack");
+    const prev = inner.querySelector("#servicesPrev");
+    const next = inner.querySelector("#servicesNext");
+    const counter = inner.querySelector("#servicesCount");
+    const progressFill = inner.querySelector("#servicesProgressFill");
+    const ghost = inner.querySelector("#servicesGhost");
+    const hint = inner.querySelector("#servicesHint");
+
+    if (track && prev && next) {
+      const pad = n => String(n).padStart(2, "0");
+      
+      // Calcular ancho de una tarjeta + gap
+      const cardStep = () => {
+        const card = track.querySelector(".service-card");
+        const gap = parseFloat(getComputedStyle(track).columnGap) || 2;
+        return card ? card.getBoundingClientRect().width + gap : 300;
+      };
+      
+      // Flechas de navegación
+      prev.addEventListener("click", () => { unflipAll(); track.scrollBy({ left: -cardStep(), behavior: "smooth" }); });
+      next.addEventListener("click", () => { unflipAll(); track.scrollBy({ left: cardStep(), behavior: "smooth" }); });
+
+      // Clic sobre cualquier zona de otra tarjeta endereza la girada
+      track.addEventListener("click", (e) => {
+        const card = e.target.closest(".service-card");
+        if (card) unflipAll(card);
+      });
+
+      // Actualizar HUD (contador, progreso, flechas)
+      const updateHUD = () => {
+        const total = s.items.length;
+        const stepW = cardStep();
+        const scrollable = track.scrollWidth > track.clientWidth + 1;
+
+        // Mostrar/ocultar flechas y hint según si hay scroll
+        prev.style.display = scrollable ? "" : "none";
+        next.style.display = scrollable ? "" : "none";
+        if (hint) hint.style.display = scrollable ? "" : "none";
+
+        // Si no hay scroll, mostrar contador completo
+        if (!scrollable) {
+          if (counter) counter.innerHTML = `<span class="sc-now">${pad(total)}</span> / ${pad(total)}`;
+          if (progressFill) progressFill.style.transform = "scaleX(1)";
+          return;
+        }
+
+        const max = track.scrollWidth - track.clientWidth - 1;
+        prev.disabled = track.scrollLeft <= 0;
+        next.disabled = track.scrollLeft >= max;
+
+        // Contador inteligente: "02 / 08" si cabe 1 tarjeta, "01–03 / 08" si caben varias
+        const idx = Math.max(0, Math.round(track.scrollLeft / stepW));
+        const perView = Math.max(1, Math.round(track.clientWidth / stepW));
+        const from = idx + 1;
+        const to = Math.min(idx + perView, total);
+        if (counter) counter.innerHTML = `<span class="sc-now">${from === to ? pad(from) : pad(from) + "–" + pad(to)}</span> / ${pad(total)}`;
+
+        // Línea de progreso
+        if (progressFill) progressFill.style.transform = `scaleX(${max > 0 ? track.scrollLeft / max : 0})`;
+
+        // Número fantasma con tick animado
+        const num = (s.items[Math.min(idx, total - 1)] || {}).number || pad(idx + 1);
+        if (ghost && ghost.dataset.num !== num) {
+          ghost.dataset.num = num;
+          ghost.textContent = num;
+          ghost.classList.remove("tick");
+          void ghost.offsetWidth; // Forzar reflow
+          ghost.classList.add("tick");
+        }
+      };
+
+      // Actualizar HUD en scroll
+      track.addEventListener("scroll", () => {
+        if (hint) hint.classList.add("hide");
+        requestAnimationFrame(updateHUD);
+      }, { passive: true });
+      
+      // Actualizar HUD en resize
+      window.addEventListener("resize", updateHUD);
+      updateHUD();
     }
-  } catch (e) { /* respaldo: servicios de config.js */ }
-}
-function svcPlain(text) {
-  return (text || '')
-    .replace(/\*\*([^*]+)\*\*/g, '$1').replace(/\*([^*]+)\*/g, '$1')
-    .replace(/_([^_]+)_/g, '$1').replace(/^##\s+/gm, '')
-    .replace(/^[-•]\s+/gm, '').replace(/^>\s?/gm, '');
-}
-function svcInline(text) {
-  let s = escapeHtml(text || '');
-  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  s = s.replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>');
-  s = s.replace(/_([^_]+)_/g, '<em>$1</em>');
-  return s;
-}
-function renderServiceContent(text) {
-  if (!text) return '';
-  return String(text).split(/\n\n+/).map(par => {
-    const t = par.trim();
-    if (!t) return '';
-    if (/^##\s/.test(t)) return `<h4 class="svc-h2">${svcInline(t.replace(/^##\s+/, ''))}</h4>`;
-    if (/^[-•]\s/.test(t)) return `<ul class="svc-ul">${t.split('\n').map(l => l.trim()).filter(l => /^[-•]\s/.test(l)).map(l => `<li>${svcInline(l.replace(/^[-•]\s+/, ''))}</li>`).join('')}</ul>`;
-    if (/^>\s?/.test(t)) return `<blockquote class="svc-quote">${svcInline(t.replace(/^>\s?/gm, ''))}</blockquote>`;
-    return `<p>${svcInline(t).replace(/\n/g, '<br>')}</p>`;
-  }).join('');
-}
-
-  // ─── BLOQUE 2: SERVICIOS (carrusel wow + flip) ───
-function buildServices() {
-  if (!isBlockEnabled("services")) {
-    const section = $("#services");
-    if (section) section.style.display = "none";
-    return;
   }
-  const s = C.services;
-  const inner = $("#servicesInner");
-  if (!inner) return;
 
-  inner.innerHTML = `
-    <div class="services-header">
-      <span class="section-label reveal">${s.label}</span>
-      <h2 class="section-heading reveal reveal-delay-1">${s.heading}</h2>
-      <hr class="editorial-hr center reveal reveal-delay-2" />
-      <p class="reveal reveal-delay-3">${s.subtitle}</p>
-    </div>
-    <div class="services-carousel reveal reveal-delay-2">
-      <div class="services-ghost" id="servicesGhost" aria-hidden="true">01</div>
-      <div class="services-track" id="servicesTrack">
-        ${s.items.map((item, i) => `
-          <div class="service-card">
-            <div class="service-flip">
-              <div class="service-face service-front">
-                ${item.image ? `<div class="service-bg-img" style="background-image:url('${item.image}')" aria-hidden="true"></div>` : ""}
-                <div class="service-number">${item.number}</div>
-                <h3 class="service-title">${item.title}</h3>
-                <p class="service-desc">${escapeHtml(item.intro || svcPlain(item.desc))}</p>
-                <button class="service-more" type="button" data-flip="open" aria-expanded="false">Ver más</button>
-              </div>
-              <div class="service-face service-back">
-                ${item.image ? `<div class="service-bg-img" style="background-image:url('${item.image}')" aria-hidden="true"></div>` : ""}
-                <div class="service-back-head">
-                  <span class="service-number-sm">${item.number}</span>
-                  <h3 class="service-title">${item.title}</h3>
-                </div>
-                <div class="service-desc-full">${renderServiceContent(item.desc)}</div>
-                <button class="service-more service-back-btn" type="button" data-flip="close">← Volver</button>
-              </div>
-            </div>
-          </div>
-        `).join("")}
-      </div>
-    </div>
-    <div class="services-meta">
-      <div class="services-progress"><div class="services-progress-fill" id="servicesProgressFill"></div></div>
-      <div class="services-count" id="servicesCount"></div>
-      <div class="services-nav">
-        <button class="services-arrow services-arrow-prev" id="servicesPrev" aria-label="Servicios anteriores">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button class="services-arrow services-arrow-next" id="servicesNext" aria-label="Más servicios">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="services-hint" id="servicesHint">← desliza →</div>
-  `;
-
-   // ✅ Flip de tarjetas (solo una girada a la vez)
-  const unflipAll = (except = null) => {
-    inner.querySelectorAll(".service-card.flipped").forEach(c => {
-      if (c !== except) {
-        c.classList.remove("flipped");
-        const ob = c.querySelector('[data-flip="open"]');
-        if (ob) ob.setAttribute("aria-expanded", "false");
-      }
-    });
-  };
-
-  inner.querySelectorAll("[data-flip]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const card = btn.closest(".service-card");
-      const willOpen = !card.classList.contains("flipped");
-      unflipAll(card); // ✅ las demás vuelven a la normalidad
-      card.classList.toggle("flipped", willOpen);
-      btn.setAttribute("aria-expanded", String(willOpen));
-    });
-  });
-
-  // ✅ Carrusel + HUD (flechas, contador, progreso, número fantasma)
-  const track = inner.querySelector("#servicesTrack");
-  const prev = inner.querySelector("#servicesPrev");
-  const next = inner.querySelector("#servicesNext");
-  const counter = inner.querySelector("#servicesCount");
-  const progressFill = inner.querySelector("#servicesProgressFill");
-  const ghost = inner.querySelector("#servicesGhost");
-  const hint = inner.querySelector("#servicesHint");
-
-  if (track && prev && next) {
-    const pad = n => String(n).padStart(2, "0");
-    const cardStep = () => {
-      const card = track.querySelector(".service-card");
-      const gap = parseFloat(getComputedStyle(track).columnGap) || 2;
-      return card ? card.getBoundingClientRect().width + gap : 300;
-    };
-        prev.addEventListener("click", () => { unflipAll(); track.scrollBy({ left: -cardStep(), behavior: "smooth" }); });
-    next.addEventListener("click", () => { unflipAll(); track.scrollBy({ left: cardStep(), behavior: "smooth" }); });
-
-    // ✅ Clic sobre cualquier zona de otra tarjeta endereza la girada
-    track.addEventListener("click", (e) => {
-      const card = e.target.closest(".service-card");
-      if (card) unflipAll(card);
-    });
-
-    const updateHUD = () => {
-      const total = s.items.length;
-      const stepW = cardStep();
-      const scrollable = track.scrollWidth > track.clientWidth + 1;
-
-      // Flechas y hint solo si hay desplazamiento
-      prev.style.display = scrollable ? "" : "none";
-      next.style.display = scrollable ? "" : "none";
-      if (hint) hint.style.display = scrollable ? "" : "none";
-
-      if (!scrollable) {
-        if (counter) counter.innerHTML = `<span class="sc-now">${pad(total)}</span> / ${pad(total)}`;
-        if (progressFill) progressFill.style.transform = "scaleX(1)";
-        return;
-      }
-
-      const max = track.scrollWidth - track.clientWidth - 1;
-      prev.disabled = track.scrollLeft <= 0;
-      next.disabled = track.scrollLeft >= max;
-
-      // ✅ Contador inteligente: "02 / 08" si cabe 1 tarjeta, "01–03 / 08" si caben varias
-      const idx = Math.max(0, Math.round(track.scrollLeft / stepW));
-      const perView = Math.max(1, Math.round(track.clientWidth / stepW));
-      const from = idx + 1;
-      const to = Math.min(idx + perView, total);
-      if (counter) counter.innerHTML = `<span class="sc-now">${from === to ? pad(from) : pad(from) + "–" + pad(to)}</span> / ${pad(total)}`;
-
-      // Línea de progreso
-      if (progressFill) progressFill.style.transform = `scaleX(${max > 0 ? track.scrollLeft / max : 0})`;
-
-      // Número fantasma con tick animado
-      const num = (s.items[Math.min(idx, total - 1)] || {}).number || pad(idx + 1);
-      if (ghost && ghost.dataset.num !== num) {
-        ghost.dataset.num = num;
-        ghost.textContent = num;
-        ghost.classList.remove("tick");
-        void ghost.offsetWidth;
-        ghost.classList.add("tick");
-      }
-    };
-
-    track.addEventListener("scroll", () => {
-      if (hint) hint.classList.add("hide");
-      requestAnimationFrame(updateHUD);
-    }, { passive: true });
-    window.addEventListener("resize", updateHUD);
-    updateHUD();
-  }
-}
-
-  // ─── LUZ QUE CAE EN SERVICIOS ───────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 💡 LUZ QUE CAE EN SERVICIOS (partículas)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initServicesLight() {
     const servicesSection = $("#services");
     if (!servicesSection) return;
 
+    // Crear contenedor de luz
     const lightContainer = document.createElement("div");
     lightContainer.className = "services-light-container";
     const servicesInner = $("#servicesInner");
     servicesInner.insertBefore(lightContainer, servicesInner.firstChild);
 
+    // Crear haz de luz
     const lightBeam = document.createElement("div");
     lightBeam.className = "light-beam";
     lightContainer.appendChild(lightBeam);
 
+    // Crear glow ambiental
     const ambientGlow = document.createElement("div");
     ambientGlow.className = "services-ambient-glow";
     lightContainer.appendChild(ambientGlow);
@@ -749,18 +904,27 @@ function buildServices() {
     let activationTimer = null;
     let particlesActive = false;
 
+    // Crear partícula individual
     function createParticle() {
       if (particles.length >= maxParticles) return;
       const particle = document.createElement("div");
       particle.className = "light-particle";
+      
+      // Posición horizontal aleatoria (30-70% del ancho)
       const startX = 30 + Math.random() * 40;
       particle.style.left = startX + "%";
       particle.style.top = "-10%";
+      
+      // Tamaño aleatorio (1-3px)
       const size = Math.random() * 2 + 1;
       particle.style.width = size + "px";
       particle.style.height = size + "px";
+      
+      // Duración de caída (2-8 segundos)
       const duration = Math.random() * 6 + 2;
+      // Delay antes de empezar (0-2 segundos)
       const delay = Math.random() * 2;
+      // Desplazamiento horizontal (-50 a 50px)
       const driftX = (Math.random() - 0.5) * 100;
 
       particle.style.setProperty("--fall-duration", duration + "s");
@@ -769,7 +933,10 @@ function buildServices() {
       lightContainer.appendChild(particle);
       particles.push(particle);
 
+      // Iniciar animación después de 50ms
       setTimeout(() => particle.classList.add("animate"), 50);
+      
+      // Remover partícula después de que termine
       setTimeout(() => {
         particle.remove();
         const index = particles.indexOf(particle);
@@ -777,9 +944,10 @@ function buildServices() {
       }, (duration + delay) * 1000);
     }
 
+    // Programar siguiente partícula
     function scheduleNextParticle() {
       if (!particlesActive) return;
-      const delay = Math.random() * 1500 + 1000;
+      const delay = Math.random() * 1500 + 1000; // 1-2.5 segundos
       particleTimer = setTimeout(() => {
         createParticle();
         particleTimer = null;
@@ -787,12 +955,14 @@ function buildServices() {
       }, delay);
     }
 
+    // Iniciar sistema de partículas
     function startParticles() {
       if (particlesActive) return;
       particlesActive = true;
       scheduleNextParticle();
     }
 
+    // Detener sistema de partículas
     function stopParticles() {
       particlesActive = false;
       if (particleTimer) {
@@ -801,6 +971,7 @@ function buildServices() {
       }
     }
 
+    // Observer para activar/desactivar según visibilidad
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -819,6 +990,7 @@ function buildServices() {
     }, { threshold: 0.2 });
     observer.observe(servicesSection);
 
+    // Pausar partículas cuando la pestaña no está visible
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         stopParticles();
@@ -829,7 +1001,9 @@ function buildServices() {
     });
   }
 
-  // ─── BLOQUE 3: GALERÍA ──────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🖼️ BLOQUE 3: GALERÍA (carrusel parallax)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildGallery() {
     if (!isBlockEnabled("gallery")) {
       const section = $("#gallery");
@@ -868,12 +1042,14 @@ function buildServices() {
     `;
   }
 
+  // Partículas en galería (al hacer hover)
   function initGalleryParticles() {
     const slides = $$(".gallery-slide");
     slides.forEach((slide, index) => {
       const particlesContainer = $(`#galleryParticles-${index}`);
       if (!particlesContainer) return;
 
+      // Crear 12 partículas por slide
       for (let i = 0; i < 12; i++) {
         const particle = document.createElement("div");
         particle.className = "gallery-particle";
@@ -890,6 +1066,7 @@ function buildServices() {
         particlesContainer.appendChild(particle);
       }
 
+      // Efecto de luz que sigue al mouse
       slide.addEventListener("mousemove", (e) => {
         const rect = slide.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -897,13 +1074,13 @@ function buildServices() {
         const light = $(".gallery-slide-light", slide);
         if (light) {
           const rgb = getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim() || '201, 169, 110';
-           light.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(${rgb}, 0.3) 0%, rgba(${rgb}, 0.1) 30%, transparent 60%)`;
+          light.style.background = `radial-gradient(circle at ${x}% ${y}%, rgba(${rgb}, 0.3) 0%, rgba(${rgb}, 0.1) 30%, transparent 60%)`;
         }
       });
     });
   }
 
-  // ─── CARRUSEL PARALLAX DE GALERÍA ───────
+  // Carrusel de galería con snap y parallax
   function initGalleryCarousel() {
     const wrapper = $("#galleryCarouselWrapper");
     const carousel = $("#galleryCarousel");
@@ -912,6 +1089,7 @@ function buildServices() {
 
     const slides = $$(".gallery-slide", carousel);
 
+    // Estado del carrusel
     let isDragging = false;
     let startX = 0;
     let startTranslate = 0;
@@ -924,6 +1102,7 @@ function buildServices() {
     let snapAnimating = false;
     let snapFallbackTimer = null;
 
+    // Calcular posiciones de snap (centrar cada slide)
     function calculateSnapPositions() {
       snapPositions = [];
       const wrapperCenter = wrapper.offsetWidth / 2;
@@ -936,16 +1115,19 @@ function buildServices() {
       });
     }
 
+    // Obtener límites de traslación
     function getLimits() {
       const maxTranslate = 0;
       const minTranslate = -(carousel.scrollWidth - wrapper.offsetWidth);
       return { minTranslate, maxTranslate };
     }
 
+    // Actualizar visuales (transform, parallax, opacidad, escala)
     function updateVisuals(x, isSnapping = false) {
       const { minTranslate, maxTranslate } = getLimits();
 
       let finalX = x;
+      // Elasticidad en los bordes
       if (!isSnapping) {
         if (x > maxTranslate) finalX = maxTranslate + (x - maxTranslate) * 0.3;
         else if (x < minTranslate) finalX = minTranslate + (x - minTranslate) * 0.3;
@@ -963,34 +1145,40 @@ function buildServices() {
       const wrapperRect = wrapper.getBoundingClientRect();
       const wrapperCenterX = wrapperRect.left + wrapperRect.width / 2;
 
+      // Aplicar efectos a cada slide
       slides.forEach(slide => {
         const rect = slide.getBoundingClientRect();
         const slideCenterX = rect.left + rect.width / 2;
         const distance = slideCenterX - wrapperCenterX;
         const normalized = distance / (wrapperRect.width / 2);
 
+        // Parallax en imagen
         const img = $(".gallery-slide-img", slide);
         if (img) {
           const parallaxOffset = normalized * 30;
           img.style.transform = `translate3d(${parallaxOffset}px, 0, 0) scale(1.2)`;
         }
 
+        // Escala y opacidad según distancia al centro
         const scale = 1 - Math.abs(normalized) * 0.15;
         const opacity = 1 - Math.abs(normalized) * 0.4;
         slide.style.transform = `scale(${clamp(scale, 0.85, 1)})`;
         slide.style.opacity = clamp(opacity, 0.5, 1);
       });
 
+      // Actualizar barra de progreso
       if (progressFill && minTranslate !== 0) {
         const progress = Math.abs(finalX) / Math.abs(minTranslate);
         progressFill.style.width = (clamp(progress, 0, 1) * 100) + "%";
       }
     }
 
+    // Obtener coordenada X del evento (mouse o touch)
     function getX(e) {
       return e.type.includes("mouse") ? e.clientX : e.touches[0].clientX;
     }
 
+    // Inicio del drag
     function onStart(e) {
       if (e.type === 'mousedown') e.preventDefault();
       isDragging = true;
@@ -1005,6 +1193,7 @@ function buildServices() {
       clearTimeout(snapFallbackTimer);
     }
 
+    // Movimiento durante drag
     function onMove(e) {
       if (!isDragging) return;
       if (e.type === 'touchmove' && e.cancelable) e.preventDefault();
@@ -1014,6 +1203,7 @@ function buildServices() {
       const now = Date.now();
       const dt = now - lastTime;
 
+      // Calcular velocidad
       if (dt > 0) {
         velocity = (x - lastX) / dt * 16;
         velocity = clamp(velocity, -50, 50);
@@ -1022,6 +1212,7 @@ function buildServices() {
       lastX = x;
       lastTime = now;
 
+      // Actualizar posición con requestAnimationFrame
       if (!rafId) {
         rafId = requestAnimationFrame(() => {
           updateVisuals(startTranslate + deltaX, false);
@@ -1030,16 +1221,19 @@ function buildServices() {
       }
     }
 
+    // Fin del drag (snap al slide más cercano)
     function onEnd() {
       if (!isDragging) return;
       isDragging = false;
 
+      // Proyectar posición final con inercia
       const projected = currentTranslate + (velocity * 15);
       const closestSnap = getClosestSnap(projected);
 
       snapAnimating = true;
       updateVisuals(closestSnap, true);
 
+      // Fallback por si la animación no termina
       clearTimeout(snapFallbackTimer);
       snapFallbackTimer = setTimeout(() => {
         if (snapAnimating) {
@@ -1050,6 +1244,7 @@ function buildServices() {
       }, 900);
     }
 
+    // Limpiar estado al terminar transición
     carousel.addEventListener("transitionend", (e) => {
       if (e.target !== carousel) return;
       carousel.classList.remove("is-snapping");
@@ -1058,15 +1253,18 @@ function buildServices() {
       clearTimeout(snapFallbackTimer);
     });
 
+    // Event listeners para mouse
     wrapper.addEventListener("mousedown", onStart);
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onEnd);
     wrapper.addEventListener("mouseleave", onEnd);
 
+    // Event listeners para touch
     wrapper.addEventListener("touchstart", onStart, { passive: true });
     wrapper.addEventListener("touchmove", onMove, { passive: false });
     wrapper.addEventListener("touchend", onEnd);
 
+    // Prevenir clics durante drag
     slides.forEach(slide => {
       slide.addEventListener("click", (e) => {
         if (isDragging || snapAnimating || Math.abs(velocity) > 2) {
@@ -1076,6 +1274,7 @@ function buildServices() {
       }, true);
     });
 
+    // Recalcular cuando las imágenes carguen
     function recalculateWhenImagesLoad() {
       const images = $$(".gallery-slide-img", carousel);
       if (!images.length) return;
@@ -1104,6 +1303,7 @@ function buildServices() {
       });
     }
 
+    // Encontrar posición de snap más cercana
     function getClosestSnap(x) {
       let closest = snapPositions[0] || 0;
       let minDistance = Infinity;
@@ -1117,6 +1317,7 @@ function buildServices() {
       return closest;
     }
 
+    // Inicializar carrusel
     function init() {
       calculateSnapPositions();
       updateVisuals(snapPositions[0] || 0, true);
@@ -1125,6 +1326,7 @@ function buildServices() {
     init();
     recalculateWhenImagesLoad();
 
+    // Recalcular cuando las fuentes estén listas
     if (document.fonts && document.fonts.ready) {
       document.fonts.ready.then(() => {
         calculateSnapPositions();
@@ -1134,6 +1336,7 @@ function buildServices() {
       });
     }
 
+    // Recalcular en resize
     let resizeTimer;
     window.addEventListener("resize", () => {
       clearTimeout(resizeTimer);
@@ -1144,7 +1347,9 @@ function buildServices() {
     });
   }
 
-  // ─── BLOQUE 4: FILOSOFÍA ────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 💬 BLOQUE 4: FILOSOFÍA (cita + CTA)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildPhilosophy() {
     if (!isBlockEnabled("philosophy")) {
       const section = $("#philosophy");
@@ -1173,7 +1378,9 @@ function buildServices() {
     `;
   }
 
-  // ─── BLOQUE 5: E-COMMERCE ───────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🛍️ BLOQUE 5: E-COMMERCE (acceso a tienda)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildEcommerce() {
     if (!isBlockEnabled("ecommerce")) {
       const section = $("#ecommerce");
@@ -1191,7 +1398,6 @@ function buildServices() {
     const inner = $("#ecommerceInner");
     if (!inner) return;
 
-    // ✅ FA: icono shopping-bag como fondo decorativo (reemplaza SVG gigante)
     inner.innerHTML = `
       <div class="ecommerce-bg-icon" aria-hidden="true">
         <i class="fa-solid fa-bag-shopping"></i>
@@ -1209,6 +1415,7 @@ function buildServices() {
     `;
   }
 
+  // Partículas flotantes en e-commerce
   function initEcommerceParticles() {
     const section = $("#ecommerce");
     if (!section) return;
@@ -1217,6 +1424,7 @@ function buildServices() {
     particlesContainer.className = "ecommerce-particles";
     section.appendChild(particlesContainer);
 
+    // Crear 20 partículas con propiedades aleatorias
     for (let i = 0; i < 20; i++) {
       const particle = document.createElement("div");
       particle.className = "ecommerce-particle";
@@ -1231,6 +1439,7 @@ function buildServices() {
       particlesContainer.appendChild(particle);
     }
 
+    // Activar partículas cuando la sección sea visible
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1242,10 +1451,12 @@ function buildServices() {
     observer.observe(section);
   }
 
-  // ─── BLOQUE: TESTIMONIOS ───
-  let tAll = [];
-  let tRendered = 0;
-  const T_BATCH = 6;
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ⭐ BLOQUE: TESTIMONIOS (carga desde Supabase)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  let tAll = [];           // Todos los testimonios cargados
+  let tRendered = 0;       // Cuántos se han renderizado
+  const T_BATCH = 6;       // Cuántos renderizar por lote
 
   function buildTestimonials() {
     const section = $("#testimonials");
@@ -1257,7 +1468,6 @@ function buildServices() {
     const inner = $("#testimonialsInner");
     if (!inner) return;
 
-    // ✅ FA: flechas de navegación del carrusel
     inner.innerHTML = `
       <div class="testimonials-header">
         <span class="section-label reveal">${t.label}</span>
@@ -1276,18 +1486,22 @@ function buildServices() {
       </div>
     `;
 
+    // Activar animaciones reveal inmediatamente
     inner.querySelectorAll(".reveal").forEach(el => el.classList.add("visible"));
 
     const track = $("#testimonialsTrack");
     const behavior = prefersReducedMotion ? "auto" : "smooth";
     const prev = $("#testimonialsPrev");
     const next = $("#testimonialsNext");
+    
+    // Flechas de navegación
     if (prev) prev.addEventListener("click", () => track.scrollBy({ left: -360, behavior }));
     if (next) next.addEventListener("click", () => {
       renderTestimonialBatch();
       track.scrollBy({ left: 360, behavior });
     });
 
+    // Cargar testimonios cuando la sección sea visible
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1298,16 +1512,19 @@ function buildServices() {
     }, { threshold: 0.1, rootMargin: "200px 0px" });
     observer.observe(section);
 
+    // Cargar más testimonios al llegar al final
     track.addEventListener("scroll", () => {
       const nearEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 400;
       if (nearEnd) renderTestimonialBatch();
     }, { passive: true });
   }
 
+  // Cargar testimonios desde Supabase
   async function loadTestimonials() {
     const track = $("#testimonialsTrack");
     if (!track) return;
     if (typeof window.supabase === "undefined" || !C.supabase?.url) return;
+    
     try {
       const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
       const { data, error } = await sb
@@ -1316,32 +1533,41 @@ function buildServices() {
         .eq("is_active", true)
         .order("created_at", { ascending: false })
         .limit(30);
+      
       if (error) throw error;
+      
       if (!data || !data.length) {
         track.innerHTML = '<div class="testimonials-empty">Muy pronto compartiremos opiniones reales de nuestros clientes.</div>';
         return;
       }
+      
       tAll = data;
       tRendered = 0;
       renderTestimonialBatch();
+      // Cargar segundo lote después de 2.5 segundos
       setTimeout(renderTestimonialBatch, 2500);
     } catch (e) {
       track.innerHTML = '<div class="testimonials-empty"></div>';
     }
   }
 
+  // Renderizar lote de testimonios
   function renderTestimonialBatch() {
     const track = $("#testimonialsTrack");
     if (!track || tRendered >= tAll.length) return;
+    
     const batch = tAll.slice(tRendered, tRendered + T_BATCH);
     batch.forEach(item => track.insertAdjacentHTML("beforeend", testimonialCard(item)));
     tRendered += batch.length;
+    
+    // Agregar fallback a imágenes que fallen
     track.querySelectorAll(".testimonial-img:not([data-fb])").forEach(img => {
       img.dataset.fb = "1";
       img.addEventListener("error", function () { this.style.display = "none"; });
     });
   }
 
+  // Generar HTML de tarjeta de testimonio
   function testimonialCard(t) {
     const rating = clamp(Number(t.rating) || 5, 1, 5);
     const photo = (t.images && t.images.length) ? t.images[0] : null;
@@ -1354,7 +1580,6 @@ function buildServices() {
            <span class="testimonial-quote-mark">"</span>
          </div>`;
 
-    // ✅ FA: check-circle como sello "Real" (juvenil y confiable)
     return `<article class="testimonial-card">
       ${photoHTML}
       <div class="testimonial-body">
@@ -1377,7 +1602,9 @@ function buildServices() {
     </article>`;
   }
 
-  // ─── BLOQUE 6: BLOG ─────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 📝 BLOQUE 6: BLOG (acceso a blog.html)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildBlog() {
     if (!isBlockEnabled("blog")) {
       const section = $("#blog");
@@ -1391,7 +1618,6 @@ function buildServices() {
     const inner = $("#blogInner");
     if (!inner) return;
 
-    // ✅ FA: icono libro abierto como fondo decorativo del blog (reemplaza SVG)
     inner.innerHTML = `
       <div class="blog-ink-bg"></div>
       <div class="blog-particles-container" id="blogParticles"></div>
@@ -1411,9 +1637,11 @@ function buildServices() {
     `;
   }
 
+  // Efecto de tinta que aparece al hacer scroll
   function initBlogInkEffect() {
     const section = $("#blog");
     if (!section) return;
+    
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1425,9 +1653,11 @@ function buildServices() {
     observer.observe(section);
   }
 
+  // Partículas flotantes en blog
   function initBlogParticles() {
     const container = $("#blogParticles");
     if (!container) return;
+    
     for (let i = 0; i < 25; i++) {
       const particle = document.createElement("div");
       particle.className = "blog-particle";
@@ -1442,9 +1672,11 @@ function buildServices() {
     }
   }
 
+  // Parallax del icono de fondo del blog
   function initBlogParallax() {
     const icon = $("#blogBgIcon");
     if (!icon) return;
+    
     let ticking = false;
     window.addEventListener("scroll", () => {
       if (!ticking) {
@@ -1465,7 +1697,9 @@ function buildServices() {
     }, { passive: true });
   }
 
-  // ─── BLOQUE 7: CONTACTO ─────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 📬 BLOQUE 7: CONTACTO (formulario + FormSubmit)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildContact() {
     if (!isBlockEnabled("contact")) {
       const section = $("#contact");
@@ -1479,7 +1713,6 @@ function buildServices() {
     const inner = $("#contactInner");
     if (!inner) return;
 
-    // ✅ FA: icono sobre como fondo decorativo (reemplaza SVG)
     inner.innerHTML = `
       <div class="contact-waves">
         <svg viewBox="0 0 1440 400" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -1520,6 +1753,8 @@ function buildServices() {
         <div class="form-message" id="formMessage"></div>
       </div>
     `;
+    
+    // Inicializar efectos después de renderizar
     setTimeout(() => {
       initContactParticles();
       initContactParallax();
@@ -1527,9 +1762,11 @@ function buildServices() {
     }, 100);
   }
 
+  // Partículas flotantes en contacto
   function initContactParticles() {
     const container = $("#contactParticles");
     if (!container) return;
+    
     for (let i = 0; i < 20; i++) {
       const particle = document.createElement("div");
       particle.className = "contact-particle";
@@ -1544,9 +1781,11 @@ function buildServices() {
     }
   }
 
+  // Parallax del icono de fondo de contacto
   function initContactParallax() {
     const icon = $("#contactBgIcon");
     if (!icon) return;
+    
     let ticking = false;
     window.addEventListener("scroll", () => {
       if (!ticking) {
@@ -1567,17 +1806,20 @@ function buildServices() {
     }, { passive: true });
   }
 
+  // Inicializar formulario de contacto con validaciones
   function initContactForm() {
     const form = $("#contactForm");
     const messageEl = $("#formMessage");
     if (!form) return;
 
+    // Guardar timestamp de carga del formulario
     const loadedAtInput = $("#formLoadedAt");
     if (loadedAtInput) loadedAtInput.value = Date.now().toString();
 
     let lastSubmitTime = 0;
-    const MIN_SUBMIT_INTERVAL = 3000;
+    const MIN_SUBMIT_INTERVAL = 3000; // 3 segundos entre envíos
 
+    // Efecto visual de "escribiendo"
     const inputs = $$(".form-input, .form-textarea", form);
     inputs.forEach(input => {
       input.addEventListener("input", () => {
@@ -1587,15 +1829,19 @@ function buildServices() {
       });
     });
 
+    // Validar formato de email
     function isValidEmail(email) {
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
       return re.test(email);
     }
 
+    // Detectar spam en texto
     function looksLikeSpam(text) {
       if (!text) return false;
       const lower = text.toLowerCase();
+      // Detectar URLs largas
       if (/https?:\/\/|www\.|\.[a-z]{2,4}\/[a-z]/i.test(text) && text.length > 50) return true;
+      // Palabras clave de spam
       const spamWords = ['viagra', 'casino', 'poker', 'lottery', 'winner', 'prize', 'bitcoin', 'crypto investment', 'earn $', 'make money fast'];
       return spamWords.some(word => lower.includes(word));
     }
@@ -1607,6 +1853,7 @@ function buildServices() {
       const submitBtn = $(".contact-submit", form);
       const originalText = submitBtn.querySelector("span").textContent;
 
+      // Honeypot anti-bot
       if (data.website_url && data.website_url.trim() !== "") {
         messageEl.textContent = C.contact.form.errorMessage;
         messageEl.className = "form-message error visible";
@@ -1614,6 +1861,7 @@ function buildServices() {
         return;
       }
 
+      // Validar tiempo mínimo desde carga
       const loadedAt = parseInt(data.form_loaded_at || "0");
       const timeSinceLoad = Date.now() - loadedAt;
       if (timeSinceLoad < 1500) {
@@ -1623,6 +1871,7 @@ function buildServices() {
         return;
       }
 
+      // Validar intervalo entre envíos
       const now = Date.now();
       if (now - lastSubmitTime < MIN_SUBMIT_INTERVAL) {
         const waitSec = Math.ceil((MIN_SUBMIT_INTERVAL - (now - lastSubmitTime)) / 1000);
@@ -1632,6 +1881,7 @@ function buildServices() {
         return;
       }
 
+      // Validaciones de campos
       if (!data.name || data.name.trim().length < 2) {
         messageEl.textContent = "Por favor, ingresa tu nombre (mínimo 2 caracteres).";
         messageEl.className = "form-message error visible";
@@ -1663,6 +1913,7 @@ function buildServices() {
         return;
       }
 
+      // Enviar formulario
       submitBtn.querySelector("span").textContent = "Enviando...";
       submitBtn.disabled = true;
       lastSubmitTime = now;
@@ -1702,100 +1953,111 @@ function buildServices() {
     });
   }
 
-  // ─── FOOTER ──────────────────────────────
-function buildFooter() {
-  if (!isBlockEnabled("footer")) {
-    const section = $("#footer");
-    if (section) section.style.display = "none";
-    return;
-  }
-  const f = C.footer;
-  if (!f) return;
-  const inner = $("#footerInner");
-  if (!inner) return;
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🦶 FOOTER (con colapso "Más")
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  function buildFooter() {
+    if (!isBlockEnabled("footer")) {
+      const section = $("#footer");
+      if (section) section.style.display = "none";
+      return;
+    }
+    const f = C.footer;
+    if (!f) return;
+    const inner = $("#footerInner");
+    if (!inner) return;
 
-  const visibleColumns = (f.columns || []).map(col => {
-    const visibleLinks = (col.links || []).filter(link => {
-      const href = link.href || "";
-      if (href.startsWith("#") && href.length > 1) {
-        const blockId = href.replace("#", "");
-        return isBlockEnabled(blockId);
-      }
-      return true;
-    });
-    return { ...col, links: visibleLinks };
-  }).filter(col => col.links.length > 0);
+    // Filtrar columnas según bloques habilitados
+    const visibleColumns = (f.columns || []).map(col => {
+      const visibleLinks = (col.links || []).filter(link => {
+        const href = link.href || "";
+        if (href.startsWith("#") && href.length > 1) {
+          const blockId = href.replace("#", "");
+          return isBlockEnabled(blockId);
+        }
+        return true;
+      });
+      return { ...col, links: visibleLinks };
+    }).filter(col => col.links.length > 0);
 
-  // ✅ Colapso "Más": primeros 3 enlaces visibles; el resto detrás de "Más"
-  const FOOTER_VISIBLE = 3;
+    // Colapso "Más": primeros 3 enlaces visibles; el resto detrás de "Más"
+    const FOOTER_VISIBLE = 3;
 
-  inner.innerHTML = `
-    <div class="footer-top">
-      <div class="footer-brand">
-        <div class="footer-brand-name">${f.brand.name}<span>${f.brand.highlight}</span></div>
-        <p class="footer-brand-desc">${f.brand.desc}</p>
+    inner.innerHTML = `
+      <div class="footer-top">
+        <div class="footer-brand">
+          <div class="footer-brand-name">${f.brand.name}<span>${f.brand.highlight}</span></div>
+          <p class="footer-brand-desc">${f.brand.desc}</p>
+        </div>
+        ${visibleColumns.map(col => {
+          const hasMore = col.links.length > FOOTER_VISIBLE + 1;
+          const shown   = hasMore ? col.links.slice(0, FOOTER_VISIBLE) : col.links;
+          const hidden  = hasMore ? col.links.slice(FOOTER_VISIBLE) : [];
+          return `
+            <div class="footer-col">
+              <h4 class="footer-col-title">${col.title}</h4>
+              <ul>
+                ${shown.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join("")}
+                ${hasMore ? `
+                  <li class="footer-more-wrap">
+                    <button class="footer-more-btn" aria-haspopup="true" aria-expanded="false">
+                      Más
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <ul class="footer-more-panel">
+                      ${hidden.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join("")}
+                    </ul>
+                  </li>` : ""}
+              </ul>
+            </div>`;
+        }).join("")}
       </div>
-      ${visibleColumns.map(col => {
-        const hasMore = col.links.length > FOOTER_VISIBLE + 1;
-        const shown   = hasMore ? col.links.slice(0, FOOTER_VISIBLE) : col.links;
-        const hidden  = hasMore ? col.links.slice(FOOTER_VISIBLE) : [];
-        return `
-          <div class="footer-col">
-            <h4 class="footer-col-title">${col.title}</h4>
-            <ul>
-              ${shown.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join("")}
-              ${hasMore ? `
-                <li class="footer-more-wrap">
-                  <button class="footer-more-btn" aria-haspopup="true" aria-expanded="false">
-                    Más
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-                  </button>
-                  <ul class="footer-more-panel">
-                    ${hidden.map(l => `<li><a href="${l.href}">${l.label}</a></li>`).join("")}
-                  </ul>
-                </li>` : ""}
-            </ul>
-          </div>`;
-      }).join("")}
-    </div>
-    <div class="footer-bottom">
-      <span class="footer-copy">${f.copyright}</span>
-      <div class="footer-socials">${(C.socials || []).map(s => `<a href="${s.href}" target="_blank" rel="noopener noreferrer">${s.label}</a>`).join("")}</div>
-    </div>
-        <div data-admin-link style="margin-top:1.4rem;">
-      <a href="admin.html" class="footer-admin-link" title="Acceso administrativo">
-        <i class="fa-solid fa-user-shield" aria-hidden="true"></i> Acceso administrativo
-      </a>
-    </div>
-  `;
+      <div class="footer-bottom">
+        <span class="footer-copy">${f.copyright}</span>
+        <div class="footer-socials">${(C.socials || []).map(s => `<a href="${s.href}" target="_blank" rel="noopener noreferrer">${s.label}</a>`).join("")}</div>
+      </div>
+      <div data-admin-link style="margin-top:1.4rem;">
+        <a href="admin.html" class="footer-admin-link" title="Acceso administrativo">
+          <i class="fa-solid fa-user-shield" aria-hidden="true"></i> Acceso administrativo
+        </a>
+      </div>
+    `;
 
-  // ✅ Comportamiento del "Más" (abrir/cerrar, clic fuera, Escape)
-  const closeAllMore = () => {
-    $$(".footer-more-wrap.open", inner).forEach(w => {
-      w.classList.remove("open");
-      w.querySelector(".footer-more-btn").setAttribute("aria-expanded", "false");
+    // Comportamiento del "Más" (abrir/cerrar, clic fuera, Escape)
+    const closeAllMore = () => {
+      $$(".footer-more-wrap.open", inner).forEach(w => {
+        w.classList.remove("open");
+        w.querySelector(".footer-more-btn").setAttribute("aria-expanded", "false");
+      });
+    };
+    
+    $$(".footer-more-btn", inner).forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const wrap = btn.closest(".footer-more-wrap");
+        const open = wrap.classList.toggle("open");
+        btn.setAttribute("aria-expanded", String(open));
+      });
     });
-  };
-  $$(".footer-more-btn", inner).forEach(btn => {
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const wrap = btn.closest(".footer-more-wrap");
-      const open = wrap.classList.toggle("open");
-      btn.setAttribute("aria-expanded", String(open));
+    
+    // Cerrar al hacer clic fuera
+    inner.addEventListener("click", (e) => {
+      if (e.target.closest(".footer-more-panel a")) closeAllMore();
+      else if (!e.target.closest(".footer-more-wrap")) closeAllMore();
     });
-  });
-  inner.addEventListener("click", (e) => {
-    if (e.target.closest(".footer-more-panel a")) closeAllMore();
-    else if (!e.target.closest(".footer-more-wrap")) closeAllMore();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeAllMore();
-  });
-}
+    
+    // Cerrar con Escape
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeAllMore();
+    });
+  }
 
-  // ─── SCROLL REVEAL ───────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 👁️ SCROLL REVEAL (animaciones al hacer scroll)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initReveal() {
     const els = $$(".reveal, .reveal-left, .reveal-right, .reveal-scale");
+    
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1804,12 +2066,16 @@ function buildFooter() {
         }
       });
     }, { threshold: C.effects.revealThreshold, rootMargin: "0px 0px -50px 0px" });
+    
     els.forEach(el => observer.observe(el));
   }
 
-  // ─── PARALLAX ENGINE ─────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🎭 PARALLAX ENGINE (hero + imagen de historia)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initParallax() {
     const isMobile = window.innerWidth < 769;
+    // Reducir velocidad en móvil para mejor rendimiento
     const heroSpeed = isMobile ? C.effects.parallaxHeroSpeed * 0.3 : C.effects.parallaxHeroSpeed;
     const imageSpeed = isMobile ? C.effects.parallaxImageSpeed * 0.5 : C.effects.parallaxImageSpeed;
 
@@ -1821,7 +2087,11 @@ function buildFooter() {
 
     function updateParallax() {
       const scrollY = window.scrollY;
+      
+      // Parallax del fondo del hero
       if (heroBg) heroBg.style.transform = `translate3d(0, ${scrollY * heroSpeed}px, 0) scale(1.1)`;
+      
+      // Parallax de la imagen de historia
       if (storyImg) {
         const rect = storyImg.getBoundingClientRect();
         if (rect.top < window.innerHeight && rect.bottom > 0) {
@@ -1829,8 +2099,11 @@ function buildFooter() {
           storyImg.style.transform = `translate3d(0, ${(progress - 0.5) * rect.height * imageSpeed}px, 0) scale(1.15)`;
         }
       }
+      
+      // Fade out del indicador de scroll
       const si = $("#scrollIndicator");
       if (si) si.style.opacity = clamp(1 - scrollY / 300, 0, 1);
+      
       ticking = false;
     }
 
@@ -1842,15 +2115,19 @@ function buildFooter() {
     }, { passive: true });
   }
 
-  // ─── CURSOR PERSONALIZADO ────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🖱️ CURSOR PERSONALIZADO (con follower)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initCursor() {
     if (!C.effects.cursorEnabled || window.innerWidth < 769) return;
+    
     const cursor = $("#cursor");
     const follower = $("#cursorFollower");
     if (!cursor || !follower) return;
 
     let mx = 0, my = 0, fx = 0, fy = 0;
 
+    // Seguir mouse instantáneamente con el cursor
     document.addEventListener("mousemove", (e) => {
       mx = e.clientX;
       my = e.clientY;
@@ -1858,6 +2135,7 @@ function buildFooter() {
       cursor.style.top = my + "px";
     });
 
+    // Animar follower con interpolación lineal (lerp)
     function animateFollower() {
       fx = lerp(fx, mx, 0.12);
       fy = lerp(fy, my, 0.12);
@@ -1867,7 +2145,7 @@ function buildFooter() {
     }
     animateFollower();
 
-    // ✅ FA: ahora los botones con iconos FA también se enganchan al cursor magnético
+    // Efecto hover en elementos interactivos
     const hoverTargets = "a, button, .service-card, .gallery-item, .philosophy-cta, .footer-social-icon, .testimonials-nav, .testimonials-source";
     document.addEventListener("mouseover", (e) => {
       if (e.target.closest(hoverTargets)) {
@@ -1883,7 +2161,9 @@ function buildFooter() {
     });
   }
 
-  // ─── SMOOTH ANCHOR SCROLL ────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🔗 SMOOTH ANCHOR SCROLL (scroll suave a anchors)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initSmoothScroll() {
     document.addEventListener("click", (e) => {
       const anchor = e.target.closest('a[href^="#"]');
@@ -1897,6 +2177,7 @@ function buildFooter() {
 
       e.preventDefault();
 
+      // Calcular offset considerando el header fijo
       const headerEl = $("#header");
       const headerHeight = headerEl ? headerEl.offsetHeight : 80;
       const offset = headerHeight + 20;
@@ -1905,13 +2186,16 @@ function buildFooter() {
 
       window.scrollTo({ top: targetPosition, behavior });
 
+      // Actualizar URL sin recargar
       if (window.history && window.history.pushState) {
         history.pushState(null, "", href);
       }
     });
   }
 
-  // ─── GRAIN TOGGLE ────────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🌾 GRAIN TOGGLE (efecto de ruido)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initGrain() {
     if (!C.effects.grainEnabled) {
       const grain = $(".grain-overlay");
@@ -1919,19 +2203,24 @@ function buildFooter() {
     }
   }
 
-  // ─── COUNTER ANIMATION ───────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🔢 COUNTER ANIMATION (números que cuentan)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initCounters() {
     const counters = $$(".story-stat-number");
+    
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const el = entry.target;
           const match = el.textContent.match(/(\d+)/);
           if (!match) return;
+          
           const target = parseInt(match[1]);
           const suffix = el.textContent.replace(match[1], "");
           let current = 0;
-          const step = Math.ceil(target / 60);
+          const step = Math.ceil(target / 60); // 60 frames para llegar al target
+          
           const timer = setInterval(() => {
             current += step;
             if (current >= target) {
@@ -1939,31 +2228,44 @@ function buildFooter() {
               clearInterval(timer);
             }
             el.textContent = current + suffix;
-          }, 25);
+          }, 25); // 25ms por frame = ~40fps
+          
           observer.unobserve(el);
         }
       });
     }, { threshold: 0.5 });
+    
     counters.forEach(c => observer.observe(c));
   }
 
-  // ─── MAGNETIC EFFECT ─────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🧲 MAGNETIC EFFECT (botones que siguen al mouse)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initMagnetic() {
     if (prefersReducedMotion) return;
+    
     const buttons = $$(".philosophy-cta, .hero-cta, .nav-cta, .blog-cta, .ecommerce-cta, .contact-submit");
+    
     buttons.forEach(btn => {
+      // Mover botón hacia el mouse
       btn.addEventListener("mousemove", (e) => {
         const rect = btn.getBoundingClientRect();
         btn.style.transform = `translate(${(e.clientX - rect.left - rect.width / 2) * 0.2}px, ${(e.clientY - rect.top - rect.height / 2) * 0.2}px)`;
       });
+      
+      // Regresar a posición original al salir
       btn.addEventListener("mouseleave", () => {
         btn.style.transition = "transform 0.5s cubic-bezier(0.16,1,0.3,1)";
         btn.style.transform = "translate(0, 0)";
+        
+        // Limpiar transition después de que termine
         const cleanup = () => {
           btn.style.transition = "";
           btn.removeEventListener("transitionend", cleanup);
         };
         btn.addEventListener("transitionend", cleanup);
+        
+        // Fallback por si transitionend no se dispara
         setTimeout(() => {
           if (btn.style.transition) btn.style.transition = "";
         }, 600);
@@ -1971,282 +2273,324 @@ function buildFooter() {
     });
   }
 
-  // ─── BLOQUE: UBICACIÓN (mapa + dirección + horario) ───
-function buildLocation() {
-  if (!isBlockEnabled("location")) {
-    const section = $("#location");
-    if (section) section.style.display = "none";
-    return;
-  }
-  const L = C.location;
-  const inner = $("#locationInner");
-  if (!inner) return;
-  const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(L.mapsQuery)}&output=embed`;
-  const dirHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(L.mapsQuery)}`;
-  inner.innerHTML = `
-    <div class="location-header">
-      <span class="section-label reveal">${L.label}</span>
-      <h2 class="section-heading reveal reveal-delay-1">${L.heading}</h2>
-      <hr class="editorial-hr center reveal reveal-delay-2" />
-      <p class="reveal reveal-delay-3">${L.subtitle}</p>
-    </div>
-    <div class="location-grid">
-      <div class="location-map reveal-left">
-        <iframe src="${mapSrc}" title="Mapa de ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 📍 BLOQUE: UBICACIÓN (mapa + dirección + horario)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  function buildLocation() {
+    if (!isBlockEnabled("location")) {
+      const section = $("#location");
+      if (section) section.style.display = "none";
+      return;
+    }
+    const L = C.location;
+    const inner = $("#locationInner");
+    if (!inner) return;
+    
+    // Generar URLs de Google Maps
+    const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(L.mapsQuery)}&output=embed`;
+    const dirHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(L.mapsQuery)}`;
+    
+    inner.innerHTML = `
+      <div class="location-header">
+        <span class="section-label reveal">${L.label}</span>
+        <h2 class="section-heading reveal reveal-delay-1">${L.heading}</h2>
+        <hr class="editorial-hr center reveal reveal-delay-2" />
+        <p class="reveal reveal-delay-3">${L.subtitle}</p>
       </div>
-      <div class="location-info reveal-right">
-        <div class="location-card">
-          <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
-          <h4>Dirección</h4>
-          <p>${L.address}</p>
+      <div class="location-grid">
+        <div class="location-map reveal-left">
+          <iframe src="${mapSrc}" title="Mapa de ubicación" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
         </div>
-        <div class="location-card">
-          <i class="fa-solid fa-clock" aria-hidden="true"></i>
-          <h4>Horario</h4>
-          <ul>${L.hours.map(h => `<li><span>${h.d}</span><span>${h.h}</span></li>`).join("")}</ul>
-        </div>
-        <div class="location-card">
-          <i class="fa-solid fa-phone" aria-hidden="true"></i>
-          <h4>Teléfono</h4>
-          <p><a href="${L.phoneHref}">${L.phone}</a></p>
-        </div>
-        <a class="location-directions" href="${dirHref}" target="_blank" rel="noopener">
-          <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i> Cómo llegar
-        </a>
-      </div>
-    </div>
-  `;
-}
-
-// ─── BLOQUE: CITAS (formulario → BD + WhatsApp) ───
-function buildAppointments() {
-  if (!isBlockEnabled("appointments")) {
-    const section = $("#appointments");
-    if (section) section.style.display = "none";
-    return;
-  }
-  const A = C.appointments;
-  const inner = $("#appointmentsInner");
-  if (!inner) return;
-  inner.innerHTML = `
-    <div class="appt-header">
-      <span class="section-label reveal">${A.label}</span>
-      <h2 class="section-heading reveal reveal-delay-1">${A.heading}</h2>
-      <hr class="editorial-hr center reveal reveal-delay-2" />
-      <p class="reveal reveal-delay-3">${A.subtitle}</p>
-    </div>
-    <form class="appt-form reveal reveal-delay-3" id="apptForm" novalidate>
-      <input type="text" name="website_url" class="contact-honeypot" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;height:0;width:0;" aria-hidden="true">
-      <div class="appt-row">
-        <div class="form-group"><input type="text" class="form-input" name="name" placeholder="Nombre completo" required minlength="2" maxlength="100"></div>
-        <div class="form-group"><input type="tel" class="form-input" name="phone" placeholder="WhatsApp (55 1234 5678)" required minlength="8" maxlength="20"></div>
-      </div>
-      <div class="appt-row">
-        <div class="form-group"><input type="date" class="form-input" name="date" required></div>
-        <div class="form-group">
-          <select class="form-input" name="slot" required>
-            <option value="" disabled selected>Horario preferido</option>
-            ${A.slots.map(s => `<option value="${s}">${s}</option>`).join("")}
-          </select>
-        </div>
-      </div>
-      <div class="form-group"><textarea class="form-textarea" name="reason" placeholder="Motivo de la cita (opcional)" maxlength="300"></textarea></div>
-      <button type="submit" class="contact-submit"><span>Solicitar Cita</span></button>
-      <div class="form-message" id="apptMessage"></div>
-    </form>
-  `;
-  setTimeout(initAppointmentForm, 100);
-}
-
-function initAppointmentForm() {
-  const form = $("#apptForm");
-  const msg = $("#apptMessage");
-  if (!form) return;
-  const dateInput = form.querySelector('input[name="date"]');
-  if (dateInput) dateInput.min = new Date().toISOString().split("T")[0];
-
-  function showApptMsg(text, type) {
-    if (!msg) return;
-    msg.textContent = text;
-    msg.className = "form-message " + type + " visible";
-    setTimeout(() => msg.classList.remove("visible"), 6000);
-  }
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(form));
-    if (data.website_url && data.website_url.trim()) return; // honeypot anti-spam
-    if (!data.name || data.name.trim().length < 2)  return showApptMsg("Escribe tu nombre.", "error");
-    if (!data.phone || data.phone.trim().length < 8) return showApptMsg("Escribe un teléfono válido.", "error");
-    if (!data.date) return showApptMsg("Elige una fecha.", "error");
-    if (!data.slot) return showApptMsg("Elige un horario.", "error");
-
-    const btn = form.querySelector('button[type="submit"]');
-    btn.disabled = true;
-
-    // 1) Guardar en Supabase (si falla, seguimos con WhatsApp)
-    let saved = false;
-    try {
-      const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
-      const { error } = await sb.from("appointments").insert([{
-        name: data.name.trim(),
-        phone: data.phone.trim(),
-        date: data.date,
-        slot: data.slot,
-        reason: (data.reason || "").trim() || null,
-        status: "pending"
-      }]);
-      saved = !error;
-      if (error) console.warn("No se guardó la cita:", error.message);
-    } catch (err) { console.warn(err); }
-
-    // 2) WhatsApp con el resumen pre-llenado
-    const wa = (C.tienda && C.tienda.whatsapp) || "521234567890";
-    let m = `📅 *Solicitud de cita*\n\n▪️ *Nombre:* ${data.name}\n▪️ *Teléfono:* ${data.phone}\n▪️ *Fecha:* ${data.date}\n▪️ *Horario:* ${data.slot}\n`;
-    if (data.reason) m += `▪️ *Motivo:* ${data.reason}\n`;
-    m += `\n_Enviado desde el sitio web_`;
-    window.open(`https://wa.me/${wa}?text=${encodeURIComponent(m)}`, "_blank");
-
-    btn.disabled = false;
-    form.reset();
-    showApptMsg(saved ? (C.appointments.successMessage || "¡Solicitud enviada!") : "Te llevamos a WhatsApp para completar tu cita.", "success");
-  });
-}
-
-// ─── BLOQUE: EQUIPO MÉDICO (tarjetas flotantes + flip) ───
-function buildTeam() {
-  if (!isBlockEnabled("team") || !C.team) {
-    const section = $("#team");
-    if (section) section.style.display = "none";
-    return;
-  }
-  const T = C.team;
-  const inner = $("#teamInner");
-  if (!inner) return;
-
-  inner.innerHTML = `
-    <div class="team-header">
-      <span class="section-label reveal">${T.label}</span>
-      <h2 class="section-heading reveal reveal-delay-1">${T.heading}</h2>
-      <hr class="editorial-hr center reveal reveal-delay-2" />
-      <p class="reveal reveal-delay-3">${T.subtitle}</p>
-    </div>
-    <div class="team-carousel reveal reveal-delay-2">
-      <div class="services-track team-track" id="teamTrack">
-        ${T.items.map(d => `
-        <div class="team-card">
-          <div class="team-flip">
-            <div class="team-face team-front">
-              <div class="team-photo"><img src="${d.photo}" alt="${escapeHtml(d.name)}" loading="lazy"></div>
-              <div class="team-front-info">
-                <h3 class="team-name">${escapeHtml(d.name)}</h3>
-                <span class="team-cedula"><i class="fa-solid fa-id-badge" aria-hidden="true"></i>${escapeHtml(d.cedula)}</span>
-                <span class="team-specialty">${escapeHtml(d.specialty)}</span>
-                <button class="team-more" type="button" data-tflip="open" aria-expanded="false">Ver ficha</button>
-              </div>
-            </div>
-            <div class="team-face team-back">
-              <div class="team-back-head">
-                <h3 class="team-name">${escapeHtml(d.name)}</h3>
-                <span class="team-specialty">${escapeHtml(d.specialty)}</span>
-              </div>
-              <p class="team-bio">${escapeHtml(d.bio)}</p>
-              <ul class="team-contact">
-                ${d.phone ? `<li><a href="tel:${String(d.phone).replace(/\s/g, "")}"><i class="fa-solid fa-phone" aria-hidden="true"></i>${escapeHtml(d.phone)}</a></li>` : ""}
-                ${d.whatsapp ? `<li><a href="https://wa.me/${d.whatsapp}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i>Escribir por WhatsApp</a></li>` : ""}
-                ${d.email ? `<li><a href="mailto:${d.email}"><i class="fa-solid fa-envelope" aria-hidden="true"></i>${escapeHtml(d.email)}</a></li>` : ""}
-                ${d.schedule ? `<li><span><i class="fa-solid fa-clock" aria-hidden="true"></i>${escapeHtml(d.schedule)}</span></li>` : ""}
-              </ul>
-              <button class="team-more team-back-btn" type="button" data-tflip="close">← Volver</button>
-            </div>
+        <div class="location-info reveal-right">
+          <div class="location-card">
+            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+            <h4>Dirección</h4>
+            <p>${L.address}</p>
           </div>
-        </div>`).join("")}
+          <div class="location-card">
+            <i class="fa-solid fa-clock" aria-hidden="true"></i>
+            <h4>Horario</h4>
+            <ul>${L.hours.map(h => `<li><span>${h.d}</span><span>${h.h}</span></li>`).join("")}</ul>
+          </div>
+          <div class="location-card">
+            <i class="fa-solid fa-phone" aria-hidden="true"></i>
+            <h4>Teléfono</h4>
+            <p><a href="${L.phoneHref}">${L.phone}</a></p>
+          </div>
+          <a class="location-directions" href="${dirHref}" target="_blank" rel="noopener">
+            <i class="fa-solid fa-diamond-turn-right" aria-hidden="true"></i> Cómo llegar
+          </a>
+        </div>
       </div>
-    </div>
-    <div class="services-meta">
-      <div class="services-progress"><div class="services-progress-fill" id="teamFill"></div></div>
-      <div class="services-count" id="teamCount"></div>
-      <div class="services-nav">
-        <button class="services-arrow" id="teamPrev" aria-label="Doctores anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
-        <button class="services-arrow" id="teamNext" aria-label="Más doctores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
-      </div>
-    </div>
-    <div class="services-hint" id="teamHint">← desliza →</div>
-  `;
-
-  // ✅ Flip (solo una tarjeta girada a la vez)
-  const unflipTeam = (except = null) => {
-    inner.querySelectorAll(".team-card.flipped").forEach(c => {
-      if (c !== except) {
-        c.classList.remove("flipped");
-        const ob = c.querySelector('[data-tflip="open"]');
-        if (ob) ob.setAttribute("aria-expanded", "false");
-      }
-    });
-  };
-  inner.querySelectorAll("[data-tflip]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const card = btn.closest(".team-card");
-      const willOpen = !card.classList.contains("flipped");
-      unflipTeam(card);
-      card.classList.toggle("flipped", willOpen);
-      btn.setAttribute("aria-expanded", String(willOpen));
-    });
-  });
-
-  // ✅ Carrusel + HUD (reutiliza el motor visual de servicios)
-  const track = inner.querySelector("#teamTrack");
-  const prev = inner.querySelector("#teamPrev");
-  const next = inner.querySelector("#teamNext");
-  const counter = inner.querySelector("#teamCount");
-  const fill = inner.querySelector("#teamFill");
-  const hint = inner.querySelector("#teamHint");
-  if (track && prev && next) {
-    const pad = n => String(n).padStart(2, "0");
-    const stepW = () => {
-      const c = track.querySelector(".team-card");
-      const g = parseFloat(getComputedStyle(track).columnGap) || 24;
-      return c ? c.getBoundingClientRect().width + g : 320;
-    };
-    prev.addEventListener("click", () => { unflipTeam(); track.scrollBy({ left: -stepW(), behavior: "smooth" }); });
-    next.addEventListener("click", () => { unflipTeam(); track.scrollBy({ left: stepW(), behavior: "smooth" }); });
-    track.addEventListener("click", (e) => {
-      const card = e.target.closest(".team-card");
-      if (card) unflipTeam(card);
-    });
-    const updateHUD = () => {
-      const total = T.items.length;
-      const w = stepW();
-      const scrollable = track.scrollWidth > track.clientWidth + 1;
-      prev.style.display = scrollable ? "" : "none";
-      next.style.display = scrollable ? "" : "none";
-      if (hint) hint.style.display = scrollable ? "" : "none";
-      if (!scrollable) {
-        if (counter) counter.innerHTML = `<span class="sc-now">${pad(total)}</span> / ${pad(total)}`;
-        if (fill) fill.style.transform = "scaleX(1)";
-        return;
-      }
-      const max = track.scrollWidth - track.clientWidth - 1;
-      prev.disabled = track.scrollLeft <= 0;
-      next.disabled = track.scrollLeft >= max;
-      const idx = Math.max(0, Math.round(track.scrollLeft / w));
-      const perView = Math.max(1, Math.round(track.clientWidth / w));
-      const from = idx + 1, to = Math.min(idx + perView, total);
-      if (counter) counter.innerHTML = `<span class="sc-now">${from === to ? pad(from) : pad(from) + "–" + pad(to)}</span> / ${pad(total)}`;
-      if (fill) fill.style.transform = `scaleX(${max > 0 ? track.scrollLeft / max : 0})`;
-    };
-    track.addEventListener("scroll", () => { if (hint) hint.classList.add("hide"); requestAnimationFrame(updateHUD); }, { passive: true });
-    window.addEventListener("resize", updateHUD);
-    updateHUD();
+    `;
   }
-}
 
-  // ─── INIT ────────────────────────────────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 📅 BLOQUE: CITAS (formulario → Supabase + WhatsApp)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  function buildAppointments() {
+    if (!isBlockEnabled("appointments")) {
+      const section = $("#appointments");
+      if (section) section.style.display = "none";
+      return;
+    }
+    const A = C.appointments;
+    const inner = $("#appointmentsInner");
+    if (!inner) return;
+    
+    inner.innerHTML = `
+      <div class="appt-header">
+        <span class="section-label reveal">${A.label}</span>
+        <h2 class="section-heading reveal reveal-delay-1">${A.heading}</h2>
+        <hr class="editorial-hr center reveal reveal-delay-2" />
+        <p class="reveal reveal-delay-3">${A.subtitle}</p>
+      </div>
+      <form class="appt-form reveal reveal-delay-3" id="apptForm" novalidate>
+        <input type="text" name="website_url" class="contact-honeypot" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;opacity:0;height:0;width:0;" aria-hidden="true">
+        <div class="appt-row">
+          <div class="form-group"><input type="text" class="form-input" name="name" placeholder="Nombre completo" required minlength="2" maxlength="100"></div>
+          <div class="form-group"><input type="tel" class="form-input" name="phone" placeholder="WhatsApp (55 1234 5678)" required minlength="8" maxlength="20"></div>
+        </div>
+        <div class="appt-row">
+          <div class="form-group"><input type="date" class="form-input" name="date" required></div>
+          <div class="form-group">
+            <select class="form-input" name="slot" required>
+              <option value="" disabled selected>Horario preferido</option>
+              ${A.slots.map(s => `<option value="${s}">${s}</option>`).join("")}
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><textarea class="form-textarea" name="reason" placeholder="Motivo de la cita (opcional)" maxlength="300"></textarea></div>
+        <button type="submit" class="contact-submit"><span>Solicitar Cita</span></button>
+        <div class="form-message" id="apptMessage"></div>
+      </form>
+    `;
+    
+    setTimeout(initAppointmentForm, 100);
+  }
+
+  // Inicializar formulario de citas
+  function initAppointmentForm() {
+    const form = $("#apptForm");
+    const msg = $("#apptMessage");
+    if (!form) return;
+    
+    // Establecer fecha mínima como hoy
+    const dateInput = form.querySelector('input[name="date"]');
+    if (dateInput) dateInput.min = new Date().toISOString().split("T")[0];
+
+    // Mostrar mensaje de error/éxito
+    function showApptMsg(text, type) {
+      if (!msg) return;
+      msg.textContent = text;
+      msg.className = "form-message " + type + " visible";
+      setTimeout(() => msg.classList.remove("visible"), 6000);
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form));
+      
+      // Honeypot anti-bot
+      if (data.website_url && data.website_url.trim()) return;
+      
+      // Validaciones
+      if (!data.name || data.name.trim().length < 2)  return showApptMsg("Escribe tu nombre.", "error");
+      if (!data.phone || data.phone.trim().length < 8) return showApptMsg("Escribe un teléfono válido.", "error");
+      if (!data.date) return showApptMsg("Elige una fecha.", "error");
+      if (!data.slot) return showApptMsg("Elige un horario.", "error");
+
+      const btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+
+      // 1) Guardar en Supabase (si falla, seguimos con WhatsApp)
+      let saved = false;
+      try {
+        const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
+        const { error } = await sb.from("appointments").insert([{
+          name: data.name.trim(),
+          phone: data.phone.trim(),
+          date: data.date,
+          slot: data.slot,
+          reason: (data.reason || "").trim() || null,
+          status: "pending"
+        }]);
+        saved = !error;
+        if (error) console.warn("No se guardó la cita:", error.message);
+      } catch (err) { console.warn(err); }
+
+      // 2) WhatsApp con el resumen pre-llenado
+      const wa = (C.tienda && C.tienda.whatsapp) || "521234567890";
+      let m = `📅 *Solicitud de cita*\n\n▪️ *Nombre:* ${data.name}\n▪️ *Teléfono:* ${data.phone}\n▪️ *Fecha:* ${data.date}\n▪️ *Horario:* ${data.slot}\n`;
+      if (data.reason) m += `▪️ *Motivo:* ${data.reason}\n`;
+      m += `\n_Enviado desde el sitio web_`;
+      window.open(`https://wa.me/${wa}?text=${encodeURIComponent(m)}`, "_blank");
+
+      btn.disabled = false;
+      form.reset();
+      showApptMsg(saved ? (C.appointments.successMessage || "¡Solicitud enviada!") : "Te llevamos a WhatsApp para completar tu cita.", "success");
+    });
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 👥 BLOQUE: EQUIPO MÉDICO (tarjetas flip + carrusel)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  function buildTeam() {
+    if (!isBlockEnabled("team") || !C.team) {
+      const section = $("#team");
+      if (section) section.style.display = "none";
+      return;
+    }
+    const T = C.team;
+    const inner = $("#teamInner");
+    if (!inner) return;
+
+    inner.innerHTML = `
+      <div class="team-header">
+        <span class="section-label reveal">${T.label}</span>
+        <h2 class="section-heading reveal reveal-delay-1">${T.heading}</h2>
+        <hr class="editorial-hr center reveal reveal-delay-2" />
+        <p class="reveal reveal-delay-3">${T.subtitle}</p>
+      </div>
+      <div class="team-carousel reveal reveal-delay-2">
+        <div class="services-track team-track" id="teamTrack">
+          ${T.items.map(d => `
+          <div class="team-card">
+            <div class="team-flip">
+              <div class="team-face team-front">
+                <div class="team-photo"><img src="${d.photo}" alt="${escapeHtml(d.name)}" loading="lazy"></div>
+                <div class="team-front-info">
+                  <h3 class="team-name">${escapeHtml(d.name)}</h3>
+                  <span class="team-cedula"><i class="fa-solid fa-id-badge" aria-hidden="true"></i>${escapeHtml(d.cedula)}</span>
+                  <span class="team-specialty">${escapeHtml(d.specialty)}</span>
+                  <button class="team-more" type="button" data-tflip="open" aria-expanded="false">Ver ficha</button>
+                </div>
+              </div>
+              <div class="team-face team-back">
+                <div class="team-back-head">
+                  <h3 class="team-name">${escapeHtml(d.name)}</h3>
+                  <span class="team-specialty">${escapeHtml(d.specialty)}</span>
+                </div>
+                <p class="team-bio">${escapeHtml(d.bio)}</p>
+                <ul class="team-contact">
+                  ${d.phone ? `<li><a href="tel:${String(d.phone).replace(/\s/g, "")}"><i class="fa-solid fa-phone" aria-hidden="true"></i>${escapeHtml(d.phone)}</a></li>` : ""}
+                  ${d.whatsapp ? `<li><a href="https://wa.me/${d.whatsapp}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i>Escribir por WhatsApp</a></li>` : ""}
+                  ${d.email ? `<li><a href="mailto:${d.email}"><i class="fa-solid fa-envelope" aria-hidden="true"></i>${escapeHtml(d.email)}</a></li>` : ""}
+                  ${d.schedule ? `<li><span><i class="fa-solid fa-clock" aria-hidden="true"></i>${escapeHtml(d.schedule)}</span></li>` : ""}
+                </ul>
+                <button class="team-more team-back-btn" type="button" data-tflip="close">← Volver</button>
+              </div>
+            </div>
+          </div>`).join("")}
+        </div>
+      </div>
+      <div class="services-meta">
+        <div class="services-progress"><div class="services-progress-fill" id="teamFill"></div></div>
+        <div class="services-count" id="teamCount"></div>
+        <div class="services-nav">
+          <button class="services-arrow" id="teamPrev" aria-label="Doctores anteriores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <button class="services-arrow" id="teamNext" aria-label="Más doctores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="services-hint" id="teamHint">← desliza →</div>
+    `;
+
+    // Flip de tarjetas (solo una girada a la vez)
+    const unflipTeam = (except = null) => {
+      inner.querySelectorAll(".team-card.flipped").forEach(c => {
+        if (c !== except) {
+          c.classList.remove("flipped");
+          const ob = c.querySelector('[data-tflip="open"]');
+          if (ob) ob.setAttribute("aria-expanded", "false");
+        }
+      });
+    };
+    
+    inner.querySelectorAll("[data-tflip]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const card = btn.closest(".team-card");
+        const willOpen = !card.classList.contains("flipped");
+        unflipTeam(card);
+        card.classList.toggle("flipped", willOpen);
+        btn.setAttribute("aria-expanded", String(willOpen));
+      });
+    });
+
+    // Carrusel + HUD (reutiliza el motor visual de servicios)
+    const track = inner.querySelector("#teamTrack");
+    const prev = inner.querySelector("#teamPrev");
+    const next = inner.querySelector("#teamNext");
+    const counter = inner.querySelector("#teamCount");
+    const fill = inner.querySelector("#teamFill");
+    const hint = inner.querySelector("#teamHint");
+    
+    if (track && prev && next) {
+      const pad = n => String(n).padStart(2, "0");
+      
+      const stepW = () => {
+        const c = track.querySelector(".team-card");
+        const g = parseFloat(getComputedStyle(track).columnGap) || 24;
+        return c ? c.getBoundingClientRect().width + g : 320;
+      };
+      
+      prev.addEventListener("click", () => { unflipTeam(); track.scrollBy({ left: -stepW(), behavior: "smooth" }); });
+      next.addEventListener("click", () => { unflipTeam(); track.scrollBy({ left: stepW(), behavior: "smooth" }); });
+      
+      track.addEventListener("click", (e) => {
+        const card = e.target.closest(".team-card");
+        if (card) unflipTeam(card);
+      });
+      
+      const updateHUD = () => {
+        const total = T.items.length;
+        const w = stepW();
+        const scrollable = track.scrollWidth > track.clientWidth + 1;
+        
+        prev.style.display = scrollable ? "" : "none";
+        next.style.display = scrollable ? "" : "none";
+        if (hint) hint.style.display = scrollable ? "" : "none";
+        
+        if (!scrollable) {
+          if (counter) counter.innerHTML = `<span class="sc-now">${pad(total)}</span> / ${pad(total)}`;
+          if (fill) fill.style.transform = "scaleX(1)";
+          return;
+        }
+        
+        const max = track.scrollWidth - track.clientWidth - 1;
+        prev.disabled = track.scrollLeft <= 0;
+        next.disabled = track.scrollLeft >= max;
+        
+        const idx = Math.max(0, Math.round(track.scrollLeft / w));
+        const perView = Math.max(1, Math.round(track.clientWidth / w));
+        const from = idx + 1, to = Math.min(idx + perView, total);
+        
+        if (counter) counter.innerHTML = `<span class="sc-now">${from === to ? pad(from) : pad(from) + "–" + pad(to)}</span> / ${pad(total)}`;
+        if (fill) fill.style.transform = `scaleX(${max > 0 ? track.scrollLeft / max : 0})`;
+      };
+      
+      track.addEventListener("scroll", () => { 
+        if (hint) hint.classList.add("hide"); 
+        requestAnimationFrame(updateHUD); 
+      }, { passive: true });
+      
+      window.addEventListener("resize", updateHUD);
+      updateHUD();
+    }
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🚀 INICIALIZACIÓN PRINCIPAL
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   async function init() {
+    // 1. Tema y SEO
     applyTheme();
     injectSEO();
+    
+    // 2. Header y Hero
     buildHeader();
     buildHero();
+    
+    // 3. Bloques de contenido (en orden de aparición)
     buildStory();
     await loadServicesFromDB();
     buildServices();
@@ -2262,7 +2606,11 @@ function buildTeam() {
     buildLocation();
     buildAppointments();
     buildContact();
+    
+    // 4. Footer
     buildFooter();
+    
+    // 5. Efectos globales
     initGrain();
     initProgressBar();
     initLoader();
@@ -2277,22 +2625,31 @@ function buildTeam() {
     initGalleryCarousel();
     initGalleryParticles();
     initServicesLight();
+    
+    // 6. Efecto magnético (después del loader)
     setTimeout(initMagnetic, C.loader.duration + 600);
+    
+    // 7. Testimonios (carga asíncrona)
     buildTestimonials();
   }
 
+  // Ejecutar init cuando el DOM esté listo
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
   } else {
     init();
   }
 
-  // ─── LISTÓN CON APARICIÓN AL SCROLL ──────
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🎀 LISTÓN CON APARICIÓN AL SCROLL (story ribbon)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initStoryRibbon() {
     const ribbon = $("#storyRibbon");
     if (!ribbon) return;
+    
     ribbon.style.opacity = "0";
     ribbon.style.transition = "opacity 2s ease-out";
+    
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -2302,7 +2659,9 @@ function buildTeam() {
         }
       });
     }, { threshold: 0.3 });
+    
     const storyEl = $("#story");
     if (storyEl) observer.observe(storyEl);
   }
+
 })();

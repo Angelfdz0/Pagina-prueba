@@ -1,34 +1,56 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         📋 METADATOS Y CONFIGURACIÓN BÁSICA
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Aviso de Privacidad, Términos y Condiciones y Política de Cookies de Studio Creativo México.">
     <title>Aviso Legal | Studio</title>
+
+    <!-- Favicon SVG por defecto (será reemplazado dinámicamente) -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
+    
+    <!-- Estilos globales del sitio -->
     <link rel="stylesheet" href="style.css">
 
-    <!-- ✅ NUEVO: Tema dinámico desde config.js (antes esta página usaba el dorado fijo) -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         ⚡ TEMA DINÁMICO (colores del cliente desde config.js)
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <script src="config.js"></script>
     <script src="theme.js"></script>
+    
+    <!-- Favicon dinámico con colores del tema (evita dorado quemado) -->
     <script>
-        // ✅ NUEVO: Favicon dinámico con el color del tema (sin dorado quemado)
         (function () {
             const C = typeof SITE_CONFIG !== 'undefined' ? SITE_CONFIG : null;
             if (!C || !C.theme) return;
+            
             const bg = C.theme.bg || '#0a0a0a';
             const accent = C.theme.accent || '#c9a96e';
-            const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='" + bg + "'/><text x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='" + accent + "' text-anchor='middle'>S</text></svg>";
+            
+            const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
+                <rect width='100' height='100' rx='20' fill='${bg}'/>
+                <text x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' 
+                      fill='${accent}' text-anchor='middle'>S</text>
+            </svg>`;
+            
             let link = document.querySelector("link[rel='icon']");
-            if (!link) { link = document.createElement('link'); link.rel = 'icon'; document.head.appendChild(link); }
+            if (!link) { 
+                link = document.createElement('link'); 
+                link.rel = 'icon'; 
+                document.head.appendChild(link); 
+            }
             link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
         })();
     </script>
 
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🎨 ESTILOS ESPECÍFICOS DE LA PÁGINA LEGAL
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <style>
-        /* ============================================
-        PÁGINA LEGAL - ESTILOS ESPECÍFICOS
-        ============================================ */
+        /* ============ LAYOUT GENERAL ============ */
         .legal-page {
             min-height: 100vh;
             padding: clamp(8rem, 12vw, 10rem) clamp(1.5rem, 5vw, 6rem) clamp(4rem, 8vw, 7rem);
@@ -57,7 +79,7 @@
             font-size: 1rem;
         }
 
-        /* ✅ NUEVO: Header fijo con fondo dinámico (reemplaza el rgba(10,10,10) inline) */
+        /* ============ HEADER FIJO (glass effect) ============ */
         .header.legal-header-bar {
             background: var(--color-bg);
             background: color-mix(in srgb, var(--color-bg) 92%, transparent);
@@ -65,7 +87,7 @@
             -webkit-backdrop-filter: blur(12px);
         }
 
-        /* Tabs de navegación */
+        /* ============ TABS DE NAVEGACIÓN ============ */
         .legal-tabs {
             display: flex;
             gap: 1rem;
@@ -77,9 +99,7 @@
             -ms-overflow-style: none;
         }
 
-        .legal-tabs::-webkit-scrollbar {
-            display: none;
-        }
+        .legal-tabs::-webkit-scrollbar { display: none; }
 
         .legal-tab {
             padding: 1rem 2rem;
@@ -97,24 +117,16 @@
             white-space: nowrap;
         }
 
-        .legal-tab:hover {
-            color: var(--color-text);
-        }
+        .legal-tab:hover { color: var(--color-text); }
+        .legal-tab.active { color: var(--color-accent); border-bottom-color: var(--color-accent); }
 
-        .legal-tab.active {
-            color: var(--color-accent);
-            border-bottom-color: var(--color-accent);
-        }
-
-        /* Contenido de las secciones */
+        /* ============ SECCIONES DE CONTENIDO ============ */
         .legal-section {
             display: none;
             animation: fadeIn 0.5s var(--ease-out-expo);
         }
 
-        .legal-section.active {
-            display: block;
-        }
+        .legal-section.active { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -157,18 +169,11 @@
             margin-bottom: 1rem;
         }
 
-        .legal-content ul {
-            padding-left: 1.5rem;
-        }
+        .legal-content ul { padding-left: 1.5rem; }
+        .legal-content li { margin-bottom: 0.5rem; }
+        .legal-content strong { color: var(--color-text); }
 
-        .legal-content li {
-            margin-bottom: 0.5rem;
-        }
-
-        .legal-content strong {
-            color: var(--color-text);
-        }
-
+        /* Bloque destacado (llamadas de atención) */
         .legal-highlight {
             background: rgba(var(--accent-rgb), 0.08);
             border-left: 3px solid var(--color-accent);
@@ -177,7 +182,7 @@
             border-radius: 4px;
         }
 
-        /* Footer con links */
+        /* ============ FOOTER DE LA PÁGINA ============ */
         .legal-footer {
             margin-top: 4rem;
             padding-top: 2rem;
@@ -191,19 +196,14 @@
             transition: color 0.3s;
         }
 
-        .legal-footer a:hover {
-            color: var(--color-accent-light);
-        }
+        .legal-footer a:hover { color: var(--color-accent-light); }
 
-        /* ============================================
-        BANNER DE CONSENTIMIENTO DE COOKIES
-        ============================================ */
+        /* ============ BANNER DE CONSENTIMIENTO DE COOKIES ============ */
         .cookie-banner {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            /* ✅ NUEVO: fondo dinámico (reemplaza rgba(17,17,17,.98) quemado) */
             background: var(--color-bg-alt);
             background: color-mix(in srgb, var(--color-bg-alt) 97%, transparent);
             backdrop-filter: blur(20px);
@@ -220,9 +220,7 @@
             transition: transform 0.5s var(--ease-out-expo);
         }
 
-        .cookie-banner.visible {
-            transform: translateY(0);
-        }
+        .cookie-banner.visible { transform: translateY(0); }
 
         .cookie-banner-text {
             flex: 1;
@@ -261,9 +259,7 @@
             color: var(--color-dark);
         }
 
-        .cookie-btn-accept:hover {
-            background: var(--color-accent-light);
-        }
+        .cookie-btn-accept:hover { background: var(--color-accent-light); }
 
         .cookie-btn-reject {
             background: transparent;
@@ -276,45 +272,13 @@
             border-color: var(--color-accent);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .legal-tabs {
-                gap: 0.5rem;
-            }
-            .legal-tab {
-                padding: 0.8rem 1.2rem;
-                font-size: 0.75rem;
-            }
-            .legal-content {
-                padding: 1.5rem;
-            }
-            .cookie-banner {
-                flex-direction: column;
-                text-align: center;
-            }
-            .cookie-banner-actions {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        /* ============================================
-        CURSOR PERSONALIZADO - LEGAL
-        ============================================ */
-        body {
-            cursor: none;
-        }
-
-        a, button {
-            cursor: none;
-        }
+        /* ============ CURSOR PERSONALIZADO ============ */
+        body, a, button { cursor: none; }
 
         .cursor {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 8px;
-            height: 8px;
+            top: 0; left: 0;
+            width: 8px; height: 8px;
             background: var(--color-accent);
             border-radius: 50%;
             pointer-events: none;
@@ -328,10 +292,8 @@
 
         .cursor-follower {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 40px;
-            height: 40px;
+            top: 0; left: 0;
+            width: 40px; height: 40px;
             border: 1px solid var(--color-accent);
             border-radius: 50%;
             pointer-events: none;
@@ -345,36 +307,46 @@
         }
 
         .cursor.hover {
-            width: 60px;
-            height: 60px;
+            width: 60px; height: 60px;
             background: transparent;
             border: 1px solid var(--color-accent);
         }
 
         .cursor-follower.hover {
-            width: 80px;
-            height: 80px;
+            width: 80px; height: 80px;
             opacity: 0.2;
         }
 
+        /* ============ RESPONSIVE ============ */
         @media (max-width: 768px) {
-            .cursor, .cursor-follower {
-                display: none;
+            .legal-tabs { gap: 0.5rem; }
+            .legal-tab { padding: 0.8rem 1.2rem; font-size: 0.75rem; }
+            .legal-content { padding: 1.5rem; }
+            
+            .cookie-banner {
+                flex-direction: column;
+                text-align: center;
             }
-            body {
-                cursor: auto;
+            .cookie-banner-actions {
+                width: 100%;
+                justify-content: center;
             }
-            a, button {
-                cursor: pointer;
-            }
+            
+            .cursor, .cursor-follower { display: none; }
+            body, a, button { cursor: auto; }
         }
     </style>
 </head>
+
 <body>
-    <!-- Grain overlay -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🎭 EFECTOS VISUALES GLOBALES
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="grain-overlay" aria-hidden="true"></div>
 
-    <!-- Header simple (✅ sin estilos inline quemados) -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🧭 HEADER (navegación simple)
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <header class="header legal-header-bar">
         <nav class="nav">
             <a href="index.html" class="nav-logo">STU<span>DIO</span></a>
@@ -382,15 +354,19 @@
         </nav>
     </header>
 
-    <!-- Contenido Legal -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         📜 CONTENIDO LEGAL PRINCIPAL
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <main class="legal-page" role="main">
         <div class="legal-container">
+            
+            <!-- Encabezado de la página -->
             <div class="legal-header">
                 <h1 class="legal-title">Información Legal</h1>
                 <p class="legal-subtitle">Transparencia y protección de tus datos conforme a la legislación mexicana</p>
             </div>
 
-            <!-- Tabs de navegación -->
+            <!-- Tabs de navegación entre secciones -->
             <div class="legal-tabs" role="tablist" aria-label="Secciones legales">
                 <button class="legal-tab active" data-tab="privacy" role="tab" aria-selected="true">Aviso de Privacidad</button>
                 <button class="legal-tab" data-tab="terms" role="tab" aria-selected="false">Términos y Condiciones</button>
@@ -398,7 +374,10 @@
                 <button class="legal-tab" data-tab="cookies" role="tab" aria-selected="false">Política de Cookies</button>
             </div>
 
-            <!-- Sección: Aviso de Privacidad -->
+            <!-- ═══════════════════════════════════════════
+                 SECCIÓN 1: AVISO DE PRIVACIDAD
+                 Cumple con LFPDPPP (Ley Federal de Protección de Datos)
+                 ═══════════════════════════════════════════ -->
             <section class="legal-section active" id="privacy" role="tabpanel">
                 <div class="legal-content">
                     <h2>Aviso de Privacidad</h2>
@@ -476,7 +455,10 @@
                 </div>
             </section>
 
-            <!-- Sección: Términos y Condiciones -->
+            <!-- ═══════════════════════════════════════════
+                 SECCIÓN 2: TÉRMINOS Y CONDICIONES DE USO
+                 Regula el acceso general al sitio web
+                 ═══════════════════════════════════════════ -->
             <section class="legal-section" id="terms" role="tabpanel">
                 <div class="legal-content">
                     <h2>Términos y Condiciones de Uso</h2>
@@ -532,7 +514,11 @@
                 </div>
             </section>
 
-            <!-- Sección: Términos Comerciales (Tienda) -->
+            <!-- ═══════════════════════════════════════════
+                 SECCIÓN 3: TÉRMINOS COMERCIALES (TIENDA)
+                 Regula exclusivamente las compras en línea
+                 Cumple con NOM-151-SCFI-2016
+                 ═══════════════════════════════════════════ -->
             <section class="legal-section" id="commercial" role="tabpanel">
                 <div class="legal-content">
                     <h2>Términos Comerciales de la Tienda</h2>
@@ -638,7 +624,7 @@
                         <li><strong>Otros productos:</strong> Según lo indicado en la ficha técnica.</li>
                     </ul>
 
-                    <h4>7.5 Cobertura de garantía</h4>
+                    <h4>7.3 Cobertura de garantía</h4>
                     <p>La garantía <strong>NO cubre</strong>:</p>
                     <ul>
                         <li>Daños por uso indebido, negligencia o accidentes.</li>
@@ -661,7 +647,10 @@
                 </div>
             </section>
 
-            <!-- Sección: Política de Cookies -->
+            <!-- ═══════════════════════════════════════════
+                 SECCIÓN 4: POLÍTICA DE COOKIES
+                 Cumple con LFPDPPP - Solo cookies necesarias
+                 ═══════════════════════════════════════════ -->
             <section class="legal-section" id="cookies" role="tabpanel">
                 <div class="legal-content">
                     <h2>Política de Cookies</h2>
@@ -743,7 +732,7 @@
                 </div>
             </section>
 
-            <!-- Footer con links -->
+            <!-- Footer con enlaces rápidos -->
             <div class="legal-footer">
                 <p style="color: var(--color-text-muted); margin-bottom: 1rem;">
                     Última actualización: Agosto 2026
@@ -757,7 +746,10 @@
         </div>
     </main>
 
-    <!-- ★ BANNER DE CONSENTIMIENTO DE COOKIES ★ -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🍪 BANNER DE CONSENTIMIENTO DE COOKIES
+         Aparece solo si no hay consentimiento previo en localStorage
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="cookie-banner" id="cookieBanner" role="dialog" aria-label="Consentimiento de cookies">
         <div class="cookie-banner-text">
             Utilizamos <strong>cookies estrictamente necesarias</strong> para el funcionamiento del sitio y cookies de funcionalidad para mejorar su experiencia. <strong>No utilizamos cookies de marketing ni analítica de terceros.</strong>
@@ -769,13 +761,22 @@
         </div>
     </div>
 
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🎯 CURSOR PERSONALIZADO (solo desktop)
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+    <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         ⚡ SCRIPTS DE INTERACTIVIDAD
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <script>
-        // Navegación por tabs
+        // ─── NAVEGACIÓN POR TABS ───
         document.addEventListener('DOMContentLoaded', function() {
             const tabs = document.querySelectorAll('.legal-tab');
             const sections = document.querySelectorAll('.legal-section');
 
-            // Activar tab según hash URL
+            // Activar tab según el hash de la URL (deep linking)
             function activateTabFromHash() {
                 const hash = window.location.hash.replace('#', '');
                 if (hash && document.getElementById(hash)) {
@@ -789,6 +790,7 @@
                 }
             }
 
+            // Evento de clic en las tabs
             tabs.forEach(tab => {
                 tab.addEventListener('click', function() {
                     const targetTab = this.dataset.tab;
@@ -807,7 +809,7 @@
                 });
             });
 
-            // Activar tab desde hash inicial
+            // Activar tab desde hash inicial y escuchar cambios
             activateTabFromHash();
             window.addEventListener('hashchange', activateTabFromHash);
 
@@ -832,9 +834,7 @@
                 });
             });
 
-            // ============================================
-            // BANNER DE COOKIES
-            // ============================================
+            // ─── BANNER DE COOKIES ───
             const cookieBanner = document.getElementById('cookieBanner');
             const cookieAccept = document.getElementById('cookieAccept');
             const cookieReject = document.getElementById('cookieReject');
@@ -847,6 +847,7 @@
                 }, 1500);
             }
 
+            // Guardar preferencia del usuario
             function handleCookieChoice(choice) {
                 localStorage.setItem('cookieConsent', choice);
                 localStorage.setItem('cookieConsentTime', Date.now().toString());
@@ -861,56 +862,51 @@
                 cookieReject.addEventListener('click', () => handleCookieChoice('rejected'));
             }
         });
-    </script>
 
-    <!-- Cursor personalizado -->
-    <div class="cursor" id="cursor" aria-hidden="true"></div>
-    <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
+        // ─── CURSOR PERSONALIZADO (solo desktop ≥769px) ───
+        (function() {
+            if (window.innerWidth < 769) return;
 
-    <script>
-    // ============================================
-    // CURSOR PERSONALIZADO - LEGAL
-    // ============================================
-    (function() {
-        if (window.innerWidth < 769) return;
+            const cursor = document.getElementById("cursor");
+            const follower = document.getElementById("cursorFollower");
+            if (!cursor || !follower) return;
 
-        const cursor = document.getElementById("cursor");
-        const follower = document.getElementById("cursorFollower");
-        if (!cursor || !follower) return;
+            let mx = 0, my = 0;
+            let fx = 0, fy = 0;
 
-        let mx = 0, my = 0;
-        let fx = 0, fy = 0;
+            // Seguir el mouse con el cursor principal
+            document.addEventListener("mousemove", (e) => {
+                mx = e.clientX;
+                my = e.clientY;
+                cursor.style.left = mx + "px";
+                cursor.style.top = my + "px";
+            });
 
-        document.addEventListener("mousemove", (e) => {
-            mx = e.clientX;
-            my = e.clientY;
-            cursor.style.left = mx + "px";
-            cursor.style.top = my + "px";
-        });
-
-        function animateFollower() {
-            fx = fx + (mx - fx) * 0.12;
-            fy = fy + (my - fy) * 0.12;
-            follower.style.left = fx + "px";
-            follower.style.top = fy + "px";
-            requestAnimationFrame(animateFollower);
-        }
-        animateFollower();
-
-        const hoverTargets = "a, button, .legal-tab";
-        document.addEventListener("mouseover", (e) => {
-            if (e.target.closest(hoverTargets)) {
-                cursor.classList.add("hover");
-                follower.classList.add("hover");
+            // Animación del follower con lerp (interpolación lineal)
+            function animateFollower() {
+                fx = fx + (mx - fx) * 0.12;
+                fy = fy + (my - fy) * 0.12;
+                follower.style.left = fx + "px";
+                follower.style.top = fy + "px";
+                requestAnimationFrame(animateFollower);
             }
-        });
-        document.addEventListener("mouseout", (e) => {
-            if (e.target.closest(hoverTargets)) {
-                cursor.classList.remove("hover");
-                follower.classList.remove("hover");
-            }
-        });
-    })();
+            animateFollower();
+
+            // Efecto hover en elementos interactivos
+            const hoverTargets = "a, button, .legal-tab";
+            document.addEventListener("mouseover", (e) => {
+                if (e.target.closest(hoverTargets)) {
+                    cursor.classList.add("hover");
+                    follower.classList.add("hover");
+                }
+            });
+            document.addEventListener("mouseout", (e) => {
+                if (e.target.closest(hoverTargets)) {
+                    cursor.classList.remove("hover");
+                    follower.classList.remove("hover");
+                }
+            });
+        })();
     </script>
 </body>
 </html>

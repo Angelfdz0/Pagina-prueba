@@ -1,54 +1,104 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         📋 METADATOS BÁSICOS
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Blog de Studio Creativo. Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.">
     <meta name="theme-color" content="#0a0a0a">
-
-    <!-- Open Graph -->
+    
+    <!-- SEO: Descripción para motores de búsqueda -->
+    <meta name="description" content="Blog de Studio Creativo. Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.">
+    
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🌐 OPEN GRAPH (redes sociales)
+         Controla cómo se ve el enlace al compartir en Facebook, Twitter, etc.
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Blog | Studio Creativo">
     <meta property="og:description" content="Historias que inspiran. Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.">
     <meta property="og:locale" content="es_MX">
-
+    
+    <!-- Título de la pestaña del navegador -->
     <title>Blog | Studio</title>
-
+    
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🎨 FAVICON (icono de pestaña)
+         SVG inline: no requiere archivo externo, carga instantánea
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
-
-    <!-- Supabase CDN -->
+    
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         ⚡ SCRIPTS CRÍTICOS (deben cargar antes del body)
+         1. Supabase SDK → Conexión a base de datos
+         2. config.js → Configuración del sitio (colores, textos, etc.)
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Configuracion -->
     <script src="config.js"></script>
-
-    <!-- Estilos -->
+    
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🎨 ESTILOS CSS
+         Orden de carga:
+         1. style.css → Variables globales, reset, componentes base
+         2. blog.css → Estilos específicos del blog
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="blog.css">
 </head>
+
 <body>
 
-    <!-- Grain overlay -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🌾 EFECTO GRAIN (ruido de película)
+         Overlay sutil que da textura cinematográfica
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="grain-overlay" aria-hidden="true"></div>
 
-    <!-- Header del Blog -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🧭 HEADER DEL BLOG
+         Barra de navegación fija con:
+         - Logo que regresa al inicio
+         - Barra de búsqueda de artículos
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <header class="blog-header" id="blogHeader" role="banner">
         <div class="blog-header-inner">
-            <a href="index.html" class="blog-logo" aria-label="Studio - Ir al inicio">STU<span>DIO</span></a>
+            <!-- Logo del blog (enlace al inicio) -->
+            <a href="index.html" class="blog-logo" aria-label="Studio - Ir al inicio">
+                STU<span>DIO</span>
+            </a>
+            
+            <!-- Barra de búsqueda -->
             <div class="blog-search-bar">
                 <label for="searchInput" class="sr-only">Buscar artículos</label>
                 <input type="text" id="searchInput" placeholder="Buscar artículos..." aria-label="Buscar artículos">
-                <!-- ✅ FA: lupa -->
+                <!-- Icono de lupa (Font Awesome) -->
                 <i class="fa-solid fa-magnifying-glass search-icon" aria-hidden="true"></i>
             </div>
         </div>
     </header>
 
     <main role="main">
-        <!-- Hero del Blog -->
+        
+        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+             🏠 HERO DEL BLOG
+             Sección principal con:
+             - Fondo degradado + efecto glow pulsante
+             - Estrellas parpadeantes (generadas por blog.js)
+             - Título animado con efecto de revelado
+             - Onda SVG decorativa inferior
+             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
         <section class="blog-hero" aria-label="Inicio del blog">
+            <!-- Fondo degradado oscuro -->
             <div class="blog-hero-bg" aria-hidden="true"></div>
+            
+            <!-- Efecto glow pulsante en la parte inferior -->
             <div class="blog-hero-glow" aria-hidden="true"></div>
+            
+            <!-- Contenedor de estrellas (blog.js las genera dinámicamente) -->
             <div class="blog-stars" id="blogStars" aria-hidden="true"></div>
+            
+            <!-- Contenido del hero -->
             <div class="blog-hero-content">
                 <span class="blog-eyebrow">Nuestro Blog</span>
                 <h1 class="blog-title">
@@ -57,6 +107,8 @@
                 </h1>
                 <p class="blog-subtitle">Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.</p>
             </div>
+            
+            <!-- Onda SVG decorativa (transición al contenido) -->
             <div class="blog-hero-wave" aria-hidden="true">
                 <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
                     <path d="M0,50 C360,100 720,0 1080,50 C1260,75 1380,50 1440,50 L1440,100 L0,100 Z" fill="var(--color-bg)"/>
@@ -64,11 +116,19 @@
             </div>
         </section>
 
-        <!-- Filtros -->
+        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+             🔍 FILTROS Y ORDENAMIENTO
+             Barra sticky (se mantiene visible al hacer scroll)
+             - Filtros por categoría (generados por blog.js)
+             - Selector de ordenamiento
+             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
         <section class="blog-filters-section" aria-label="Filtros y ordenamiento de artículos">
+            <!-- Botones de filtro (blog.js los genera dinámicamente) -->
             <div class="blog-filters" id="blogFilters" role="tablist" aria-label="Filtrar artículos por categoría">
                 <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true">Todos</button>
             </div>
+            
+            <!-- Selector de ordenamiento -->
             <div class="blog-sort">
                 <label for="sortSelect" class="sr-only">Ordenar artículos</label>
                 <select id="sortSelect" aria-label="Ordenar artículos por">
@@ -78,65 +138,111 @@
             </div>
         </section>
 
-        <!-- Grid de Posts -->
+        <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+             📝 GRID DE POSTS
+             Grid responsivo de tarjetas de artículos
+             - blog.js renderiza las tarjetas dinámicamente desde Supabase
+             - Mensaje "No se encontraron artículos" si el filtro no tiene resultados
+             ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
         <section class="blog-posts-section" aria-label="Lista de artículos del blog">
+            <!-- Grid donde blog.js inyecta las tarjetas de posts -->
             <div class="blog-posts-grid" id="postsGrid" role="tabpanel" aria-live="polite"></div>
+            
+            <!-- Mensaje cuando no hay posts que coincidan con el filtro -->
             <div class="blog-no-results" id="noResults" style="display: none;" role="status" aria-live="polite">
                 <p>No se encontraron artículos</p>
             </div>
         </section>
     </main>
 
-    <!-- Modal de Lectura -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         📖 MODAL DE LECTURA (artículo completo)
+         Se abre al hacer clic en una tarjeta de post
+         Incluye:
+         - Galería de imágenes con miniaturas
+         - Información del artículo (categoría, título, autor, fecha)
+         - Botones de acción (me gusta, compartir, WhatsApp)
+         - Contenido completo del artículo
+         - Sección de comentarios
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="post-modal" id="postModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <!-- Overlay oscuro detrás del modal -->
         <div class="modal-overlay" id="modalOverlay"></div>
+        
         <div class="modal-content">
-            <!-- ✅ FA: X para cerrar -->
+            <!-- Botón cerrar (esquina superior derecha) -->
             <button class="modal-close" id="modalClose" aria-label="Cerrar artículo">
                 <i class="fa-solid fa-xmark" aria-hidden="true"></i>
             </button>
+            
             <div class="modal-body">
+                <!-- Sección izquierda: Galería de imágenes -->
                 <div class="modal-gallery-section" aria-label="Galería de imágenes del artículo">
+                    <!-- Contenedor de imágenes principales -->
                     <div class="modal-gallery" id="modalGallery" role="region" aria-label="Imágenes del artículo"></div>
+                    
+                    <!-- Miniaturas para navegar entre imágenes -->
                     <div class="modal-thumbnails" id="modalThumbnails" role="tablist" aria-label="Miniaturas de imágenes"></div>
                 </div>
+                
+                <!-- Sección derecha: Información del artículo -->
                 <div class="modal-info-section">
                     <div class="modal-info-content">
+                        <!-- Categoría del artículo -->
                         <span class="modal-category" id="modalCategory"></span>
+                        
+                        <!-- Título del artículo -->
                         <h2 class="modal-title" id="modalTitle"></h2>
+                        
+                        <!-- Subtítulo (opcional) -->
                         <p class="modal-subtitle" id="modalSubtitle" style="display:none;"></p>
+                        
+                        <!-- Meta información (autor + fecha) -->
                         <div class="modal-meta">
                             <span class="modal-author" id="modalAuthor"></span>
                             <time class="modal-date" id="modalDate"></time>
                         </div>
 
-                        <!-- ✅ FA: botones de acción con iconos -->
+                        <!-- Botones de acción (me gusta, compartir) -->
                         <div class="modal-actions">
+                            <!-- Botón Me gusta -->
                             <button class="modal-like-btn" id="likeBtn" aria-label="Me gusta este artículo">
                                 <i class="fa-regular fa-heart" aria-hidden="true"></i>
                                 <span class="like-count">0</span> Me gusta
                             </button>
+                            
+                            <!-- Botón Compartir (nativo) -->
                             <button class="modal-save-btn" id="shareBtn" aria-label="Compartir artículo">
                                 <i class="fa-solid fa-share-nodes" aria-hidden="true"></i>
                                 Compartir
                             </button>
+                            
+                            <!-- Botón Compartir por WhatsApp -->
                             <button class="modal-save-btn whatsapp-btn" id="shareWhatsappBtn" aria-label="Compartir por WhatsApp">
                                 <i class="fa-brands fa-whatsapp" aria-hidden="true"></i>
                                 WhatsApp
                             </button>
                         </div>
 
+                        <!-- Contenido completo del artículo (blog.js lo renderiza) -->
                         <div class="modal-description" id="modalDescription"></div>
 
+                        <!-- Sección de comentarios -->
                         <div class="comments-section" aria-label="Comentarios del artículo">
                             <h4 class="comments-title">Comentarios (<span id="commentsCount">0</span>)</h4>
+                            
+                            <!-- Lista de comentarios (blog.js la genera) -->
                             <div class="comments-list" id="commentsList" aria-live="polite"></div>
+                            
+                            <!-- Formulario para agregar comentario -->
                             <form class="comment-form" id="commentForm" novalidate>
                                 <label for="commentName" class="sr-only">Tu nombre</label>
                                 <input type="text" class="comment-input" id="commentName" placeholder="Tu nombre" maxlength="60" required>
+                                
                                 <label for="commentText" class="sr-only">Escribe un comentario</label>
                                 <textarea class="comment-textarea" id="commentText" placeholder="Escribe un comentario..." maxlength="600" required></textarea>
-                                <!-- ✅ FA: flecha en el botón enviar -->
+                                
+                                <!-- Botón enviar comentario -->
                                 <button type="submit" class="comment-submit" id="commentSubmit">
                                     <span>Comentar</span>
                                     <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
@@ -149,80 +255,119 @@
         </div>
     </div>
 
-    <!-- Modal de Nuevo Post (ADMIN) -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         ✍️ MODAL DE NUEVO POST (solo administradores)
+         Formulario para crear nuevos artículos
+         Incluye:
+         - Gestión de categorías (crear/eliminar)
+         - Campos: título, subtítulo, categoría, autor
+         - Área de subida de imágenes de portada
+         - Editor de contenido con botón para insertar imágenes
+         Solo visible cuando el usuario está autenticado como admin
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="new-post-modal" id="newPostModal" role="dialog" aria-modal="true" aria-labelledby="newPostTitle">
+        <!-- Overlay oscuro -->
         <div class="modal-overlay" id="newPostOverlay"></div>
+        
         <div class="new-post-content">
-            <!-- ✅ FA: X para cerrar -->
+            <!-- Botón cerrar -->
             <button class="modal-close" id="newPostClose" aria-label="Cerrar formulario de nuevo post">
                 <i class="fa-solid fa-xmark" aria-hidden="true"></i>
             </button>
+            
             <div class="new-post-inner">
                 <h2 class="new-post-title" id="newPostTitle">Crear Nuevo Post</h2>
 
-                <!-- Gestión de Categorías -->
+                <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                     🏷️ GESTIÓN DE CATEGORÍAS
+                     Permite crear y eliminar categorías de artículos
+                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
                 <div class="category-manager" role="region" aria-labelledby="categoryManagerTitle">
                     <h4 class="category-title" id="categoryManagerTitle">Categorías</h4>
+                    
+                    <!-- Lista de categorías existentes (blog.js la genera) -->
                     <div class="category-list" id="categoryList" aria-label="Lista de categorías existentes"></div>
+                    
+                    <!-- Formulario para agregar nueva categoría -->
                     <div class="category-add">
                         <label for="newCategoryInput" class="sr-only">Nueva categoría</label>
                         <input type="text" id="newCategoryInput" placeholder="Nueva categoría" aria-label="Nombre de la nueva categoría">
-                        <!-- ✅ FA: plus en botón agregar -->
+                        
+                        <!-- Botón agregar categoría -->
                         <button class="category-add-btn" id="addCategoryBtn" aria-label="Agregar nueva categoría">
                             <i class="fa-solid fa-plus" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
 
+                <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+                     📝 FORMULARIO DE NUEVO POST
+                     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
                 <form class="new-post-form" id="newPostForm" novalidate>
+                    <!-- Título del artículo -->
                     <div class="form-group">
                         <label for="postTitle">Título</label>
                         <input type="text" class="form-input" id="postTitle" name="title" required aria-required="true">
                     </div>
 
+                    <!-- Subtítulo (opcional) -->
                     <div class="form-group">
                         <label for="postSubtitle">Subtítulo (opcional)</label>
                         <input type="text" class="form-input" id="postSubtitle" name="subtitle" maxlength="200" placeholder="Una frase que complemente el título">
                     </div>
 
+                    <!-- Categoría (select generado por blog.js) -->
                     <div class="form-group">
                         <label for="postCategory">Categoría</label>
                         <select class="form-select" name="category" id="postCategory" required aria-required="true"></select>
                     </div>
 
+                    <!-- Autor del artículo -->
                     <div class="form-group">
                         <label for="postAuthor">Autor</label>
                         <input type="text" class="form-input" id="postAuthor" name="author" required aria-required="true">
                     </div>
 
+                    <!-- Imágenes de portada (drag & drop) -->
                     <div class="form-group">
                         <label id="imagesLabel">Imágenes de Portada</label>
                         <div class="image-upload-area" id="imageUploadArea" role="button" tabindex="0" aria-labelledby="imagesLabel" aria-describedby="uploadHelp">
+                            <!-- Input de archivo oculto -->
                             <input type="file" id="imageInput" multiple accept="image/*" style="display:none" aria-hidden="true" tabindex="-1">
+                            
+                            <!-- Placeholder con instrucciones -->
                             <div class="upload-placeholder" id="uploadPlaceholder">
-                                <!-- ✅ FA: icono de imagen en el área de subida -->
                                 <i class="fa-regular fa-image upload-icon" aria-hidden="true"></i>
                                 <p>Arrastra imágenes aquí o haz clic para seleccionar</p>
                                 <small id="uploadHelp">Formatos: JPG, PNG, WebP • Máx. 5MB</small>
                             </div>
+                            
+                            <!-- Grid de vistas previas (blog.js lo genera) -->
                             <div class="image-preview-grid" id="imagePreviewGrid" aria-live="polite" aria-label="Vista previa de imágenes seleccionadas"></div>
                         </div>
                     </div>
 
+                    <!-- Contenido del artículo -->
                     <div class="form-group">
                         <label for="postContent">Contenido</label>
+                        
+                        <!-- Barra de herramientas (botón insertar imagen) -->
                         <div class="content-toolbar">
-                            <!-- ✅ FA: camera en botón insertar imagen -->
                             <button type="button" class="toolbar-btn" id="insertImageBtn">
                                 <i class="fa-solid fa-camera" aria-hidden="true"></i>
                                 Insertar imagen
                             </button>
                         </div>
+                        
+                        <!-- Input de archivo para imágenes inline (oculto) -->
                         <input type="file" id="contentImageInput" accept="image/*" style="display:none" aria-hidden="true" tabindex="-1">
+                        
+                        <!-- Textarea del contenido -->
                         <textarea class="form-textarea" id="postContent" name="content" rows="8" required aria-required="true" aria-describedby="contentHelp"></textarea>
                         <small id="contentHelp" class="sr-only">Puedes insertar imágenes dentro del contenido usando el botón de arriba</small>
                     </div>
 
+                    <!-- Botón publicar -->
                     <button type="submit" class="new-post-submit">
                         <span>Publicar Post</span>
                         <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
@@ -232,14 +377,27 @@
         </div>
     </div>
 
-    <!-- Toast de notificación -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🔔 TOAST DE NOTIFICACIONES
+         Mensajes temporales que aparecen en la parte inferior
+         blog.js los muestra para confirmar acciones
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="blog-toast" id="blogToast" role="status" aria-live="polite" aria-atomic="true"></div>
 
-    <!-- Cursor personalizado -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🖱️ CURSOR PERSONALIZADO
+         Dos elementos:
+         - cursor: punto pequeño que sigue al mouse instantáneamente
+         - cursor-follower: círculo más grande que sigue con delay (efecto suave)
+         Solo visible en desktop (≥769px)
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="cursor" id="cursor" aria-hidden="true"></div>
     <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
 
-    <!-- Clase auxiliar para screen readers -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         ♿ UTILIDAD DE ACCESIBILIDAD
+         Clase .sr-only: oculta visualmente pero visible para screen readers
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <style>
         .sr-only {
             position: absolute;
@@ -254,7 +412,12 @@
         }
     </style>
 
-    <!-- Scripts (orden importante) -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         ⚡ SCRIPTS (orden de carga crítico)
+         1. theme.js → Aplica variables CSS desde config.js + carga fuentes
+         2. blog.js → Lógica completa del blog (posts, comentarios, likes)
+         3. admin-auth.js → Sistema de autenticación para administradores
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <script src="theme.js"></script>
     <script src="blog.js"></script>
     <script src="admin-auth.js"></script>

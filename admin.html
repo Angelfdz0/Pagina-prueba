@@ -1,36 +1,66 @@
 <!DOCTYPE html>
 <html lang="es-MX">
 <head>
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         📋 METADATOS Y CONFIGURACIÓN BÁSICA
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Evita que los motores de búsqueda indexen el panel de administración -->
     <meta name="robots" content="noindex, nofollow">
     <title>Admin | Studio</title>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         ⚡ SCRIPTS Y ESTILOS CRÍTICOS
+         1. Supabase SDK → Conexión a la base de datos
+         2. config.js → Configuración global del sitio (colores, módulos activos)
+         3. style.css → Variables CSS globales y reset
+         4. admin.css → Estilos específicos del panel de administración
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="admin.css">
 </head>
+
 <body class="admin-body">
 
-    <!-- LOGIN -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🔐 PANTALLA DE LOGIN
+         Visible solo cuando no hay sesión activa.
+         admin.js intercepta el submit y valida contra Supabase Auth.
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="admin-login" id="adminLogin">
         <form class="admin-login-card" id="adminLoginForm">
             <h1>Panel de Administración</h1>
             <p>🔐 Acceso restringido</p>
+            
             <label for="adminEmail" class="sr-only">Correo</label>
             <input type="email" id="adminEmail" placeholder="Correo" required autocomplete="email">
+            
             <label for="adminPassword" class="sr-only">Contraseña</label>
             <input type="password" id="adminPassword" placeholder="Contraseña" required autocomplete="current-password">
+            
             <button type="submit">Entrar</button>
             <div class="admin-login-error" id="adminLoginError" role="alert"></div>
+            
             <a href="index.html" class="admin-back">← Volver al sitio</a>
         </form>
     </div>
 
-    <!-- APP -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🏢 APP SHELL (Panel Principal)
+         Oculto por defecto (`hidden`). admin.js lo muestra tras login exitoso.
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="admin-app" id="adminApp" hidden>
+        
+        <!-- ─── BARRA LATERAL (Navegación) ─── -->
         <aside class="admin-sidebar">
-        <a href="index.html" class="admin-brand" aria-label="Studio — Volver al inicio">STU<span>DIO</span> · Admin</a>
+            <a href="index.html" class="admin-brand" aria-label="Studio — Volver al inicio">
+                STU<span>DIO</span> · Admin
+            </a>
+            
+            <!-- Menú de módulos (admin.js oculta los que estén en false en config.js) -->
             <nav aria-label="Secciones del panel">
                 <button data-view="dashboard" class="active">📊 Dashboard</button>
                 <button data-view="posts">📝 Posts</button>
@@ -43,123 +73,149 @@
                 <button data-view="testimonials">🌟 Testimonios</button>
                 <button data-view="appointments">📅 Citas</button>
             </nav>
+            
+            <!-- Footer de la barra lateral -->
             <div class="admin-sidebar-footer">
-    <a href="index.html" class="admin-back-home">← Volver al inicio</a>
-    <a href="#" id="adminShortcut" class="admin-back-home admin-shortcut" target="_blank" rel="noopener" hidden>Ver blog ↗</a>
-    <button id="adminLogout">Cerrar sesión</button>
-</div>
+                <a href="index.html" class="admin-back-home">← Volver al inicio</a>
+                <!-- Acceso directo contextual (cambia a "Ver blog" o "Ver tienda" según la pestaña) -->
+                <a href="#" id="adminShortcut" class="admin-back-home admin-shortcut" target="_blank" rel="noopener" hidden>Ver blog ↗</a>
+                <button id="adminLogout">Cerrar sesión</button>
+            </div>
         </aside>
 
+        <!-- ─── ÁREA DE CONTENIDO PRINCIPAL ─── -->
         <main class="admin-main">
+            
+            <!-- 📊 DASHBOARD -->
             <section id="view-dashboard" class="admin-view active">
                 <h2>Dashboard</h2>
+                <!-- admin.js inyecta las tarjetas de estadísticas aquí -->
                 <div class="admin-stats" id="adminStats"></div>
             </section>
 
+            <!-- 📝 POSTS (Blog) -->
             <section id="view-posts" class="admin-view">
                 <h2>Posts</h2>
                 <div class="admin-inline-form">
-        <button type="button" id="newPostAdminBtn">＋ Nuevo post</button>
-    </div>
-    <div id="postsTable"></div>
+                    <button type="button" id="newPostAdminBtn">＋ Nuevo post</button>
+                </div>
+                <!-- Tabla paginada inyectada por admin.js -->
+                <div id="postsTable"></div>
             </section>
 
+            <!-- 🛠️ SERVICIOS (Editor inline) -->
             <section id="view-services" class="admin-view">
-  <h2>Servicios</h2>
-  <button id="newServiceBtn" class="admin-btn primary">＋ Nuevo servicio</button>
-  <div id="servicesTable"></div>
+                <h2>Servicios</h2>
+                <button id="newServiceBtn" class="admin-btn primary">＋ Nuevo servicio</button>
+                <div id="servicesTable"></div>
 
-  <div id="serviceEditor" class="admin-editor-card" hidden>
-    <h3 id="serviceEditorTitle">Nuevo Servicio</h3>
-    <div class="admin-editor-row">
-      <div>
-        <label for="serviceNumber">Número</label>
-        <input id="serviceNumber" maxlength="4" placeholder="01">
-      </div>
-      <div>
-        <label for="serviceTitle">Título *</label>
-        <input id="serviceTitle" maxlength="80" placeholder="Consulta General" required>
-      </div>
-    </div>
-    <label for="serviceIntro">Frase corta (frente de la tarjeta)</label>
-    <input id="serviceIntro" maxlength="160" placeholder="Valoración completa y plan de tratamiento en una sola visita.">
-    <label for="serviceContent">Descripción completa (reverso) — con formato</label>
-    <div class="md-toolbar" id="serviceMdToolbar">
-      <button type="button" data-md="bold" title="Negrita"><b>N</b></button>
-      <button type="button" data-md="italic" title="Cursiva"><i>C</i></button>
-      <button type="button" data-md="h2" title="Subtítulo">H2</button>
-      <button type="button" data-md="list" title="Lista">• Lista</button>
-      <button type="button" data-md="quote" title="Cita">❝ Cita</button>
-    </div>
-    <textarea id="serviceContent" rows="7" placeholder="En esta consulta realizamos **historia clínica completa**...&#10;&#10;## Incluye&#10;- Receta digital&#10;- Seguimiento por WhatsApp"></textarea>
-    <div class="admin-editor-row">
-      <div>
-        <label for="serviceImage">URL de imagen (marca de agua, opcional)</label>
-        <input id="serviceImage" placeholder="https://...">
-      </div>
-      <div>
-        <label>&nbsp;</label>
-        <button type="button" id="serviceImgBtn" class="admin-btn">📷 Subir imagen</button>
-        <input type="file" id="serviceImgInput" accept="image/*" hidden>
-      </div>
-    </div>
-    <label class="admin-check"><input type="checkbox" id="serviceActive" checked> Activo (visible en el sitio)</label>
-    <div class="admin-editor-actions">
-      <button id="serviceSave" class="admin-btn primary">Guardar servicio</button>
-      <button id="serviceCancel" class="admin-btn">Cancelar</button>
-    </div>
-  </div>
-</section>
+                <!-- Formulario de edición/creación de servicios (Soporta Markdown) -->
+                <div id="serviceEditor" class="admin-editor-card" hidden>
+                    <h3 id="serviceEditorTitle">Nuevo Servicio</h3>
+                    
+                    <div class="admin-editor-row">
+                        <div>
+                            <label for="serviceNumber">Número</label>
+                            <input id="serviceNumber" maxlength="4" placeholder="01">
+                        </div>
+                        <div>
+                            <label for="serviceTitle">Título *</label>
+                            <input id="serviceTitle" maxlength="80" placeholder="Consulta General" required>
+                        </div>
+                    </div>
+                    
+                    <label for="serviceIntro">Frase corta (frente de la tarjeta)</label>
+                    <input id="serviceIntro" maxlength="160" placeholder="Valoración completa y plan de tratamiento en una sola visita.">
+                    
+                    <label for="serviceContent">Descripción completa (reverso) — con formato</label>
+                    <!-- Barra de herramientas Markdown -->
+                    <div class="md-toolbar" id="serviceMdToolbar">
+                        <button type="button" data-md="bold" title="Negrita"><b>N</b></button>
+                        <button type="button" data-md="italic" title="Cursiva"><i>C</i></button>
+                        <button type="button" data-md="h2" title="Subtítulo">H2</button>
+                        <button type="button" data-md="list" title="Lista">• Lista</button>
+                        <button type="button" data-md="quote" title="Cita">❝ Cita</button>
+                    </div>
+                    <textarea id="serviceContent" rows="7" placeholder="En esta consulta realizamos **historia clínica completa**...&#10;&#10;## Incluye&#10;- Receta digital&#10;- Seguimiento por WhatsApp"></textarea>
+                    
+                    <div class="admin-editor-row">
+                        <div>
+                            <label for="serviceImage">URL de imagen (marca de agua, opcional)</label>
+                            <input id="serviceImage" placeholder="https://...">
+                        </div>
+                        <div>
+                            <label>&nbsp;</label>
+                            <button type="button" id="serviceImgBtn" class="admin-btn">📷 Subir imagen</button>
+                            <input type="file" id="serviceImgInput" accept="image/*" hidden>
+                        </div>
+                    </div>
+                    
+                    <label class="admin-check"><input type="checkbox" id="serviceActive" checked> Activo (visible en el sitio)</label>
+                    
+                    <div class="admin-editor-actions">
+                        <button id="serviceSave" class="admin-btn primary">Guardar servicio</button>
+                        <button id="serviceCancel" class="admin-btn">Cancelar</button>
+                    </div>
+                </div>
+            </section>
 
+            <!-- 💬 COMENTARIOS -->
             <section id="view-comments" class="admin-view">
                 <h2>Comentarios</h2>
                 <div id="commentsTable"></div>
             </section>
 
+            <!-- 🛒 ÓRDENES (E-commerce) -->
             <section id="view-orders" class="admin-view">
                 <h2>Órdenes</h2>
                 <div id="ordersTable"></div>
             </section>
 
+            <!-- 🎟️ CUPONES (Descuentos y Popups) -->
             <section id="view-coupons" class="admin-view">
-  <h2>Cupones</h2>
+                <h2>Cupones</h2>
 
-  <form id="couponForm" class="coupon-form">
-    <!-- ── Datos del cupón ── -->
-    <div class="coupon-section">
-      <h4 class="coupon-section-title">🎟️ Datos del cupón</h4>
-      <div class="coupon-grid coupon-grid--main">
-        <input id="couponCode" placeholder="Código (ej. VERANO25)" required>
-        <select id="couponType" title="Tipo de descuento"><option value="percent">%</option><option value="fixed">$</option></select>
-        <input id="couponValue" type="number" min="1" required placeholder="Valor">
-        <input id="couponUntil" type="date" title="Fecha de vigencia">
-      </div>
-    </div>
-    <!-- ── Popup visual (opcional) ── -->
-    <div class="coupon-section">
-      <h4 class="coupon-section-title">📣 Popup visual (opcional)</h4>
-      <div class="coupon-grid">
-        <input id="couponTitle" placeholder="Título (ej. 10% de Descuento)">
-        <input id="couponSubtitle" placeholder="Subtítulo (ej. En toda la tienda)">
-        <input id="couponDesc" class="span-2" placeholder="Descripción corta">
-        <input id="couponBadge" placeholder="Badge" value="🔥 OFERTA">
-        <select id="couponAccent">
-          <option value="gold">Dorado</option>
-          <option value="red">Rojo</option>
-          <option value="purple">Morado</option>
-        </select>
-      </div>
-    </div>
-    <!-- ── Pie: checkbox + botón ── -->
-    <div class="coupon-footer">
-      <label class="admin-check"><input type="checkbox" id="couponPopup"> Mostrar en popup</label>
-      <button type="submit" class="coupon-submit">Agregar cupón</button>
-    </div>
-  </form>
+                <form id="couponForm" class="coupon-form">
+                    <!-- Datos técnicos del cupón -->
+                    <div class="coupon-section">
+                        <h4 class="coupon-section-title">🎟️ Datos del cupón</h4>
+                        <div class="coupon-grid coupon-grid--main">
+                            <input id="couponCode" placeholder="Código (ej. VERANO25)" required>
+                            <select id="couponType" title="Tipo de descuento">
+                                <option value="percent">%</option>
+                                <option value="fixed">$</option>
+                            </select>
+                            <input id="couponValue" type="number" min="1" required placeholder="Valor">
+                            <input id="couponUntil" type="date" title="Fecha de vigencia">
+                        </div>
+                    </div>
+                    
+                    <!-- Configuración visual para el popup de la tienda -->
+                    <div class="coupon-section">
+                        <h4 class="coupon-section-title">📣 Popup visual (opcional)</h4>
+                        <div class="coupon-grid">
+                            <input id="couponTitle" placeholder="Título (ej. 10% de Descuento)">
+                            <input id="couponSubtitle" placeholder="Subtítulo (ej. En toda la tienda)">
+                            <input id="couponDesc" class="span-2" placeholder="Descripción corta">
+                            <input id="couponBadge" placeholder="Badge" value="🔥 OFERTA">
+                            <select id="couponAccent">
+                                <option value="gold">Dorado</option>
+                                <option value="red">Rojo</option>
+                                <option value="purple">Morado</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="coupon-footer">
+                        <label class="admin-check"><input type="checkbox" id="couponPopup"> Mostrar en popup</label>
+                        <button type="submit" class="coupon-submit">Agregar cupón</button>
+                    </div>
+                </form>
 
-  <div id="couponsTable"></div>
-</section>
+                <div id="couponsTable"></div>
+            </section>
 
+            <!-- 🏷️ CATEGORÍAS (Blog) -->
             <section id="view-categories" class="admin-view">
                 <h2>Categorías</h2>
                 <form id="categoryForm" class="admin-inline-form">
@@ -169,79 +225,95 @@
                 <div id="categoriesTable"></div>
             </section>
 
+            <!-- 🌟 TESTIMONIOS (Prueba social) -->
             <section id="view-testimonials" class="admin-view">
-    <h2>Testimonios</h2>
-    <form id="testimonialForm" class="admin-testimonial-form">
-        <input id="tAuthor" placeholder="Nombre del cliente" required>
-        <input id="tLocation" placeholder="Ciudad (opcional)">
-        <div class="admin-editor-row">
-            <div>
-                <select id="tSource" aria-label="Red social de origen">
-                    <option value="instagram">Instagram</option>
-                    <option value="facebook">Facebook</option>
-                    <option value="whatsapp">WhatsApp</option>
-                    <option value="google">Google</option>
-                </select>
-            </div>
-            <div>
-                <select id="tRating" aria-label="Calificación">
-                    <option value="5">★★★★★</option>
-                    <option value="4">★★★★</option>
-                    <option value="3">★★★</option>
-                </select>
-            </div>
-        </div>
-        <textarea id="tComment" rows="3" placeholder="Copia aquí el comentario REAL del cliente (de tus redes)" required></textarea>
-        <div>
-            <button type="button" class="admin-btn txt" id="tAddPhoto">📷 Agregar foto real</button>
-            <input type="file" id="tPhotoInput" accept="image/*" style="display:none">
-            <div class="admin-editor-images" id="tPhotos"></div>
-        </div>
-        <button type="submit" class="admin-btn txt">Publicar testimonio</button>
-    </form>
-    <div id="testimonialsTable"></div>
-</section>
+                <h2>Testimonios</h2>
+                <form id="testimonialForm" class="admin-testimonial-form">
+                    <input id="tAuthor" placeholder="Nombre del cliente" required>
+                    <input id="tLocation" placeholder="Ciudad (opcional)">
+                    
+                    <div class="admin-editor-row">
+                        <div>
+                            <select id="tSource" aria-label="Red social de origen">
+                                <option value="instagram">Instagram</option>
+                                <option value="facebook">Facebook</option>
+                                <option value="whatsapp">WhatsApp</option>
+                                <option value="google">Google</option>
+                            </select>
+                        </div>
+                        <div>
+                            <select id="tRating" aria-label="Calificación">
+                                <option value="5">★★★★★</option>
+                                <option value="4">★★★★</option>
+                                <option value="3">★★★</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <textarea id="tComment" rows="3" placeholder="Copia aquí el comentario REAL del cliente (de tus redes)" required></textarea>
+                    
+                    <div>
+                        <button type="button" class="admin-btn txt" id="tAddPhoto">📷 Agregar foto real</button>
+                        <input type="file" id="tPhotoInput" accept="image/*" style="display:none">
+                        <div class="admin-editor-images" id="tPhotos"></div>
+                    </div>
+                    
+                    <button type="submit" class="admin-btn txt">Publicar testimonio</button>
+                </form>
+                <div id="testimonialsTable"></div>
+            </section>
 
-<section id="view-appointments" class="admin-view">
-  <h2>Citas</h2>
-  <div id="appointmentsTable"></div>
-</section>
+            <!-- 📅 CITAS (Agenda) -->
+            <section id="view-appointments" class="admin-view">
+                <h2>Citas</h2>
+                <div id="appointmentsTable"></div>
+            </section>
 
-<section class="admin-view" id="view-products">
-    <h2>Productos</h2>
-    <div class="admin-inline-form">
-        <button type="button" class="admin-btn txt" id="newProductBtn">＋ Nuevo producto</button>
-    </div>
-    <div id="productsTable"></div>
-</section>
+            <!-- 📦 PRODUCTOS (E-commerce) -->
+            <section class="admin-view" id="view-products">
+                <h2>Productos</h2>
+                <div class="admin-inline-form">
+                    <button type="button" class="admin-btn txt" id="newProductBtn">＋ Nuevo producto</button>
+                </div>
+                <div id="productsTable"></div>
+            </section>
+            
         </main>
     </div>
 
-    <!-- EDITOR DE POST (modal) -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         ✍️ MODAL: EDITOR DE POSTS (Blog)
+         Se superpone a la pantalla. Incluye subida de imágenes a Supabase Storage.
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="admin-editor" id="postEditor">
         <form class="admin-editor-card" id="postEditorForm">
             <div class="admin-editor-head">
                 <h3>Editar Post</h3>
                 <button type="button" class="auth-close" id="postEditorClose" aria-label="Cerrar editor">✕</button>
             </div>
+            
             <input type="hidden" id="editPostId">
+            
             <label for="editTitle">Título</label>
             <input id="editTitle" required>
+            
             <label for="editSubtitle">Subtítulo</label>
             <input id="editSubtitle">
+            
             <div class="admin-editor-row">
                 <div>
                     <label for="editCategory">Categoría</label>
                     <select id="editCategory"></select>
-                <div class="cat-quick">
-            <button type="button" class="admin-btn txt" id="catQuickToggle">＋ Nueva categoría</button>
-            <div class="cat-quick-form" id="catQuickForm" hidden>
-                <input id="catQuickName" placeholder="Nombre de la categoría" maxlength="40">
-                <button type="button" class="admin-btn txt" id="catQuickSave">Crear</button>
-            </div>
-        </div>
-    </div>
-    <div>
+                    <!-- Creación rápida de categorías sin salir del editor -->
+                    <div class="cat-quick">
+                        <button type="button" class="admin-btn txt" id="catQuickToggle">＋ Nueva categoría</button>
+                        <div class="cat-quick-form" id="catQuickForm" hidden>
+                            <input id="catQuickName" placeholder="Nombre de la categoría" maxlength="40">
+                            <button type="button" class="admin-btn txt" id="catQuickSave">Crear</button>
+                        </div>
+                    </div>
+                </div>
+                <div>
                     <label for="editStatus">Estado</label>
                     <select id="editStatus">
                         <option value="published">Publicado</option>
@@ -249,54 +321,91 @@
                     </select>
                 </div>
             </div>
+            
             <label for="editAuthor">Autor</label>
             <input id="editAuthor" required>
+            
             <label for="editExcerpt">Extracto (opcional)</label>
             <textarea id="editExcerpt" rows="2"></textarea>
+            
             <label for="editContent">Contenido</label>
             <div class="admin-editor-toolbar">
                 <button type="button" class="admin-btn" id="editInsertImage">📷 Insertar imagen en el texto</button>
             </div>
             <input type="file" id="editImageInput" accept="image/*" style="display:none">
             <textarea id="editContent" rows="10" required></textarea>
+            
             <label>Imágenes de portada</label>
             <div class="admin-editor-images" id="editImages"></div>
             <button type="button" class="admin-btn" id="editAddCover">+ Agregar portada</button>
             <input type="file" id="editCoverInput" accept="image/*" style="display:none">
+            
             <button type="submit" class="admin-editor-save">Guardar cambios</button>
         </form>
     </div>
 
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         📦 MODAL: EDITOR DE PRODUCTOS (Tienda)
+         Maneja variantes, precios, stock e imágenes múltiples.
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <div class="admin-editor" id="productEditor">
+        <form class="admin-editor-card" id="productEditorForm">
+            <div class="admin-editor-head">
+                <h3 id="productEditorTitle">Nuevo producto</h3>
+                <button type="button" id="productEditorClose">✕</button>
+            </div>
+            
+            <input type="hidden" id="prodId">
+            
+            <label>Nombre</label>
+            <input id="prodName" required>
+            
+            <div class="admin-editor-row">
+                <div><label>Categoría</label><input id="prodCategory" value="destacado"></div>
+                <div><label>Badge (opcional)</label><input id="prodBadge" placeholder="Destacado / Nuevo"></div>
+            </div>
+            
+            <div class="admin-editor-row">
+                <div><label>Precio (MXN)</label><input id="prodPrice" type="number" min="0" required></div>
+                <div><label>Precio original (opcional)</label><input id="prodPriceOrig" type="number" min="0"></div>
+            </div>
+            
+            <label>Descripción</label>
+            <textarea id="prodDesc"></textarea>
+            
+            <label>Características (una por línea)</label>
+            <textarea id="prodFeatures"></textarea>
+            
+            <label>Imágenes de portada</label>
+            <div class="admin-editor-toolbar">
+                <button type="button" id="prodAddImg">📷 Agregar imagen</button>
+            </div>
+            <input type="file" id="prodImgInput" accept="image/*" hidden>
+            <div class="admin-editor-images" id="prodImages"></div>
+            
+            <label>Variantes</label>
+            <div id="prodVariants"></div>
+            <div class="admin-editor-toolbar">
+                <button type="button" id="prodAddVariant">🧩 Agregar variante</button>
+            </div>
+            <input type="file" id="prodVarImgInput" accept="image/*" hidden>
+            
+            <label class="admin-check"><input type="checkbox" id="prodActive" checked> Activo en la tienda</label>
+            
+            <button class="admin-editor-save" type="submit">Guardar producto</button>
+        </form>
+    </div>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🔔 TOAST DE NOTIFICACIONES
+         Mensajes temporales inyectados por admin.js (éxito/error).
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
 
-    <div class="admin-editor" id="productEditor">
-  <form class="admin-editor-card" id="productEditorForm">
-    <div class="admin-editor-head"><h3 id="productEditorTitle">Nuevo producto</h3><button type="button" id="productEditorClose">✕</button></div>
-    <input type="hidden" id="prodId">
-    <label>Nombre</label><input id="prodName" required>
-    <div class="admin-editor-row">
-      <div><label>Categoría</label><input id="prodCategory" value="destacado"></div>
-      <div><label>Badge (opcional)</label><input id="prodBadge" placeholder="Destacado / Nuevo"></div>
-    </div>
-    <div class="admin-editor-row">
-      <div><label>Precio (MXN)</label><input id="prodPrice" type="number" min="0" required></div>
-      <div><label>Precio original (opcional)</label><input id="prodPriceOrig" type="number" min="0"></div>
-    </div>
-    <label>Descripción</label><textarea id="prodDesc"></textarea>
-    <label>Características (una por línea)</label><textarea id="prodFeatures"></textarea>
-    <label>Imágenes de portada</label>
-    <div class="admin-editor-toolbar"><button type="button" id="prodAddImg">📷 Agregar imagen</button></div>
-    <input type="file" id="prodImgInput" accept="image/*" hidden>
-    <div class="admin-editor-images" id="prodImages"></div>
-    <label>Variantes</label>
-    <div id="prodVariants"></div>
-    <div class="admin-editor-toolbar"><button type="button" id="prodAddVariant">🧩 Agregar variante</button></div>
-    <input type="file" id="prodVarImgInput" accept="image/*" hidden>
-    <label class="admin-check"><input type="checkbox" id="prodActive" checked> Activo en la tienda</label>
-    <button class="admin-editor-save" type="submit">Guardar producto</button>
-  </form>
-</div>
-
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         ♿ UTILIDAD DE ACCESIBILIDAD
+         Oculta elementos visualmente pero los mantiene para screen readers.
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <style>
         .sr-only {
             position: absolute;
@@ -309,7 +418,11 @@
         }
     </style>
 
-    <!-- Scripts (orden importante) -->
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         ⚡ SCRIPTS DE EJECUCIÓN
+         1. theme.js → Inyecta variables CSS y fuentes
+         2. admin.js → Lógica CRUD, autenticación y renderizado
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <script src="theme.js"></script>
     <script src="admin.js"></script>
 </body>

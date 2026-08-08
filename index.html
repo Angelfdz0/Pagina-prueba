@@ -6,7 +6,9 @@
     <meta name="description" content="Estudio creativo especializado en diseño digital, branding y desarrollo web de alto impacto en México.">
     <meta name="theme-color" content="#0a0a0a">
 
-    <!-- Open Graph -->
+    <!-- ============================================================
+    OPEN GRAPH
+    ============================================================ -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Studio | Estudio Creativo">
     <meta property="og:description" content="Diseño, estrategia y tecnología fusionados para construir marcas que trascienden lo ordinario.">
@@ -14,28 +16,47 @@
 
     <title>Studio | Estudio Creativo</title>
 
-    <!-- Favicon SVG inline -->
+    <!-- ============================================================
+    FAVICON SVG INLINE
+    ============================================================ -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
 
-    <!-- Supabase CDN (necesario para el login discreto del footer) -->
+    <!-- ============================================================
+    ESTILOS
+    ============================================================ -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- ============================================================
+    SUPABASE CDN
+    Necesario para el login discreto del footer (admin-auth.js)
+    ============================================================ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Configuracion -->
+    <!-- ============================================================
+    CONFIGURACIÓN GLOBAL
+    ============================================================ -->
     <script src="config.js"></script>
-
-    <!-- Estilos -->
-    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <!-- Cursor personalizado -->
+    <!-- ============================================================
+    CURSOR PERSONALIZADO
+    app.js usa: #cursor, #cursorFollower
+    ============================================================ -->
     <div class="cursor" id="cursor" aria-hidden="true"></div>
     <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
 
-    <!-- Grain overlay -->
+    <!-- ============================================================
+    GRAIN OVERLAY
+    Efecto de ruido sutil sobre toda la página
+    ============================================================ -->
     <div class="grain-overlay" aria-hidden="true"></div>
 
-    <!-- Loader -->
+    <!-- ============================================================
+    LOADER
+    app.js usa: #loader, #loaderTitleFill, #loaderPercentage
+    ============================================================ -->
     <div class="loader" id="loader" role="status" aria-label="Cargando página">
         <div class="loader-inner">
             <div class="loader-title-wrapper">
@@ -46,21 +67,30 @@
         </div>
     </div>
 
-    <!-- Header -->
+    <!-- ============================================================
+    HEADER / NAVEGACIÓN
+    app.js usa: #header, #nav
+    ============================================================ -->
     <header class="header" id="header" role="banner">
         <nav class="nav" id="nav" role="navigation" aria-label="Navegación principal"></nav>
     </header>
 
     <main role="main">
-        <!-- Hero -->
+
+        <!-- ========================================================
+        HERO
+        app.js usa: #hero, #heroBg, #heroContent, #scrollIndicator
+        ======================================================== -->
         <section class="hero" id="hero" aria-label="Inicio">
             <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
             <div class="hero-glow" aria-hidden="true"></div>
             <div class="hero-content" id="heroContent"></div>
+
             <div class="scroll-indicator" id="scrollIndicator" aria-hidden="true">
                 <div class="scroll-indicator-line"></div>
                 <span class="scroll-indicator-text">Scroll</span>
             </div>
+
             <div class="hero-wave" aria-hidden="true">
                 <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
                     <path d="M0,60 C240,120 480,0 720,60 C960,120 1200,0 1440,60 L1440,120 L0,120 Z" fill="var(--color-bg)"/>
@@ -68,70 +98,120 @@
             </div>
         </section>
 
-        <!-- Bloque 1: Historia -->
+        <!-- ========================================================
+        BLOQUE 1: HISTORIA
+        app.js usa: #storyInner
+        ======================================================== -->
         <section class="section section-story" id="story">
             <div class="section-inner" id="storyInner"></div>
         </section>
 
-        <!-- Bloque 2: Servicios -->
+        <!-- ========================================================
+        BLOQUE 2: EQUIPO MÉDICO (opcional)
+        app.js usa: #teamInner
+        Se activa desde config.js → team.enabled
+        ======================================================== -->
+        <section class="section section-team" id="team">
+            <div class="section-inner" id="teamInner"></div>
+        </section>
+
+        <!-- ========================================================
+        BLOQUE 3: SERVICIOS
+        app.js usa: #servicesInner
+        ======================================================== -->
         <section class="section section-services" id="services">
             <div class="section-inner" id="servicesInner"></div>
         </section>
 
-        <!-- BLOQUE: EQUIPO MÉDICO (opcional) -->
-<section class="section section-team" id="team">
-  <div class="section-inner" id="teamInner"></div>
-</section>
-
-        <!-- Bloque 3: Galería -->
+        <!-- ========================================================
+        BLOQUE 4: GALERÍA / PORTAFOLIO
+        app.js usa: #galleryInner
+        ======================================================== -->
         <section class="section section-gallery" id="gallery">
             <div class="section-inner" id="galleryInner"></div>
         </section>
 
-        <!-- Bloque 4: Filosofía -->
+        <!-- ========================================================
+        BLOQUE 5: FILOSOFÍA (opcional)
+        app.js usa: #philosophyInner
+        Se activa desde config.js → philosophy.enabled
+        ======================================================== -->
         <section class="section section-philosophy" id="philosophy">
             <div class="section-inner" id="philosophyInner"></div>
         </section>
 
-        <!-- Bloque 5: E-Commerce -->
+        <!-- ========================================================
+        BLOQUE 6: E-COMMERCE (acceso a tienda)
+        app.js usa: #ecommerceInner
+        ======================================================== -->
         <section class="section section-ecommerce" id="ecommerce">
             <div class="section-inner" id="ecommerceInner"></div>
         </section>
 
-        <!-- Bloque 6: Blog -->
+        <!-- ========================================================
+        BLOQUE 7: BLOG (acceso a blog.html)
+        app.js usa: #blogInner
+        ======================================================== -->
         <section class="section section-blog" id="blog">
             <div class="section-inner" id="blogInner"></div>
         </section>
 
-                <!-- Bloque: Testimonios -->
+        <!-- ========================================================
+        BLOQUE 8: UBICACIÓN (opcional)
+        app.js usa: #locationInner
+        Se activa desde config.js → location.enabled
+        ======================================================== -->
+        <section class="section section-location" id="location">
+            <div class="section-inner" id="locationInner"></div>
+        </section>
+
+        <!-- ========================================================
+        BLOQUE 9: CITAS (opcional)
+        app.js usa: #appointmentsInner
+        Se activa desde config.js → appointments.enabled
+        ======================================================== -->
+        <section class="section section-appointments" id="appointments">
+            <div class="section-inner" id="appointmentsInner"></div>
+        </section>
+
+        <!-- ========================================================
+        BLOQUE 10: CONTACTO
+        app.js usa: #contactInner
+        ======================================================== -->
+        <section class="section section-contact" id="contact">
+            <div class="section-inner" id="contactInner"></div>
+        </section>
+
+        <!-- ========================================================
+        BLOQUE 11: TESTIMONIOS
+        app.js usa: #testimonialsInner
+        Se construye al final porque carga datos asíncronos de Supabase
+        ======================================================== -->
         <section class="section section-testimonials" id="testimonials">
             <div class="section-inner" id="testimonialsInner"></div>
         </section>
 
-        <!-- BLOQUE: UBICACIÓN (opcional) -->
-<section class="section section-location" id="location">
-  <div class="section-inner" id="locationInner"></div>
-</section>
-
-<!-- BLOQUE: CITAS (opcional) -->
-<section class="section section-appointments" id="appointments">
-  <div class="section-inner" id="appointmentsInner"></div>
-</section>
-
-        <!-- Bloque 7: Contacto -->
-        <section class="section section-contact" id="contact">
-            <div class="section-inner" id="contactInner"></div>
-        </section>
     </main>
 
-    <!-- Footer -->
+    <!-- ============================================================
+    FOOTER
+    app.js usa: #footerInner
+    admin-auth.js usa: [data-admin-link] dentro del footer
+    ============================================================ -->
     <footer class="footer" id="footer" role="contentinfo">
         <div class="footer-inner" id="footerInner"></div>
     </footer>
 
-    <!-- Scripts (orden importante) -->
+    <!-- ============================================================
+    SCRIPTS
+    Orden importante:
+    1. theme.js   → aplica colores y fuentes de config.js
+    2. app.js     → construye todas las secciones y animaciones
+    3. admin-auth.js → inyecta el enlace discreto de login admin
+    ============================================================ -->
     <script src="theme.js"></script>
     <script src="app.js"></script>
     <script src="admin-auth.js"></script>
+
 </body>
 </html>
