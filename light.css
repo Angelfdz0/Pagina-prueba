@@ -239,6 +239,16 @@ html[data-theme="light"] .team-card::after {
   html[data-theme="light"] .scroll-indicator-text { color: rgba(255,255,255,.7); }
 }
 
+html[data-theme="light"] .modal-close,
+html[data-theme="light"] .post-modal .modal-close {
+  background: rgba(255, 255, 255, .92);
+  color: var(--color-text);
+  box-shadow: 0 4px 14px rgba(15, 42, 63, .25);
+}
+
+html[data-theme="light"] .footer-brand-name { color: #F5F2EA; }
+html[data-theme="light"] .footer-brand-name span { color: var(--color-accent-light); }
+
 /* ============ LOADER (telón premium) ============ */
 /* El loader conserva el telón oscuro (contraste de entrada elegante). */
 

@@ -1081,272 +1081,196 @@ function initLoader() {
     });
   }
 
-  // Carrusel de galería con snap y parallax
-  function initGalleryCarousel() {
+  // ─── CARRUSEL "LIBRERÍA" v4: sin desfase + loop infinito sin retroceso ───
+function initGalleryCarousel() {
     const wrapper = $("#galleryCarouselWrapper");
     const carousel = $("#galleryCarousel");
     const progressFill = $("#galleryProgressFill");
     if (!wrapper || !carousel) return;
 
-    const slides = $$(".gallery-slide", carousel);
+    const realSlides = $$(".gallery-slide", carousel);
+    const realCount = realSlides.length;
+    if (!realCount) return;
 
-    // Estado del carrusel
-    let isDragging = false;
-    let startX = 0;
-    let startTranslate = 0;
-    let currentTranslate = 0;
-    let velocity = 0;
-    let lastX = 0;
-    let lastTime = 0;
-    let rafId = null;
-    let snapPositions = [];
-    let snapAnimating = false;
-    let snapFallbackTimer = null;
+    // 📚 Clona los slides para loop infinito (avance siempre "hacia adelante")
+    realSlides.forEach(s => carousel.appendChild(s.cloneNode(true)));
+    const slides = $$(".gallery-slide", carousel);   // reales + clones
 
-    // Calcular posiciones de snap (centrar cada slide)
+    let isDragging = false, startX = 0, startTranslate = 0, currentTranslate = 0,
+        velocity = 0, lastX = 0, lastTime = 0, rafId = null,
+        snapPositions = [], slideCenters = [], snapAnimating = false, snapFallbackTimer = null;
+
+    let autoTimer = null, idleTimer = null, autoIndex = 0;
+    const autoOn = () => C.effects?.galleryAuto !== false && !prefersReducedMotion;
+    const autoEvery = C.effects?.galleryAutoInterval || 4000;
+
     function calculateSnapPositions() {
-      snapPositions = [];
-      const wrapperCenter = wrapper.offsetWidth / 2;
-      const paddingLeft = parseFloat(getComputedStyle(carousel).paddingLeft) || 0;
-
-      slides.forEach(slide => {
-        const slideVisualCenter = paddingLeft + slide.offsetLeft + (slide.offsetWidth / 2);
-        let targetX = wrapperCenter - slideVisualCenter;
-        snapPositions.push(targetX);
-      });
-    }
-
-    // Obtener límites de traslación
-    function getLimits() {
-      const maxTranslate = 0;
-      const minTranslate = -(carousel.scrollWidth - wrapper.offsetWidth);
-      return { minTranslate, maxTranslate };
-    }
-
-    // Actualizar visuales (transform, parallax, opacidad, escala)
-    function updateVisuals(x, isSnapping = false) {
-      const { minTranslate, maxTranslate } = getLimits();
-
-      let finalX = x;
-      // Elasticidad en los bordes
-      if (!isSnapping) {
-        if (x > maxTranslate) finalX = maxTranslate + (x - maxTranslate) * 0.3;
-        else if (x < minTranslate) finalX = minTranslate + (x - minTranslate) * 0.3;
-      } else {
-        finalX = Math.max(minTranslate, Math.min(maxTranslate, x));
-      }
-
-      currentTranslate = finalX;
-
-      if (isSnapping) carousel.classList.add("is-snapping");
-      else carousel.classList.remove("is-snapping");
-
-      carousel.style.transform = `translate3d(${finalX}px, 0, 0)`;
-
-      const wrapperRect = wrapper.getBoundingClientRect();
-      const wrapperCenterX = wrapperRect.left + wrapperRect.width / 2;
-
-      // Aplicar efectos a cada slide
-      slides.forEach(slide => {
-        const rect = slide.getBoundingClientRect();
-        const slideCenterX = rect.left + rect.width / 2;
-        const distance = slideCenterX - wrapperCenterX;
-        const normalized = distance / (wrapperRect.width / 2);
-
-        // Parallax en imagen
-        const img = $(".gallery-slide-img", slide);
-        if (img) {
-          const parallaxOffset = normalized * 30;
-          img.style.transform = `translate3d(${parallaxOffset}px, 0, 0) scale(1.2)`;
-        }
-
-        // Escala y opacidad según distancia al centro
-        const scale = 1 - Math.abs(normalized) * 0.15;
-        const opacity = 1 - Math.abs(normalized) * 0.4;
-        slide.style.transform = `scale(${clamp(scale, 0.85, 1)})`;
-        slide.style.opacity = clamp(opacity, 0.5, 1);
-      });
-
-      // Actualizar barra de progreso
-      if (progressFill && minTranslate !== 0) {
-        const progress = Math.abs(finalX) / Math.abs(minTranslate);
-        progressFill.style.width = (clamp(progress, 0, 1) * 100) + "%";
-      }
-    }
-
-    // Obtener coordenada X del evento (mouse o touch)
-    function getX(e) {
-      return e.type.includes("mouse") ? e.clientX : e.touches[0].clientX;
-    }
-
-    // Inicio del drag
-    function onStart(e) {
-      if (e.type === 'mousedown') e.preventDefault();
-      isDragging = true;
-      startX = getX(e);
-      startTranslate = currentTranslate;
-      lastX = startX;
-      lastTime = Date.now();
-      velocity = 0;
-      if (rafId) cancelAnimationFrame(rafId);
-      carousel.classList.remove("is-snapping");
-      snapAnimating = false;
-      clearTimeout(snapFallbackTimer);
-    }
-
-    // Movimiento durante drag
-    function onMove(e) {
-      if (!isDragging) return;
-      if (e.type === 'touchmove' && e.cancelable) e.preventDefault();
-
-      const x = getX(e);
-      const deltaX = x - startX;
-      const now = Date.now();
-      const dt = now - lastTime;
-
-      // Calcular velocidad
-      if (dt > 0) {
-        velocity = (x - lastX) / dt * 16;
-        velocity = clamp(velocity, -50, 50);
-      }
-
-      lastX = x;
-      lastTime = now;
-
-      // Actualizar posición con requestAnimationFrame
-      if (!rafId) {
-        rafId = requestAnimationFrame(() => {
-          updateVisuals(startTranslate + deltaX, false);
-          rafId = null;
+        snapPositions = []; slideCenters = [];
+        const wrapperCenter = wrapper.offsetWidth / 2;
+        const paddingLeft = parseFloat(getComputedStyle(carousel).paddingLeft) || 0;
+        slides.forEach(slide => {
+            const c = paddingLeft + slide.offsetLeft + slide.offsetWidth / 2;
+            slideCenters.push(c);
+            snapPositions.push(wrapperCenter - c);
         });
-      }
+    }
+    function getLimits() {
+        return { minTranslate: -(carousel.scrollWidth - wrapper.offsetWidth), maxTranslate: 0 };
+    }
+    function getClosestIndex(x) {
+        let bi = 0, md = Infinity;
+        snapPositions.forEach((p, i) => { const d = Math.abs(x - p); if (d < md) { md = d; bi = i; } });
+        return bi;
+    }
+    function getClosestSnap(x) { return snapPositions[getClosestIndex(x)] ?? 0; }
+
+    // ✅ Sin desfase: calcula la inclinación con la posición OBJETIVO (finalX),
+    // no con getBoundingClientRect (que llega una transición tarde).
+    function updateVisuals(x, isSnapping = false) {
+        const { minTranslate, maxTranslate } = getLimits();
+        let finalX = x;
+        if (!isSnapping) {
+            if (x > maxTranslate) finalX = maxTranslate + (x - maxTranslate) * 0.3;
+            else if (x < minTranslate) finalX = minTranslate + (x - minTranslate) * 0.3;
+        } else finalX = clamp(x, minTranslate, maxTranslate);
+
+        currentTranslate = finalX;
+        carousel.classList.toggle("is-snapping", isSnapping);
+        carousel.style.transform = `translate3d(${finalX}px, 0, 0)`;
+
+        const wrapperCenter = wrapper.offsetWidth / 2;
+        const halfW = wrapper.offsetWidth / 2;
+
+        slides.forEach((slide, i) => {
+            const n = ((slideCenters[i] + finalX) - wrapperCenter) / halfW;
+            const img = $(".gallery-slide-img", slide);
+            if (img) img.style.transform = `translate3d(${n * 30}px, 0, 0) scale(1.2)`;
+            const scale = clamp(1 - Math.abs(n) * 0.15, 0.85, 1);
+            const opacity = clamp(1 - Math.abs(n) * 0.4, 0.5, 1);
+            const rot = clamp(n * -8, -8, 8);
+            slide.style.transform = `scale(${scale}) rotate(${rot}deg)`;
+            slide.style.opacity = opacity;
+            slide.style.zIndex = String(20 - Math.round(Math.abs(n) * 10));
+        });
+
+        if (progressFill && minTranslate !== 0)
+            progressFill.style.width = (clamp(Math.abs(finalX) / Math.abs(minTranslate), 0, 1) * 100) + "%";
     }
 
-    // Fin del drag (snap al slide más cercano)
-    function onEnd() {
-      if (!isDragging) return;
-      isDragging = false;
+    function goToSlide(i) {
+        if (snapPositions[i] === undefined) return;
+        autoIndex = i;
+        snapAnimating = true;
+        updateVisuals(snapPositions[i], true);
+        clearTimeout(snapFallbackTimer);
+        snapFallbackTimer = setTimeout(settle, 900);
+    }
 
-      // Proyectar posición final con inercia
-      const projected = currentTranslate + (velocity * 15);
-      const closestSnap = getClosestSnap(projected);
-
-      snapAnimating = true;
-      updateVisuals(closestSnap, true);
-
-      // Fallback por si la animación no termina
-      clearTimeout(snapFallbackTimer);
-      snapFallbackTimer = setTimeout(() => {
-        if (snapAnimating) {
-          carousel.classList.remove("is-snapping");
-          snapAnimating = false;
-          velocity = 0;
+    // Al asentarse: si caímos en un clon, salto INVISIBLE al slide real
+    function settle() {
+        carousel.classList.remove("is-snapping");
+        snapAnimating = false; velocity = 0;
+        if (autoIndex >= realCount) {
+            autoIndex -= realCount;
+            updateVisuals(snapPositions[autoIndex], false); // sin transición (idéntico píxel a píxel)
         }
-      }, 900);
     }
 
-    // Limpiar estado al terminar transición
-    carousel.addEventListener("transitionend", (e) => {
-      if (e.target !== carousel) return;
-      carousel.classList.remove("is-snapping");
-      snapAnimating = false;
-      velocity = 0;
-      clearTimeout(snapFallbackTimer);
+    // 🤖 auto-avance siempre "hacia adelante" (real → clon → remap)
+    function startAuto() {
+        if (!autoOn() || realCount < 2) return;
+        stopAuto();
+        autoTimer = setInterval(() => {
+            if (isDragging || snapAnimating) return;
+            goToSlide(autoIndex + 1);
+        }, autoEvery);
+    }
+    function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
+    function pauseAuto() { stopAuto(); clearTimeout(idleTimer); idleTimer = setTimeout(startAuto, 6000); }
+
+    function getX(e) { return e.type.includes("mouse") ? e.clientX : e.touches[0].clientX; }
+    function onStart(e) {
+        if (e.type === "mousedown") e.preventDefault();
+        isDragging = true; pauseAuto();
+        startX = getX(e); startTranslate = currentTranslate;
+        lastX = startX; lastTime = Date.now(); velocity = 0;
+        if (rafId) cancelAnimationFrame(rafId);
+        carousel.classList.remove("is-snapping");
+        snapAnimating = false; clearTimeout(snapFallbackTimer);
+    }
+    function onMove(e) {
+        if (!isDragging) return;
+        if (e.type === "touchmove" && e.cancelable) e.preventDefault();
+        const x = getX(e), dx = x - startX, now = Date.now(), dt = now - lastTime;
+        if (dt > 0) velocity = clamp(((x - lastX) / dt) * 16, -50, 50);
+        lastX = x; lastTime = now;
+        if (!rafId) rafId = requestAnimationFrame(() => { updateVisuals(startTranslate + dx, false); rafId = null; });
+    }
+    function onEnd() {
+        if (!isDragging) return;
+        isDragging = false; pauseAuto();
+        snapAnimating = true;
+        const target = getClosestSnap(currentTranslate + velocity * 15);
+        autoIndex = getClosestIndex(target);
+        updateVisuals(target, true);
+        clearTimeout(snapFallbackTimer);
+        snapFallbackTimer = setTimeout(settle, 900);
+    }
+
+    carousel.addEventListener("transitionend", e => {
+        if (e.target !== carousel) return;
+        settle();
     });
 
-    // Event listeners para mouse
     wrapper.addEventListener("mousedown", onStart);
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onEnd);
     wrapper.addEventListener("mouseleave", onEnd);
-
-    // Event listeners para touch
     wrapper.addEventListener("touchstart", onStart, { passive: true });
     wrapper.addEventListener("touchmove", onMove, { passive: false });
     wrapper.addEventListener("touchend", onEnd);
 
-    // Prevenir clics durante drag
-    slides.forEach(slide => {
-      slide.addEventListener("click", (e) => {
-        if (isDragging || snapAnimating || Math.abs(velocity) > 2) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }, true);
+    // Clic/tap en un libro → lo centra (y pausa el auto)
+    slides.forEach((slide, i) => {
+        slide.addEventListener("click", () => {
+            if (!isDragging && Math.abs(velocity) <= 2) { pauseAuto(); goToSlide(i); }
+        });
     });
 
-    // Recalcular cuando las imágenes carguen
     function recalculateWhenImagesLoad() {
-      const images = $$(".gallery-slide-img", carousel);
-      if (!images.length) return;
-
-      let remaining = images.length;
-      let finished = false;
-
-      const done = () => {
-        if (finished) return;
-        remaining -= 1;
-        if (remaining <= 0) {
-          finished = true;
-          calculateSnapPositions();
-          if (!isDragging && !snapAnimating) {
-            updateVisuals(getClosestSnap(currentTranslate), true);
-          }
-        }
-      };
-
-      images.forEach(img => {
-        if (img.complete) done();
-        else {
-          img.addEventListener("load", done, { once: true });
-          img.addEventListener("error", done, { once: true });
-        }
-      });
+        const imgs = $$(".gallery-slide-img", carousel);
+        if (!imgs.length) return;
+        let remaining = imgs.length, finished = false;
+        const done = () => {
+            if (finished) return;
+            if (--remaining <= 0) {
+                finished = true;
+                calculateSnapPositions();
+                if (!isDragging && !snapAnimating) updateVisuals(getClosestSnap(currentTranslate), true);
+            }
+        };
+        imgs.forEach(img => img.complete ? done() : (img.addEventListener("load", done, { once: true }), img.addEventListener("error", done, { once: true })));
     }
 
-    // Encontrar posición de snap más cercana
-    function getClosestSnap(x) {
-      let closest = snapPositions[0] || 0;
-      let minDistance = Infinity;
-      snapPositions.forEach(pos => {
-        const dist = Math.abs(x - pos);
-        if (dist < minDistance) {
-          minDistance = dist;
-          closest = pos;
-        }
-      });
-      return closest;
-    }
-
-    // Inicializar carrusel
-    function init() {
-      calculateSnapPositions();
-      updateVisuals(snapPositions[0] || 0, true);
-    }
-
-    init();
+    calculateSnapPositions();
+    updateVisuals(snapPositions[0], true);   // ✅ la 1ª ya nace centrada y resaltada
     recalculateWhenImagesLoad();
+    startAuto();
 
-    // Recalcular cuando las fuentes estén listas
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => {
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
         calculateSnapPositions();
-        if (!isDragging && !snapAnimating) {
-          updateVisuals(getClosestSnap(currentTranslate), true);
-        }
-      });
-    }
+        if (!isDragging && !snapAnimating) updateVisuals(getClosestSnap(currentTranslate), true);
+    });
 
-    // Recalcular en resize
     let resizeTimer;
     window.addEventListener("resize", () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        calculateSnapPositions();
-        updateVisuals(getClosestSnap(currentTranslate), true);
-      }, 200);
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            calculateSnapPositions();
+            if (!isDragging && !snapAnimating) updateVisuals(getClosestSnap(currentTranslate), true);
+        }, 200);
     });
-  }
+}
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 💬 BLOQUE 4: FILOSOFÍA (cita + CTA)
@@ -2625,7 +2549,7 @@ function initLoader() {
     initCounters();
     initGalleryCarousel();
     initGalleryParticles();
-    initServicesLight();
+      if (C.effects?.servicesLight !== false) initServicesLight();
     
     // 6. Efecto magnético (después del loader)
     setTimeout(initMagnetic, C.loader.duration + 600);

@@ -435,6 +435,9 @@ const SITE_CONFIG = {
     cursorEnabled: true,
     grainEnabled: false,       // ★ Desactivado (clínicas piden look más limpio)
     progressBarEnabled: true,
+    servicesLight: false,
+    galleryAuto: true,          // false = sin auto-rotación (solo clic/drag)
+    galleryAutoInterval: 4000,  // ms entre cada libro centrado
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

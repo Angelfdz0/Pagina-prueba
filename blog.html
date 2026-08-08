@@ -33,9 +33,11 @@
          ⚡ SCRIPTS CRÍTICOS (deben cargar antes del body)
          1. Supabase SDK → Conexión a base de datos
          2. config.js → Configuración del sitio (colores, textos, etc.)
+         3. theme.js → Aplica variables CSS desde config.js + carga fuentes
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
+    <script src="theme.js"></script>
     
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          🎨 ESTILOS CSS
@@ -64,9 +66,9 @@
     <header class="blog-header" id="blogHeader" role="banner">
         <div class="blog-header-inner">
             <!-- Logo del blog (enlace al inicio) -->
-            <a href="index.html" class="blog-logo" aria-label="Studio - Ir al inicio">
-                STU<span>DIO</span>
-            </a>
+           <a href="index.html" class="blog-logo" aria-label="Volver al inicio">
+             <span data-logo-text>VI</span><span data-logo-highlight>TALIS</span>
+           </a>
             
             <!-- Barra de búsqueda -->
             <div class="blog-search-bar">
@@ -414,11 +416,9 @@
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          ⚡ SCRIPTS (orden de carga crítico)
-         1. theme.js → Aplica variables CSS desde config.js + carga fuentes
-         2. blog.js → Lógica completa del blog (posts, comentarios, likes)
-         3. admin-auth.js → Sistema de autenticación para administradores
+         1. blog.js → Lógica completa del blog (posts, comentarios, likes)
+         2. admin-auth.js → Sistema de autenticación para administradores
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-    <script src="theme.js"></script>
     <script src="blog.js"></script>
     <script src="admin-auth.js"></script>
 </body>

@@ -100,4 +100,14 @@
   addLink('stylesheet', 'light.css');
     }
 
+  // ✅ Logo dinámico en todas las páginas (blog / tienda / legal)
+  function applyLogo() {
+    const logo = C.header?.logo;
+    if (!logo) return;
+    document.querySelectorAll('[data-logo-text]').forEach(el => el.textContent = logo.text || '');
+    document.querySelectorAll('[data-logo-highlight]').forEach(el => el.textContent = logo.highlight || '');
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyLogo);
+  else applyLogo();
+
 })();
