@@ -393,6 +393,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 /* Luz que cae */
 .services-light-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 0; }
 .light-beam {
+  display: none;
   position: absolute; top: -20%; left: 50%; transform: translateX(-50%); width: 200px; height: 150%;
   background: linear-gradient(to bottom, rgba(var(--accent-rgb),0.4) 0%, rgba(var(--accent-rgb),0.2) 20%, rgba(var(--accent-rgb),0.1) 40%, rgba(var(--accent-rgb),0.05) 60%, transparent 100%);
   filter: blur(30px); opacity: 0; transition: opacity 2s ease-out;
@@ -1045,37 +1046,91 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 [data-personality="minimal"] .post-card:hover { transform: none; }
 [data-personality="minimal"] .services-header .section-heading { text-shadow: none !important; }
 
+/* ============================================================
+   ✅ HERO SPLIT ARTÍSTICO — texto izquierda / imagen derecha
+   ============================================================ */
+
+/* El hero reparte: contenido a la izquierda, imagen a la derecha */
+[data-hero-layout="split"] .hero {
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* — Columna de texto: ancha fija, centrada vertical, sin montarse — */
 [data-hero-layout="split"] .hero-content {
-  text-align: left;
+  position: relative;
+  z-index: 4;
+  width: min(46%, 620px);
   max-width: 46%;
-  margin: 0 0 0 6%;
+  margin-left: clamp(1.5rem, 6vw, 7rem);
+  text-align: left;
   padding: 0;
 }
-[data-hero-layout="split"] .hero-title { font-size: clamp(2.6rem, 5.5vw, 5.5rem); }
-[data-hero-layout="split"] .hero-subtitle { margin: 0 0 2.5rem; }
+
+/* Toque artístico: línea acento junto al eyebrow */
+[data-hero-layout="split"] .hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .9rem;
+}
+[data-hero-layout="split"] .hero-eyebrow::before {
+  content: '';
+  width: 42px;
+  height: 1px;
+  background: var(--color-accent);
+}
+
+/* Título y subtítulo contenidos en su columna */
+[data-hero-layout="split"] .hero-title { font-size: clamp(2.8rem, 5vw, 5rem); }
+[data-hero-layout="split"] .hero-subtitle { margin: 0 0 2.5rem; max-width: 46ch; }
+
+/* — Imagen: marco derecho, luminosa, con sombra suave — */
 [data-hero-layout="split"] .hero-bg {
-  top: 12%; bottom: 14%; left: 54%; right: 5%;
-  filter: brightness(0.85) saturate(1);
-  border-radius: 18px;
-  border: 1px solid rgba(255,255,255,.14);
-  box-shadow: 0 40px 80px rgba(0,0,0,.55);
+  z-index: auto;                 /* deja que el marco vaya DETRÁS */
+  top: 10%;
+  bottom: 12%;
+  left: 53%;
+  right: clamp(1rem, 4vw, 4.5rem);
+  filter: brightness(.92) saturate(1);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow: 0 40px 80px rgba(15, 42, 63, .25);
   transform: none !important;
 }
-[data-hero-layout="split"] .hero-bg::after {
-  background: linear-gradient(180deg, transparent 55%, rgba(10,10,10,.45) 100%);
+
+/* Marco acento desplazado detrás de la imagen (look editorial) */
+[data-hero-layout="split"] .hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: translate(18px, 18px);
+  border: 1px solid rgba(var(--accent-rgb), .4);
+  border-radius: 20px;
 }
+
+/* Velo suave solo abajo (no tapa el texto) */
+[data-hero-layout="split"] .hero-bg::after {
+  background: linear-gradient(180deg, transparent 60%, rgba(15, 42, 63, .18) 100%);
+}
+
+/* — Móvil: vuelve al hero centrado a pantalla completa — */
 @media (max-width: 900px) {
-  [data-hero-layout="split"] .hero-bg {
-    top: -20%; bottom: -20%; left: -20%; right: -20%;
-    border-radius: 0; border: none; box-shadow: none;
-    filter: brightness(0.35) saturate(0.8);
-  }
+  [data-hero-layout="split"] .hero { justify-content: center; }
   [data-hero-layout="split"] .hero-content {
-    max-width: 100%; margin: 0 auto;
+    width: 100%; max-width: 100%;
+    margin: 0 auto;
     padding: 0 clamp(1.5rem, 5vw, 2rem);
     text-align: center;
   }
-  [data-hero-layout="split"] .hero-subtitle { margin: 0 auto 2.5rem; }
+  [data-hero-layout="split"] .hero-eyebrow::before { display: none; }
+  [data-hero-layout="split"] .hero-bg {
+    top: -20%; bottom: -20%; left: -20%; right: -20%;
+    border-radius: 0; border: none; box-shadow: none;
+    filter: brightness(.35) saturate(.8);
+    z-index: 0;
+  }
+  [data-hero-layout="split"] .hero-bg::before { display: none; }
 }
 
 /* ============ 19 UBICACIÓN + CITAS + PATROCINADORES ============ */
@@ -1216,3 +1271,164 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 .team-contact a:hover { color: var(--color-accent); }
 .team-contact i { width: 26px; height: 26px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(var(--accent-rgb), .12); border: 1px solid rgba(var(--accent-rgb), .3); color: var(--color-accent); font-size: .68rem; }
 .team-back-btn { margin-top: auto; }
+
+/* ============================================================
+🏥 TEMA CLARO CLÍNICA — AJUSTES DE CONTRASTE
+(El sitio nació en dark; este bloque adapta los textos a fondo claro)
+============================================================ */
+/* Títulos que viven sobre fondo claro → oscuros */
+.section-heading,
+.service-title,
+.team-name,
+.testimonial-name,
+.location-card h4,
+.philosophy-quote,
+.service-desc-full strong { color: var(--color-text); }
+
+/* Textos que viven sobre fondo OSCURO (hero) → aclarar */
+.hero-subtitle,
+.scroll-indicator-text { color: rgba(255,255,255,.85); }
+
+/* Header al hacer scroll: claro en vez de oscuro */
+.header.scrolled { background: rgba(250,248,245,.92); }
+
+/* Footer (fondo oscuro) → textos gris-azulado claros */
+.footer-col a, .footer-copy, .footer-socials a, .footer-brand-desc { color: #93A5B8; }
+.footer-col a:hover, .footer-socials a:hover { color: #ffffff; }
+
+/* Marcas de agua más sutiles sobre fondo claro */
+.service-bg-img { opacity: .05; }
+.service-card:hover .service-bg-img { opacity: .1; }
+.service-number { color: rgba(var(--accent-rgb), .3); }
+.service-number-sm { color: rgba(var(--accent-rgb), .5); }
+
+/* ============================================================
+🏥 BLOQUE 2 — REFINADO TEMA CLARO
+"Sin negros: todo tenue, limpio y artístico"
+(Agregar al FINAL de style.css)
+============================================================ */
+
+/* ── 1. INTRO / HERO — lo primero que se ve: IMPECABLE ── */
+/* Título y subtítulo en tinta azul-noche sobre crema (legibles) */
+[data-hero-layout="split"] .hero-title,
+.hero-title { color: var(--color-text); }
+
+[data-hero-layout="split"] .hero-subtitle { color: var(--color-text-muted); }
+
+/* CTA visible: borde y texto en verde clínico */
+[data-hero-layout="split"] .hero-cta,
+.hero-cta {
+  color: var(--color-accent);
+  border-color: rgba(var(--accent-rgb), .55);
+  background: transparent;
+}
+[data-hero-layout="split"] .hero-cta:hover,
+.hero-cta:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #ffffff;
+}
+
+/* Glow artístico SUAVE (se quita el tinte morado, queda acuarela verde) */
+.hero-glow {
+  background: radial-gradient(ellipse at center bottom,
+    rgba(var(--accent-rgb), .16) 0%,
+    rgba(var(--accent-rgb), .06) 45%,
+    transparent 75%);
+}
+
+/* La foto del hero: luminosa, con sombra suave de acuarela (sin velo negro) */
+[data-hero-layout="split"] .hero-bg {
+  filter: brightness(1) saturate(1);
+  box-shadow: 0 30px 70px rgba(15, 42, 63, .18);
+}
+[data-hero-layout="split"] .hero-bg::after {
+  background: linear-gradient(180deg, transparent 65%, rgba(15, 42, 63, .15) 100%);
+}
+
+/* ── 2. LOADER — abre en crema, no en negro (primera impresión) ── */
+.loader { background: var(--color-bg); }
+.loader-title-base { color: rgba(15, 42, 63, .10); }
+.loader-title-fill { color: var(--color-accent); }
+.loader-percentage { color: var(--color-text-muted); }
+
+/* ── 3. CURSOR — sin blend "difference" (en crema se veía rojo) ── */
+.cursor { mix-blend-mode: normal; }
+
+/* ── 4. FOTOS SIN VELAS NEGRAS (tenue, casi artístico) ── */
+/* Equipo: el degradado negro del pie de foto → tinte azul muy suave */
+.team-photo::after {
+  background: linear-gradient(to top, rgba(15, 42, 63, .14), transparent 45%);
+}
+
+/* Galería: velo tenue solo para leer el caption */
+.gallery-slide::after {
+  background: linear-gradient(to top, rgba(15, 42, 63, .38), transparent 55%);
+}
+
+/* Blog: mismo tratamiento suave */
+.post-image-overlay {
+  background: linear-gradient(to top, rgba(15, 42, 63, .35), transparent 45%);
+}
+
+/* ── 5. MENÚS Y PANELES FLOTANTES — claros, no negros ── */
+.nav-more-panel {
+  background: rgba(250, 248, 245, .97);
+  border: 1px solid rgba(15, 42, 63, .08);
+}
+.nav-more-panel a { color: var(--color-text-muted); }
+.nav-more-panel a:hover {
+  color: var(--color-accent);
+  background: rgba(var(--accent-rgb), .07);
+}
+.header.menu-open { background: var(--color-bg) !important; }
+
+@media (max-width: 1080px) {
+  .nav-links { background: var(--color-bg); }
+}
+
+/* ============================================================
+   ✅ GALERÍA: TODAS LAS FOTOS CON LA MISMA MEDIDA (vertical)
+   Unifica las slides PARES con las IMPARES para que todas
+   conserven el formato vertical de tu captura.
+   (object-fit: cover recorta cualquier foto original a este marco)
+   ============================================================ */
+.gallery-slide:nth-child(odd),
+.gallery-slide:nth-child(even) {
+  width: clamp(280px, 45vw, 500px);
+  height: clamp(380px, 60vw, 650px);
+}
+
+/* En móvil ya eran uniformes, pero lo reafirmamos */
+@media (max-width: 768px) {
+  .gallery-slide:nth-child(odd),
+  .gallery-slide:nth-child(even) {
+    width: clamp(260px, 75vw, 320px);
+    height: clamp(340px, 90vw, 420px);
+  }
+}
+
+/* ============================================================
+   ✅ IMÁGENES: tono apagado premium + resaltado suave al hover
+   ------------------------------------------------------------
+   Por defecto: un poco más oscuras y grises (look editorial).
+   Al hover / seleccionar: vuelve el color real, pero SIN el
+   brillo exagerado (se quita el brightness > 1).
+   Ajusta los 3 valores de filter a tu gusto.
+   ============================================================ */
+
+/* Estado normal: apagado / grisáceo elegante */
+html[data-theme="light"] .gallery-slide-img,
+html[data-theme="light"] .product-image,
+html[data-theme="light"] .post-image,
+html[data-theme="light"] .team-photo img {
+  filter: grayscale(0.45) brightness(0.85) saturate(0.8);
+}
+
+/* Al pasar el mouse / seleccionar: color real, brillo controlado */
+html[data-theme="light"] .gallery-slide:hover .gallery-slide-img,
+html[data-theme="light"] .product-card:hover .product-image,
+html[data-theme="light"] .post-card:hover .post-image,
+html[data-theme="light"] .team-card:hover .team-photo img {
+  filter: grayscale(0) brightness(0.97) saturate(1.05);
+}

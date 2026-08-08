@@ -1,8 +1,14 @@
 /* ============================================================
-   CONFIG.JS — CONFIGURACIÓN MAESTRA DEL SITIO
+   CONFIG.JS — CONFIGURACIÓN MAESTRA — SECTOR SALUD
    ============================================================
-   Este archivo controla TODO el comportamiento del sitio web.
-   Cada sección corresponde a un bloque visual o funcionalidad.
+   Plantilla adaptada para clínicas, hospitales, consultorios
+   médicos y profesionales de la salud.
+   
+   🎨 PALETA PREMIUM MÉDICA:
+   - Crema clínica (#FAF8F5)
+   - Verde quirúrgico (#2E8B7F)
+   - Azul noche (#0F2A3F)
+   - Tipografías: Cormorant Garamond + Manrope
    
    FLUJO DE TRABAJO POR CLIENTE:
    1. Copiar este archivo como config.js
@@ -14,411 +20,375 @@
 const SITE_CONFIG = {
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎨 TEMA / IDENTIDAD VISUAL
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Controla colores, fuentes y personalidad visual del sitio.
-  // theme.js lee estos valores y los aplica como variables CSS.
+  // 🎨 TEMA / IDENTIDAD VISUAL (PALETA MÉDICA PREMIUM)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   theme: {
-    // Colores principales del sitio
-    bg: "#0a0a0a",              // Fondo principal (negro muy oscuro)
-    bgAlt: "#111111",           // Fondo alternativo (secciones alternas)
-    text: "#f0ece2",            // Color de texto principal (blanco cálido)
-    textMuted: "#9a9488",       // Texto secundario (gris cálido)
+    mode: "light",   // ← "light" para clínicas | "dark" para clientes oscuros
+    // Paleta médica premium: calma, confianza y profesionalismo
+    bg: "#FAF8F5",              // Fondo principal (blanco clínico cálido)
+    bgAlt: "#F0EDE4",           // Fondo alternativo (crema muy suave)
+    text: "#0F2A3F",            // Texto principal (azul noche médico)
+    textMuted: "#6B7A8F",       // Texto secundario (gris azulado)
     
-    accent: "#4a90d9",          // ★ CLIENTE: Color de acento (azul en este ejemplo)
-    accentRGB: "74, 144, 217",  // ★ Mismo color en formato RGB (sin paréntesis)
-    accentLight: "#7ab0e8",     // Versión clara del acento (para hovers)
+    accent: "#2E8B7F",          // ★ Verde quirúrgico (color hospital premium)
+    accentRGB: "46, 139, 127",  // Mismo color en RGB
+    accentLight: "#5FB8AD",     // Verde menta claro (para hovers)
     
     white: "#ffffff",           // Blanco puro
-    dark: "#0a0a0a",            // Negro puro
+    dark: "#0F2A3F",            // Azul noche profundo (reemplaza al negro puro)
     
-    // Tipografías (se cargan desde Google Fonts)
-    fontDisplay: "'Playfair Display', Georgia, serif",  // Fuente para títulos
-    fontBody: "'Inter', -apple-system, sans-serif",     // Fuente para cuerpo
+    // Tipografías médicas premium (serif elegante + sans legible)
+    fontDisplay: "'Cormorant Garamond', 'Playfair Display', Georgia, serif",
+    fontBody: "'Manrope', 'Inter', -apple-system, sans-serif",
     
-    // URLs de recursos externos
-    googleFontsUrl: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap",
+    // Google Fonts con la nueva selección
+    googleFontsUrl: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700&display=swap",
     fontAwesomeUrl: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css",
     
-    // Personalidad visual (afecta bordes, botones, animaciones)
-    personality: "editorial",   // Opciones: "editorial" | "minimal" | "bold"
-                                // - editorial: elegante, serif, sofisticado
-                                // - minimal: limpio, sin ruido, sobrio
-                                // - bold: juvenil, botones pill, tarjetas redondas
+    // Personalidad: "editorial" = elegante, sofisticado, serio (ideal para salud)
+    personality: "editorial",
     
-    // Layout del hero (pantalla de inicio)
-    heroLayout: "center",       // Opciones: "center" | "split"
-                                // - center: texto centrado sobre imagen de fondo
-                                // - split: texto a la izquierda, imagen a la derecha
+    // Layout del hero: "split" = texto izquierda + imagen derecha (estilo clínica premium)
+    heroLayout: "split",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ⏳ LOADER (pantalla de carga inicial)
+  // ⏳ LOADER
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   loader: {
-    text: "Studio",             // ★ Texto que aparece en el loader
-    duration: 2200,             // Duración en milisegundos (2.2 segundos)
+    text: "Vitalis",            // ★ Nombre corto de la clínica
+    duration: 2200,
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 🧭 HEADER / NAVEGACIÓN SUPERIOR
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // app.js construye el header dinámicamente usando estos datos.
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   header: {
-    enabled: true,              // Mostrar/ocultar el header completo
-    maxLinks: 5,                // Máximo de enlaces visibles antes del menú "Más"
+    enabled: true,
+    maxLinks: 5,
     
     logo: {
-      text: "STU",              // ★ CLIENTE: Primera parte del logo
-      highlight: "DIO",         // ★ Parte que se muestra en color accent
+      text: "VI",               // ★ Primera parte del logo
+      highlight: "TALIS",       // ★ Parte en color accent
     },
     
-    // Enlaces de navegación (orden = orden de aparición)
     links: [
-      { label: "Inicio",      href: "#hero" },         // Salta a sección #hero
-      { label: "Historia",    href: "#story" },        // Salta a sección #story
-      { label: "Equipo",      href: "#team" },         // Salta a sección #team
-      { label: "Servicios",   href: "#services" },     // Salta a sección #services
-      { label: "Galería",     href: "#gallery" },      // Salta a sección #gallery
-      { label: "Tienda",      href: "#ecommerce" },    // Salta a sección #ecommerce
-      { label: "Blog",        href: "#blog" },         // Salta a sección #blog
-      { label: "Testimonios", href: "#testimonials" }, // Salta a sección #testimonials
-      { label: "Contacto",    href: "#contact" },      // Salta a sección #contact
+      { label: "Inicio",         href: "#hero" },
+      { label: "Nosotros",       href: "#story" },
+      { label: "Especialidades", href: "#services" },
+      { label: "Equipo",  href: "#team" },
+      { label: "Instalaciones",  href: "#gallery" },
+      { label: "Blog de Salud",  href: "#blog" },
+      { label: "Testimonios",    href: "#testimonials" },
+      { label: "Ubicación",      href: "#location" },
+      { label: "Contacto",       href: "#contact" },
     ],
     
-    // Botón CTA (Call To Action) principal
+    // CTA principal: AGENDAR CITA (el más importante en salud)
     cta: { 
-      label: "Contacto",        // Texto del botón
-      href: "#contact"          // Destino al hacer clic
+      label: "Agendar Cita",
+      href: "#appointments"
     },
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🏠 HERO (sección principal de inicio)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Primera pantalla que ve el usuario al cargar el sitio.
+  // 🏠 HERO (pantalla principal)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   hero: {
-    enabled: true,              // Mostrar/ocultar la sección hero
+    enabled: true,
     
-    backgroundImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2064&auto=format&fit=crop",
-    // ★ CLIENTE: URL de la imagen de fondo (recomendado: 2000x1200px mínimo)
+    // Imagen: doctor(a) o instalaciones premium (recomendado 2000x1200px)
+    backgroundImage: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?q=80&w=2091&auto=format&fit=crop",
     
-    eyebrow: "Estudio Creativo — Desde 2018",
-    // ★ Texto pequeño sobre el título (ej: "Agencia Digital — Desde 2020")
+    eyebrow: "Clínica Médica Premium — Desde 2010",
     
     title: {
-      line1: "Creamos",         // ★ Primera línea del título principal
-      line2: "Experiencias",    // ★ Segunda línea del título principal
-      
-      // Palabras que rotan con efecto typewriter (máquina de escribir)
+      line1: "Nosotros",
+      line2: "Cuidamos tu",
       typewriterWords: [
-        "Digitales",            // Aparece como: "Creamos Experiencias Digitales"
-        "Únicas",               // Luego cambia a: "Creamos Experiencias Únicas"
-        "Memorables"            // Luego cambia a: "Creamos Experiencias Memorables"
+        "Bienestar",
+        "Salud",
+        "Futuro",
+        "Familia"
       ],
     },
     
-    subtitle: "Diseño, estrategia y tecnología fusionados para construir marcas que trascienden lo ordinario.",
-    // ★ Descripción debajo del título (máximo 2 líneas recomendado)
+    subtitle: "Medicina de precisión con calidez humana. Diagnósticos avanzados y atención personalizada por especialistas certificados.",
     
-    cta: "Descubrir Más",       // ★ Texto del botón CTA
-    ctaHref: "#story",          // Destino del botón (puede ser #sección o URL externa)
+    cta: "Agendar Consulta",
+    ctaHref: "#appointments",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📖 HISTORIA (sección "Sobre Nosotros")
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Cuenta la historia del negocio con imagen + texto + estadísticas.
+  // 📖 HISTORIA (Sobre la Clínica)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   story: {
-    enabled: true,              // Mostrar/ocultar esta sección
+    enabled: true,
     
-    label: "Nuestra Historia",  // Etiqueta pequeña sobre el título
-    heading: "Donde la <em>visión</em> se convierte en realidad",
-    // Título principal (puede incluir HTML como <em> para cursivas)
+    label: "Nuestra Historia",
+    heading: "Más de una década <em>cuidando</em> de ti",
     
-    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop",
-    // ★ Imagen principal (recomendado: 1200x1600px, formato vertical)
+    // Imagen: fachada de la clínica o sala de espera premium
+    image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop",
     
-    // Párrafos de la historia (se muestran en orden)
     paragraphs: [
-      "Párrafo 1 de la historia del negocio...",  // ★ Primer párrafo
-      "Párrafo 2 de la historia del negocio...",  // ★ Segundo párrafo
-      // Puedes agregar más párrafos si necesitas
+      "Fundada en 2010 por un equipo de médicos con visión humanista, Clínica Vitalis nació con un propósito claro: ofrecer atención médica de primer nivel sin perder el trato cálido que cada paciente merece. Hoy somos referentes en medicina integral en la región.",
+      "Contamos con tecnología diagnóstica de última generación, un equipo multidisciplinario de más de 25 especialistas y protocolos clínicos basados en evidencia internacional. Cada paciente recibe un plan de atención personalizado, porque entendemos que no hay dos historias clínicas iguales."
     ],
     
-    // Estadísticas numéricas (se muestran en fila)
     stats: [
-      { number: "150+", label: "Proyectos" },    // ★ Número + descripción
-      { number: "12",   label: "Premios" },
-      { number: "98%",  label: "Satisfacción" },
+      { number: "15K+", label: "Pacientes Atendidos" },
+      { number: "25",   label: "Especialistas" },
+      { number: "99%",  label: "Satisfacción" },
+      { number: "14",   label: "Años de Experiencia" },
     ],
     
-    // Carrusel de patrocinadores/convenios (opcional)
+    // Convenios con aseguradoras (clave para clínicas privadas)
     partners: {
-      enabled: true,            // Mostrar/ocultar el carrusel
-      title: "Patrocinadores y Convenios",  // Título del carrusel
-      
-      // Lista de logos (si img está vacío, muestra el nombre como texto)
+      enabled: true,
+      title: "Aseguradoras y Convenios",
       logos: [
-        { name: "GNP Seguros",       img: "" },  // ★ Sin imagen = muestra texto
-        { name: "Laboratorios Roma", img: "" },
-        { name: "UNAM",              img: "" },
-        { name: "MetLife",           img: "" },
-        { name: "Farmacias Similar", img: "" },
-        { name: "AXA",               img: "" },
-        // Para usar imagen: { name: "Marca", img: "https://url-del-logo.png" }
+        { name: "GNP Seguros",        img: "" },
+        { name: "MetLife",            img: "" },
+        { name: "AXA Seguros",        img: "" },
+        { name: "Allianz",            img: "" },
+        { name: "Mapfre",             img: "" },
+        { name: "Zurich Seguros",     img: "" },
+        { name: "Cigna",              img: "" },
+        { name: "Bupa",               img: "" },
       ],
     },
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ⚙️ SERVICIOS (tarjetas flip con frente/reverso)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Cada servicio tiene una tarjeta que gira al hacer clic.
+  // ⚙️ SERVICIOS / ESPECIALIDADES MÉDICAS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   services: {
-    enabled: true,              // Mostrar/ocultar esta sección
+    enabled: true,
     
-    label: "Especialidades",    // Etiqueta pequeña
-    heading: "Atención médica <em>integral</em>",  // Título (con HTML permitido)
-    subtitle: "Cada consulta está diseñada para brindarte un diagnóstico preciso y un trato humano.",
-    // Descripción debajo del título
+    label: "Especialidades",
+    heading: "Atención médica <em>integral</em>",
+    subtitle: "Cada especialidad cuenta con equipo de diagnóstico avanzado y especialistas certificados por sus respectivos consejos médicos.",
     
-    visibleCount: 6,            // Cuántas tarjetas mostrar antes del botón "Ver todos"
+    visibleCount: 6,
     
-    // Lista de servicios (cada uno es una tarjeta)
     items: [
       {
-        number: "01",           // Número decorativo (01, 02, 03...)
-        title: "Consulta General",  // ★ Título del servicio
-        
-        intro: "Valoración completa y plan de tratamiento personalizado en una sola visita.",
-        // ★ Texto del FRENTE de la tarjeta (corto, atractivo, máximo 120 caracteres)
-        
-        desc: "En esta consulta realizamos historia clínica completa, exploración física, interpretación de estudios recientes y diseñamos un plan de tratamiento paso a paso. Incluye receta digital, indicaciones por escrito y seguimiento por WhatsApp durante 7 días.",
-        // ★ Texto del REVERSO de la tarjeta (largo, detallado, sin límite)
-        // Soporta formato Markdown: **negrita**, *cursiva*, ## subtítulos, - listas
-        
-        image: "https://..."    // URL de imagen de fondo (marca de agua sutil)
+        number: "01",
+        title: "Cardiología",
+        intro: "Diagnóstico y tratamiento de enfermedades del corazón y sistema circulatorio.",
+        desc: "**Evaluación cardiovascular completa** con electrocardiograma, ecocardiograma Doppler, prueba de esfuerzo y monitoreo Holter 24h.\n\nNuestros cardiólogos certificados por el Consejo Mexicano de Cardiología atienden:\n- Hipertensión arterial\n- Arritmias cardíacas\n- Insuficiencia cardíaca\n- Enfermedad coronaria\n- Prevención cardiovascular\n\n*Incluye interpretación de estudios, receta digital y seguimiento por WhatsApp.*",
+        image: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?q=80&w=2070&auto=format&fit=crop"
       },
       {
         number: "02",
-        title: "Consulta General",
-        intro: "Valoración completa y plan de tratamiento personalizado en una sola visita.",
-        desc: "En esta consulta realizamos historia clínica completa, exploración física, interpretación de estudios recientes y diseñamos un plan de tratamiento paso a paso. Incluye receta digital, indicaciones por escrito y seguimiento por WhatsApp durante 7 días.",
-        image: "https://..."
+        title: "Dermatología",
+        intro: "Cuidado especializado de piel, cabello y uñas con tecnología de última generación.",
+        desc: "**Diagnóstico dermatoscópico digital** y tratamientos avanzados para:\n- Acné y rosácea\n- Dermatitis y psoriasis\n- Lunares y lesiones sospechosas (mapeo corporal)\n- Caída del cabello\n- Rejuvenecimiento facial médico\n\n*Contamos con láser fraccionado, luz pulsada y crioterapia.*",
+        image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop"
       },
       {
         number: "03",
-        title: "Consulta General",
-        intro: "Valoración completa y plan de tratamiento personalizado en una sola visita.",
-        desc: "En esta consulta realizamos historia clínica completa, exploración física, interpretación de estudios recientes y diseñamos un plan de tratamiento paso a paso. Incluye receta digital, indicaciones por escrito y seguimiento por WhatsApp durante 7 días.",
-        image: "https://..."
+        title: "Pediatría",
+        intro: "Atención integral para recién nacidos, niños y adolescentes en un entorno cálido.",
+        desc: "**Control del niño sano**, vacunación y atención de enfermedades pediátricas.\n\n- Consultas de desarrollo y crecimiento\n- Vacunación completa (esquema nacional + internacional)\n- Atención de enfermedades comunes\n- Evaluación nutricional\n- Adolescencia y salud mental juvenil\n\n*Área de juegos diseñada para que los pequeños se sientan cómodos.*",
+        image: "https://images.unsplash.com/photo-1581056771107-2421345a0e4a?q=80&w=2070&auto=format&fit=crop"
       },
-      // Agrega más servicios según necesites
+      {
+        number: "04",
+        title: "Ginecología y Obstetricia",
+        intro: "Cuidado integral de la salud femenina en todas las etapas de la vida.",
+        desc: "**Atención ginecológica completa** con equipo de diagnóstico de última generación.\n\n- Papanicolaou y colposcopia digital\n- Ultrasonido pélvico y obstétrico 4D\n- Control prenatal de alto y bajo riesgo\n- Climaterio y terapia hormonal\n- Planificación familiar\n\n*Ginecólogas certificadas con enfoque humano y discreto.*",
+        image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?q=80&w=2069&auto=format&fit=crop"
+      },
+      {
+        number: "05",
+        title: "Nutrición Clínica",
+        intro: "Planes alimenticios personalizados basados en evidencia científica.",
+        desc: "**Evaluación nutricional integral** con análisis de composición corporal (bioimpedancia).\n\n- Pérdida y control de peso\n- Nutrición deportiva\n- Dietas para enfermedades crónicas (diabetes, hipertensión)\n- Nutrición en embarazo y lactancia\n- Alimentación vegetariana/vegana\n\n*Plan de alimentación personalizado + seguimiento semanal.*",
+        image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2053&auto=format&fit=crop"
+      },
+      {
+        number: "06",
+        title: "Medicina General",
+        intro: "Tu primer punto de contacto: diagnósticos precisos y derivaciones oportunas.",
+        desc: "**Consulta médica integral** con historia clínica digital completa.\n\n- Chequeo médico preventivo anual\n- Interpretación de estudios de laboratorio\n- Certificados médicos oficiales\n- Atención de enfermedades agudas\n- Derivación a especialistas cuando sea necesario\n\n*Incluye receta digital y seguimiento por WhatsApp durante 7 días.*",
+        image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=2080&auto=format&fit=crop"
+      },
     ],
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 👩‍⚕️ EQUIPO MÉDICO (tarjetas con ficha técnica)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Muestra doctores/especialistas con foto + datos de contacto.
+  // 👩‍⚕️ EQUIPO MÉDICO
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   team: {
-    enabled: true,              // Mostrar/ocultar esta sección
+    enabled: true,
     
-    label: "Equipo Médico",     // Etiqueta pequeña
-    heading: "Especialistas que <em>te cuidan</em>",  // Título
-    subtitle: "Profesionales certificados con vocación de servicio.",
+    label: "Nuestro Equipo",
+    heading: "Especialistas que <em>te cuidan</em>",
+    subtitle: "Médicos certificados con formación en las mejores instituciones del país y del extranjero.",
     
-    // Lista de miembros del equipo
     items: [
       {
-        photo: "https://.../dra-lopez.jpg",  // ★ Foto del doctor (600x800px recomendado)
-        name: "Dra. María López",            // ★ Nombre completo
-        cedula: "Céd. Prof. 1234567",        // ★ Cédula profesional
-        specialty: "Cardiología",            // ★ Especialidad
-        
-        bio: "Más de 12 años de experiencia en cardiología clínica y ecocardiografía. Certificada por el Consejo Mexicano de Cardiología.",
-        // ★ Biografía corta (máximo 200 caracteres)
-        
-        phone: "+52 55 1234 5678",           // Teléfono de contacto
-        whatsapp: "5215512345678",           // WhatsApp (formato: 52 + 10 dígitos)
-        email: "dra.lopez@clinica.com",      // Correo electrónico
-        schedule: "Lun–Vie · 9:00–17:00",    // Horario de atención
+        photo: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=2070&auto=format&fit=crop",
+        name: "Dra. María López Hernández",
+        cedula: "Céd. Prof. 7845123",
+        specialty: "Cardiología Clínica",
+        bio: "Egresada de la UNAM con especialidad en el Instituto Nacional de Cardiología. Más de 12 años de experiencia.",
+        phone: "+52 55 1234 5678",
+        whatsapp: "5215512345678",
+        email: "dra.lopez@clinicavitalis.com",
+        schedule: "Lun–Vie · 9:00–17:00",
       },
-      // { /* más doctores… */ },
+      {
+        photo: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=2070&auto=format&fit=crop",
+        name: "Dr. Carlos Ramírez Soto",
+        cedula: "Céd. Prof. 9234567",
+        specialty: "Dermatología",
+        bio: "Especialista formado en la Fundación Jiménez Díaz (España). Experto en dermatoscopia y láser dermatológico.",
+        phone: "+52 55 1234 5679",
+        whatsapp: "5215512345679",
+        email: "dr.ramirez@clinicavitalis.com",
+        schedule: "Mar–Sáb · 10:00–18:00",
+      },
+      {
+        photo: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?q=80&w=1974&auto=format&fit=crop",
+        name: "Dra. Andrea Torres Vega",
+        cedula: "Céd. Prof. 8123456",
+        specialty: "Pediatría",
+        bio: "Pediatra con subespecialidad en neonatología. Certificada por el Consejo Mexicano de Pediatría.",
+        phone: "+52 55 1234 5680",
+        whatsapp: "5215512345680",
+        email: "dra.torres@clinicavitalis.com",
+        schedule: "Lun–Vie · 8:00–15:00",
+      },
+      {
+        photo: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1964&auto=format&fit=crop",
+        name: "Dr. Roberto Mendoza",
+        cedula: "Céd. Prof. 6547891",
+        specialty: "Ginecología y Obstetricia",
+        bio: "Más de 15 años de experiencia en obstetricia de alto riesgo. Formado en el Hospital Español de México.",
+        phone: "+52 55 1234 5681",
+        whatsapp: "5215512345681",
+        email: "dr.mendoza@clinicavitalis.com",
+        schedule: "Lun–Vie · 9:00–18:00",
+      },
     ],
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🖼️ GALERÍA / PORTAFOLIO (carrusel parallax)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Carrusel horizontal de imágenes con efecto parallax al hacer scroll.
+  // 🖼️ GALERÍA / INSTALACIONES
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   gallery: {
-    enabled: true,              // Mostrar/ocultar esta sección
-    
-    label: "Portafolio",        // Etiqueta pequeña
-    heading: "Trabajo que <em>habla</em> por sí solo",  // Título
-    subtitle: "Una selección de proyectos donde la creatividad y la estrategia se encuentran.",
-    
-    // Lista de imágenes del portafolio
-    items: [
-      {
-        image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=2000&auto=format&fit=crop",
-        // ★ URL de la imagen (recomendado: 1600x1200px mínimo)
-        
-        caption: "Proyecto 1",  // ★ Texto que aparece al hacer hover
-        
-        parallaxSpeed: 0.08     // Velocidad del efecto parallax (0.05 a 0.15)
-                                // Valores positivos = se mueve hacia adelante
-                                // Valores negativos = se mueve hacia atrás
-      },
-      {
-        image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?q=80&w=2032&auto=format&fit=crop",
-        caption: "Proyecto 2",
-        parallaxSpeed: -0.05    // Este se mueve en dirección opuesta
-      },
-      {
-        image: "https://images.unsplash.com/photo-1545235617-9465d2a55698?q=80&w=2080&auto=format&fit=crop",
-        caption: "Proyecto 3",
-        parallaxSpeed: 0.1
-      },
-    ],
-  },
+  enabled: true,
+  label: "Nuestras Instalaciones",
+  heading: "Espacios diseñados para tu <em>bienestar</em>",
+  subtitle: "Instalaciones modernas, higiénicas y pensadas para que te sientas cómodo desde el primer momento.",
+  items: [
+    { image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2000&auto=format&fit=crop", caption: "Recepción Principal",  parallaxSpeed: 0.08 },
+    { image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=2000&auto=format&fit=crop", caption: "Consultorios",        parallaxSpeed: -0.05 },
+    { image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2000&auto=format&fit=crop", caption: "Laboratorio Clínico", parallaxSpeed: 0.1 },
+    { image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2000&auto=format&fit=crop", caption: "Sala de Espera",      parallaxSpeed: -0.08 },
+    { image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2000&auto=format&fit=crop", caption: "Atención Pediátrica", parallaxSpeed: 0.06 },
+  ],
+},
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 💬 FILOSOFÍA (cita inspiracional + CTA)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Sección opcional con una frase + botón de acción.
+  // 💬 FILOSOFÍA (activada para clínicas)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   philosophy: {
-    enabled: false,             // Cambiar a true para activar esta sección
-    
+    enabled: true,
     label: "Nuestra Filosofía",
-    
-    quote: "El diseño no es solo lo que se ve y se siente. El diseño es <em>cómo funciona</em>.",
-    // Cita principal (puede incluir HTML)
-    
-    author: "— Steve Jobs",     // Autor de la cita
-    
-    cta: "Iniciar un Proyecto", // Texto del botón
-    ctaHref: "#contact",        // Destino del botón
+    quote: "La medicina no es solo ciencia, es el <em>arte de cuidar</em> con el corazón.",
+    author: "— Dr. Carlos Ramírez, Director Médico",
+    cta: "Conoce a Nuestro Equipo",
+    ctaHref: "#team",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🛍️ TIENDA (sección de acceso a tienda.html)
+  // 🛒 TIENDA (DESACTIVADA — no es natural en clínicas)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Esta sección solo muestra un CTA que lleva a tienda.html.
-  // Los productos reales están en tienda.html + Supabase.
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ecommerce: {
-    enabled: true,              // Mostrar/ocultar esta sección
-    
-    label: "Tienda Online",
-    heading: "Productos que <em>inspiran</em>",
-    subtitle: "Descubre nuestra colección curada de productos.",
-    
-    cta: "Ver Catálogo Completo",  // Texto del botón
-    ctaHref: "tienda.html",        // Destino (archivo tienda.html)
-    
-    products: [],               // No se usa aquí (productos están en Supabase)
-    
-    // Popup de promociones (aparece después de X segundos)
-    promotions: {
-      enabled: true,            // Mostrar/ocultar el popup
-      delay: 3000,              // Milisegundos antes de mostrar (3 segundos)
-      autoRotate: true,         // Rotar automáticamente entre promociones
-      rotateInterval: 6000,     // Intervalo entre rotaciones (6 segundos)
-      showCloseButton: true,    // Mostrar botón de cerrar
-      rememberDismiss: true,    // Recordar si el usuario cerró el popup
-      dismissDuration: 24,      // Horas antes de volver a mostrar
-      
-      items: []                 // Promociones (se cargan desde Supabase)
-    },
+  ecommerce: { 
+    enabled: false,  // ★ Desactivada (clínicas médicas no venden productos)
+    label: "Farmacia",
+    heading: "Productos que <em>cuidan</em>",
+    subtitle: "Productos médicos y de cuidado personal recomendados por nuestros especialistas.",
+    cta: "Ver Catálogo",
+    ctaHref: "tienda.html",
+    products: [],
+    promotions: { enabled: false, delay: 3000, autoRotate: true, rotateInterval: 6000, showCloseButton: true, rememberDismiss: true, dismissDuration: 24, items: [] },
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📝 BLOG (sección de acceso a blog.html)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Esta sección solo muestra un CTA que lleva a blog.html.
-  // Los posts reales están en blog.html + Supabase.
+  // 📝 BLOG DE SALUD
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   blog: {
-    enabled: true,              // Mostrar/ocultar esta sección
-    
-    label: "Nuestro Blog",
-    heading: "Historias que <em>inspiran</em>",
-    subtitle: "Reflexiones, tendencias y detrás de escena de nuestro proceso creativo.",
-    
-    cta: "Leer Artículos",      // Texto del botón
-    ctaHref: "blog.html",       // Destino (archivo blog.html)
+    enabled: true,
+    label: "Blog de Salud",
+    heading: "Información que <em>cuida</em>",
+    subtitle: "Artículos médicos redactados por nuestros especialistas. Educación en salud basada en evidencia.",
+    cta: "Leer Artículos",
+    ctaHref: "blog.html",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📬 CONTACTO (formulario + datos)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Formulario de contacto que envía a FormSubmit.co
+  // 📬 CONTACTO
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   contact: {
-    enabled: true,              // Mostrar/ocultar esta sección
-    
+    enabled: true,
     label: "Contacto",
-    heading: "Hablemos de tu <em>próximo proyecto</em>",
-    subtitle: "¿Tienes una idea en mente? Cuéntanos sobre ella.",
+    heading: "Estamos para <em>atenderte</em>",
+    subtitle: "¿Tienes dudas sobre tu salud o nuestros servicios? Nuestro equipo de atención al paciente te responde en menos de 24 horas.",
     
-    // Configuración del formulario
     form: {
-      namePlaceholder: "Tu nombre",
+      namePlaceholder: "Tu nombre completo",
       emailPlaceholder: "Tu correo electrónico",
-      subjectPlaceholder: "Asunto",
-      messagePlaceholder: "Cuéntanos sobre tu proyecto...",
-      
-      submitText: "Enviar Mensaje",  // Texto del botón enviar
-      
-      successMessage: "¡Mensaje enviado con éxito! Te contactaremos pronto.",
-      errorMessage: "Hubo un error al enviar. Por favor, intenta de nuevo.",
+      subjectPlaceholder: "Motivo de consulta",
+      messagePlaceholder: "Cuéntanos cómo podemos ayudarte...",
+      submitText: "Enviar Mensaje",
+      successMessage: "¡Mensaje enviado! Nuestro equipo te contactará en las próximas 24 horas.",
+      errorMessage: "Hubo un error al enviar. Intenta de nuevo o llámanos directamente.",
     },
     
-    email: "contacto@clientedominio.com",   // ★ Correo de contacto
-    phone: "+52 55 1234 5678",              // ★ Teléfono (formato internacional)
-    address: "Ciudad de México, México",    // ★ Dirección física
+    email: "contacto@clinicavitalis.com",
+    phone: "+52 55 5555 1234",
+    address: "Av. Reforma 222, Col. Juárez, C.P. 06600, Ciudad de México",
+    urgencias: "+52 55 5555 9999",  // ★ DATO EXTRA: línea de urgencias (útil en salud)
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🦶 FOOTER (pie de página)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // app.js construye el footer dinámicamente usando estos datos.
+  // 🦶 FOOTER
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   footer: {
-    enabled: true,              // Mostrar/ocultar el footer
-    
+    enabled: true,
     brand: {
-      name: "STU",              // ★ Nombre del logo (igual que header)
-      highlight: "DIO",         // ★ Parte resaltada
-      desc: "Descripción corta del negocio para el pie de página.",
-      // ★ Descripción breve (máximo 100 caracteres)
+      name: "VI",
+      highlight: "TALIS",
+      desc: "Clínica médica premium. Medicina integral con tecnología de vanguardia y trato humano.",
     },
     
-    // Columnas del footer (máximo 4 columnas recomendado)
     columns: [
       {
-        title: "Navegación",    // Título de la columna
+        title: "Clínica",
         links: [
-          { label: "Inicio",      href: "#hero" },
-          { label: "Historia",    href: "#story" },
-          { label: "Equipo",      href: "#team" },
-          { label: "Servicios",   href: "#services" },
-          { label: "Galería",     href: "#gallery" },
-          { label: "Tienda",      href: "#ecommerce" },
-          { label: "Blog",        href: "#blog" },
-          { label: "Testimonios", href: "#testimonials" },
-          { label: "Contacto",    href: "#contact" },
+          { label: "Inicio",           href: "#hero" },
+          { label: "Nosotros",         href: "#story" },
+          { label: "Especialidades",   href: "#services" },
+          { label: "Equipo",    href: "#team" },
+          { label: "Instalaciones",    href: "#gallery" },
+          { label: "Blog de Salud",    href: "#blog" },
+          { label: "Testimonios",      href: "#testimonials" },
+        ],
+      },
+      {
+        title: "Servicios",
+        links: [
+          { label: "Cardiología",              href: "#services" },
+          { label: "Dermatología",             href: "#services" },
+          { label: "Pediatría",                href: "#services" },
+          { label: "Ginecología",              href: "#services" },
+          { label: "Nutrición",                href: "#services" },
+          { label: "Chequeos Preventivos",     href: "#services" },
         ],
       },
       {
@@ -433,100 +403,79 @@ const SITE_CONFIG = {
       {
         title: "Contacto",
         links: [
-          { label: "contacto@clientedominio.com", href: "mailto:contacto@clientedominio.com" },
-          { label: "+52 55 1234 5678",            href: "tel:+525512345678" },
-          { label: "Ciudad de México, MX",        href: "#contact" },
+          { label: "🚨 Urgencias 24h",               href: "tel:+525555559999" },
+          { label: "📞 Citas: +52 55 5555 1234",     href: "tel:+525555551234" },
+          { label: "✉️ contacto@clinicavitalis.com", href: "mailto:contacto@clinicavitalis.com" },
+          { label: "📍 Av. Reforma 222, CDMX",       href: "#location" },
         ],
       },
     ],
     
-    // Copyright (año se calcula automáticamente)
-    copyright: "© " + new Date().getFullYear() + " NOMBRE LEGAL S.A. de C.V. Todos los derechos reservados.",
+    copyright: "© " + new Date().getFullYear() + " Clínica Vitalis S.A. de C.V. — Todos los derechos reservados. Aviso: La información en este sitio no sustituye una consulta médica profesional.",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 🌐 REDES SOCIALES
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Enlaces que aparecen en el footer.
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   socials: [
-    { label: "Instagram", href: "https://instagram.com/USUARIO_CLIENTE" },  // ★
-    { label: "Facebook",  href: "https://facebook.com/USUARIO_CLIENTE" },   // ★
-    { label: "WhatsApp",  href: "https://wa.me/5215512345678" },           // ★
+    { label: "Instagram", href: "https://instagram.com/clinicavitalis" },
+    { label: "Facebook",  href: "https://facebook.com/clinicavitalis" },
+    { label: "WhatsApp",  href: "https://wa.me/5215555551234" },
+    { label: "LinkedIn",  href: "https://linkedin.com/company/clinica-vitalis" },
   ],
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // ⚡ EFECTOS VISUALES
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Controla animaciones y efectos avanzados.
-  // Normalmente no necesitas modificar esto.
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   effects: {
-    parallaxHeroSpeed: 0.35,     // Velocidad del parallax en el hero
-    parallaxImageSpeed: 0.12,    // Velocidad del parallax en imágenes
-    smoothScrollLerp: 0.08,      // Suavidad del scroll (0.05 a 0.15)
-    revealThreshold: 0.15,       // Umbral para activar animaciones (0.1 a 0.3)
-    
-    cursorEnabled: true,         // Cursor personalizado (desactivar en móvil)
-    grainEnabled: true,          // Efecto de grano/ruido sutil
-    progressBarEnabled: true,    // Barra de progreso de scroll
+    parallaxHeroSpeed: 0.35,
+    parallaxImageSpeed: 0.12,
+    smoothScrollLerp: 0.08,
+    revealThreshold: 0.15,
+    cursorEnabled: true,
+    grainEnabled: false,       // ★ Desactivado (clínicas piden look más limpio)
+    progressBarEnabled: true,
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🛒 TIENDA (configuración específica de tienda.html)
+  // 🛒 TIENDA (archivo tienda.html) — desactivada
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   tienda: {
-    whatsapp: "5215512345678",  // ★ WhatsApp (52 + 10 dígitos, sin + ni espacios)
-    
-    // Hero de la tienda
+    whatsapp: "5215555551234",
     hero: {
-      eyebrow: "Tienda Online",
+      eyebrow: "Farmacia Vitalis",
       titleLine1: "Productos que",
-      titleLine2: "inspiran",
-      subtitle: "Descubre nuestra colección curada de productos."
+      titleLine2: "cuidan",
+      subtitle: "Productos médicos recomendados por nuestros especialistas."
     }
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🔐 SUPABASE (base de datos)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Conexión a Supabase para blog, testimonios, productos, etc.
-  // Cada cliente debe tener su propio proyecto de Supabase.
+  // 🔐 SUPABASE
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   supabase: {
     url: "https://ouxfmeugibrpjysjfqso.supabase.co",
-    // ★ URL del proyecto (Settings → API → Project URL)
-    
     key: "sb_publishable_jAgXqz1iqlEyveCIFy4eOw_idYvxmoQ",
-    // ★ Clave anon/public (NUNCA usar service_role)
-    
-    storageBucket: "blog-images",  // Nombre del bucket de Storage
+    storageBucket: "blog-images",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 📧 EMAIL & FORMULARIOS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Configuración de FormSubmit.co para el formulario de contacto.
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   email: {
-    contactForm: "contacto@clientedominio.com",  // ★ Correo que recibe mensajes
-    formSubmitUrl: "https://formsubmit.co/ajax/contacto@clientedominio.com",
-    // ★ URL de FormSubmit (se activa al primer envío)
+    contactForm: "contacto@clinicavitalis.com",
+    formSubmitUrl: "https://formsubmit.co/ajax/contacto@clinicavitalis.com",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📝 BLOG CONFIG (mensajes del sistema)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Mensajes que muestra blog.js al usuario.
+  // 📝 BLOG CONFIG
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   blogConfig: {
-    categories: [],             // Categorías iniciales (se cargan desde Supabase)
-    heroStars: 35,              // Número de estrellas en el hero del blog
-    
-    // Mensajes del sistema (puedes personalizar el texto)
+    categories: ["prevencion", "cardiologia", "nutricion", "pediatria", "dermatologia"],
+    heroStars: 25,  // menos estrellas (look más serio)
     messages: {
-      postSuccess: "¡Post publicado con éxito!",
-      postError: "Error al crear el post",
+      postSuccess: "¡Artículo publicado con éxito!",
+      postError: "Error al crear el artículo",
       categoryAdded: "Categoría agregada",
       categoryRemoved: "Categoría eliminada",
       categoryExists: "Categoría ya existe o inválida",
@@ -545,34 +494,29 @@ const SITE_CONFIG = {
       noPosts: "No se encontraron artículos",
       noComments: "Sé el primero en comentar",
       commentAdded: "¡Comentario agregado!",
-      likeAdded: "¡Te gustó este post!",
+      likeAdded: "¡Te gustó este artículo!",
       likeRemoved: "Like removido",
-      saved: "Post guardado",
-      unsaved: "Post removido de guardados",
+      saved: "Artículo guardado",
+      unsaved: "Artículo removido de guardados",
       invalidCategory: "Debe haber al menos una categoría",
     },
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🛒 TIENDA CONFIG (mensajes del sistema)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Mensajes que muestra shop.js al usuario.
+  // 🛒 TIENDA CONFIG
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   shopConfig: {
     whatsapp: {
-      number: "5215512345678",  // ★ Igual que tienda.whatsapp
-      defaultMessage: "¡Hola! Me interesa conocer más sobre sus productos.",
-      orderMessage: "¡Hola! Me interesa hacer el siguiente pedido:\n\n",
+      number: "5215555551234",
+      defaultMessage: "Hola, me interesa conocer más sobre sus productos médicos.",
+      orderMessage: "Hola, me gustaría realizar el siguiente pedido:\n\n",
       orderTotal: "\n*💰 Total a pagar: $",
-      emptyCartAlert: "Tu carrito está vacío. ¡Agrega algunos productos primero!",
+      emptyCartAlert: "Tu carrito está vacío.",
     },
-    
-    // Botón flotante de WhatsApp
     whatsappButton: {
-      showThreshold: 0.80,      // Mostrar después del 80% del scroll
-      hideThreshold: 0.75,      // Ocultar antes del 75% del scroll
+      showThreshold: 0.80,
+      hideThreshold: 0.75,
     },
-    
     messages: {
       promoApplied: '¡Código "{code}" aplicado! {label}',
       promoInvalid: "Código no válido o expirado",
@@ -583,93 +527,77 @@ const SITE_CONFIG = {
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🏢 DATOS FISCALES DEL NEGOCIO
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Información legal que aparece en legal.html
+  // 🏢 DATOS FISCALES (CLÍNICA)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   business: {
-    name: "Nombre Comercial",                    // ★ Nombre comercial
-    legalName: "Razón Social S.A. de C.V.",      // ★ Razón social legal
-    taxId: "XXX000000XX0",                       // ★ RFC (12-13 caracteres)
-    address: "Calle, Número, Colonia, C.P., Ciudad, México", // ★ Dirección fiscal
-    phone: "+52 55 1234 5678",                   // ★ Teléfono
-    email: "contacto@clientedominio.com",        // ★ Correo
-    businessHours: "Lun - Vie: 9:00 - 18:00",    // Horario de atención
-    registryData: "Inscrita en el Registro Público de Comercio", // ★ Datos registrales
+    name: "Clínica Vitalis",
+    legalName: "Clínica Vitalis S.A. de C.V.",
+    taxId: "CVL100315AB1",                       // RFC real de la clínica
+    address: "Av. Reforma 222, Col. Juárez, C.P. 06600, Ciudad de México",
+    phone: "+52 55 5555 1234",
+    email: "contacto@clinicavitalis.com",
+    businessHours: "Lun - Sáb: 8:00 - 20:00 | Urgencias 24h",
+    registryData: "Inscrita en el Registro Público de Comercio. COFEPRIS: 193300101A0234",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📍 UBICACIÓN (mapa + datos de contacto)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Sección opcional con mapa de Google Maps embebido.
+  // 📍 UBICACIÓN
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   location: {
-    enabled: true,              // Mostrar/ocultar esta sección
+    enabled: true,
+    label: "Nuestra Ubicación",
+    heading: "Visítanos en <em>nuestra clínica</em>",
+    subtitle: "Fácil acceso, estacionamiento propio y transporte público cercano.",
     
-    label: "Ubicación",
-    heading: "Visítanos <em>hoy</em>",
-    subtitle: "Estamos para atenderte en el corazón de la ciudad.",
+    address: "Av. Reforma 222, Col. Juárez, C.P. 06600, Ciudad de México",
+    phone: "+52 55 5555 1234",
+    phoneHref: "tel:+525555551234",
     
-    address: "Av. Siempre Viva 123, Col. Centro, C.P. 06000, Ciudad de México",  // ★
-    phone: "+52 55 1234 5678",  // ★
-    phoneHref: "tel:+525512345678",  // Enlace para llamar
-    
-    // Horarios de atención
     hours: [
-      { d: "Lunes a Viernes", h: "9:00 – 19:00" },
-      { d: "Sábado",          h: "10:00 – 14:00" },
-      { d: "Domingo",         h: "Cerrado" }
+      { d: "Lunes a Viernes", h: "8:00 – 20:00" },
+      { d: "Sábado",          h: "9:00 – 14:00" },
+      { d: "Domingo",         h: "Solo Urgencias" },
+      { d: "Urgencias",       h: "24 horas" },
     ],
     
-    mapsQuery: "Av. Siempre Viva 123, Col. Centro, Ciudad de México",
-    // ★ Dirección que busca Google Maps (debe ser exacta)
+    mapsQuery: "Av. Paseo de la Reforma 222, Juárez, Cuauhtémoc, 06600 Ciudad de México, CDMX",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📅 CITAS (formulario de solicitud)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Formulario que envía solicitudes a WhatsApp + Supabase.
+  // 📅 CITAS (CRÍTICO en salud)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   appointments: {
-    enabled: true,              // Mostrar/ocultar esta sección
+    enabled: true,
+    label: "Agenda tu Cita",
+    heading: "Reserva tu <em>consulta</em>",
+    subtitle: "Déjanos tus datos y te confirmamos por WhatsApp en menos de 2 horas en horario laboral.",
     
-    label: "Agenda tu cita",
-    heading: "Reserva tu <em>momento</em>",
-    subtitle: "Déjanos tus datos y te confirmamos por WhatsApp en menos de 24 horas.",
-    
-    // Horarios disponibles para reservar
     slots: [
-      "Mañana (9:00–13:00)",
-      "Tarde (14:00–18:00)",
-      "Noche (18:00–21:00)"
+      "Mañana (8:00–12:00)",
+      "Mediodía (12:00–15:00)",
+      "Tarde (15:00–19:00)"
     ],
     
-    successMessage: "¡Solicitud enviada! Te confirmaremos por WhatsApp.",
+    successMessage: "¡Solicitud recibida! Nuestro equipo te contactará para confirmar tu cita.",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 💳 PAGOS CON TARJETA (módulo opcional)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Integración con Mercado Pago o Stripe.
-  // Déjalo en false hasta que el cliente pague por esta funcionalidad.
+  // 💳 PAGOS (desactivado por defecto)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   payments: {
-    enabled: false,             // EL INTERRUPTOR: true = pagos activos
-    provider: "mercadopago",    // "mercadopago" | "stripe"
-    currency: "MXN",            // Moneda (MXN, USD, EUR)
-    buttonLabel: "💳 Pagar con tarjeta",  // Texto del botón
+    enabled: false,
+    provider: "mercadopago",
+    currency: "MXN",
+    buttonLabel: "💳 Pagar consulta",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🌟 TESTIMONIOS (prueba social)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Sección que carga testimonios desde Supabase.
+  // 🌟 TESTIMONIOS (de pacientes)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   testimonials: {
-    enabled: true,              // Mostrar/ocultar esta sección
-    
+    enabled: true,
     label: "Testimonios",
-    heading: "Clientes que <em>confían</em> en nosotros",
-    subtitle: "Opiniones reales tomadas de nuestras redes sociales, con fotos reales de nuestros productos.",
+    heading: "Pacientes que <em>confían</em> en nosotros",
+    subtitle: "Opiniones reales de pacientes que han recibido atención en nuestra clínica.",
   },
 };

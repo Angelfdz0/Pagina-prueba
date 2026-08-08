@@ -221,40 +221,41 @@
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // ⏳ LOADER (pantalla de carga)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  function initLoader() {
-    const loader = $("#loader");
-    const titleFill = $("#loaderTitleFill");
-    const percentage = $("#loaderPercentage");
+function initLoader() {
+  const loader = $("#loader");
+  const titleBase = $(".loader-title-base");
+  const titleFill = $("#loaderTitleFill");
+  const percentage = $("#loaderPercentage");
 
-    // Si no hay loader, animar hero directamente
-    if (!loader) {
-      if (isBlockEnabled("hero")) animateHero();
-      return;
-    }
+  // ✅ El nombre del loader ahora viene de config.js → loader.text
+  const loaderText = String(C.loader?.text || "Studio").toUpperCase();
+  if (titleBase) titleBase.textContent = loaderText;
+  if (titleFill) titleFill.textContent = loaderText;
 
-    let progress = 0;
-    // Incrementar progreso cada (duración / 8) milisegundos
-    const interval = setInterval(() => {
-      progress += Math.random() * 8 + 3;
-      if (progress > 100) progress = 100;
-
-      // Actualizar barra de progreso del título
-      if (titleFill) titleFill.style.width = progress + "%";
-      // Actualizar porcentaje
-      if (percentage) percentage.textContent = Math.round(progress) + "%";
-
-      // Cuando llega al 100%, ocultar loader
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          loader.classList.add("hidden");
-          setTimeout(() => {
-            if (isBlockEnabled("hero")) animateHero();
-          }, 800);
-        }, 600);
-      }
-    }, C.loader.duration / 8);
+  if (!loader) {
+    if (isBlockEnabled("hero")) animateHero();
+    return;
   }
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += Math.random() * 8 + 3;
+    if (progress > 100) progress = 100;
+
+    if (titleFill) titleFill.style.width = progress + "%";
+    if (percentage) percentage.textContent = Math.round(progress) + "%";
+
+    if (progress >= 100) {
+      clearInterval(interval);
+      setTimeout(() => {
+        loader.classList.add("hidden");
+        setTimeout(() => {
+          if (isBlockEnabled("hero")) animateHero();
+        }, 800);
+      }, 600);
+    }
+  }, (C.loader?.duration || 2200) / 8);
+}
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 🧭 HEADER / NAVEGACIÓN

@@ -106,7 +106,7 @@
             <!-- 🛠️ SERVICIOS (Editor inline) -->
             <section id="view-services" class="admin-view">
                 <h2>Servicios</h2>
-                <button id="newServiceBtn" class="admin-btn primary">＋ Nuevo servicio</button>
+                <button id="newServiceBtn" class="admin-btn action solid">＋ Nuevo servicio</button>
                 <div id="servicesTable"></div>
 
                 <!-- Formulario de edición/creación de servicios (Soporta Markdown) -->
@@ -145,7 +145,7 @@
                         </div>
                         <div>
                             <label>&nbsp;</label>
-                            <button type="button" id="serviceImgBtn" class="admin-btn">📷 Subir imagen</button>
+                            <button type="button" id="serviceImgBtn" class="admin-btn action outline">📷 Subir imagen</button>
                             <input type="file" id="serviceImgInput" accept="image/*" hidden>
                         </div>
                     </div>
@@ -153,8 +153,8 @@
                     <label class="admin-check"><input type="checkbox" id="serviceActive" checked> Activo (visible en el sitio)</label>
                     
                     <div class="admin-editor-actions">
-                        <button id="serviceSave" class="admin-btn primary">Guardar servicio</button>
-                        <button id="serviceCancel" class="admin-btn">Cancelar</button>
+                        <button id="serviceSave" class="admin-btn action solid">Guardar servicio</button>
+                        <button id="serviceCancel" class="admin-btn action ghost">Cancelar</button>
                     </div>
                 </div>
             </section>

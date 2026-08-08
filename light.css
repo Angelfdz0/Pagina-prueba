@@ -1,0 +1,246 @@
+/* ============================================================
+   LIGHT.CSS — SKIN "CLARO PREMIUM"
+   ------------------------------------------------------------
+   Arquitectura: el CSS oscuro es la BASE y queda intacto.
+   Este archivo es un SKIN que SOLO aplica bajo
+   html[data-theme="light"] (lo activa theme.js desde config.js).
+
+   Toda la afinación del modo claro vive AQUÍ (1 archivo).
+   ============================================================ */
+
+/* Tokens del modo claro (tinta = azul-noche de la clínica) */
+html[data-theme="light"] {
+  --L-card: #ffffff;                              /* superficies sólidas */
+  --L-line: rgba(15, 42, 63, .10);                /* hairlines */
+  --L-line-strong: rgba(15, 42, 63, .18);         /* bordes de campos */
+  --L-shadow: 0 18px 40px rgba(15, 42, 63, .10);  /* sombra suave premium */
+  --L-glass: rgba(250, 248, 245, .92);            /* vidrio claro (headers) */
+  --L-veil: rgba(15, 42, 63, .16);                /* velo suave sobre fotos */
+  --L-field: #ffffff;                             /* inputs */
+  color-scheme: light;
+}
+
+/* ============ HEADER / NAV ============ */
+html[data-theme="light"] .header.scrolled,
+html[data-theme="light"] .shop-header,
+html[data-theme="light"] .shop-header.scrolled,
+html[data-theme="light"] .blog-header,
+html[data-theme="light"] .blog-header.scrolled { background: var(--L-glass); }
+
+html[data-theme="light"] .header.menu-open { background: var(--color-bg) !important; }
+
+html[data-theme="light"] .nav-more-panel { background: var(--L-glass); border-color: var(--L-line); }
+html[data-theme="light"] .nav-more-panel a { color: var(--color-text-muted); }
+html[data-theme="light"] .nav-more-panel a:hover { color: var(--color-accent); }
+
+@media (max-width: 1080px) {
+  html[data-theme="light"] .nav-links { background: var(--color-bg); }
+}
+
+/* ============ HERO (índice) ============ */
+html[data-theme="light"] .hero-title { color: var(--color-text); }
+html[data-theme="light"] .hero-subtitle { color: var(--color-text-muted); }
+html[data-theme="light"] .hero-cta { color: var(--color-accent); border-color: rgba(var(--accent-rgb), .55); }
+html[data-theme="light"] .hero-cta:hover { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+html[data-theme="light"] .hero-glow {
+  background: radial-gradient(ellipse at center bottom,
+    rgba(var(--accent-rgb), .16) 0%, rgba(var(--accent-rgb), .06) 45%, transparent 75%);
+}
+html[data-theme="light"] .scroll-indicator-text { color: var(--color-text-muted); }
+
+/* Layout SPLIT (clínicas): foto enmarcada con sombra suave */
+html[data-theme="light"][data-hero-layout="split"] .hero-bg {
+  filter: none;
+  box-shadow: var(--L-shadow);
+}
+html[data-theme="light"][data-hero-layout="split"] .hero-bg::after {
+  background: linear-gradient(180deg, transparent 65%, var(--L-veil) 100%);
+}
+
+/* Layout CENTER (sobre foto oscura): el texto se queda claro */
+html[data-theme="light"][data-hero-layout="center"] .hero-title { color: #fff; }
+html[data-theme="light"][data-hero-layout="center"] .hero-subtitle { color: rgba(255,255,255,.85); }
+html[data-theme="light"][data-hero-layout="center"] .hero-cta { color: #fff; border-color: rgba(255,255,255,.4); }
+
+/* ============ HERO TIENDA / BLOG (fondo claro) ============ */
+html[data-theme="light"] .shop-hero-bg,
+html[data-theme="light"] .blog-hero-bg { background: linear-gradient(160deg, #F4F1EA 0%, #EDE9E0 60%, #FAF8F5 100%); }
+html[data-theme="light"] .shop-title,
+html[data-theme="light"] .blog-title { color: var(--color-text); }
+html[data-theme="light"] .shop-subtitle,
+html[data-theme="light"] .blog-subtitle { color: var(--color-text-muted); }
+html[data-theme="light"] .spotlight-beam,
+html[data-theme="light"] .spotlight-glow { opacity: .5; }
+
+/* ============ TÍTULOS SOBRE FONDO CLARO ============ */
+html[data-theme="light"] .section-heading,
+html[data-theme="light"] .service-title,
+html[data-theme="light"] .team-name,
+html[data-theme="light"] .testimonial-name,
+html[data-theme="light"] .post-title,
+html[data-theme="light"] .philosophy-quote,
+html[data-theme="light"] .modal-title,
+html[data-theme="light"] .new-post-title,
+html[data-theme="light"] .comments-title,
+html[data-theme="light"] .location-card h4,
+html[data-theme="light"] .cart-header h2,
+html[data-theme="light"] .cart-item-name,
+html[data-theme="light"] .modal-variant-name,
+html[data-theme="light"] .service-desc-full strong,
+html[data-theme="light"] .modal-description strong,
+html[data-theme="light"] .modal-description h3,
+html[data-theme="light"] .admin-view h2,
+html[data-theme="light"] .admin-editor-head h3,
+html[data-theme="light"] .login-title,
+html[data-theme="light"] .promo-title { color: var(--color-text); }
+
+/* ============ SUPERFICIES (tarjetas / modales / paneles) ============ */
+html[data-theme="light"] .service-card,
+html[data-theme="light"] .service-face,
+html[data-theme="light"] .product-card,
+html[data-theme="light"] .post-card,
+html[data-theme="light"] .testimonial-card,
+html[data-theme="light"] .team-face,
+html[data-theme="light"] .location-card,
+html[data-theme="light"] .category-manager,
+html[data-theme="light"] .comment-item,
+html[data-theme="light"] .modal-content,
+html[data-theme="light"] .new-post-content,
+html[data-theme="light"] .admin-editor-card,
+html[data-theme="light"] .admin-login-card,
+html[data-theme="light"] .login-content,
+html[data-theme="light"] .promo-popup-content,
+html[data-theme="light"] .cart-content,
+html[data-theme="light"] .admin-confirm-card {
+  background: var(--L-card);
+  border-color: var(--L-line);
+  box-shadow: var(--L-shadow);
+}
+
+/* ============ HAIRLINES / BORDES INTERNOS ============ */
+html[data-theme="light"] .story-stat-row,
+html[data-theme="light"] .post-meta,
+html[data-theme="light"] .testimonial-footer,
+html[data-theme="light"] .cart-item,
+html[data-theme="light"] .cart-header,
+html[data-theme="light"] .cart-footer,
+html[data-theme="light"] .cart-summary,
+html[data-theme="light"] .cart-total,
+html[data-theme="light"] .team-back-head,
+html[data-theme="light"] .modal-meta,
+html[data-theme="light"] .modal-actions { border-color: var(--L-line); }
+
+html[data-theme="light"] .filter-btn { border-color: var(--L-line-strong); }
+html[data-theme="light"] .filter-btn:hover,
+html[data-theme="light"] .filter-btn.active { border-color: var(--color-accent); }
+
+/* ============ CAMPOS / INPUTS ============ */
+html[data-theme="light"] .form-input,
+html[data-theme="light"] .form-select,
+html[data-theme="light"] .form-textarea,
+html[data-theme="light"] .comment-input,
+html[data-theme="light"] .comment-textarea,
+html[data-theme="light"] .cart-promo-input input,
+html[data-theme="light"] .shop-search-bar input,
+html[data-theme="light"] .blog-search-bar input,
+html[data-theme="light"] .admin-editor-card input,
+html[data-theme="light"] .admin-editor-card textarea,
+html[data-theme="light"] .admin-inline-form input,
+html[data-theme="light"] #couponForm input,
+html[data-theme="light"] #couponForm select,
+html[data-theme="light"] .category-add input,
+html[data-theme="light"] .admin-login-card input,
+html[data-theme="light"] .login-form input,
+html[data-theme="light"] .admin-select,
+html[data-theme="light"] .shop-sort select,
+html[data-theme="light"] .blog-sort select,
+html[data-theme="light"] .qty-btn {
+  background: var(--L-field);
+  border-color: var(--L-line-strong);
+  color: var(--color-text);
+}
+html[data-theme="light"] .shop-sort select option,
+html[data-theme="light"] .blog-sort select option,
+html[data-theme="light"] .admin-body select option { background: var(--L-card); color: var(--color-text); }
+
+/* ============ VELOS SUAVES SOBRE FOTOS ============ */
+html[data-theme="light"] .team-photo::after { background: linear-gradient(to top, var(--L-veil), transparent 45%); }
+html[data-theme="light"] .team-card::after { background: radial-gradient(ellipse at center, rgba(15,42,63,.20), transparent 70%); }
+html[data-theme="light"] .location-map { box-shadow: var(--L-shadow); }
+/* (los velos de galería/post se quedan: viven SOBRE la foto) */
+
+/* ============ BOTONES / PIEZAS SOBRE CLARO ============ */
+html[data-theme="light"] .action-btn { background: #fff; }
+html[data-theme="light"] .modal-close,
+html[data-theme="light"] .promo-close { background: rgba(15,42,63,.06); color: var(--color-text); }
+html[data-theme="light"] .promo-dot { background: rgba(15,42,63,.2); }
+html[data-theme="light"] .promo-code-wrapper { background: rgba(15,42,63,.04); }
+html[data-theme="light"] .admin-btn { background: #fff; border-color: var(--L-line-strong); }
+html[data-theme="light"] .admin-btn:hover { border-color: var(--color-accent); }
+
+/* ============ PARTNERS (logos en gris elegante) ============ */
+html[data-theme="light"] .partner-logo { filter: grayscale(1) opacity(.6); }
+html[data-theme="light"] .partner-logo:hover { filter: none; opacity: 1; }
+
+/* ============ ADMIN (panel claro) ============ */
+html[data-theme="light"] .admin-body { color-scheme: light; }
+html[data-theme="light"] .admin-sidebar { background: var(--L-card); border-right-color: var(--L-line); }
+html[data-theme="light"] #postsTable,
+html[data-theme="light"] #commentsTable,
+html[data-theme="light"] #ordersTable,
+html[data-theme="light"] #couponsTable,
+html[data-theme="light"] #categoriesTable,
+html[data-theme="light"] #testimonialsTable,
+html[data-theme="light"] #productsTable,
+html[data-theme="light"] #servicesTable,
+html[data-theme="light"] #appointmentsTable { background: var(--L-card); border-color: var(--L-line); box-shadow: var(--L-shadow); }
+html[data-theme="light"] .admin-table td { border-bottom-color: var(--L-line); }
+html[data-theme="light"] .admin-table th { background: rgba(15,42,63,.04); }
+html[data-theme="light"] .admin-stat { background: var(--L-card); border-color: var(--L-line); box-shadow: var(--L-shadow); }
+html[data-theme="light"] .admin-stat .num { color: var(--color-text); }
+
+html[data-theme="light"] .team-face {
+  box-shadow: 0 12px 28px rgba(15, 42, 63, .08);  /* sombra suave azul-noche al 8% */
+}
+html[data-theme="light"] .team-card::after {
+  display: none;  /* la "sombra que respira" sí la quitamos */
+}
+
+/* ============================================================
+   ✅ HERO MÓVIL (≤900px): imagen OSCURA + texto BLANCO
+   (va al FINAL de light.css para ganar sobre las reglas split)
+   ============================================================ */
+@media (max-width: 900px) {
+  /* Oscurece la imagen (anula el filter:none del split) */
+  html[data-theme="light"] .hero-bg,
+  html[data-theme="light"][data-hero-layout="split"] .hero-bg {
+    filter: brightness(.25) saturate(.9) blur(4px);
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  /* Velo oscuro para unificar el fondo del texto */
+  html[data-theme="light"] .hero-bg::after {
+    background: linear-gradient(180deg,
+      rgba(10, 10, 10, .55) 0%,
+      rgba(10, 10, 10, .35) 50%,
+      rgba(10, 10, 10, .20) 100%);
+  }
+
+  /* Texto en blanco sobre la imagen oscurecida */
+  html[data-theme="light"] .hero-title,
+  html[data-theme="light"][data-hero-layout="split"] .hero-title { color: #fff; }
+  html[data-theme="light"] .hero-subtitle { color: rgba(255,255,255,.9); }
+  html[data-theme="light"] .hero-eyebrow,
+  html[data-theme="light"] .typewriter-word { color: var(--color-accent-light); }
+  html[data-theme="light"] .hero-cta { color: #fff; border-color: rgba(255,255,255,.5); }
+  html[data-theme="light"] .hero-cta:hover { background: #fff; color: var(--color-dark); }
+  html[data-theme="light"] .scroll-indicator-text { color: rgba(255,255,255,.7); }
+}
+
+/* ============ LOADER (telón premium) ============ */
+/* El loader conserva el telón oscuro (contraste de entrada elegante). */
+
+/* ============ FOOTER ============ */
+/* El footer conserva su fondo oscuro: contraste premium sobre sitio claro. */
