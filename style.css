@@ -175,24 +175,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 }
 .nav-more-panel a:hover { color: var(--color-accent); background: rgba(var(--accent-rgb), .06); }
 
-.header:not(.scrolled):not(.menu-open) {
-  background: linear-gradient(to bottom, rgba(10, 10, 10, .42), rgba(10, 10, 10, 0));
-}
-
-.header:not(.scrolled):not(.menu-open) .nav-logo,
-.header:not(.scrolled):not(.menu-open) .nav-links a,
-.header:not(.scrolled):not(.menu-open) .nav-cta {
-  color: #fff;
-  text-shadow: 0 1px 10px rgba(0, 0, 0, .45);
-}
-
-/* La parte acentuada del logo un poco más clara para resaltar */
-.header:not(.scrolled):not(.menu-open) .nav-logo span { color: var(--color-accent-light); }
-
-/* Borde del CTA y líneas del menú hamburguesa en blanco */
-.header:not(.scrolled):not(.menu-open) .nav-cta { border-color: rgba(255, 255, 255, .55); }
-.header:not(.scrolled):not(.menu-open) .nav-hamburger span { background: #fff; }
-
 @media (max-width: 1080px) {
   .nav-hamburger { display: flex; }
   .nav-cta { display: none; }
@@ -250,9 +232,29 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   #navMoreMobile { display: none; }
 }
 @media (min-width: 1081px) and (max-width: 1280px) { .nav-links { gap: 1.6rem; } }
+
 @media (max-width: 768px) {
   .header { padding: 1.2rem 1.5rem; }
   .header.scrolled { padding: 0.8rem 1.5rem; }
+
+  .header:not(.scrolled):not(.menu-open) {
+  background: linear-gradient(to bottom, rgba(10, 10, 10, .42), rgba(10, 10, 10, 0));
+}
+
+.header:not(.scrolled):not(.menu-open) .nav-logo,
+.header:not(.scrolled):not(.menu-open) .nav-links a,
+.header:not(.scrolled):not(.menu-open) .nav-cta {
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .45);
+}
+
+/* La parte acentuada del logo un poco más clara para resaltar */
+.header:not(.scrolled):not(.menu-open) .nav-logo span { color: var(--color-accent-light); }
+
+/* Borde del CTA y líneas del menú hamburguesa en blanco */
+.header:not(.scrolled):not(.menu-open) .nav-cta { border-color: rgba(255, 255, 255, .55); }
+.header:not(.scrolled):not(.menu-open) .nav-hamburger span { background: #fff; }
+
 }
 
 /* ============ 07 HERO + TYPEWRITER ============ */
