@@ -1088,22 +1088,30 @@ function initGalleryCarousel() {
     const progressFill = $("#galleryProgressFill");
     if (!wrapper || !carousel) return;
 
-    const realSlides = $$(".gallery-slide", carousel);
+       const realSlides = $$(".gallery-slide", carousel);
     const n = realSlides.length;
     if (!n) return;
 
-    // 📚 Clona a AMBOS lados → nunca hay bordes vacíos → loop invisible
-    const beforeFrag = document.createDocumentFragment();
-    const afterFrag = document.createDocumentFragment();
-    realSlides.forEach(s => { beforeFrag.appendChild(s.cloneNode(true)); afterFrag.appendChild(s.cloneNode(true)); });
-    carousel.insertBefore(beforeFrag, realSlides[0]);
-    carousel.appendChild(afterFrag);
+    // 📱 MODO LITE en móvil: sin clones ni efectos pesados (mejor rendimiento)
+    const lite = window.matchMedia("(max-width: 768px)").matches;
 
-    const slides = $$(".gallery-slide", carousel);   // [clones][reales][clones] = 3n
-    const START = n;                                  // índice del 1er slide real
+    let slides, START;
+    if (lite) {
+      slides = realSlides;      // 1× el DOM, no 3×
+      START = 0;
+    } else {
+      const beforeFrag = document.createDocumentFragment();
+      const afterFrag = document.createDocumentFragment();
+      realSlides.forEach(s => { beforeFrag.appendChild(s.cloneNode(true)); afterFrag.appendChild(s.cloneNode(true)); });
+      carousel.insertBefore(beforeFrag, realSlides[0]);
+      carousel.appendChild(afterFrag);
+      slides = $$(".gallery-slide", carousel);
+      START = n;
+    }
 
         // 🖼️ Pre-decodifica TODAS las imágenes (reales + clones) para que el
     //    salto del loop sea instantáneo y NO parpadee
+    if (!lite) {
     slides.forEach(s => {
         const img = s.querySelector(".gallery-slide-img");
         if (img) {
@@ -1111,6 +1119,7 @@ function initGalleryCarousel() {
             if (img.decode) img.decode().catch(() => {}); // fuerza decodificado
         }
     });
+    }
 
     let isDragging = false, startX = 0, startTranslate = 0, currentTranslate = 0,
         velocity = 0, lastX = 0, lastTime = 0, rafId = null,
@@ -1154,6 +1163,7 @@ function initGalleryCarousel() {
         carousel.style.transform = `translate3d(${finalX}px, 0, 0)`;
 
         const wrapperCenter = wrapper.offsetWidth / 2, halfW = wrapper.offsetWidth / 2;
+        if (!lite) { 
         slides.forEach((slide, i) => {
             const norm = ((slideCenters[i] + finalX) - wrapperCenter) / halfW;
             const img = $(".gallery-slide-img", slide);
@@ -1165,6 +1175,7 @@ function initGalleryCarousel() {
             slide.style.opacity = opacity;
             slide.style.zIndex = String(20 - Math.round(Math.abs(norm) * 10));
         });
+        }
 
         if (progressFill && minTranslate !== 0)
             progressFill.style.width = (clamp(Math.abs(finalX) / Math.abs(minTranslate), 0, 1) * 100) + "%";
@@ -1185,8 +1196,10 @@ function initGalleryCarousel() {
         snapAnimating = false; velocity = 0;
 
         let changed = false;
+        if (!lite) {
         if (autoIndex >= 2 * n) { autoIndex -= n; changed = true; }
         else if (autoIndex < n) { autoIndex += n; changed = true; }
+        }
 
         if (changed) {
             // 1) Congela transiciones, 2) salta, 3) aplica en ESTE frame, 4) reactiva
@@ -1198,7 +1211,7 @@ function initGalleryCarousel() {
     }
 
     function startAuto() {
-        if (!autoOn() || n < 2) return;
+         if (lite || !autoOn() || n < 2) return;
         stopAuto();
         autoTimer = setInterval(() => {
             if (isDragging || snapAnimating) return;

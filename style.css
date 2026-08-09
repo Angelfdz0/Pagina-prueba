@@ -1511,3 +1511,38 @@ html[data-theme="light"] .team-card:hover .team-photo img {
 
 /* En tema oscuro, aún más tenue */
 html[data-theme="dark"] .section-location::before { opacity: .07; filter: grayscale(1) brightness(.9); }
+
+/* ============================================================
+   📱 GALERÍA LITE EN MÓVIL: tarjetas limpias, sin apilar ni sombras pesadas
+   ============================================================ */
+@media (max-width: 768px) {
+  .gallery-slide + .gallery-slide { margin-left: 0; }        /* sin apilar */
+  .gallery-slide {
+    border-radius: 10px;
+    border-left: none;                                       /* sin "lomo" */
+    box-shadow: 0 6px 16px rgba(15, 42, 63, .12);            /* sombra ligera */
+    transition: none;                                        /* sin animaciones de tarjeta */
+    will-change: auto;
+  }
+  .gallery-carousel { gap: 1rem; }
+}
+
+/* ============================================================
+   📱 FIX iPhone: "Agenda tu cita" — inputs ya no se desbordan
+   ============================================================ */
+#appointments .form-row,
+.appointments-form .form-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));  /* permite encoger */
+}
+
+#appointments input, #appointments select, #appointments textarea,
+#appointments .form-input, #appointments .form-select, #appointments .form-textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;          /* clave en iOS: deja que encojan */
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  #appointments .form-row { grid-template-columns: 1fr; }  /* 1 columna en móvil */
+}
