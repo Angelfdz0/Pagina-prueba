@@ -1,5 +1,5 @@
 /* ============================================================
-   STYLE.CSS — ORGANIZADO Y OPTIMIZADO
+   STYLE.CSS — OPTIMIZADO Y LIMPIO
    ÍNDICE:
    01 Reset & variables          11 E-commerce
    02 Accesibilidad (focus)      12 Blog (tinta dorada)
@@ -95,7 +95,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 }
 .loader.hidden { opacity: 0; visibility: hidden; }
 .loader-inner { text-align: center; position: relative; }
-.loader-title-wrapper { position: relative; display: inline-block; margin-bottom: 1.5rem; }
+.loader-title-wrapper { position: relative; display: inline-block; margin-bottom: 1.5rem; --p: 0%; }
 .loader-title-base {
   font-family: var(--font-display); font-size: clamp(2rem, 6vw, 4rem); font-weight: 700;
   letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255, 255, 255, 0.1); display: block;
@@ -107,7 +107,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   width: 0%; overflow: hidden; white-space: nowrap;
   transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
 .loader-percentage { font-family: var(--font-body); font-size: 0.75rem; letter-spacing: 0.3em; color: var(--color-text-muted); opacity: 0.6; }
 
 /* ============ 06 HEADER / NAV + MENÚ "MÁS" ============ */
@@ -175,6 +174,24 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   color: var(--color-text-muted); transition: color .3s, background .3s;
 }
 .nav-more-panel a:hover { color: var(--color-accent); background: rgba(var(--accent-rgb), .06); }
+
+.header:not(.scrolled):not(.menu-open) {
+  background: linear-gradient(to bottom, rgba(10, 10, 10, .42), rgba(10, 10, 10, 0));
+}
+
+.header:not(.scrolled):not(.menu-open) .nav-logo,
+.header:not(.scrolled):not(.menu-open) .nav-links a,
+.header:not(.scrolled):not(.menu-open) .nav-cta {
+  color: #fff;
+  text-shadow: 0 1px 10px rgba(0, 0, 0, .45);
+}
+
+/* La parte acentuada del logo un poco más clara para resaltar */
+.header:not(.scrolled):not(.menu-open) .nav-logo span { color: var(--color-accent-light); }
+
+/* Borde del CTA y líneas del menú hamburguesa en blanco */
+.header:not(.scrolled):not(.menu-open) .nav-cta { border-color: rgba(255, 255, 255, .55); }
+.header:not(.scrolled):not(.menu-open) .nav-hamburger span { background: #fff; }
 
 @media (max-width: 1080px) {
   .nav-hamburger { display: flex; }
@@ -351,15 +368,25 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   .story-grid { grid-template-columns: 1fr; }
   .story-image-wrapper { aspect-ratio: 4/3; }
 }
-@media (max-width: 480px) { .story-ribbon svg { width: 80px; opacity: .4; } }
+@media (max-width: 480px) {
+  .story-ribbon svg { width: 80px; opacity: .4; }
+  .section-story { padding-left: 1.2rem; padding-right: 1.2rem; }
+  .story-grid { gap: 2rem; }
+  .story-text p { font-size: .95rem; overflow-wrap: break-word; }
+  .story-stat-row { flex-wrap: wrap; gap: 1.5rem; }
+  .story-image-wrapper { aspect-ratio: 4/3; }
+}
+@media (max-width: 360px) {
+  .story-text p { font-size: .9rem; }
+  .story-stat-row { gap: 1rem; }
+}
 
 /* ============ 08 BLOQUE 2 — SERVICIOS + LUZ QUE CAE ============ */
-.section-services { background: var(--color-bg-alt); }
+.section-services { background: var(--color-bg-alt); contain: layout style paint; }
 .services-header { text-align: center; max-width: 700px; margin: 0 auto 5rem; }
 .services-header p { color: var(--color-text-muted); font-size: 1.05rem; }
 .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2px; }
 
-/* Service Card - definición unificada */
 .service-card {
   position: relative; padding: clamp(2rem, 4vw, 3.5rem);
   background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);
@@ -391,7 +418,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 }
 .service-more:hover { color: var(--color-accent-light); }
 
-/* Luz que cae */
 .services-light-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 0; }
 .light-beam {
   position: absolute; top: -20%; left: 50%; transform: translateX(-50%); width: 200px; height: 150%;
@@ -420,7 +446,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   text-shadow: 0 0 40px rgba(var(--accent-rgb),0.6), 0 0 80px rgba(var(--accent-rgb),0.3), 0 0 120px rgba(var(--accent-rgb),0.15), 0 0 160px rgba(var(--accent-rgb),0.08);
 }
 
-/* Servicios - Imagen watermark */
 .service-bg-img {
   position: absolute; inset: 0; z-index: 0;
   background-size: cover; background-position: center;
@@ -433,7 +458,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 .service-card:hover .service-bg-img { opacity: .14; transform: scale(1.06); }
 .service-card > *:not(.service-bg-img) { position: relative; z-index: 1; }
 
-/* Servicios - Toggle */
 .services-grid:not(.all-visible) .service-hidden { display: none; }
 .services-toggle-wrap { text-align: center; margin-top: clamp(2.5rem, 5vw, 4rem); position: relative; z-index: 1; }
 .services-toggle {
@@ -448,7 +472,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 .services-toggle svg { width: 12px; height: 12px; transition: transform .3s var(--ease-out-expo); }
 .services-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
 
-/* Servicios - Flip Card */
 .service-card {
   background: transparent; border: none; padding: 0;
   overflow: visible; perspective: 1400px; display: flex;
@@ -506,7 +529,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 .service-card.flipped .service-front { pointer-events: none; }
 .service-card:not(.flipped) .service-back { pointer-events: none; }
 
-/* Servicios - Formato rico */
 .service-desc-full p { margin-bottom: .7rem; }
 .service-desc-full strong { color: var(--color-white); }
 .service-desc-full em { color: var(--color-accent-light); }
@@ -523,7 +545,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   font-style: italic; color: var(--color-text);
 }
 
-/* Servicios - Carrusel */
 .services-carousel { position: relative; display: block; }
 .services-track {
   display: grid;
@@ -579,7 +600,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 .services-hint.hide { opacity: 0; }
 @keyframes hintFloat { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(8px); } }
 
-/* Servicios - Número fantasma */
 .services-ghost {
   position: absolute; top: -2.8rem; right: .5rem;
   font-family: var(--font-display); font-style: italic;
@@ -593,7 +613,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Servicios - Brillo diagonal */
 .service-face::after {
   content: ''; position: absolute; inset: 0;
   background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.07) 50%, transparent 60%);
@@ -603,7 +622,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 }
 .service-card:hover .service-face::after { transform: translateX(130%); }
 
-/* Servicios - Entrada cinematográfica */
 .services-carousel .service-card {
   opacity: 0; transform: translateY(30px); filter: blur(6px);
   transition: opacity .8s var(--ease-out-expo), transform .8s var(--ease-out-expo), filter .8s var(--ease-out-expo);
@@ -637,7 +655,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 }
 
 /* ============ 09 BLOQUE 3 — GALERÍA (carrusel parallax) ============ */
-.section-gallery { background: var(--color-bg); padding-bottom: clamp(4rem, 8vw, 8rem); overflow: hidden; }
+.section-gallery { background: var(--color-bg); padding-bottom: clamp(4rem, 8vw, 8rem); overflow: hidden; contain: layout style paint; }
 .gallery-header { text-align: center; max-width: 700px; margin: 0 auto clamp(3rem, 6vw, 5rem); padding: 0 clamp(1.5rem, 5vw, 6rem); }
 .gallery-header p { color: var(--color-text-muted); font-size: 1.05rem; }
 .gallery-carousel-wrapper { position: relative; width: 100%; overflow: hidden; padding: 2rem 0; cursor: grab; -webkit-user-select: none; user-select: none; touch-action: pan-y; }
@@ -645,8 +663,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 .gallery-carousel { display: flex; gap: clamp(1rem, 2vw, 2rem); padding: 0 clamp(2rem, 5vw, 8rem); transition: none; }
 .gallery-carousel.is-snapping { transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
 .gallery-slide { position: relative; flex-shrink: 0; overflow: hidden; border-radius: 4px; transition: transform 0.6s var(--ease-out-expo), opacity 0.6s var(--ease-out-expo); }
-.gallery-slide:nth-child(odd) { width: clamp(280px, 45vw, 500px); height: clamp(380px, 60vw, 650px); }
-.gallery-slide:nth-child(even) { width: clamp(320px, 50vw, 580px); height: clamp(320px, 45vw, 480px); }
+.gallery-slide { width: clamp(280px, 45vw, 500px); height: clamp(380px, 60vw, 650px); }
 .gallery-slide-img-wrapper { position: absolute; inset: -20%; overflow: hidden; }
 .gallery-slide-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-out-expo), filter 0.6s var(--ease-out-expo); filter: brightness(0.85) saturate(0.9); pointer-events: none; }
 .gallery-slide:hover .gallery-slide-img { filter: brightness(1.1) saturate(1.3); }
@@ -686,7 +703,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   80% { opacity: 0.6; } 100% { opacity: 0; }
 }
 @media (max-width: 768px) {
-  .gallery-slide:nth-child(odd), .gallery-slide:nth-child(even) { width: clamp(260px, 75vw, 320px); height: clamp(340px, 90vw, 420px); }
+  .gallery-slide { width: clamp(260px, 75vw, 320px); height: clamp(340px, 90vw, 420px); }
   .gallery-carousel { padding: 0 1.5rem; gap: 1rem; }
 }
 
@@ -901,7 +918,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 }
 
 /* ============ 15 TESTIMONIOS ============ */
-.section-testimonials { background: var(--color-bg-alt); }
+.section-testimonials { background: var(--color-bg-alt); contain: layout style paint; }
 .testimonials-header { text-align: center; margin-bottom: 3rem; }
 .testimonials-carousel { position: relative; max-width: 1400px; margin: 0 auto; }
 .testimonials-track { display: flex; gap: 1.5rem; overflow-x: auto; scroll-snap-type: x mandatory; padding: 1rem .5rem 2rem; scrollbar-width: none; }
@@ -1046,75 +1063,35 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 [data-personality="minimal"] .post-card:hover { transform: none; }
 [data-personality="minimal"] .services-header .section-heading { text-shadow: none !important; }
 
-/* ============================================================
-   ✅ HERO SPLIT ARTÍSTICO — texto izquierda / imagen derecha
-   ============================================================ */
-
-/* El hero reparte: contenido a la izquierda, imagen a la derecha */
-[data-hero-layout="split"] .hero {
-  justify-content: flex-start;
-  align-items: center;
-}
-
-/* — Columna de texto: ancha fija, centrada vertical, sin montarse — */
+[data-hero-layout="split"] .hero { justify-content: flex-start; align-items: center; }
 [data-hero-layout="split"] .hero-content {
-  position: relative;
-  z-index: 4;
-  width: min(46%, 620px);
-  max-width: 46%;
+  position: relative; z-index: 4;
+  width: min(46%, 620px); max-width: 46%;
   margin-left: clamp(1.5rem, 6vw, 7rem);
-  text-align: left;
-  padding: 0;
+  text-align: left; padding: 0;
 }
-
-/* Toque artístico: línea acento junto al eyebrow */
-[data-hero-layout="split"] .hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: .9rem;
-}
+[data-hero-layout="split"] .hero-eyebrow { display: inline-flex; align-items: center; gap: .9rem; }
 [data-hero-layout="split"] .hero-eyebrow::before {
-  content: '';
-  width: 42px;
-  height: 1px;
-  background: var(--color-accent);
+  content: ''; width: 42px; height: 1px; background: var(--color-accent);
 }
-
-/* Título y subtítulo contenidos en su columna */
 [data-hero-layout="split"] .hero-title { font-size: clamp(2.8rem, 5vw, 5rem); }
 [data-hero-layout="split"] .hero-subtitle { margin: 0 0 2.5rem; max-width: 46ch; }
-
-/* — Imagen: marco derecho, luminosa, con sombra suave — */
 [data-hero-layout="split"] .hero-bg {
-  z-index: auto;                 /* deja que el marco vaya DETRÁS */
-  top: 10%;
-  bottom: 12%;
-  left: 53%;
-  right: clamp(1rem, 4vw, 4.5rem);
+  z-index: auto; top: 10%; bottom: 12%;
+  left: 53%; right: clamp(1rem, 4vw, 4.5rem);
   filter: brightness(.92) saturate(1);
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,.16);
+  border-radius: 20px; border: 1px solid rgba(255,255,255,.16);
   box-shadow: 0 40px 80px rgba(15, 42, 63, .25);
   transform: none !important;
 }
-
-/* Marco acento desplazado detrás de la imagen (look editorial) */
 [data-hero-layout="split"] .hero-bg::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
+  content: ''; position: absolute; inset: 0; z-index: -1;
   transform: translate(18px, 18px);
-  border: 1px solid rgba(var(--accent-rgb), .4);
-  border-radius: 20px;
+  border: 1px solid rgba(var(--accent-rgb), .4); border-radius: 20px;
 }
-
-/* Velo suave solo abajo (no tapa el texto) */
 [data-hero-layout="split"] .hero-bg::after {
   background: linear-gradient(180deg, transparent 60%, rgba(15, 42, 63, .18) 100%);
 }
-
-/* — Móvil: vuelve al hero centrado a pantalla completa — */
 @media (max-width: 900px) {
   [data-hero-layout="split"] .hero { justify-content: center; }
   [data-hero-layout="split"] .hero-content {
@@ -1127,14 +1104,31 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   [data-hero-layout="split"] .hero-bg {
     top: -20%; bottom: -20%; left: -20%; right: -20%;
     border-radius: 0; border: none; box-shadow: none;
-    filter: brightness(.35) saturate(.8);
-    z-index: 0;
+    filter: brightness(.35) saturate(.8); z-index: 0;
   }
   [data-hero-layout="split"] .hero-bg::before { display: none; }
 }
 
 /* ============ 19 UBICACIÓN + CITAS + PATROCINADORES ============ */
-.section-location { background: var(--color-bg); }
+.section-location { background: var(--color-bg); position: relative; overflow: hidden; }
+.section-location::before {
+  content: ''; position: absolute; inset: 0;
+  background-image: var(--location-img, none);
+  background-size: cover; background-position: center top;
+  opacity: .10; filter: grayscale(1) brightness(1.35);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 45%, transparent 80%);
+  mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 45%, transparent 80%);
+  pointer-events: none; z-index: 0;
+}
+html[data-theme="dark"] .section-location::before { opacity: .07; filter: grayscale(1) brightness(.9); }
+.section-location::after {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: min(70%, 700px); height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), .5), transparent);
+  pointer-events: none;
+}
+.section-location .section-inner { position: relative; z-index: 1; }
+
 .location-header { text-align: center; max-width: 700px; margin: 0 auto clamp(3rem, 6vw, 5rem); }
 .location-header p { color: var(--color-text-muted); font-size: 1.05rem; }
 .location-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(2rem, 4vw, 4rem); align-items: stretch; max-width: 1200px; margin: 0 auto; }
@@ -1154,13 +1148,16 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 .location-directions:hover { background: var(--color-accent-light); transform: translateY(-2px); }
 @media (max-width: 900px) { .location-grid { grid-template-columns: 1fr; } .location-map { min-height: 320px; } }
 
-.section-appointments { background: var(--color-bg-alt); }
+.section-appointments { background: var(--color-bg-alt); overflow-x: clip; }
 .appt-header { text-align: center; max-width: 700px; margin: 0 auto 3rem; }
 .appt-header p { color: var(--color-text-muted); font-size: 1.05rem; }
 .appt-form { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.2rem; text-align: left; }
 .appt-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
 .appt-form select.form-input { cursor: pointer; }
 .appt-form input[type="date"].form-input { color-scheme: dark; }
+.appt-form input, .appt-form select, .appt-form textarea {
+  width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box;
+}
 @media (max-width: 640px) { .appt-row { grid-template-columns: 1fr; } }
 
 .partners-strip { margin-top: clamp(4rem, 8vw, 7rem); text-align: center; }
@@ -1273,276 +1270,165 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 .team-back-btn { margin-top: auto; }
 
 /* ============================================================
-🏥 TEMA CLARO CLÍNICA — AJUSTES DE CONTRASTE
-(El sitio nació en dark; este bloque adapta los textos a fondo claro)
-============================================================ */
-/* Títulos que viven sobre fondo claro → oscuros */
-.section-heading,
-.service-title,
-.team-name,
-.testimonial-name,
-.location-card h4,
-.philosophy-quote,
-.service-desc-full strong { color: var(--color-text); }
+   🏥 TEMA CLARO CLÍNICA — AJUSTES DE CONTRASTE
+   Solo se aplican bajo html[data-theme="light"]
+   ============================================================ */
+html[data-theme="light"] .section-heading,
+html[data-theme="light"] .service-title,
+html[data-theme="light"] .team-name,
+html[data-theme="light"] .testimonial-name,
+html[data-theme="light"] .location-card h4,
+html[data-theme="light"] .philosophy-quote,
+html[data-theme="light"] .service-desc-full strong { color: var(--color-text); }
 
-/* Textos que viven sobre fondo OSCURO (hero) → aclarar */
-.hero-subtitle,
-.scroll-indicator-text { color: rgba(255,255,255,.85); }
+html[data-theme="light"] .scroll-indicator-text { color: rgba(255,255,255,.85); }
 
-/* Header al hacer scroll: claro en vez de oscuro */
-.header.scrolled { background: rgba(250,248,245,.92); }
+html[data-theme="light"] .header.scrolled { background: rgba(250,248,245,.92); }
 
-/* Footer (fondo oscuro) → textos gris-azulado claros */
-.footer-col a, .footer-copy, .footer-socials a, .footer-brand-desc { color: #93A5B8; }
-.footer-col a:hover, .footer-socials a:hover { color: #ffffff; }
+html[data-theme="light"] .footer-col a,
+html[data-theme="light"] .footer-copy,
+html[data-theme="light"] .footer-socials a,
+html[data-theme="light"] .footer-brand-desc { color: #93A5B8; }
+html[data-theme="light"] .footer-col a:hover,
+html[data-theme="light"] .footer-socials a:hover { color: #ffffff; }
 
-/* Marcas de agua más sutiles sobre fondo claro */
-.service-bg-img { opacity: .05; }
-.service-card:hover .service-bg-img { opacity: .1; }
-.service-number { color: rgba(var(--accent-rgb), .3); }
-.service-number-sm { color: rgba(var(--accent-rgb), .5); }
+html[data-theme="light"] .service-bg-img { opacity: .05; }
+html[data-theme="light"] .service-card:hover .service-bg-img { opacity: .1; }
+html[data-theme="light"] .service-number { color: rgba(var(--accent-rgb), .3); }
+html[data-theme="light"] .service-number-sm { color: rgba(var(--accent-rgb), .5); }
 
-/* ============================================================
-🏥 BLOQUE 2 — REFINADO TEMA CLARO
-"Sin negros: todo tenue, limpio y artístico"
-(Agregar al FINAL de style.css)
-============================================================ */
-
-/* ── 1. INTRO / HERO — lo primero que se ve: IMPECABLE ── */
-/* Título y subtítulo en tinta azul-noche sobre crema (legibles) */
-[data-hero-layout="split"] .hero-title,
-.hero-title { color: var(--color-text); }
-
-[data-hero-layout="split"] .hero-subtitle { color: var(--color-text-muted); }
-
-/* CTA visible: borde y texto en verde clínico */
-[data-hero-layout="split"] .hero-cta,
-.hero-cta {
+/* Hero claro */
+html[data-theme="light"] .hero-title { color: var(--color-text); }
+html[data-theme="light"] .hero-subtitle { color: var(--color-text-muted); }
+html[data-theme="light"] .hero-cta {
   color: var(--color-accent);
   border-color: rgba(var(--accent-rgb), .55);
   background: transparent;
 }
-[data-hero-layout="split"] .hero-cta:hover,
-.hero-cta:hover {
+html[data-theme="light"] .hero-cta:hover {
   background: var(--color-accent);
   border-color: var(--color-accent);
   color: #ffffff;
 }
-
-/* Glow artístico SUAVE (se quita el tinte morado, queda acuarela verde) */
-.hero-glow {
+html[data-theme="light"] .hero-glow {
   background: radial-gradient(ellipse at center bottom,
     rgba(var(--accent-rgb), .16) 0%,
     rgba(var(--accent-rgb), .06) 45%,
     transparent 75%);
 }
-
-/* La foto del hero: luminosa, con sombra suave de acuarela (sin velo negro) */
-[data-hero-layout="split"] .hero-bg {
+html[data-theme="light"][data-hero-layout="split"] .hero-bg {
   filter: brightness(1) saturate(1);
   box-shadow: 0 30px 70px rgba(15, 42, 63, .18);
 }
-[data-hero-layout="split"] .hero-bg::after {
+html[data-theme="light"][data-hero-layout="split"] .hero-bg::after {
   background: linear-gradient(180deg, transparent 65%, rgba(15, 42, 63, .15) 100%);
 }
 
-/* ── 2. LOADER — abre en crema, no en negro (primera impresión) ── */
-.loader { background: var(--color-bg); }
-.loader-title-base { color: rgba(15, 42, 63, .10); }
-.loader-title-fill { color: var(--color-accent); }
-.loader-percentage { color: var(--color-text-muted); }
+/* Loader claro */
+html[data-theme="light"] .loader { background: var(--color-bg); }
+html[data-theme="light"] .loader-title-base { color: rgba(15, 42, 63, .10); }
+html[data-theme="light"] .loader-title-fill { color: var(--color-accent); }
+html[data-theme="light"] .loader-percentage { color: var(--color-text-muted); }
 
-/* ── 3. CURSOR — sin blend "difference" (en crema se veía rojo) ── */
-.cursor { mix-blend-mode: normal; }
+/* Cursor claro */
+html[data-theme="light"] .cursor { mix-blend-mode: normal; }
 
-/* ── 4. FOTOS SIN VELAS NEGRAS (tenue, casi artístico) ── */
-/* Equipo: el degradado negro del pie de foto → tinte azul muy suave */
-.team-photo::after {
+/* Velos sobre fotos (modo claro) */
+html[data-theme="light"] .team-photo::after {
   background: linear-gradient(to top, rgba(15, 42, 63, .14), transparent 45%);
 }
-
-/* Galería: velo tenue solo para leer el caption */
-.gallery-slide::after {
+html[data-theme="light"] .gallery-slide::after {
   background: linear-gradient(to top, rgba(15, 42, 63, .38), transparent 55%);
 }
-
-/* Blog: mismo tratamiento suave */
-.post-image-overlay {
+html[data-theme="light"] .post-image-overlay {
   background: linear-gradient(to top, rgba(15, 42, 63, .35), transparent 45%);
 }
 
-/* ── 5. MENÚS Y PANELES FLOTANTES — claros, no negros ── */
-.nav-more-panel {
+/* Menús/paneles claros */
+html[data-theme="light"] .nav-more-panel {
   background: rgba(250, 248, 245, .97);
   border: 1px solid rgba(15, 42, 63, .08);
 }
-.nav-more-panel a { color: var(--color-text-muted); }
-.nav-more-panel a:hover {
+html[data-theme="light"] .nav-more-panel a { color: var(--color-text-muted); }
+html[data-theme="light"] .nav-more-panel a:hover {
   color: var(--color-accent);
   background: rgba(var(--accent-rgb), .07);
 }
-.header.menu-open { background: var(--color-bg) !important; }
-
+html[data-theme="light"] .header.menu-open { background: var(--color-bg) !important; }
 @media (max-width: 1080px) {
-  .nav-links { background: var(--color-bg); }
+  html[data-theme="light"] .nav-links { background: var(--color-bg); }
 }
 
-/* ============================================================
-   ✅ GALERÍA: TODAS LAS FOTOS CON LA MISMA MEDIDA (vertical)
-   Unifica las slides PARES con las IMPARES para que todas
-   conserven el formato vertical de tu captura.
-   (object-fit: cover recorta cualquier foto original a este marco)
-   ============================================================ */
-.gallery-slide:nth-child(odd),
-.gallery-slide:nth-child(even) {
-  width: clamp(280px, 45vw, 500px);
-  height: clamp(380px, 60vw, 650px);
-}
-
-/* En móvil ya eran uniformes, pero lo reafirmamos */
-@media (max-width: 768px) {
-  .gallery-slide:nth-child(odd),
-  .gallery-slide:nth-child(even) {
-    width: clamp(260px, 75vw, 320px);
-    height: clamp(340px, 90vw, 420px);
-  }
-}
-
-/* ============================================================
-   ✅ IMÁGENES: tono apagado premium + resaltado suave al hover
-   ------------------------------------------------------------
-   Por defecto: un poco más oscuras y grises (look editorial).
-   Al hover / seleccionar: vuelve el color real, pero SIN el
-   brillo exagerado (se quita el brightness > 1).
-   Ajusta los 3 valores de filter a tu gusto.
-   ============================================================ */
-
-/* Estado normal: apagado / grisáceo elegante */
+/* Imágenes: tono apagado premium + resaltado suave al hover (solo claro) */
 html[data-theme="light"] .gallery-slide-img,
 html[data-theme="light"] .product-image,
 html[data-theme="light"] .post-image,
 html[data-theme="light"] .team-photo img {
   filter: grayscale(0.45) brightness(0.85) saturate(0.8);
 }
-
-/* Al pasar el mouse / seleccionar: color real, brillo controlado */
 html[data-theme="light"] .gallery-slide:hover .gallery-slide-img,
 html[data-theme="light"] .product-card:hover .product-image,
 html[data-theme="light"] .post-card:hover .post-image,
 html[data-theme="light"] .team-card:hover .team-photo img {
   filter: grayscale(0) brightness(0.97) saturate(1.05);
 }
-@media (max-width: 480px) {
-  .section-story { padding-left: 1.2rem; padding-right: 1.2rem; }
-  .story-grid { gap: 2rem; }
-  .story-text p { font-size: .95rem; overflow-wrap: break-word; }
-  .story-stat-row { flex-wrap: wrap; gap: 1.5rem; }
-  .story-image-wrapper { aspect-ratio: 4/3; }
+
+/* Galería librería v2 */
+.gallery-slide + .gallery-slide { margin-left: clamp(-3.5rem, -4vw, -1.5rem); }
+.gallery-slide {
+  border-radius: 6px 18px 18px 6px;
+  border-left: 3px solid rgba(var(--accent-rgb), .35);
+  box-shadow: -14px 0 28px rgba(15, 42, 63, .18);
+  transition: transform .45s var(--ease-out-expo), opacity .45s, box-shadow .45s;
+  will-change: transform;
 }
-@media (max-width: 360px) {
-  .story-text p { font-size: .9rem; }
-  .story-stat-row { gap: 1rem; }
+.gallery-carousel.no-anim,
+.gallery-carousel.no-anim .gallery-slide,
+.gallery-carousel.no-anim .gallery-slide-img { transition: none !important; }
+
+/* Galería lite móvil */
+@media (max-width: 768px) {
+  .gallery-slide + .gallery-slide { margin-left: 0; }
+  .gallery-slide {
+    border-radius: 10px;
+    border-left: none;
+    box-shadow: 0 6px 16px rgba(15, 42, 63, .12);
+    transition: none;
+    will-change: auto;
+  }
+  .gallery-carousel { gap: 1rem; }
 }
 
-/* Fix iOS: fuerza GPU para que las caras no se transparenten */
+/* iOS: GPU para flip de servicios */
 .service-front, .service-back {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0);
 }
 .service-back { transform: rotateY(180deg) translateZ(0); }
-
 @media (max-width: 400px) {
   .service-face { padding: 1.5rem 1.2rem; }
 }
 
-/* ============================================================
-   📚 GALERÍA "LIBRERÍA" v2 — TODA la tarjeta tipo libro
-   (apiladas + lomo salido; el giro lo aplica app.js)
-   ============================================================ */
-.gallery-slide + .gallery-slide { margin-left: clamp(-3.5rem, -4vw, -1.5rem); } /* apila */
-
-.gallery-slide {
-  border-radius: 6px 18px 18px 6px;                    /* lomo esquinado */
-  border-left: 3px solid rgba(var(--accent-rgb), .35); /* lomo salido */
-  box-shadow: -14px 0 28px rgba(15, 42, 63, .18);       /* sombra de apilado */
-  transition: transform .45s var(--ease-out-expo), opacity .45s, box-shadow .45s;
-  will-change: transform;
-}
-
-/* Apaga transiciones SOLO durante el salto invisible del loop */
-.gallery-carousel.no-anim,
-.gallery-carousel.no-anim .gallery-slide,
-.gallery-carousel.no-anim .gallery-slide-img {
-  transition: none !important;
-}
-
-/* ============================================================
-   🏥 UBICACIÓN: fachada discreta de fondo (watermark elegante)
-   ============================================================ */
-.section-location { position: relative; overflow: hidden; }
-
-.section-location::before {
-  content: '';
-  position: absolute; inset: 0;
-  background-image: var(--location-img, none);
-  background-size: cover;
-  background-position: center top;
-  opacity: .10;                                  /* discreta */
-  filter: grayscale(1) brightness(1.35);         /* se funde con el tema claro */
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 45%, transparent 80%);
-  mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,.5) 45%, transparent 80%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Línea acento sutil que "enmarca" la fachada arriba */
-.section-location::after {
-  content: '';
-  position: absolute; top: 0; left: 50%;
-  transform: translateX(-50%);
-  width: min(70%, 700px); height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), .5), transparent);
-  pointer-events: none;
-}
-
-/* El contenido queda por encima del watermark */
-.section-location .section-inner { position: relative; z-index: 1; }
-
-/* En tema oscuro, aún más tenue */
-html[data-theme="dark"] .section-location::before { opacity: .07; filter: grayscale(1) brightness(.9); }
-
-/* ============================================================
-   📱 GALERÍA LITE EN MÓVIL: tarjetas limpias, sin apilar ni sombras pesadas
-   ============================================================ */
+/* iOS: volteo de equipo sin parpadeo */
 @media (max-width: 768px) {
-  .gallery-slide + .gallery-slide { margin-left: 0; }        /* sin apilar */
-  .gallery-slide {
-    border-radius: 10px;
-    border-left: none;                                       /* sin "lomo" */
-    box-shadow: 0 6px 16px rgba(15, 42, 63, .12);            /* sombra ligera */
-    transition: none;                                        /* sin animaciones de tarjeta */
-    will-change: auto;
+  .team-card { animation: none; }
+  .team-card::after { animation: none; }
+  .team-face {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
-  .gallery-carousel { gap: 1rem; }
+  .team-front { transform: rotateY(0deg) translateZ(0); }
+  .team-back  { transform: rotateY(180deg) translateZ(0); }
 }
 
-/* ============================================================
-   📱 FIX iPhone: "Agenda tu cita" — inputs ya no se desbordan
-   ============================================================ */
-#appointments .form-row,
-.appointments-form .form-row {
-  grid-template-columns: repeat(2, minmax(0, 1fr));  /* permite encoger */
+/* Galería lite: scroll nativo iOS */
+.gallery-lite {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
-
-#appointments input, #appointments select, #appointments textarea,
-#appointments .form-input, #appointments .form-select, #appointments .form-textarea {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;          /* clave en iOS: deja que encojan */
-  box-sizing: border-box;
-}
-
-@media (max-width: 640px) {
-  #appointments .form-row { grid-template-columns: 1fr; }  /* 1 columna en móvil */
-}
+.gallery-lite::-webkit-scrollbar { display: none; }
+.gallery-lite .gallery-carousel { transform: none !important; }
+.gallery-lite .gallery-slide { scroll-snap-align: center; }

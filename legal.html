@@ -5,23 +5,37 @@
          📋 METADATOS Y CONFIGURACIÓN BÁSICA
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="robots" content="index, follow">
+    <meta name="format-detection" content="telephone=yes">
     <meta name="description" content="Aviso de Privacidad, Términos y Condiciones y Política de Cookies de Studio Creativo México.">
+    
+    <!-- Open Graph para redes sociales -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Aviso Legal | Studio Creativo">
+    <meta property="og:description" content="Transparencia y protección de tus datos conforme a la legislación mexicana.">
+    <meta property="og:locale" content="es_MX">
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Aviso Legal | Studio Creativo">
+    <meta name="twitter:description" content="Transparencia y protección de tus datos conforme a la legislación mexicana.">
+    
+    <!-- Canonical URL (evita contenido duplicado) -->
+    <link rel="canonical" href="https://studio.com/legal.html">
+    
     <title>Aviso Legal | Studio</title>
 
-    <!-- Favicon SVG por defecto (será reemplazado dinámicamente) -->
+    <!-- Favicon SVG dinámico (será reemplazado por script) -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
     
-    <!-- Estilos globales del sitio -->
-    <link rel="stylesheet" href="style.css">
-
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         ⚡ TEMA DINÁMICO (colores del cliente desde config.js)
+         ⚡ CONFIGURACIÓN Y TEMA DINÁMICO
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <script src="config.js"></script>
     <script src="theme.js"></script>
     
-    <!-- Favicon dinámico con colores del tema (evita dorado quemado) -->
+    <!-- Favicon dinámico con colores del tema -->
     <script>
         (function () {
             const C = typeof SITE_CONFIG !== 'undefined' ? SITE_CONFIG : null;
@@ -33,7 +47,7 @@
             const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'>
                 <rect width='100' height='100' rx='20' fill='${bg}'/>
                 <text x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' 
-                      fill='${accent}' text-anchor='middle'>S</text>
+                      fill='${accent}' text-anchor='middle'>${C.header?.logo?.text || 'S'}</text>
             </svg>`;
             
             let link = document.querySelector("link[rel='icon']");
@@ -45,6 +59,16 @@
             link.href = 'data:image/svg+xml,' + encodeURIComponent(svg);
         })();
     </script>
+
+    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+         🎨 ESTILOS CSS
+         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="light.css">
+
+    <!-- Font Awesome (diferido) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          🎨 ESTILOS ESPECÍFICOS DE LA PÁGINA LEGAL
@@ -163,15 +187,19 @@
         }
 
         .legal-content p,
-        .legal-content ul {
+        .legal-content ul,
+        .legal-content ol {
             color: var(--color-text-muted);
             line-height: 1.8;
             margin-bottom: 1rem;
         }
 
-        .legal-content ul { padding-left: 1.5rem; }
+        .legal-content ul,
+        .legal-content ol { padding-left: 1.5rem; }
         .legal-content li { margin-bottom: 0.5rem; }
         .legal-content strong { color: var(--color-text); }
+        .legal-content a { color: var(--color-accent); text-decoration: underline; }
+        .legal-content a:hover { color: var(--color-accent-light); }
 
         /* Bloque destacado (llamadas de atención) */
         .legal-highlight {
@@ -272,51 +300,6 @@
             border-color: var(--color-accent);
         }
 
-        /* ============ CURSOR PERSONALIZADO ============ */
-        body, a, button { cursor: none; }
-
-        .cursor {
-            position: fixed;
-            top: 0; left: 0;
-            width: 8px; height: 8px;
-            background: var(--color-accent);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99999;
-            transform: translate(-50%, -50%);
-            transition: width 0.3s var(--ease-out-expo),
-                        height 0.3s var(--ease-out-expo),
-                        background 0.3s;
-            mix-blend-mode: difference;
-        }
-
-        .cursor-follower {
-            position: fixed;
-            top: 0; left: 0;
-            width: 40px; height: 40px;
-            border: 1px solid var(--color-accent);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99998;
-            transform: translate(-50%, -50%);
-            transition: width 0.4s var(--ease-out-expo),
-                        height 0.4s var(--ease-out-expo),
-                        border-color 0.3s,
-                        opacity 0.3s;
-            opacity: 0.5;
-        }
-
-        .cursor.hover {
-            width: 60px; height: 60px;
-            background: transparent;
-            border: 1px solid var(--color-accent);
-        }
-
-        .cursor-follower.hover {
-            width: 80px; height: 80px;
-            opacity: 0.2;
-        }
-
         /* ============ RESPONSIVE ============ */
         @media (max-width: 768px) {
             .legal-tabs { gap: 0.5rem; }
@@ -331,10 +314,23 @@
                 width: 100%;
                 justify-content: center;
             }
-            
-            .cursor, .cursor-follower { display: none; }
-            body, a, button { cursor: auto; }
         }
+
+        /* ============ AJUSTES TEMA CLARO ============ */
+html[data-theme="light"] .legal-title,
+html[data-theme="light"] .legal-content h2,
+html[data-theme="light"] .legal-content h4 {
+  color: var(--color-text);              /* tinta azul-noche legible */
+}
+
+html[data-theme="light"] .legal-content {
+  background: rgba(15, 42, 63, 0.03);   /* tarjeta apenas visible */
+  border-color: rgba(15, 42, 63, 0.1);
+}
+
+html[data-theme="light"] .legal-tabs { border-bottom-color: rgba(15, 42, 63, 0.12); }
+html[data-theme="light"] .legal-footer { border-top-color: rgba(15, 42, 63, 0.1); }
+
     </style>
 </head>
 
@@ -345,11 +341,13 @@
     <div class="grain-overlay" aria-hidden="true"></div>
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         🧭 HEADER (navegación simple)
+         🧭 HEADER (navegación simple con logo dinámico)
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <header class="header legal-header-bar">
         <nav class="nav">
-            <a href="index.html" class="nav-logo">STU<span>DIO</span></a>
+            <a href="index.html" class="nav-logo">
+                <span data-logo-text>VI</span><span data-logo-highlight>TALIS</span>
+            </a>
             <a href="index.html" class="nav-cta">Volver al Inicio</a>
         </nav>
     </header>
@@ -368,17 +366,16 @@
 
             <!-- Tabs de navegación entre secciones -->
             <div class="legal-tabs" role="tablist" aria-label="Secciones legales">
-                <button class="legal-tab active" data-tab="privacy" role="tab" aria-selected="true">Aviso de Privacidad</button>
-                <button class="legal-tab" data-tab="terms" role="tab" aria-selected="false">Términos y Condiciones</button>
-                <button class="legal-tab" data-tab="commercial" role="tab" aria-selected="false">Términos Comerciales</button>
-                <button class="legal-tab" data-tab="cookies" role="tab" aria-selected="false">Política de Cookies</button>
+                <button class="legal-tab active" data-tab="privacy" role="tab" aria-selected="true" aria-controls="privacy" id="tab-privacy">Aviso de Privacidad</button>
+                <button class="legal-tab" data-tab="terms" role="tab" aria-selected="false" aria-controls="terms" id="tab-terms">Términos y Condiciones</button>
+                <button class="legal-tab" data-tab="commercial" role="tab" aria-selected="false" aria-controls="commercial" id="tab-commercial">Términos Comerciales</button>
+                <button class="legal-tab" data-tab="cookies" role="tab" aria-selected="false" aria-controls="cookies" id="tab-cookies">Política de Cookies</button>
             </div>
 
             <!-- ═══════════════════════════════════════════
                  SECCIÓN 1: AVISO DE PRIVACIDAD
-                 Cumple con LFPDPPP (Ley Federal de Protección de Datos)
                  ═══════════════════════════════════════════ -->
-            <section class="legal-section active" id="privacy" role="tabpanel">
+            <section class="legal-section active" id="privacy" role="tabpanel" aria-labelledby="tab-privacy">
                 <div class="legal-content">
                     <h2>Aviso de Privacidad</h2>
 
@@ -457,9 +454,8 @@
 
             <!-- ═══════════════════════════════════════════
                  SECCIÓN 2: TÉRMINOS Y CONDICIONES DE USO
-                 Regula el acceso general al sitio web
                  ═══════════════════════════════════════════ -->
-            <section class="legal-section" id="terms" role="tabpanel">
+            <section class="legal-section" id="terms" role="tabpanel" aria-labelledby="tab-terms">
                 <div class="legal-content">
                     <h2>Términos y Condiciones de Uso</h2>
 
@@ -516,10 +512,8 @@
 
             <!-- ═══════════════════════════════════════════
                  SECCIÓN 3: TÉRMINOS COMERCIALES (TIENDA)
-                 Regula exclusivamente las compras en línea
-                 Cumple con NOM-151-SCFI-2016
                  ═══════════════════════════════════════════ -->
-            <section class="legal-section" id="commercial" role="tabpanel">
+            <section class="legal-section" id="commercial" role="tabpanel" aria-labelledby="tab-commercial">
                 <div class="legal-content">
                     <h2>Términos Comerciales de la Tienda</h2>
 
@@ -649,9 +643,8 @@
 
             <!-- ═══════════════════════════════════════════
                  SECCIÓN 4: POLÍTICA DE COOKIES
-                 Cumple con LFPDPPP - Solo cookies necesarias
                  ═══════════════════════════════════════════ -->
-            <section class="legal-section" id="cookies" role="tabpanel">
+            <section class="legal-section" id="cookies" role="tabpanel" aria-labelledby="tab-cookies">
                 <div class="legal-content">
                     <h2>Política de Cookies</h2>
 
@@ -747,166 +740,8 @@
     </main>
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         🍪 BANNER DE CONSENTIMIENTO DE COOKIES
-         Aparece solo si no hay consentimiento previo en localStorage
+         ⚡ SCRIPT DE INTERACTIVIDAD
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-    <div class="cookie-banner" id="cookieBanner" role="dialog" aria-label="Consentimiento de cookies">
-        <div class="cookie-banner-text">
-            Utilizamos <strong>cookies estrictamente necesarias</strong> para el funcionamiento del sitio y cookies de funcionalidad para mejorar su experiencia. <strong>No utilizamos cookies de marketing ni analítica de terceros.</strong>
-            <a href="legal.html#cookies">Más información en nuestra Política de Cookies</a>.
-        </div>
-        <div class="cookie-banner-actions">
-            <button class="cookie-btn cookie-btn-reject" id="cookieReject">Rechazar opcionales</button>
-            <button class="cookie-btn cookie-btn-accept" id="cookieAccept">Aceptar todas</button>
-        </div>
-    </div>
-
-    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         🎯 CURSOR PERSONALIZADO (solo desktop)
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-    <div class="cursor" id="cursor" aria-hidden="true"></div>
-    <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
-
-    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         ⚡ SCRIPTS DE INTERACTIVIDAD
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-    <script>
-        // ─── NAVEGACIÓN POR TABS ───
-        document.addEventListener('DOMContentLoaded', function() {
-            const tabs = document.querySelectorAll('.legal-tab');
-            const sections = document.querySelectorAll('.legal-section');
-
-            // Activar tab según el hash de la URL (deep linking)
-            function activateTabFromHash() {
-                const hash = window.location.hash.replace('#', '');
-                if (hash && document.getElementById(hash)) {
-                    tabs.forEach(t => {
-                        t.classList.toggle('active', t.dataset.tab === hash);
-                        t.setAttribute('aria-selected', t.dataset.tab === hash);
-                    });
-                    sections.forEach(s => {
-                        s.classList.toggle('active', s.id === hash);
-                    });
-                }
-            }
-
-            // Evento de clic en las tabs
-            tabs.forEach(tab => {
-                tab.addEventListener('click', function() {
-                    const targetTab = this.dataset.tab;
-
-                    tabs.forEach(t => {
-                        t.classList.remove('active');
-                        t.setAttribute('aria-selected', 'false');
-                    });
-                    this.classList.add('active');
-                    this.setAttribute('aria-selected', 'true');
-
-                    sections.forEach(section => section.classList.remove('active'));
-                    document.getElementById(targetTab).classList.add('active');
-
-                    history.replaceState(null, null, '#' + targetTab);
-                });
-            });
-
-            // Activar tab desde hash inicial y escuchar cambios
-            activateTabFromHash();
-            window.addEventListener('hashchange', activateTabFromHash);
-
-            // Smooth scroll para links del footer
-            document.querySelectorAll('.legal-footer a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        const tabId = target.id;
-                        tabs.forEach(t => {
-                            const isActive = t.dataset.tab === tabId;
-                            t.classList.toggle('active', isActive);
-                            t.setAttribute('aria-selected', isActive.toString());
-                        });
-                        sections.forEach(s => {
-                            s.classList.toggle('active', s.id === tabId);
-                        });
-                        history.replaceState(null, null, '#' + tabId);
-                    }
-                });
-            });
-
-            // ─── BANNER DE COOKIES ───
-            const cookieBanner = document.getElementById('cookieBanner');
-            const cookieAccept = document.getElementById('cookieAccept');
-            const cookieReject = document.getElementById('cookieReject');
-
-            // Mostrar banner solo si no hay consentimiento previo
-            const cookieConsent = localStorage.getItem('cookieConsent');
-            if (!cookieConsent) {
-                setTimeout(() => {
-                    cookieBanner.classList.add('visible');
-                }, 1500);
-            }
-
-            // Guardar preferencia del usuario
-            function handleCookieChoice(choice) {
-                localStorage.setItem('cookieConsent', choice);
-                localStorage.setItem('cookieConsentTime', Date.now().toString());
-                cookieBanner.classList.remove('visible');
-            }
-
-            if (cookieAccept) {
-                cookieAccept.addEventListener('click', () => handleCookieChoice('accepted'));
-            }
-
-            if (cookieReject) {
-                cookieReject.addEventListener('click', () => handleCookieChoice('rejected'));
-            }
-        });
-
-        // ─── CURSOR PERSONALIZADO (solo desktop ≥769px) ───
-        (function() {
-            if (window.innerWidth < 769) return;
-
-            const cursor = document.getElementById("cursor");
-            const follower = document.getElementById("cursorFollower");
-            if (!cursor || !follower) return;
-
-            let mx = 0, my = 0;
-            let fx = 0, fy = 0;
-
-            // Seguir el mouse con el cursor principal
-            document.addEventListener("mousemove", (e) => {
-                mx = e.clientX;
-                my = e.clientY;
-                cursor.style.left = mx + "px";
-                cursor.style.top = my + "px";
-            });
-
-            // Animación del follower con lerp (interpolación lineal)
-            function animateFollower() {
-                fx = fx + (mx - fx) * 0.12;
-                fy = fy + (my - fy) * 0.12;
-                follower.style.left = fx + "px";
-                follower.style.top = fy + "px";
-                requestAnimationFrame(animateFollower);
-            }
-            animateFollower();
-
-            // Efecto hover en elementos interactivos
-            const hoverTargets = "a, button, .legal-tab";
-            document.addEventListener("mouseover", (e) => {
-                if (e.target.closest(hoverTargets)) {
-                    cursor.classList.add("hover");
-                    follower.classList.add("hover");
-                }
-            });
-            document.addEventListener("mouseout", (e) => {
-                if (e.target.closest(hoverTargets)) {
-                    cursor.classList.remove("hover");
-                    follower.classList.remove("hover");
-                }
-            });
-        })();
-    </script>
+    <script src="legal.js" defer></script>
 </body>
 </html>

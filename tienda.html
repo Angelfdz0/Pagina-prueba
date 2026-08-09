@@ -5,47 +5,50 @@
          📋 METADATOS BÁSICOS
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#0a0a0a">
+    <meta name="robots" content="index, follow">
+    <meta name="format-detection" content="telephone=yes">
     
-    <!-- SEO: Descripción para motores de búsqueda -->
     <meta name="description" content="Tienda online de Studio Creativo. Productos premium seleccionados con envío a todo México.">
     
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          🌐 OPEN GRAPH (redes sociales)
-         Controla cómo se ve el enlace al compartir en Facebook, Twitter, etc.
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Tienda | Studio Creativo">
     <meta property="og:description" content="Descubre nuestra colección curada de productos diseñados para transformar tu espacio y estilo de vida.">
     <meta property="og:locale" content="es_MX">
     
-    <!-- Título de la pestaña del navegador -->
     <title>Tienda | Studio</title>
     
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         🎨 FAVICON (icono de pestaña)
-         SVG inline: no requiere archivo externo, carga instantánea
+         🎨 FAVICON (SVG inline)
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='55' font-weight='bold' fill='%23c9a96e' text-anchor='middle'%3ES%3C/text%3E%3C/svg%3E">
     
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          ⚙️ CONFIGURACIÓN DEL SITIO
-         Debe cargarse ANTES de los scripts que la usan
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <script src="config.js"></script>
     <script src="theme.js"></script>
 
-    
+    <!-- Preload de imagen hero (LCP) -->
+    <link rel="preload" as="image" href="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2064&auto=format&fit=crop" fetchpriority="high">
+
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          🎨 ESTILOS CSS
-         Orden de carga:
-         1. style.css → Variables, reset, componentes globales
-         2. shop.css → Estilos específicos de la tienda
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="shop.css">
     <link rel="stylesheet" href="light.css">
+
+    <!-- Font Awesome (carga diferida, no bloquea) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"></noscript>
+
+    <!-- Supabase SDK (diferido, solo se usa para checkout) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 </head>
 
 <body>
@@ -53,7 +56,6 @@
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          🧭 HEADER DE LA TIENDA
          Construido dinámicamente por shop.js
-         Incluye: Logo + Barra de búsqueda + Botón carrito
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <header class="shop-header" id="shopHeader" role="banner"></header>
 
@@ -61,29 +63,18 @@
         
         <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
              🏠 HERO DE LA TIENDA
-             Sección principal con:
-             - Fondo degradado + efecto glow
-             - Spotlight (luz linterna desde arriba)
-             - Título y subtítulo (inyectados por shop.js)
-             - Onda decorativa inferior
              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
         <section class="shop-hero" aria-label="Inicio de la tienda">
-            <!-- Fondo degradado -->
             <div class="shop-hero-bg" aria-hidden="true"></div>
-            
-            <!-- Efecto glow pulsante en la parte inferior -->
             <div class="shop-hero-glow" aria-hidden="true"></div>
             
-            <!-- Efecto de luz linterna desde arriba (spotlight) -->
             <div class="shop-spotlight" id="shopSpotlight" aria-hidden="true">
                 <div class="spotlight-beam"></div>
                 <div class="spotlight-glow"></div>
             </div>
             
-            <!-- Contenido del hero (shop.js inyecta eyebrow, title, subtitle) -->
             <div class="shop-hero-content"></div>
             
-            <!-- Onda SVG decorativa en la parte inferior -->
             <div class="shop-hero-wave" aria-hidden="true">
                 <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
                     <path d="M0,50 C360,100 1080,0 1440,50 L1440,100 L0,100 Z" fill="var(--color-bg)"></path>
@@ -93,12 +84,8 @@
 
         <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
              🔍 FILTROS Y ORDENAMIENTO
-             Sticky (se mantiene visible al hacer scroll)
-             - Filtros por categoría: Todos, Destacados, Nuevos, Populares
-             - Ordenamiento: Precio, Nombre
              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
         <section class="shop-filters-section" aria-label="Filtros y ordenamiento de productos">
-            <!-- Botones de filtro por categoría -->
             <div class="shop-filters" role="tablist" aria-label="Filtrar productos por categoría">
                 <button class="filter-btn active" data-filter="all" role="tab" aria-selected="true" aria-label="Mostrar todos los productos">Todos</button>
                 <button class="filter-btn" data-filter="destacado" role="tab" aria-selected="false" aria-label="Mostrar productos destacados">Destacados</button>
@@ -106,7 +93,6 @@
                 <button class="filter-btn" data-filter="popular" role="tab" aria-selected="false" aria-label="Mostrar productos populares">Populares</button>
             </div>
             
-            <!-- Selector de ordenamiento -->
             <div class="shop-sort">
                 <label for="sortSelect" class="sr-only">Ordenar productos</label>
                 <select id="sortSelect" aria-label="Ordenar productos por">
@@ -120,15 +106,10 @@
 
         <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
              🛍️ CATÁLOGO DE PRODUCTOS
-             Grid responsivo de tarjetas de producto
-             - shop.js renderiza las tarjetas dinámicamente
-             - Mensaje "No se encontraron productos" si el filtro no tiene resultados
              ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
         <section class="shop-products-section" aria-label="Catálogo de productos">
-            <!-- Grid donde shop.js inyecta las tarjetas de producto -->
             <div class="shop-products-grid" id="productsGrid" role="tabpanel" aria-live="polite"></div>
             
-            <!-- Mensaje cuando no hay productos que coincidan con el filtro -->
             <div class="shop-no-results" id="noResults" style="display: none;" role="status" aria-live="polite">
                 No se encontraron productos
             </div>
@@ -137,19 +118,11 @@
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          🛒 CARRITO DE COMPRAS (Sidebar)
-         Panel lateral que se desliza desde la derecha
-         Incluye:
-         - Lista de productos agregados
-         - Campo de código de descuento
-         - Resumen (subtotal, descuento, total)
-         - Botones de pago (tarjeta + WhatsApp)
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <aside class="cart-sidebar" id="cartSidebar" role="dialog" aria-modal="true" aria-label="Carrito de compras" aria-labelledby="cartTitle">
-        <!-- Overlay oscuro detrás del carrito -->
         <div class="cart-overlay" id="cartOverlay"></div>
         
         <div class="cart-content">
-            <!-- Header del carrito con botón cerrar -->
             <div class="cart-header">
                 <h2 id="cartTitle">Tu Carrito</h2>
                 <button class="cart-close" id="cartClose" aria-label="Cerrar carrito">
@@ -159,41 +132,33 @@
                 </button>
             </div>
             
-            <!-- Lista de productos en el carrito -->
             <div class="cart-items" id="cartItems">
-                <!-- Estado vacío (shop.js lo oculta cuando hay productos) -->
                 <div class="cart-empty" id="cartEmpty" role="status">
                     <p>Tu carrito está vacío</p>
                     <a href="#productsGrid" class="cart-continue">Continuar comprando</a>
                 </div>
             </div>
             
-            <!-- Footer del carrito con resumen y acciones -->
             <div class="cart-footer">
-                <!-- Sección de código de descuento -->
                 <div class="cart-promo-section">
-                    <!-- Input para ingresar código -->
                     <div class="cart-promo-input" id="promoInputContainer">
                         <label for="promoCodeInput" class="sr-only">Código de descuento</label>
                         <input type="text" id="promoCodeInput" placeholder="Código de descuento" aria-label="Ingresa tu código de descuento">
                         <button class="cart-promo-apply" id="applyPromoBtn" aria-label="Aplicar código de descuento">Aplicar</button>
                     </div>
                     
-                    <!-- Código aplicado (shop.js lo muestra cuando hay un código activo) -->
                     <div id="promoApplied" style="display: none; align-items: center; justify-content: space-between; background: rgba(201,169,110,0.1); padding: 0.7rem 1rem; border-radius: 4px; border: 1px solid var(--color-accent);" role="status" aria-live="polite">
                         <span style="color: var(--color-accent); font-weight: 600; font-size: 0.85rem;">Código: <span id="promoCodeDisplay"></span></span>
                         <button class="cart-remove-promo" id="removePromoBtn" aria-label="Quitar código de descuento">Quitar</button>
                     </div>
                 </div>
                 
-                <!-- Resumen de totales -->
                 <div class="cart-summary" aria-label="Resumen del carrito">
                     <div class="cart-summary-row">
                         <span>Subtotal:</span>
                         <span id="cartSubtotal" aria-live="polite">$0</span>
                     </div>
                     
-                    <!-- Fila de descuento (oculta si no hay descuento) -->
                     <div class="cart-summary-row cart-discount-row" id="cartDiscountRow" style="display: none;">
                         <span class="cart-discount-text">Descuento:</span>
                         <span id="cartDiscountAmount" aria-live="polite">-$0</span>
@@ -205,10 +170,7 @@
                     </div>
                 </div>
                 
-                <!-- Botón de pago con tarjeta (oculto si payments.enabled = false en config.js) -->
                 <button class="cart-checkout" id="payCardBtn" style="display:none;">💳 Pagar con tarjeta</button>
-                
-                <!-- Botón de checkout por WhatsApp (siempre visible) -->
                 <button class="cart-checkout" id="cartCheckout" aria-label="Finalizar compra por WhatsApp">Finalizar Compra</button>
             </div>
         </div>
@@ -216,20 +178,11 @@
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          📦 MODAL DE FICHA TÉCNICA
-         Se abre al hacer clic en "Ver Más" de un producto
-         Incluye:
-         - Galería de imágenes con miniaturas
-         - Información del producto (categoría, título, precio, descripción)
-         - Lista de características
-         - Selector de variantes (color, talla, etc.)
-         - Botón "Agregar al carrito"
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="product-modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDescription">
-        <!-- Overlay oscuro detrás del modal -->
         <div class="modal-overlay" id="modalOverlay"></div>
         
         <div class="modal-content">
-            <!-- Botón cerrar (esquina superior derecha) -->
             <button class="modal-close" id="modalClose" aria-label="Cerrar modal de producto">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M18 6L6 18M6 6l12 12"></path>
@@ -237,40 +190,25 @@
             </button>
             
             <div class="modal-body">
-                <!-- Sección izquierda: Galería de imágenes -->
                 <div class="modal-gallery-section" aria-label="Galería de imágenes del producto">
-                    <!-- Contenedor de imágenes principales -->
                     <div class="modal-gallery" id="modalGallery" role="region" aria-label="Imágenes del producto"></div>
-                    
-                    <!-- Miniaturas para navegar entre imágenes -->
                     <div class="modal-thumbnails" id="modalThumbnails" role="tablist" aria-label="Miniaturas de imágenes"></div>
                 </div>
                 
-                <!-- Sección derecha: Información del producto -->
                 <div class="modal-info-section">
                     <div class="modal-info-content">
-                        <!-- Categoría del producto -->
                         <span class="modal-category" id="modalCategory"></span>
-                        
-                        <!-- Título del producto -->
                         <h2 class="modal-title" id="modalTitle"></h2>
-                        
-                        <!-- Precio del producto -->
                         <div class="modal-price" id="modalPrice" aria-label="Precio del producto"></div>
-                        
-                        <!-- Descripción detallada -->
                         <p class="modal-description" id="modalDescription"></p>
                         
-                        <!-- Lista de características -->
                         <div class="modal-features-section">
                             <h4 class="modal-features-title">Características</h4>
                             <ul class="modal-features-list" id="modalFeatures" aria-label="Lista de características del producto"></ul>
                         </div>
                         
-                        <!-- Selector de variantes (shop.js lo construye dinámicamente) -->
                         <div class="modal-variants-section" id="modalVariants" role="radiogroup" aria-label="Selecciona una variante del producto"></div>
                         
-                        <!-- Botón para agregar al carrito -->
                         <button class="modal-add-to-cart" id="modalAddToCart" aria-label="Agregar producto al carrito">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                                 <path d="M6 6h15l-1.5 9h-12z"></path>
@@ -287,33 +225,22 @@
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          🎟️ POPUP DE PROMOCIONES
-         Aparece automáticamente después de X segundos (configurable en config.js)
-         - Carrusel de promociones con navegación
-         - Código de descuento copiable
-         - Checkbox "No mostrar de nuevo"
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="promo-popup" id="promoPopup" role="dialog" aria-modal="true" aria-label="Promociones especiales" aria-labelledby="promoTitle">
-        <!-- Overlay oscuro -->
         <div class="promo-popup-overlay" id="promoOverlay"></div>
         
         <div class="promo-popup-content">
-            <!-- Título oculto para screen readers -->
             <h2 id="promoTitle" class="sr-only">Promociones Especiales</h2>
             
-            <!-- Botón cerrar -->
             <button class="promo-close" id="promoClose" aria-label="Cerrar popup de promociones">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M18 6L6 18M6 6l12 12"></path>
                 </svg>
             </button>
             
-            <!-- Indicadores de navegación (dots) -->
             <div class="promo-dots" id="promoDots" role="tablist" aria-label="Navegación de promociones"></div>
-            
-            <!-- Contenedor de slides de promociones -->
             <div class="promo-slider" id="promoSlider" role="tabpanel" aria-live="polite"></div>
             
-            <!-- Flechas de navegación -->
             <button class="promo-nav promo-nav-prev" id="promoPrev" aria-label="Promoción anterior">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <path d="M15 18l-6-6 6-6"></path>
@@ -325,7 +252,6 @@
                 </svg>
             </button>
             
-            <!-- Checkbox para no mostrar el popup nuevamente -->
             <label class="promo-dont-show">
                 <input type="checkbox" id="promoDontShow" aria-label="No mostrar este popup de promociones nuevamente"> No mostrar de nuevo
             </label>
@@ -334,9 +260,6 @@
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          💬 BOTÓN FLOTANTE DE WHATSAPP
-         Aparece después de hacer scroll (85% de la página)
-         - Enlace directo a WhatsApp con mensaje pre-llenado
-         - shop.js actualiza el href con el número de config.js
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <a href="#" class="whatsapp-float" id="whatsappFloat" aria-label="Contactar por WhatsApp" target="_blank" rel="noopener noreferrer">
         <svg class="whatsapp-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -346,39 +269,13 @@
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
          🖱️ CURSOR PERSONALIZADO
-         Dos elementos:
-         - cursor: punto pequeño que sigue al mouse instantáneamente
-         - cursor-follower: círculo más grande que sigue con delay (efecto suave)
-         Solo visible en desktop (≥769px)
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
     <div class="cursor" id="cursor" aria-hidden="true"></div>
     <div class="cursor-follower" id="cursorFollower" aria-hidden="true"></div>
 
     <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         ♿ UTILIDAD DE ACCESIBILIDAD
-         Clase .sr-only: oculta visualmente pero visible para screen readers
+         ⚡ SCRIPTS
          ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-    <style>
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
-        }
-    </style>
-
-    <!-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-         ⚡ SCRIPTS (orden de carga crítico)
-         1. Supabase SDK → Conexión a base de datos
-         2. theme.js → Aplica variables CSS desde config.js
-         3. shop.js → Lógica completa de la tienda
-         ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="shop.js"></script>
 </body>
 </html>

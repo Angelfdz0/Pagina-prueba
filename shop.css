@@ -307,6 +307,7 @@
 .whatsapp-float.visible { opacity: 1; transform: scale(1); pointer-events: auto; }
 .whatsapp-float:hover { transform: scale(1.1); box-shadow: 0 6px 30px rgba(37,211,102,0.6); animation: none; }
 .whatsapp-float i[class*="fa-"] { width: auto; height: auto; font-size: 30px; line-height: 1; color: #fff; display: block; }
+.whatsapp-float .whatsapp-icon { width: 30px; height: 30px; fill: #fff; display: block; }
 @keyframes whatsappPulse {
   0%,100% { box-shadow: 0 4px 20px rgba(37,211,102,0.4); }
   50% { box-shadow: 0 4px 30px rgba(37,211,102,0.7); }
@@ -343,6 +344,7 @@
   .promo-nav-next { right: 0.5rem; }
   .whatsapp-float { bottom: 1.5rem; right: 1.5rem; width: 55px; height: 55px; }
   .whatsapp-float i[class*="fa-"] { font-size: 26px; }
+  .whatsapp-float .whatsapp-icon { width: 26px; height: 26px; }
   .cart-toggle i[class*="fa-"] { font-size: 18px; }
   .modal-close i[class*="fa-"] { font-size: 18px; }
 }
@@ -355,11 +357,10 @@
   .promo-popup-content { padding: 2rem 1.5rem; }
   .promo-slider { min-height: 320px; }
   .promo-code-wrapper { flex-wrap: wrap; justify-content: center; }
-  .whatsapp-float { bottom: 1rem; right: 1rem; }
+  .whatsapp-float { bottom: 1rem; right: 1rem; animation: none; }
   .spotlight-beam, .spotlight-glow { animation: none; opacity: 0.4; }
   .promo-popup-content::before { animation: none; }
   .promo-badge { animation: none; }
-  .whatsapp-float { animation: none; }
   .shop-hero-glow { filter: blur(20px); animation-duration: 15s; }
 }
 @media (prefers-reduced-motion: reduce) {

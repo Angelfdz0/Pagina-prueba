@@ -1,36 +1,31 @@
 /* ============================================================
-   SHOP.JS — CEREBRO DE LA TIENDA ONLINE
-   ============================================================
-   Sistema completo de e-commerce con:
-   - Catálogo de productos desde Supabase
-   - Carrito de compras con localStorage
-   - Modal de ficha técnica con galería y variantes
-   - Códigos de descuento (anti-abuso: 1 por persona + límite global)
-   - Checkout por WhatsApp + pagos con tarjeta (Mercado Pago/Stripe)
-   - Popup de promociones con carrusel
-   - Botón flotante de WhatsApp
-   
-   ✅ Iconos Font Awesome integrados
+   SHOP.JS — CEREBRO DE LA TIENDA ONLINE (OPTIMIZADO)
    ============================================================ */
 
 (function() {
     "use strict";
 
     const C = typeof SITE_CONFIG !== 'undefined' ? SITE_CONFIG : {};
-    let PRODUCTS = C.ecommerce.products || []; // Respaldo si la BD está vacía
+    let PRODUCTS = C.ecommerce.products || [];
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🔌 SUPABASE (cliente compartido para órdenes y cupones)
+    // 🔌 SUPABASE (lazy initialization)
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    const supabaseOrders = window.__supabaseShared || 
-        (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
+    let supabaseOrders = null;
+    function getSupabaseClient() {
+        if (!supabaseOrders) {
+            supabaseOrders = window.__supabaseShared || 
+                (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
+        }
+        return supabaseOrders;
+    }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 📦 CARGA DE PRODUCTOS DESDE BASE DE DATOS
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     async function loadProductsFromDB() {
         try {
-            const { data, error } = await supabaseOrders.from('products').select('*')
+            const { data, error } = await getSupabaseClient().from('products').select('*')
                 .eq('is_active', true).order('created_at', { ascending: false });
             if (error) throw error;
             if (data && data.length) {
@@ -51,14 +46,14 @@
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     async function saveOrder(orderData) {
         try {
-            const { error } = await supabaseOrders.from('orders').insert([orderData]);
+            const { error } = await getSupabaseClient().from('orders').insert([orderData]);
             if (error) { console.error('Error guardando orden:', error); return false; }
             return true;
         } catch (e) { console.error(e); return false; }
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 💳 MÓDULO DE PAGOS CON TARJETA (Mercado Pago/Stripe)
+    // 💳 MÓDULO DE PAGOS CON TARJETA
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     const PAYMENTS_ENABLED = !!(C.payments && C.payments.enabled);
 
@@ -71,11 +66,13 @@
         btn.disabled = true; btn.textContent = "Creando pago...";
         
         try {
-            // Registrar cupón antes de redirigir a la pasarela de pago
             if (appliedPromoCode) {
                 markCouponUsed(appliedPromoCode.code);
                 bumpCouponUsage(appliedPromoCode.code);
             }
+            
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000);
             
             const res = await fetch(`${C.supabase.url}/functions/v1/create-payment`, {
                 method: "POST",
@@ -86,22 +83,23 @@
                     promo_code: appliedPromoCode ? appliedPromoCode.code : null,
                     customer_name: "Cliente Web",
                 }),
+                signal: controller.signal
             });
             
+            clearTimeout(timeoutId);
             const data = await res.json();
-            if (!res.ok || data.error) throw new Error(data.error);
+            if (!res.ok || data.error) throw new Error(data.error || "Error en el servidor");
             
             cart = []; appliedPromoCode = null;
             saveCart(); updateCart(); updatePromoUI(); closeCart();
             window.location.href = data.init_point;
         } catch (e) {
-            showToast("No se pudo crear el pago: " + e.message, "error");
+            showToast("No se pudo crear el pago: " + (e.name === 'AbortError' ? "Tiempo de espera agotado" : e.message), "error");
             btn.disabled = false;
             btn.textContent = C.payments?.buttonLabel || "💳 Pagar con tarjeta";
         }
     }
 
-    // Manejar retorno de pasarela de pago
     function handlePaymentReturn() {
         const params = new URLSearchParams(window.location.search);
         const payment = params.get("payment");
@@ -126,7 +124,6 @@
         }).format(amount);
     };
 
-    // Imagen de respaldo cuando falla una imagen
     const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'%3E%3Crect width='400' height='400' fill='%23111111'/%3E%3Ctext x='50%25' y='50%25' font-family='sans-serif' font-size='14' fill='%238a8578' text-anchor='middle' dy='.3em'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -155,6 +152,7 @@
     let appliedPromoCode = null;
     let isProcessingCheckout = false;
     let isProcessingPromo = false;
+    let filteredProductsCache = null; // Cache de productos filtrados
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 🎯 UTILIDADES DOM
@@ -172,7 +170,6 @@
         document.documentElement.style.overflow = "";
     }
 
-    // Cache de elementos DOM
     const elements = {
         productsGrid: $("#productsGrid"),
         searchInput: $("#searchInput"),
@@ -206,7 +203,7 @@
     };
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🔔 SISTEMA DE TOASTS (notificaciones)
+    // 🔔 SISTEMA DE TOASTS
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function showToast(message, type = "info") {
         let toast = $(".promo-toast");
@@ -225,7 +222,7 @@
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🛡️ CONTROL DE CUPONES (anti-abuso: 1 por persona)
+    // 🛡️ CONTROL DE CUPONES
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function getUsedCoupons() {
         try {
@@ -242,10 +239,9 @@
         }
     }
 
-    // Verificar límite global de usos del cupón
     async function checkCouponGlobalLimit(code) {
         try {
-            const { data } = await supabaseOrders
+            const { data } = await getSupabaseClient()
                 .from('coupons').select('used_count, max_uses')
                 .eq('code', code).single();
             if (!data) return true;
@@ -256,15 +252,14 @@
         }
     }
 
-    // Incrementar contador de usos del cupón
     async function bumpCouponUsage(code) {
         try {
-            const { data } = await supabaseOrders
+            const { data } = await getSupabaseClient()
                 .from('coupons').select('id, used_count, max_uses')
                 .eq('code', code).single();
             if (!data) return;
             if (data.max_uses && (data.used_count || 0) >= data.max_uses) return;
-            await supabaseOrders.from('coupons')
+            await getSupabaseClient().from('coupons')
                 .update({ used_count: (data.used_count || 0) + 1 })
                 .eq('id', data.id);
         } catch (err) { /* silencioso */ }
@@ -336,48 +331,44 @@
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🖼️ MANEJO DE IMÁGENES (fallback)
+    // 🖼️ MANEJO DE IMÁGENES (fallback con event delegation)
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    function attachImageFallback(imgElement) {
-        if (!imgElement) return;
-        imgElement.addEventListener('error', function() {
-            if (this.src !== FALLBACK_IMAGE) this.src = FALLBACK_IMAGE;
-        });
-    }
+    document.addEventListener('error', function(e) {
+        if (e.target.tagName === 'IMG' && e.target.src !== FALLBACK_IMAGE) {
+            e.target.src = FALLBACK_IMAGE;
+        }
+    }, true);
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 🛍️ RENDERIZADO DE PRODUCTOS
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function renderProducts() {
         if (!elements.productsGrid) return;
-        let filtered = filterProducts();
-        filtered = sortProducts(filtered);
         
-        if (filtered.length === 0) {
+        // Usar cache si no cambió el filtro/búsqueda/orden
+        if (!filteredProductsCache) {
+            filteredProductsCache = sortProducts(filterProducts());
+        }
+        
+        if (filteredProductsCache.length === 0) {
             elements.productsGrid.innerHTML = "";
             if (elements.noResults) elements.noResults.style.display = "block";
             return;
         }
         
         if (elements.noResults) elements.noResults.style.display = "none";
-        const html = filtered.map((product, index) => createProductCard(product, index)).join("");
-        elements.productsGrid.innerHTML = html;
-        $$(".product-image").forEach(attachImageFallback);
         
-        setTimeout(() => {
-            $$(".product-view-more").forEach(btn => {
-                btn.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    openProductModal(parseInt(btn.dataset.id));
-                });
-            });
-            $$(".product-add-to-cart").forEach(btn => {
-                btn.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    addToCart(parseInt(btn.dataset.id), null);
-                });
-            });
-        }, 100);
+        // Usar DocumentFragment para mejor rendimiento
+        const fragment = document.createDocumentFragment();
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = filteredProductsCache.map((product, index) => createProductCard(product, index)).join("");
+        
+        while (tempDiv.firstChild) {
+            fragment.appendChild(tempDiv.firstChild);
+        }
+        
+        elements.productsGrid.innerHTML = '';
+        elements.productsGrid.appendChild(fragment);
     }
 
     function filterProducts() {
@@ -434,7 +425,7 @@
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 📦 MODAL DE FICHA TÉCNICA (producto)
+    // 📦 MODAL DE FICHA TÉCNICA
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function getDefaultVariant(product) {
         if (!product || !Array.isArray(product.variants) || product.variants.length === 0) return null;
@@ -481,38 +472,31 @@
         const product = currentProduct;
         const variant = currentVariant || product;
         
-        // Botón de cerrar con Font Awesome
         if (elements.modalClose) {
             elements.modalClose.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
         }
         
-        // Galería de imágenes
         if (elements.modalGallery && product.images && product.images.length > 0) {
             elements.modalGallery.innerHTML = product.images.map((img, i) => `
                 <div class="modal-gallery-slide ${i === 0 ? 'active' : ''}" data-index="${i}">
                     <img src="${img}" alt="${product.name}" class="modal-gallery-img" loading="lazy">
                 </div>
             `).join("");
-            $$(".modal-gallery-img").forEach(attachImageFallback);
         }
         
-        // Miniaturas
         if (elements.modalThumbnails && product.images && product.images.length > 0) {
             elements.modalThumbnails.innerHTML = product.images.map((img, i) => `
                 <button class="modal-thumbnail ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="Ver imagen ${i + 1}">
                     <img src="${img}" alt="${product.name} ${i + 1}" loading="lazy">
                 </button>
             `).join("");
-            $$(".modal-thumbnail img").forEach(attachImageFallback);
         }
         
-        // Información del producto
         if (elements.modalCategory) elements.modalCategory.textContent = product.category;
         if (elements.modalTitle) elements.modalTitle.textContent = product.name;
         if (elements.modalPrice) elements.modalPrice.innerHTML = formatCurrency(variant.price);
         if (elements.modalDescription) elements.modalDescription.textContent = product.description;
         
-        // Características
         if (elements.modalFeatures && product.features) {
             elements.modalFeatures.innerHTML = product.features.map(f => `
                 <li class="modal-feature-item">
@@ -522,7 +506,6 @@
             `).join("");
         }
         
-        // Variantes
         if (elements.modalVariants && product.variants && product.variants.length > 0) {
             const activeIndex = currentVariant ? product.variants.findIndex(v => v === currentVariant) : -1;
             elements.modalVariants.innerHTML = `
@@ -540,7 +523,6 @@
                     `).join("")}
                 </div>
             `;
-            $$(".modal-variant img").forEach(attachImageFallback);
             $$(".modal-variant").forEach(btn => {
                 btn.addEventListener("click", () => {
                     if (btn.classList.contains("out-of-stock")) return;
@@ -556,7 +538,6 @@
             elements.modalVariants.innerHTML = "";
         }
         
-        // Botón agregar al carrito
         if (elements.modalAddToCart) {
             elements.modalAddToCart.onclick = () => {
                 if (!isAddToCartAllowed(product, currentVariant)) {
@@ -576,7 +557,6 @@
     }
 
     function initModalGallery() {
-        // Delegación de eventos para miniaturas
         if (!elements.modalThumbnails || elements.modalThumbnails.dataset.bound) return;
         elements.modalThumbnails.dataset.bound = "1";
         elements.modalThumbnails.addEventListener("click", (e) => {
@@ -596,7 +576,6 @@
         currentImageIndex = i;
     }
 
-    // Sincronizar galería con variante seleccionada
     function syncGalleryWithVariant(product, variant) {
         if (!variant || !variant.image || !elements.modalGallery) return;
         const slides = $$(".modal-gallery-slide");
@@ -605,7 +584,6 @@
             return img && (img.getAttribute("src") === variant.image || img.src === variant.image);
         });
         
-        // Si la imagen de la variante no está en la galería, agregarla
         if (idx === -1) {
             idx = slides.length;
             elements.modalGallery.insertAdjacentHTML("beforeend", `
@@ -617,16 +595,11 @@
                     <button class="modal-thumbnail" data-index="${idx}" aria-label="Ver imagen ${idx + 1}">
                         <img src="${variant.image}" alt="${product.name} ${idx + 1}" loading="lazy">
                     </button>`);
-                const newThumbImg = elements.modalThumbnails.querySelector(`.modal-thumbnail[data-index="${idx}"] img`);
-                if (newThumbImg) attachImageFallback(newThumbImg);
             }
-            const newSlideImg = elements.modalGallery.querySelector(`.modal-gallery-slide[data-index="${idx}"] img`);
-            if (newSlideImg) attachImageFallback(newSlideImg);
         }
         activateSlide(idx);
     }
 
-    // Navegación por teclado en el modal
     function initModalKeyboard() {
         document.addEventListener("keydown", (e) => {
             if (!elements.productModal || !elements.productModal.classList.contains("open")) return;
@@ -644,7 +617,7 @@
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🛒 CARRITO DE COMPRAS (CRUD completo)
+    // 🛒 CARRITO DE COMPRAS
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function addToCart(productId, variant = null) {
         const product = PRODUCTS.find(p => p.id === productId);
@@ -688,7 +661,6 @@
         return true;
     }
 
-    // Animación bounce en el ícono del carrito
     function triggerCartBounce() {
         const cartToggle = $("#cartToggle");
         const cartCount = $("#cartCount");
@@ -730,7 +702,6 @@
                 if (elements.cartSubtotal) elements.cartSubtotal.textContent = formatCurrency(0);
                 if (elements.cartDiscountRow) elements.cartDiscountRow.style.display = "none";
                 if (elements.cartTotal) elements.cartTotal.textContent = formatCurrency(0);
-                // Limpiar cupón si el carrito queda vacío
                 if (appliedPromoCode) {
                     appliedPromoCode = null;
                     updatePromoUI();
@@ -756,17 +727,6 @@
                         </button>
                     </div>
                 `).join("");
-                $$(".cart-item-image").forEach(attachImageFallback);
-                $$(".qty-btn").forEach(btn => {
-                    btn.addEventListener("click", () => {
-                        updateQuantity(parseInt(btn.dataset.id), btn.dataset.action === "increase" ? 1 : -1, btn.dataset.variant || null);
-                    });
-                });
-                $$(".cart-item-remove").forEach(btn => {
-                    btn.addEventListener("click", () => {
-                        removeFromCart(parseInt(btn.dataset.id), btn.dataset.variant || null);
-                    });
-                });
             }
         }
         
@@ -832,7 +792,7 @@
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🎟️ CÓDIGOS DE DESCUENTO
+    // 🎟️ CÓDIGOS DE DESCUENTO (optimizado: 1 query en lugar de 3)
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function isPromoValid(promoData) {
         if (!promoData) return false;
@@ -851,10 +811,10 @@
         const code = input.value.trim().toUpperCase();
         if (!code) { showToast("Por favor ingresa un código de descuento.", "error"); return; }
         
-        // Consultar el cupón en la base de datos
-        const { data: promoData, error } = await supabaseOrders
+        // Query única: obtener cupón + verificar límites
+        const { data: promoData, error } = await getSupabaseClient()
             .from('coupons')
-            .select('*')
+            .select('*, used_count, max_uses')
             .eq('code', code)
             .eq('is_active', true)
             .single();
@@ -866,7 +826,6 @@
             return;
         }
         
-        // Verificar si expiró
         if (promoData.valid_until) {
             const expiryDate = new Date(promoData.valid_until);
             expiryDate.setHours(23, 59, 59, 999);
@@ -878,7 +837,6 @@
             }
         }
         
-        // Bloquear si ya lo usó en una compra anterior
         if (getUsedCoupons().includes(code)) {
             input.classList.add("error");
             showToast("Ya usaste este código en una compra anterior.", "error");
@@ -886,9 +844,7 @@
             return;
         }
         
-        // Verificar límite global (max_uses)
-        const dbLimitOk = await checkCouponGlobalLimit(code);
-        if (!dbLimitOk) {
+        if (promoData.max_uses && (promoData.used_count || 0) >= promoData.max_uses) {
             input.classList.add("error");
             showToast("Este código ya alcanzó su límite de usos.", "error");
             setTimeout(() => input.classList.remove("error"), 2000);
@@ -950,43 +906,76 @@
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🎯 EVENTOS Y LISTENERS
+    // 🎯 EVENTOS Y LISTENERS (con event delegation)
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function initEvents() {
-        // Filtros de categoría
         elements.filterBtns.forEach(btn => {
             btn.addEventListener("click", () => {
                 elements.filterBtns.forEach(b => b.classList.remove("active"));
                 btn.classList.add("active");
                 currentFilter = btn.dataset.filter;
+                filteredProductsCache = null; // Invalidar cache
                 renderProducts();
             });
         });
         
-        // Búsqueda en tiempo real
         if (elements.searchInput) {
             let searchTimeout;
             elements.searchInput.addEventListener("input", (e) => {
                 clearTimeout(searchTimeout);
-                searchTimeout = setTimeout(() => { searchQuery = e.target.value; renderProducts(); }, 300);
+                searchTimeout = setTimeout(() => { 
+                    searchQuery = e.target.value; 
+                    filteredProductsCache = null; // Invalidar cache
+                    renderProducts(); 
+                }, 300);
             });
         }
         
-        // Ordenamiento
         if (elements.sortSelect) {
-            elements.sortSelect.addEventListener("change", (e) => { sortValue = e.target.value; renderProducts(); });
+            elements.sortSelect.addEventListener("change", (e) => { 
+                sortValue = e.target.value; 
+                filteredProductsCache = null; // Invalidar cache
+                renderProducts(); 
+            });
         }
         
-        // Carrito
         if (elements.cartToggle) elements.cartToggle.addEventListener("click", openCart);
         if (elements.cartClose) elements.cartClose.addEventListener("click", closeCart);
         if (elements.cartOverlay) elements.cartOverlay.addEventListener("click", closeCart);
         
-        // Modal de producto
         if (elements.modalClose) elements.modalClose.addEventListener("click", closeProductModal);
         if (elements.modalOverlay) elements.modalOverlay.addEventListener("click", closeProductModal);
         
-        // CHECKOUT POR WHATSAPP
+        // Event delegation en el grid de productos
+        if (elements.productsGrid) {
+            elements.productsGrid.addEventListener("click", (e) => {
+                const viewMoreBtn = e.target.closest(".product-view-more");
+                const addToCartBtn = e.target.closest(".product-add-to-cart");
+                
+                if (viewMoreBtn) {
+                    e.preventDefault();
+                    openProductModal(parseInt(viewMoreBtn.dataset.id));
+                } else if (addToCartBtn) {
+                    e.preventDefault();
+                    addToCart(parseInt(addToCartBtn.dataset.id), null);
+                }
+            });
+        }
+        
+        // Event delegation en items del carrito
+        if (elements.cartItems) {
+            elements.cartItems.addEventListener("click", (e) => {
+                const qtyBtn = e.target.closest(".qty-btn");
+                const removeBtn = e.target.closest(".cart-item-remove");
+                
+                if (qtyBtn) {
+                    updateQuantity(parseInt(qtyBtn.dataset.id), qtyBtn.dataset.action === "increase" ? 1 : -1, qtyBtn.dataset.variant || null);
+                } else if (removeBtn) {
+                    removeFromCart(parseInt(removeBtn.dataset.id), removeBtn.dataset.variant || null);
+                }
+            });
+        }
+        
         const checkoutBtn = $("#cartCheckout");
         if (checkoutBtn) {
             checkoutBtn.addEventListener("click", async () => {
@@ -1021,7 +1010,6 @@
                 if (appliedPromoCode && discount > 0) msg += `\n*Código:* ${appliedPromoCode.code} (-$${discount})`;
                 msg += `\n*💰 Total a pagar: $${total}*`;
                 
-                // Registrar cupón como usado
                 if (appliedPromoCode) {
                     markCouponUsed(appliedPromoCode.code);
                     bumpCouponUsage(appliedPromoCode.code);
@@ -1055,7 +1043,6 @@
             });
         }
         
-        // Botón de pago con tarjeta
         const payCardBtn = $("#payCardBtn");
         if (payCardBtn) {
             payCardBtn.style.display = PAYMENTS_ENABLED ? "block" : "none";
@@ -1063,7 +1050,6 @@
             payCardBtn.addEventListener("click", checkoutWithCard);
         }
         
-        // Cupones de descuento
         const applyPromoBtn = $("#applyPromoBtn");
         if (applyPromoBtn) applyPromoBtn.addEventListener("click", handleApplyPromo);
         const promoInput = $("#promoCodeInput");
@@ -1077,12 +1063,20 @@
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 📜 EFECTOS DE SCROLL
+    // 📜 EFECTOS DE SCROLL (throttle con rAF)
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function initScrollEffects() {
         const header = elements.shopHeader;
+        let ticking = false;
+        
         window.addEventListener("scroll", () => {
-            if (header) header.classList.toggle("scrolled", window.scrollY > 100);
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    if (header) header.classList.toggle("scrolled", window.scrollY > 100);
+                    ticking = false;
+                });
+                ticking = true;
+            }
         }, { passive: true });
     }
 
@@ -1112,11 +1106,11 @@
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🎁 POPUP DE PROMOCIONES (carrusel)
+    // 🎁 POPUP DE PROMOCIONES
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     async function loadPromosFromDB() {
         try {
-            const { data, error } = await supabaseOrders
+            const { data, error } = await getSupabaseClient()
                 .from('coupons').select('*')
                 .eq('is_active', true)
                 .eq('show_in_popup', true)
@@ -1148,7 +1142,6 @@
         if (!promotions.length) promotions = (config.items || []).filter(p => isPromoValid(p));
         if (promotions.length === 0) return;
         
-        // Verificar si el usuario cerró el popup recientemente
         if (config.rememberDismiss) {
             const dismissed = localStorage.getItem('promoDismissed');
             const dismissedTime = localStorage.getItem('promoDismissTime');
@@ -1360,7 +1353,7 @@
     }
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🖱️ CURSOR PERSONALIZADO
+    // 🖱️ CURSOR PERSONALIZADO (optimizado: se detiene cuando el mouse está quieto)
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function initCursor() {
         if (window.innerWidth < 769) return;
@@ -1370,20 +1363,43 @@
         
         let mx = 0, my = 0;
         let fx = 0, fy = 0;
+        let isMouseMoving = false;
+        let rafId = null;
         
         document.addEventListener("mousemove", (e) => {
             mx = e.clientX; my = e.clientY;
             cursor.style.left = mx + "px"; cursor.style.top = my + "px";
+            
+            if (!isMouseMoving) {
+                isMouseMoving = true;
+                animateFollower();
+            }
+        });
+        
+        document.addEventListener("mouseleave", () => {
+            isMouseMoving = false;
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
         });
         
         function animateFollower() {
+            if (!isMouseMoving) return;
+            
             fx = fx + (mx - fx) * 0.12;
             fy = fy + (my - fy) * 0.12;
             follower.style.left = fx + "px";
             follower.style.top = fy + "px";
-            requestAnimationFrame(animateFollower);
+            
+            // Detener si está muy cerca del cursor
+            if (Math.abs(mx - fx) < 0.5 && Math.abs(my - fy) < 0.5) {
+                isMouseMoving = false;
+                return;
+            }
+            
+            rafId = requestAnimationFrame(animateFollower);
         }
-        animateFollower();
         
         const hoverTargets = "a, button, .product-card, .action-btn, .filter-btn, .cart-toggle, .promo-cta, .modal-variant";
         document.addEventListener("mouseover", (e) => {

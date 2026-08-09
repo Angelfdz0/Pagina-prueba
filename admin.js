@@ -1,56 +1,45 @@
 /* ============================================================
-   ADMIN.JS — CEREBRO DEL PANEL DE ADMINISTRACIÓN
-   ============================================================
-   Sistema completo de gestión de contenidos (CMS) y e-commerce:
-   - Autenticación segura con Supabase Auth
-   - CRUD completo para Posts, Productos, Servicios, Testimonios
-   - Gestión de Órdenes, Cupones, Citas y Categorías
-   - Subida de imágenes a Supabase Storage
-   - Editor con barra de formato Markdown seguro
-   - Paginación automática en todas las tablas (10 por página)
-   - Modal de confirmación para acciones destructivas
-   - Ocultamiento dinámico de módulos desactivados en config.js
-   
-   ✅ Iconos Font Awesome integrados
+   ADMIN.JS — CEREBRO DEL PANEL DE ADMINISTRACIÓN (OPTIMIZADO)
    ============================================================ */
 
 (function() {
     "use strict";
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // ⚙️ CONFIGURACIÓN Y UTILIDADES GLOBALES
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     const C = typeof SITE_CONFIG !== 'undefined' ? SITE_CONFIG : {};
-    const supabase = window.supabase.createClient(C.supabase.url, C.supabase.key);
     const STORAGE_BUCKET = C.supabase?.storageBucket || 'blog-images';
 
-    // Selectores DOM abreviados
+    // Lazy init de Supabase
+    let supabaseClient = null;
+    function getSupabase() {
+        if (!supabaseClient) {
+            supabaseClient = window.__supabaseShared || 
+                (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
+        }
+        return supabaseClient;
+    }
+
     const $ = s => document.querySelector(s);
     const $$ = s => Array.from(document.querySelectorAll(s));
 
-    // Previene ataques XSS escapando caracteres HTML
-    function escapeHtml(str) { 
-        if (!str) return ''; 
-        const d = document.createElement('div'); 
-        d.textContent = str; 
-        return d.innerHTML; 
+    // escapeHtml optimizado (sin crear div DOM)
+    const escapeMap = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"']/g, m => escapeMap[m]);
     }
     
-    // Formatea números a moneda mexicana (MXN)
     function money(n) { 
         return new Intl.NumberFormat('es-MX', { 
             style: 'currency', currency: 'MXN', minimumFractionDigits: 0 
         }).format(n || 0); 
     }
     
-    // Formatea fechas a formato corto en español (México)
     function fmtDate(d) { 
         return d ? new Date(d).toLocaleDateString('es-MX', { 
             day: '2-digit', month: 'short', year: 'numeric' 
         }) : ''; 
     }
     
-    // Muestra notificaciones temporales (toasts) en la parte inferior
     function toast(msg) { 
         const t = $('#adminToast'); 
         if (!t) return;
@@ -59,20 +48,14 @@
         setTimeout(() => t.classList.remove('show'), 2500); 
     }
 
-    // Estado global de los datos cargados desde la BD
     let DATA = { 
         posts: [], comments: [], orders: [], coupons: [], 
         categories: [], likes: [], testimonials: [], 
         products: [], appointments: [], services: [] 
     };
     
-    // Arrays temporales para gestión de imágenes en editores
     let editImagesArr = [];
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🎨 ICONOS (SVG y Font Awesome)
-    // Se usan en las tablas para las acciones (Editar, Eliminar, etc.)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     const ICONS_SVG = {
         trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
         edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>',
@@ -95,20 +78,15 @@
         ban: '<i class="fa-solid fa-ban"></i>'
     };
     
-    // Interruptor global para usar Font Awesome en lugar de SVG inline
     const USE_FONTAWESOME = true; 
     const ICONS = USE_FONTAWESOME ? ICONS_FA : ICONS_SVG;
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 📄 SISTEMA DE PAGINACIÓN (10 registros por página)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     const PAGE_SIZE = 10;
     const pageState = { 
         posts: 1, comments: 1, orders: 1, coupons: 1, 
         testimonials: 1, products: 1, appointments: 1, services: 1 
     };
 
-    // Devuelve el slice del array correspondiente a la página actual
     function slicePage(arr, key) {
         const pages = Math.max(1, Math.ceil(arr.length / PAGE_SIZE));
         if (pageState[key] > pages) pageState[key] = pages;
@@ -116,7 +94,6 @@
         return arr.slice(start, start + PAGE_SIZE);
     }
 
-    // Genera el HTML de los botones de paginación
     function pagerHTML(key, total) {
         const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
         const cur = pageState[key];
@@ -128,7 +105,7 @@
         </div>`;
     }
 
-    // Delegación de eventos para los botones de paginación
+    // Event delegation para paginación
     document.addEventListener('click', e => {
         const btn = e.target.closest('[data-page-key]');
         if (!btn || btn.disabled) return;
@@ -136,10 +113,6 @@
         renderAll();
     });
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // ⚠️ MODAL DE CONFIRMACIÓN (Acciones destructivas)
-    // Retorna una Promesa (true si confirma, false si cancela)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function askConfirm({ title = '¿Estás seguro?', message = '', confirmText = 'Eliminar' } = {}) {
         return new Promise(resolve => {
             let modal = document.getElementById('adminConfirm');
@@ -171,9 +144,7 @@
         });
     }
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 📝 BARRA DE FORMATO MARKDOWN (Seguro contra XSS)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // Toolbar MD consolidada (una sola implementación)
     const MD_TOOLBAR_HTML = `<div class="md-toolbar">
         <button type="button" data-md="bold" title="Negrita"><b>N</b></button>
         <button type="button" data-md="italic" title="Cursiva"><i>C</i></button>
@@ -207,95 +178,146 @@
         });
     }
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🔐 AUTENTICACIÓN Y CONTROL DE ACCESO
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     async function initAuth() {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) showApp();
-        else $('#adminLogin').style.display = 'flex';
+        try {
+            const { data: { session } } = await getSupabase().auth.getSession();
+            if (session) showApp();
+            else $('#adminLogin').style.display = 'flex';
+        } catch (e) {
+            console.error('Error de autenticación:', e);
+            toast('Error de conexión. Recarga la página.');
+        }
     }
 
     $('#adminLoginForm').addEventListener('submit', async e => {
         e.preventDefault();
         const btn = e.target.querySelector('button');
         btn.disabled = true; btn.textContent = 'Verificando...';
-        const { error } = await supabase.auth.signInWithPassword({ 
-            email: $('#adminEmail').value, 
-            password: $('#adminPassword').value 
-        });
-        btn.disabled = false; btn.textContent = 'Entrar';
-        if (error) { $('#adminLoginError').textContent = 'Credenciales inválidas'; return; }
-        showApp();
+        try {
+            const { error } = await getSupabase().auth.signInWithPassword({ 
+                email: $('#adminEmail').value, 
+                password: $('#adminPassword').value 
+            });
+            btn.disabled = false; btn.textContent = 'Entrar';
+            if (error) { $('#adminLoginError').textContent = 'Credenciales inválidas'; return; }
+            showApp();
+        } catch (e) {
+            btn.disabled = false; btn.textContent = 'Entrar';
+            $('#adminLoginError').textContent = 'Error de conexión';
+        }
     });
 
     $('#adminLogout').addEventListener('click', async () => { 
-        await supabase.auth.signOut(); 
-        location.reload(); 
+        try {
+            await getSupabase().auth.signOut(); 
+            location.reload(); 
+        } catch (e) {
+            toast('Error al cerrar sesión');
+        }
     });
 
     async function showApp() {
         $('#adminLogin').style.display = 'none';
         $('#adminApp').hidden = false;
-        applyAdminTabsVisibility();   // Oculta pestañas de módulos apagados en config.js
+        applyAdminTabsVisibility();
         await loadAll();
         renderAll();
     }
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 📥 CARGA DE DATOS DESDE SUPABASE
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // Carga selectiva: solo módulos activos
     async function loadAll() {
-        const [posts, comments, orders, coupons, categories, likes, testimonials, appointments] = await Promise.all([
-            supabase.from('posts').select('*').order('created_at', { ascending: false }),
-            supabase.from('post_comments').select('*').order('created_at', { ascending: false }),
-            supabase.from('orders').select('*').order('created_at', { ascending: false }),
-            supabase.from('coupons').select('*').order('created_at', { ascending: false }),
-            supabase.from('categories').select('*').order('name'),
-            supabase.from('post_likes').select('post_id'),
-            supabase.from('testimonials').select('*').order('created_at', { ascending: false }),
-            supabase.from('appointments').select('*').order('created_at', { ascending: false })
-        ]);
+        const sb = getSupabase();
+        const queries = [];
         
-        DATA.posts = posts.data || [];
-        DATA.comments = comments.data || [];
-        DATA.orders = orders.data || [];
-        DATA.coupons = coupons.data || [];
-        DATA.categories = categories.data || [];
-        DATA.likes = likes.data || [];
-        DATA.testimonials = testimonials.data || [];
-        DATA.appointments = appointments.data || [];
+        if (C.blog?.enabled !== false) {
+            queries.push(
+                sb.from('posts').select('*').order('created_at', { ascending: false }),
+                sb.from('post_comments').select('*').order('created_at', { ascending: false }),
+                sb.from('categories').select('*').order('name'),
+                sb.from('post_likes').select('post_id')
+            );
+        } else {
+            queries.push(null, null, null, null);
+        }
         
-        try {
-            const prod = await supabase.from('products').select('*').order('created_at', { ascending: false });
-            DATA.products = prod.data || [];
-        } catch (e) { DATA.products = []; console.warn('Tabla products no disponible'); }
-
-        try {
-            const srv = await supabase.from('services').select('*').order('sort', { ascending: true }).order('created_at', { ascending: true });
-            DATA.services = srv.data || [];
-        } catch (e) { DATA.services = []; console.warn('Tabla services no disponible'); }
+        if (C.ecommerce?.enabled !== false) {
+            queries.push(
+                sb.from('orders').select('*').order('created_at', { ascending: false }),
+                sb.from('coupons').select('*').order('created_at', { ascending: false })
+            );
+        } else {
+            queries.push(null, null);
+        }
+        
+        if (C.testimonials?.enabled !== false) {
+            queries.push(sb.from('testimonials').select('*').order('created_at', { ascending: false }));
+        } else {
+            queries.push(null);
+        }
+        
+        if (C.appointments?.enabled === true) {
+            queries.push(sb.from('appointments').select('*').order('created_at', { ascending: false }));
+        } else {
+            queries.push(null);
+        }
+        
+        const results = await Promise.all(queries);
+        
+        let idx = 0;
+        if (C.blog?.enabled !== false) {
+            DATA.posts = results[idx++]?.data || [];
+            DATA.comments = results[idx++]?.data || [];
+            DATA.categories = results[idx++]?.data || [];
+            DATA.likes = results[idx++]?.data || [];
+        }
+        
+        if (C.ecommerce?.enabled !== false) {
+            DATA.orders = results[idx++]?.data || [];
+            DATA.coupons = results[idx++]?.data || [];
+        }
+        
+        if (C.testimonials?.enabled !== false) {
+            DATA.testimonials = results[idx++]?.data || [];
+        }
+        
+        if (C.appointments?.enabled === true) {
+            DATA.appointments = results[idx++]?.data || [];
+        }
+        
+        if (C.ecommerce?.enabled !== false) {
+            try {
+                const prod = await sb.from('products').select('*').order('created_at', { ascending: false });
+                DATA.products = prod.data || [];
+            } catch (e) { DATA.products = []; console.warn('Tabla products no disponible'); }
+        }
+        
+        if (C.services?.enabled !== false || C.services?.items?.length) {
+            try {
+                const srv = await sb.from('services').select('*').order('sort', { ascending: true }).order('created_at', { ascending: true });
+                DATA.services = srv.data || [];
+            } catch (e) { DATA.services = []; console.warn('Tabla services no disponible'); }
+        }
     }
 
     function renderAll() {
         renderDashboard();
-        renderPosts();
-        renderProductsAdmin();
-        renderComments();
-        renderOrders();
-        renderCoupons();
-        renderCategories();
-        renderTestimonials();
-        renderAppointments();
-        renderServicesAdmin();
+        if (C.blog?.enabled !== false) {
+            renderPosts();
+            renderComments();
+            renderCategories();
+        }
+        if (C.ecommerce?.enabled !== false) {
+            renderOrders();
+            renderCoupons();
+            renderProductsAdmin();
+        }
+        if (C.testimonials?.enabled !== false) renderTestimonials();
+        if (C.appointments?.enabled === true) renderAppointments();
+        if (DATA.services.length || C.services?.enabled !== false) renderServicesAdmin();
     }
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🧭 NAVEGACIÓN Y CONTROL DE PESTAÑAS
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     const viewShortcut = $('#adminShortcut');
     
-    // Muestra un enlace rápido al blog o tienda según la pestaña activa
     function updateViewShortcut(view) {
         if (!viewShortcut) return;
         if (view === 'posts') {
@@ -322,7 +344,6 @@
     });
     updateViewShortcut('dashboard');
 
-    // Oculta pestañas de módulos que el cliente desactivó en config.js
     function applyAdminTabsVisibility() {
         const rules = {
             posts:        C.blog?.enabled !== false,
@@ -338,22 +359,17 @@
             const btn = document.querySelector(`.admin-sidebar nav button[data-view="${view}"]`);
             if (btn) btn.style.display = visible ? '' : 'none';
         });
-        // Si la pestaña activa quedó oculta, regresa al Dashboard
         const activeBtn = document.querySelector('.admin-sidebar nav button.active');
         if (activeBtn && activeBtn.style.display === 'none') {
             document.querySelector('.admin-sidebar nav button[data-view="dashboard"]')?.click();
         }
     }
 
-    // Oculta el tab de Citas si el cliente no usa el bloque (redundante pero seguro)
     if (C.appointments?.enabled !== true) {
         const b = document.querySelector('[data-view="appointments"]');
         if (b) b.style.display = 'none';
     }
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 📊 DASHBOARD (Estadísticas de módulos activos)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function renderDashboard() {
         const stats = [];
 
@@ -391,9 +407,6 @@
         ).join('') || '<p class="admin-empty">Sin módulos activos</p>';
     }
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 📅 MÓDULO: CITAS (Appointments)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function renderAppointments() {
         const el = $('#appointmentsTable');
         if (!el) return;
@@ -415,25 +428,25 @@
             </td>
         </tr>`).join('') + `</tbody></table>` + pagerHTML('appointments', DATA.appointments.length);
 
-        el.querySelectorAll('select[data-appt]').forEach(sel => sel.addEventListener('change', async () => {
-            const { error } = await supabase.from('appointments').update({ status: sel.value }).eq('id', sel.dataset.appt);
+        // Event delegation
+        el.addEventListener('change', async e => {
+            const sel = e.target.closest('select[data-appt]');
+            if (!sel) return;
+            const { error } = await getSupabase().from('appointments').update({ status: sel.value }).eq('id', sel.dataset.appt);
             toast(error ? 'Error al actualizar' : 'Cita actualizada');
             if (!error) { await loadAll(); renderDashboard(); renderAppointments(); }
-        }));
+        });
         
-        el.querySelectorAll('[data-delappt]').forEach(btn => btn.addEventListener('click', async () => {
+        el.addEventListener('click', async e => {
+            const btn = e.target.closest('[data-delappt]');
+            if (!btn) return;
             if (!await askConfirm({ title: 'Eliminar cita', message: 'Esta acción no se puede deshacer.' })) return;
-            const { error } = await supabase.from('appointments').delete().eq('id', btn.dataset.delappt);
+            const { error } = await getSupabase().from('appointments').delete().eq('id', btn.dataset.delappt);
             toast(error ? 'Error al eliminar' : 'Cita eliminada');
             if (!error) { await loadAll(); renderAppointments(); }
-        }));
+        });
     }
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 📝 MÓDULO: BLOG (Posts, Comentarios, Categorías)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    
-    // --- Renderizado de Tablas ---
     function renderPosts() {
         const el = $('#postsTable');
         if (!DATA.posts.length) { el.innerHTML = '<p class="admin-empty">Sin posts todavía</p>'; return; }
@@ -459,21 +472,28 @@
             </td>
         </tr>`).join('') + `</tbody></table>` + pagerHTML('posts', DATA.posts.length);
 
-        el.querySelectorAll('[data-edit]').forEach(btn => btn.addEventListener('click', () => openPostEditor(btn.dataset.edit)));
-        el.querySelectorAll('[data-toggle]').forEach(btn => btn.addEventListener('click', async () => {
-            const post = DATA.posts.find(p => String(p.id) === String(btn.dataset.toggle));
-            const newStatus = post.status === 'published' ? 'draft' : 'published';
-            const { error } = await supabase.from('posts').update({ status: newStatus }).eq('id', post.id);
-            toast(error ? 'Error al actualizar' : (newStatus === 'published' ? 'Post publicado' : 'Post ocultado'));
-            if (!error) { await loadAll(); renderAll(); }
-        }));
-        el.querySelectorAll('[data-delpost]').forEach(btn => btn.addEventListener('click', async () => {
-            const postDel = DATA.posts.find(x => String(x.id) === String(btn.dataset.delpost));
-            if (!await askConfirm({ title: 'Eliminar post', message: `Se eliminará "${postDel ? postDel.title : ''}" junto con sus comentarios y likes.` })) return;
-            const { error } = await supabase.from('posts').delete().eq('id', btn.dataset.delpost);
-            toast(error ? 'Error al eliminar' : 'Post eliminado');
-            if (!error) { await loadAll(); renderAll(); }
-        }));
+        // Event delegation
+        el.addEventListener('click', async e => {
+            const editBtn = e.target.closest('[data-edit]');
+            const toggleBtn = e.target.closest('[data-toggle]');
+            const delBtn = e.target.closest('[data-delpost]');
+            
+            if (editBtn) {
+                openPostEditor(editBtn.dataset.edit);
+            } else if (toggleBtn) {
+                const post = DATA.posts.find(p => String(p.id) === String(toggleBtn.dataset.toggle));
+                const newStatus = post.status === 'published' ? 'draft' : 'published';
+                const { error } = await getSupabase().from('posts').update({ status: newStatus }).eq('id', post.id);
+                toast(error ? 'Error al actualizar' : (newStatus === 'published' ? 'Post publicado' : 'Post ocultado'));
+                if (!error) { await loadAll(); renderAll(); }
+            } else if (delBtn) {
+                const postDel = DATA.posts.find(x => String(x.id) === String(delBtn.dataset.delpost));
+                if (!await askConfirm({ title: 'Eliminar post', message: `Se eliminará "${postDel ? postDel.title : ''}" junto con sus comentarios y likes.` })) return;
+                const { error } = await getSupabase().from('posts').delete().eq('id', delBtn.dataset.delpost);
+                toast(error ? 'Error al eliminar' : 'Post eliminado');
+                if (!error) { await loadAll(); renderAll(); }
+            }
+        });
     }
 
     function renderComments() {
@@ -494,12 +514,14 @@
             </tr>`;
         }).join('') + `</tbody></table>` + pagerHTML('comments', DATA.comments.length);
 
-        el.querySelectorAll('[data-delcom]').forEach(btn => btn.addEventListener('click', async () => {
+        el.addEventListener('click', async e => {
+            const btn = e.target.closest('[data-delcom]');
+            if (!btn) return;
             if (!await askConfirm({ title: 'Eliminar comentario', message: 'Esta acción no se puede deshacer.' })) return;
-            const { error } = await supabase.from('post_comments').delete().eq('id', btn.dataset.delcom);
+            const { error } = await getSupabase().from('post_comments').delete().eq('id', btn.dataset.delcom);
             toast(error ? 'Error al eliminar' : 'Comentario eliminado');
             if (!error) { await loadAll(); renderAll(); }
-        }));
+        });
     }
 
     function renderCategories() {
@@ -515,42 +537,64 @@
             </td>
         </tr>`).join('') + `</tbody></table>`;
 
-        el.querySelectorAll('[data-delcat]').forEach(btn => btn.addEventListener('click', async () => {
+        el.addEventListener('click', async e => {
+            const btn = e.target.closest('[data-delcat]');
+            if (!btn) return;
             if (!await askConfirm({ title: 'Eliminar categoría', message: 'Los posts existentes conservarán su categoría actual.' })) return;
-            await supabase.from('categories').delete().eq('id', btn.dataset.delcat);
+            await getSupabase().from('categories').delete().eq('id', btn.dataset.delcat);
             await loadAll(); renderCategories(); toast('Categoría eliminada');
-        }));
+        });
     }
 
     $('#categoryForm').addEventListener('submit', async e => {
         e.preventDefault();
         const name = $('#categoryName').value.trim();
         const slug = name.toLowerCase().replace(/\s+/g, '-');
-        const { error } = await supabase.from('categories').insert([{ name, slug }]);
+        const { error } = await getSupabase().from('categories').insert([{ name, slug }]);
         toast(error ? 'Error: ' + error.message : 'Categoría agregada');
         if (!error) { e.target.reset(); await loadAll(); renderCategories(); }
     });
 
-    // --- Editor de Posts ---
-    async function uploadFile(file, prefix) {
+    // Upload con timeout
+    async function uploadFile(file, prefix, timeoutMs = 30000) {
         const fileExt = file.name.split('.').pop();
         const fileName = `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
-        const { error } = await supabase.storage.from(STORAGE_BUCKET).upload(fileName, file);
-        if (error) { toast('Error al subir imagen: ' + error.message); return null; }
-        return supabase.storage.from(STORAGE_BUCKET).getPublicUrl(fileName).data.publicUrl;
+        
+        const uploadPromise = getSupabase().storage.from(STORAGE_BUCKET).upload(fileName, file);
+        const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Timeout: la subida tardó demasiado')), timeoutMs)
+        );
+        
+        try {
+            const { error } = await Promise.race([uploadPromise, timeoutPromise]);
+            if (error) { toast('Error al subir imagen: ' + error.message); return null; }
+            return getSupabase().storage.from(STORAGE_BUCKET).getPublicUrl(fileName).data.publicUrl;
+        } catch (e) {
+            toast('Error: ' + e.message);
+            return null;
+        }
+    }
+
+    // Renderizado de imágenes consolidado
+    function renderImageList(containerId, imagesArr, removeHandler) {
+        const el = $(`#${containerId}`);
+        if (!el) return;
+        el.innerHTML = imagesArr.map((url, i) => `
+            <div class="admin-editor-img">
+                <img src="${url}" alt="Imagen ${i + 1}">
+                <button type="button" data-rmimg="${i}" aria-label="Quitar imagen">✕</button>
+            </div>`).join('');
+        el.addEventListener('click', e => {
+            const btn = e.target.closest('[data-rmimg]');
+            if (btn) removeHandler(+btn.dataset.rmimg);
+        });
     }
 
     function renderEditImages() {
-        const el = $('#editImages');
-        el.innerHTML = editImagesArr.map((url, i) => `
-            <div class="admin-editor-img">
-                <img src="${url}" alt="Portada ${i + 1}">
-                <button type="button" data-rmimg="${i}" aria-label="Quitar imagen">✕</button>
-            </div>`).join('');
-        el.querySelectorAll('[data-rmimg]').forEach(b => b.addEventListener('click', () => {
-            editImagesArr.splice(+b.dataset.rmimg, 1);
+        renderImageList('editImages', editImagesArr, idx => {
+            editImagesArr.splice(idx, 1);
             renderEditImages();
-        }));
+        });
     }
 
     function openPostEditor(id) {
@@ -627,8 +671,8 @@
         };
 
         const { error } = id
-            ? await supabase.from('posts').update(payload).eq('id', id)
-            : await supabase.from('posts').insert([{ ...payload, created_at: new Date().toISOString() }]);
+            ? await getSupabase().from('posts').update(payload).eq('id', id)
+            : await getSupabase().from('posts').insert([{ ...payload, created_at: new Date().toISOString() }]);
 
         btn.disabled = false; btn.textContent = originalText;
         if (error) { toast('Error: ' + error.message); return; }
@@ -638,7 +682,6 @@
         renderAll();
     });
 
-    // --- Crear Categoría al vuelo desde el Editor de Posts ---
     const catQuickToggle = $('#catQuickToggle');
     const catQuickForm = $('#catQuickForm');
     const catQuickName = $('#catQuickName');
@@ -660,7 +703,7 @@
             if (!name) { toast('Escribe un nombre de categoría'); return; }
             const slug = name.replace(/\s+/g, '-');
             if (DATA.categories.some(c => c.slug === slug)) { toast('Esa categoría ya existe'); return; }
-            const { error } = await supabase.from('categories').insert([{ name, slug }]);
+            const { error } = await getSupabase().from('categories').insert([{ name, slug }]);
             if (error) { toast('Error: ' + error.message); return; }
             await loadAll();               
             refreshCategorySelect(slug);   
@@ -673,11 +716,6 @@
         });
     }
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🛒 MÓDULO: E-COMMERCE (Órdenes, Cupones, Productos)
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    
-    // --- Renderizado de Tablas ---
     function renderOrders() {
         const el = $('#ordersTable');
         if (!DATA.orders.length) { el.innerHTML = '<p class="admin-empty">Sin órdenes todavía</p>'; return; }
@@ -695,11 +733,13 @@
                 `${escapeHtml(i.name)}${i.variant ? ' (' + escapeHtml(i.variant) + ')' : ''} ×${i.qty}`).join('<br>')}</div></td>
         </tr>`).join('') + `</tbody></table>` + pagerHTML('orders', DATA.orders.length);
 
-        el.querySelectorAll('select[data-order]').forEach(sel => sel.addEventListener('change', async () => {
-            const { error } = await supabase.from('orders').update({ status: sel.value }).eq('id', sel.dataset.order);
+        el.addEventListener('change', async e => {
+            const sel = e.target.closest('select[data-order]');
+            if (!sel) return;
+            const { error } = await getSupabase().from('orders').update({ status: sel.value }).eq('id', sel.dataset.order);
             toast(error ? 'Error al actualizar' : 'Estado actualizado');
             if (!error) { await loadAll(); renderDashboard(); }
-        }));
+        });
     }
 
     function renderCoupons() {
@@ -720,23 +760,27 @@
             </td>
         </tr>`).join('') + `</tbody></table>` + pagerHTML('coupons', DATA.coupons.length);
         
-        el.querySelectorAll('[data-togcoupon]').forEach(btn => btn.addEventListener('click', async () => {
-            const cup = DATA.coupons.find(c => String(c.id) === String(btn.dataset.togcoupon));
-            await supabase.from('coupons').update({ is_active: !cup.is_active }).eq('id', cup.id);
-            await loadAll(); renderCoupons(); toast('Cupón actualizado');
-        }));
-        el.querySelectorAll('[data-delcoupon]').forEach(btn => btn.addEventListener('click', async () => {
-            if (!await askConfirm({ title: 'Eliminar cupón', message: 'El código dejará de funcionar y desaparecerá del popup inmediatamente.' })) return;
-            await supabase.from('coupons').delete().eq('id', btn.dataset.delcoupon);
-            await loadAll(); renderCoupons(); toast('Cupón eliminado');
-        }));
+        el.addEventListener('click', async e => {
+            const toggleBtn = e.target.closest('[data-togcoupon]');
+            const delBtn = e.target.closest('[data-delcoupon]');
+            
+            if (toggleBtn) {
+                const cup = DATA.coupons.find(c => String(c.id) === String(toggleBtn.dataset.togcoupon));
+                await getSupabase().from('coupons').update({ is_active: !cup.is_active }).eq('id', cup.id);
+                await loadAll(); renderCoupons(); toast('Cupón actualizado');
+            } else if (delBtn) {
+                if (!await askConfirm({ title: 'Eliminar cupón', message: 'El código dejará de funcionar y desaparecerá del popup inmediatamente.' })) return;
+                await getSupabase().from('coupons').delete().eq('id', delBtn.dataset.delcoupon);
+                await loadAll(); renderCoupons(); toast('Cupón eliminado');
+            }
+        });
     }
 
     $('#couponForm').addEventListener('submit', async e => {
         e.preventDefault();
         const code = $('#couponCode').value.trim().toUpperCase();
         const until = $('#couponUntil').value ? new Date($('#couponUntil').value).toISOString() : null;
-        const { error } = await supabase.from('coupons').insert([{
+        const { error } = await getSupabase().from('coupons').insert([{
             code, type: $('#couponType').value, value: Number($('#couponValue').value), valid_until: until,
             title: $('#couponTitle').value.trim() || null,
             subtitle: $('#couponSubtitle').value.trim() || null,
@@ -749,7 +793,6 @@
         if (!error) { e.target.reset(); $('#couponBadge').value = '🔥 OFERTA'; await loadAll(); renderCoupons(); }
     });
 
-    // --- Editor de Productos ---
     let prodImagesArr = [];
     let prodVariantsArr = [];
     let currentVariantIdx = -1;
@@ -771,20 +814,26 @@
                     <button class="admin-btn" data-prodtoggle="${p.id}" title="${p.is_active ? 'Ocultar' : 'Activar'}">${p.is_active ? ICONS.eyeOff : ICONS.eye}</button>
                     <button class="admin-btn danger" data-proddel="${p.id}" title="Eliminar">${ICONS.trash}</button>
                 </td></tr>`).join('') + `</tbody></table>` + pagerHTML('products', DATA.products.length);
-                
-        el.querySelectorAll('[data-prodedit]').forEach(b => b.addEventListener('click', () => openProductEditor(+b.dataset.prodedit)));
-        el.querySelectorAll('[data-prodtoggle]').forEach(b => b.addEventListener('click', async () => {
-            const p = DATA.products.find(x => String(x.id) === String(b.dataset.prodtoggle));
-            await supabase.from('products').update({ is_active: !p.is_active }).eq('id', p.id);
-            toast('Producto actualizado'); await loadAll(); renderProductsAdmin();
-        }));
-        el.querySelectorAll('[data-proddel]').forEach(b => b.addEventListener('click', async () => {
-            const p = DATA.products.find(x => String(x.id) === String(b.dataset.proddel));
-            if (!await askConfirm({ title: 'Eliminar producto', message: `Se eliminará "${p.name}" de la tienda de forma permanente.` })) return;
-            const { error } = await supabase.from('products').delete().eq('id', p.id);
-            toast(error ? 'Error al eliminar' : 'Producto eliminado');
-            if (!error) { await loadAll(); renderAll(); }
-        }));
+        
+        el.addEventListener('click', async e => {
+            const editBtn = e.target.closest('[data-prodedit]');
+            const toggleBtn = e.target.closest('[data-prodtoggle]');
+            const delBtn = e.target.closest('[data-proddel]');
+            
+            if (editBtn) {
+                openProductEditor(+editBtn.dataset.prodedit);
+            } else if (toggleBtn) {
+                const p = DATA.products.find(x => String(x.id) === String(toggleBtn.dataset.prodtoggle));
+                await getSupabase().from('products').update({ is_active: !p.is_active }).eq('id', p.id);
+                toast('Producto actualizado'); await loadAll(); renderProductsAdmin();
+            } else if (delBtn) {
+                const p = DATA.products.find(x => String(x.id) === String(delBtn.dataset.proddel));
+                if (!await askConfirm({ title: 'Eliminar producto', message: `Se eliminará "${p.name}" de la tienda de forma permanente.` })) return;
+                const { error } = await getSupabase().from('products').delete().eq('id', p.id);
+                toast(error ? 'Error al eliminar' : 'Producto eliminado');
+                if (!error) { await loadAll(); renderAll(); }
+            }
+        });
     }
 
     function renderProdImages() {
@@ -795,13 +844,15 @@
                 <span class="img-number">${i + 1}</span>
                 <button type="button" data-rm="${i}" aria-label="Quitar imagen">✕</button>
             </div>`).join('');
-        el.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', () => {
-            prodImagesArr.splice(+b.dataset.rm, 1);
+        el.addEventListener('click', e => {
+            const btn = e.target.closest('[data-rm]');
+            if (!btn) return;
+            prodImagesArr.splice(+btn.dataset.rm, 1);
             prodVariantsArr.forEach(v => {
                 if (v.image && !prodImagesArr.includes(v.image)) v.image = prodImagesArr[0] || '';
             });
             renderProdImages(); renderProdVariants();
-        }));
+        });
     }
 
     function renderProdVariants() {
@@ -825,14 +876,28 @@
             </div>`;
         }).join('') || '<p class="admin-empty">Sin variantes (se usará precio único).</p>';
 
-        wrap.querySelectorAll('.v-name').forEach((inp, i) => inp.addEventListener('input', () => prodVariantsArr[i].name = inp.value));
-        wrap.querySelectorAll('.v-price').forEach((inp, i) => inp.addEventListener('input', () => prodVariantsArr[i].price = Number(inp.value) || 0));
-        wrap.querySelectorAll('.v-stock').forEach((inp, i) => inp.addEventListener('change', () => prodVariantsArr[i].inStock = inp.checked));
-        wrap.querySelectorAll('.v-del').forEach((b, i) => b.addEventListener('click', () => { prodVariantsArr.splice(i, 1); renderProdVariants(); }));
-        wrap.querySelectorAll('.v-imgsel').forEach((sel, i) => sel.addEventListener('change', () => {
-            const idx = Number(sel.value);
-            if (idx >= 0) prodVariantsArr[i].image = prodImagesArr[idx];
-        }));
+        // Event delegation para variantes
+        wrap.addEventListener('input', e => {
+            const idx = [...wrap.querySelectorAll('.admin-variant-row')].indexOf(e.target.closest('.admin-variant-row'));
+            if (idx === -1) return;
+            if (e.target.classList.contains('v-name')) prodVariantsArr[idx].name = e.target.value;
+            else if (e.target.classList.contains('v-price')) prodVariantsArr[idx].price = Number(e.target.value) || 0;
+        });
+        wrap.addEventListener('change', e => {
+            const idx = [...wrap.querySelectorAll('.admin-variant-row')].indexOf(e.target.closest('.admin-variant-row'));
+            if (idx === -1) return;
+            if (e.target.classList.contains('v-stock')) prodVariantsArr[idx].inStock = e.target.checked;
+            else if (e.target.classList.contains('v-imgsel')) {
+                const imgIdx = Number(e.target.value);
+                if (imgIdx >= 0) prodVariantsArr[idx].image = prodImagesArr[imgIdx];
+            }
+        });
+        wrap.addEventListener('click', e => {
+            const btn = e.target.closest('.v-del');
+            if (!btn) return;
+            const idx = [...wrap.querySelectorAll('.admin-variant-row')].indexOf(btn.closest('.admin-variant-row'));
+            if (idx !== -1) { prodVariantsArr.splice(idx, 1); renderProdVariants(); }
+        });
     }
 
     function openProductEditor(id) {
@@ -896,15 +961,12 @@
             is_active: $('#prodActive').checked
         };
         const { error } = id
-            ? await supabase.from('products').update(payload).eq('id', id)
-            : await supabase.from('products').insert([payload]);
+            ? await getSupabase().from('products').update(payload).eq('id', id)
+            : await getSupabase().from('products').insert([payload]);
         toast(error ? 'Error: ' + error.message : 'Producto guardado');
         if (!error) { $('#productEditor').classList.remove('open'); await loadAll(); renderAll(); }
     });
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🌟 MÓDULO: TESTIMONIOS
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     let tPhotosArr = [];
 
     function renderTestimonials() {
@@ -924,26 +986,27 @@
             </td>
         </tr>`).join('') + `</tbody></table>` + pagerHTML('testimonials', DATA.testimonials.length);
 
-        el.querySelectorAll('[data-togtest]').forEach(btn => btn.addEventListener('click', async () => {
-            const t = DATA.testimonials.find(x => String(x.id) === String(btn.dataset.togtest));
-            await supabase.from('testimonials').update({ is_active: !t.is_active }).eq('id', t.id);
-            await loadAll(); renderTestimonials(); toast('Testimonio actualizado');
-        }));
-        el.querySelectorAll('[data-deltest]').forEach(btn => btn.addEventListener('click', async () => {
-            if (!await askConfirm({ title: 'Eliminar testimonio', message: 'Se quitará definitivamente del sitio.' })) return;
-            await supabase.from('testimonials').delete().eq('id', btn.dataset.deltest);
-            await loadAll(); renderTestimonials(); toast('Testimonio eliminado');
-        }));
+        el.addEventListener('click', async e => {
+            const toggleBtn = e.target.closest('[data-togtest]');
+            const delBtn = e.target.closest('[data-deltest]');
+            
+            if (toggleBtn) {
+                const t = DATA.testimonials.find(x => String(x.id) === String(toggleBtn.dataset.togtest));
+                await getSupabase().from('testimonials').update({ is_active: !t.is_active }).eq('id', t.id);
+                await loadAll(); renderTestimonials(); toast('Testimonio actualizado');
+            } else if (delBtn) {
+                if (!await askConfirm({ title: 'Eliminar testimonio', message: 'Se quitará definitivamente del sitio.' })) return;
+                await getSupabase().from('testimonials').delete().eq('id', delBtn.dataset.deltest);
+                await loadAll(); renderTestimonials(); toast('Testimonio eliminado');
+            }
+        });
     }
 
     function renderTestimonialPhotos() {
-        const el = $('#tPhotos');
-        if (!el) return;
-        el.innerHTML = tPhotosArr.map((url, i) => `
-            <div class="admin-editor-img"><img src="${url}" alt=""><button type="button" data-rmt="${i}">✕</button></div>`).join('');
-        el.querySelectorAll('[data-rmt]').forEach(b => b.addEventListener('click', () => {
-            tPhotosArr.splice(+b.dataset.rmt, 1); renderTestimonialPhotos();
-        }));
+        renderImageList('tPhotos', tPhotosArr, idx => {
+            tPhotosArr.splice(idx, 1);
+            renderTestimonialPhotos();
+        });
     }
 
     const tAddPhoto = $('#tAddPhoto');
@@ -965,7 +1028,7 @@
         const author = $('#tAuthor').value.trim();
         const comment = $('#tComment').value.trim();
         if (!author || !comment) return;
-        const { error } = await supabase.from('testimonials').insert([{
+        const { error } = await getSupabase().from('testimonials').insert([{
             author,
             comment,
             location: $('#tLocation').value.trim() || null,
@@ -981,33 +1044,13 @@
         }
     });
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🛠️ MÓDULO: SERVICIOS
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     let editingServiceId = null;
 
     (function attachServiceToolbar() {
         const ta = $('#serviceContent');
-        const toolbar = $('#serviceMdToolbar');
-        if (!ta || !toolbar) return;
-        const actions = {
-            bold:   { before: '**', after: '**', ph: 'texto en negrita' },
-            italic: { before: '*',  after: '*',  ph: 'texto en cursiva' },
-            h2:     { line: '## ' },
-            list:   { line: '- ' },
-            quote:  { line: '> ' }
-        };
-        toolbar.addEventListener('click', e => {
-            const btn = e.target.closest('[data-md]');
-            if (!btn) return;
-            e.preventDefault();
-            const a = actions[btn.dataset.md];
-            const s = ta.selectionStart, en = ta.selectionEnd;
-            const sel = ta.value.slice(s, en) || (a.ph || 'texto');
-            const insert = a.line ? ('\n' + a.line + sel) : (a.before + sel + a.after);
-            ta.setRangeText(insert, s, en, 'end');
-            ta.focus();
-        });
+        if (!ta) return;
+        ta.insertAdjacentHTML('beforebegin', MD_TOOLBAR_HTML);
+        attachMdToolbar(ta);
     })();
 
     function renderServicesAdmin() {
@@ -1026,13 +1069,19 @@
             </td>
         </tr>`).join('') + `</tbody></table>` + pagerHTML('services', DATA.services.length);
         
-        el.querySelectorAll('[data-editservice]').forEach(b => b.addEventListener('click', () => openServiceEditor(b.dataset.editservice)));
-        el.querySelectorAll('[data-delservice]').forEach(b => b.addEventListener('click', async () => {
-            if (!await askConfirm({ title: 'Eliminar servicio', message: 'Se quitará del sitio inmediatamente.' })) return;
-            const { error } = await supabase.from('services').delete().eq('id', b.dataset.delservice);
-            toast(error ? 'Error al eliminar' : 'Servicio eliminado');
-            if (!error) { await loadAll(); renderServicesAdmin(); }
-        }));
+        el.addEventListener('click', async e => {
+            const editBtn = e.target.closest('[data-editservice]');
+            const delBtn = e.target.closest('[data-delservice]');
+            
+            if (editBtn) {
+                openServiceEditor(editBtn.dataset.editservice);
+            } else if (delBtn) {
+                if (!await askConfirm({ title: 'Eliminar servicio', message: 'Se quitará del sitio inmediatamente.' })) return;
+                const { error } = await getSupabase().from('services').delete().eq('id', delBtn.dataset.delservice);
+                toast(error ? 'Error al eliminar' : 'Servicio eliminado');
+                if (!error) { await loadAll(); renderServicesAdmin(); }
+            }
+        });
     }
 
     function openServiceEditor(id) {
@@ -1067,8 +1116,8 @@
             sort: DATA.services.length
         };
         const { error } = editingServiceId
-            ? await supabase.from('services').update(payload).eq('id', editingServiceId)
-            : await supabase.from('services').insert([payload]);
+            ? await getSupabase().from('services').update(payload).eq('id', editingServiceId)
+            : await getSupabase().from('services').insert([payload]);
         toast(error ? 'Error: ' + error.message : 'Servicio guardado ✅');
         if (!error) { closeServiceEditor(); await loadAll(); renderServicesAdmin(); }
     });
@@ -1078,21 +1127,14 @@
         const file = e.target.files[0];
         if (!file) return;
         toast('Subiendo imagen...');
-        try {
-            const ext = file.name.split('.').pop();
-            const name = `servicio-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-            const { error } = await supabase.storage.from('blog-images').upload(name, file, { cacheControl: '3600', upsert: false });
-            if (error) throw error;
-            const { data } = supabase.storage.from('blog-images').getPublicUrl(name);
-            $('#serviceImage').value = data.publicUrl;
+        const url = await uploadFile(file, 'servicio');
+        if (url) {
+            $('#serviceImage').value = url;
             toast('Imagen lista ✅');
-        } catch (err) { toast('Error al subir: ' + err.message); }
+        }
         e.target.value = '';
     });
 
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    // 🚀 INICIALIZACIÓN
-    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     initAuth();
 
 })();

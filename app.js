@@ -1,23 +1,11 @@
 /* ============================================================
-   APP.JS — CEREBRO DE LA PÁGINA
+   APP.JS — CEREBRO DE LA PÁGINA (OPTIMIZADO)
    ============================================================
    Lee SITE_CONFIG y construye + anima todo el sitio.
    
-   ARQUITECTURA:
-   1. Utilidades globales (escapeHtml, clamp, lerp, etc.)
-   2. Sistema de tema y SEO dinámico
-   3. Loader y barra de progreso
-   4. Header con navegación inteligente
-   5. Hero con efecto typewriter
-   6. Bloques de contenido (11 secciones)
-   7. Formularios (contacto + citas)
-   8. Footer con colapso "Más"
-   9. Efectos visuales (parallax, cursor, reveal, magnetic)
-   10. Sistema de inicialización
-   
-   ✅ Iconos Font Awesome integrados
-   ✅ Supabase para testimonios y servicios
-   ✅ FormSubmit.co para formulario de contacto
+   ✅ Bugs corregidos: initStoryRibbon, memory leaks
+   ✅ Optimizaciones: event delegation, throttling, cleanup
+   ✅ Código consolidado: partículas, validaciones
    ============================================================ */
 
 (function () {
@@ -29,25 +17,16 @@
   // 🧰 UTILIDADES GLOBALES
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   
-  // Selectores DOM optimizados
   const $ = (sel, ctx = document) => ctx.querySelector(sel);
   const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
-  
-  // Interpolación lineal (para animaciones suaves)
   const lerp = (a, b, t) => a + (b - a) * t;
-  
-  // Limitar valor entre min y max
   const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
-
-  // Detectar preferencia de movimiento reducido (accesibilidad)
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Verificar si un bloque está habilitado en config.js
   function isBlockEnabled(blockName) {
     return C[blockName]?.enabled !== false;
   }
 
-  // Escape HTML para prevenir XSS
   function escapeHtml(str) {
     if (!str) return '';
     const div = document.createElement('div');
@@ -55,12 +34,24 @@
     return div.innerHTML;
   }
   
-  // Generar iniciales de un nombre (para avatares)
   function initials(name) {
     return (name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
   }
 
-  // Iconos de redes sociales (Font Awesome Brands)
+  // Throttle para eventos de scroll/resize
+  function throttle(fn, wait) {
+    let timeout = null, lastArgs = null;
+    return function (...args) {
+      lastArgs = args;
+      if (!timeout) {
+        timeout = setTimeout(() => {
+          fn.apply(this, lastArgs);
+          timeout = null;
+        }, wait);
+      }
+    };
+  }
+
   const SOURCE_ICONS = {
     instagram: '<i class="fa-brands fa-instagram"></i>',
     facebook:  '<i class="fa-brands fa-facebook-f"></i>',
@@ -70,13 +61,12 @@
   };
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎨 APLICAR TEMA (variables CSS desde config.js)
+  // 🎨 APLICAR TEMA
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function applyTheme() {
     const r = document.documentElement.style;
     const t = C.theme;
     
-    // Colores
     r.setProperty("--color-bg", t.bg);
     r.setProperty("--color-bg-alt", t.bgAlt);
     r.setProperty("--color-text", t.text);
@@ -86,12 +76,9 @@
     r.setProperty("--color-accent-light", t.accentLight);
     r.setProperty("--color-white", t.white);
     r.setProperty("--color-dark", t.dark);
-    
-    // Tipografías
     r.setProperty("--font-display", t.fontDisplay);
     r.setProperty("--font-body", t.fontBody);
     
-    // Título de la pestaña
     document.title = C.header.logo.text + C.header.logo.highlight;
   }
 
@@ -99,7 +86,6 @@
   // 📊 INYECTAR SEO DINÁMICO
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function injectSEO() {
-    // Meta description desde el primer párrafo de la historia
     const firstParagraph = C.story?.paragraphs?.[0];
     const description = firstParagraph
       ? firstParagraph.substring(0, 155)
@@ -113,7 +99,6 @@
     }
     if (description) metaDesc.content = description;
 
-    // Open Graph tags para redes sociales
     const ogImage = C.hero?.backgroundImage || "";
     const ogTags = {
       'og:title': (C.header?.logo?.text || "") + (C.header?.logo?.highlight || ""),
@@ -135,50 +120,34 @@
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ⭐ HERO STARS (estrellas parpadeantes)
+  // ⭐ HERO STARS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initHeroStars() {
     if (!isBlockEnabled("hero")) return;
     const hero = $("#hero");
     if (!hero) return;
 
-    // Crear contenedor de estrellas
     const starsContainer = document.createElement("div");
     starsContainer.className = "hero-stars";
     hero.appendChild(starsContainer);
 
-    // Generar 40 estrellas con propiedades aleatorias
     const starCount = 40;
     for (let i = 0; i < starCount; i++) {
       const star = document.createElement("div");
       star.className = "star";
       
-      // Posición aleatoria
       const x = Math.random() * 100;
       const y = Math.random() * 100;
-      
-      // Tamaño aleatorio (1-3px)
       const size = Math.random() * 2 + 1;
-      
-      // Duración de parpadeo (2-6 segundos)
       const duration = Math.random() * 4 + 2;
-      
-      // Delay antes de empezar (0-5 segundos)
       const delay = Math.random() * 5;
-      
-      // Opacidad mínima y máxima
       const minOpacity = Math.random() * 0.3 + 0.1;
       const maxOpacity = Math.random() * 0.5 + 0.5;
-      
-      // Tamaño del glow (3x el tamaño de la estrella)
       const glowSize = size * 3;
 
-      // Aplicar propiedades como variables CSS
       star.style.cssText = `
-        left: ${x}%;
-        top: ${y}%;
-        width: ${size}px;
-        height: ${size}px;
+        left: ${x}%; top: ${y}%;
+        width: ${size}px; height: ${size}px;
         --twinkle-duration: ${duration}s;
         --twinkle-delay: ${delay}s;
         --min-opacity: ${minOpacity};
@@ -190,72 +159,67 @@
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📏 BARRA DE PROGRESO (scroll)
+  // 📏 BARRA DE PROGRESO
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initProgressBar() {
     if (!C.effects.progressBarEnabled) return;
 
-    // Crear barra en el top de la página
     const bar = document.createElement("div");
     bar.className = "scroll-progress";
     document.body.prepend(bar);
 
-    function updateProgress() {
-      // Calcular altura total scrolleable
+    const updateProgress = throttle(() => {
       const h = document.documentElement.scrollHeight - window.innerHeight;
       if (h <= 0) {
         bar.style.width = "0%";
         return;
       }
-      // Calcular progreso (0 a 1)
       const progress = clamp(window.scrollY / h, 0, 1);
       bar.style.width = (progress * 100) + "%";
-    }
+    }, 100);
 
-    // Actualizar en scroll y resize
     window.addEventListener("scroll", updateProgress, { passive: true });
     window.addEventListener("resize", updateProgress, { passive: true });
     updateProgress();
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ⏳ LOADER (pantalla de carga)
+  // ⏳ LOADER
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function initLoader() {
-  const loader = $("#loader");
-  const titleBase = $(".loader-title-base");
-  const titleFill = $("#loaderTitleFill");
-  const percentage = $("#loaderPercentage");
+  function initLoader() {
+    const loader = $("#loader");
+    const titleBase = $(".loader-title-base");
+    const titleFill = $("#loaderTitleFill");
+    const percentage = $("#loaderPercentage");
 
-  // ✅ El nombre del loader ahora viene de config.js → loader.text
-  const loaderText = String(C.loader?.text || "Studio").toUpperCase();
-  if (titleBase) titleBase.textContent = loaderText;
-  if (titleFill) titleFill.textContent = loaderText;
+    const loaderText = String(C.loader?.text || "Studio").toUpperCase();
+    if (titleBase) titleBase.textContent = loaderText;
+    if (titleFill) titleFill.textContent = loaderText;
 
-  if (!loader) {
-    if (isBlockEnabled("hero")) animateHero();
-    return;
-  }
-
-  let progress = 0;
-  const interval = setInterval(() => {
-    progress += Math.random() * 8 + 3;
-    if (progress > 100) progress = 100;
-
-    if (titleFill) titleFill.style.width = progress + "%";
-    if (percentage) percentage.textContent = Math.round(progress) + "%";
-
-    if (progress >= 100) {
-      clearInterval(interval);
-      setTimeout(() => {
-        loader.classList.add("hidden");
-        setTimeout(() => {
-          if (isBlockEnabled("hero")) animateHero();
-        }, 800);
-      }, 600);
+    if (!loader) {
+      if (isBlockEnabled("hero")) animateHero();
+      return;
     }
-  }, (C.loader?.duration || 2200) / 8);
-}
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.random() * 8 + 3;
+      if (progress > 100) progress = 100;
+
+      if (titleFill) titleFill.style.width = progress + "%";
+      if (percentage) percentage.textContent = Math.round(progress) + "%";
+
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(() => {
+          loader.classList.add("hidden");
+          setTimeout(() => {
+            if (isBlockEnabled("hero")) animateHero();
+          }, 800);
+        }, 600);
+      }
+    }, (C.loader?.duration || 2200) / 8);
+  }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 🧭 HEADER / NAVEGACIÓN
@@ -266,7 +230,6 @@ function initLoader() {
     const h = C.header;
     if (!h) return;
 
-    // Filtrar enlaces según bloques habilitados
     const visibleLinks = (h.links || []).filter(link => {
       const href = link.href || "";
       if (href.startsWith("#") && href.length > 1) {
@@ -276,19 +239,16 @@ function initLoader() {
       return true;
     });
 
-    // Límites: escritorio = maxLinks + "Más" | móvil = 4 + "Más"
     const maxLinks = typeof h.maxLinks === "number" ? h.maxLinks : 5;
     const mobileMax = 4;
     const extraLinks = visibleLinks.slice(maxLinks);
 
-    // Construir lista de enlaces
     const linkLis = visibleLinks.map((l, i) =>
       `<li class="${i >= mobileMax ? "m-extra" : ""}">
          <a href="${l.href}" class="${i >= maxLinks ? "nav-link-extra" : ""}">${l.label}</a>
        </li>`
     );
     
-    // Insertar botón "Más" en móvil (como 5º elemento)
     if (visibleLinks.length > mobileMax) {
       linkLis.splice(mobileMax, 0, `
         <li class="nav-more-mobile" id="navMoreMobile">
@@ -298,7 +258,6 @@ function initLoader() {
         </li>`);
     }
 
-    // Renderizar header completo
     nav.innerHTML = `
       <a href="#hero" class="nav-logo">${h.logo.text}<span>${h.logo.highlight}</span></a>
       <ul class="nav-links" id="navLinks">
@@ -320,7 +279,6 @@ function initLoader() {
       </button>
     `;
 
-    // Referencias a elementos
     const hamburger = $("#hamburger");
     const navLinks = $("#navLinks");
     const header = $("#header");
@@ -328,13 +286,11 @@ function initLoader() {
     const moreBtn = $("#navMoreBtn");
     const moreMobileBtn = $("#navMoreMobileBtn");
 
-    // Función para cerrar menú "Más" en móvil
     const closeMobileMore = () => {
       if (navLinks) navLinks.classList.remove("more-open");
       if (moreMobileBtn) moreMobileBtn.setAttribute("aria-expanded", "false");
     };
 
-    // Toggle menú hamburguesa
     if (hamburger && navLinks && header) {
       hamburger.addEventListener("click", () => {
         const isOpen = navLinks.classList.contains("open");
@@ -353,7 +309,6 @@ function initLoader() {
       });
     }
 
-    // "Más" del MÓVIL: despliega el resto de enlaces
     if (moreMobileBtn && navLinks) {
       moreMobileBtn.addEventListener("click", (e) => {
         e.stopPropagation();
@@ -362,7 +317,6 @@ function initLoader() {
       });
     }
 
-    // "Más" del ESCRITORIO (dropdown)
     if (moreWrap && moreBtn) {
       const closeMore = () => {
         moreWrap.classList.remove("open");
@@ -373,38 +327,36 @@ function initLoader() {
         const open = moreWrap.classList.toggle("open");
         moreBtn.setAttribute("aria-expanded", String(open));
       });
-      // Cerrar al hacer clic fuera
       document.addEventListener("click", (e) => {
         if (moreWrap.classList.contains("open") && !moreWrap.contains(e.target)) closeMore();
       });
-      // Cerrar con Escape
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeMore();
       });
-      // Cerrar al hacer clic en un enlace
       $$("#navMorePanel a").forEach(a => a.addEventListener("click", closeMore));
     }
 
-    // Cerrar menú al hacer clic en un enlace
-    $$(".nav-links a").forEach(a => {
-      a.addEventListener("click", () => {
+    // Event delegation para cerrar menú al hacer clic en enlaces
+    nav.addEventListener("click", (e) => {
+      if (e.target.closest(".nav-links a")) {
         if (hamburger) hamburger.classList.remove("active");
         if (navLinks) navLinks.classList.remove("open");
         if (header) header.classList.remove("menu-open");
         document.body.style.overflow = "";
         closeMobileMore();
-      });
+      }
     });
 
-    // Agregar clase "scrolled" al hacer scroll
-    window.addEventListener("scroll", () => {
+    const updateScrolled = throttle(() => {
       const headerEl = $("#header");
       if (headerEl) headerEl.classList.toggle("scrolled", window.scrollY > 80);
-    }, { passive: true });
+    }, 100);
+
+    window.addEventListener("scroll", updateScrolled, { passive: true });
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🏠 HERO (sección principal)
+  // 🏠 HERO
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildHero() {
     if (!isBlockEnabled("hero")) {
@@ -416,11 +368,9 @@ function initLoader() {
     const bg = $("#heroBg");
     const content = $("#heroContent");
 
-    // Aplicar imagen de fondo
     if (bg) bg.style.backgroundImage = `url(${h.backgroundImage})`;
     if (!content) return;
 
-    // Construir contenido del hero
     content.innerHTML = `
       <p class="hero-eyebrow">${h.eyebrow}</p>
       <h1 class="hero-title">
@@ -444,10 +394,8 @@ function initLoader() {
     `;
   }
 
-  // Animar elementos del hero después del loader
   function animateHero() {
     const lines = $$(".hero-title .line-inner");
-    // Animar líneas del título con delay escalonado
     lines.forEach((line, i) => {
       setTimeout(() => {
         line.style.transition = `transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)`;
@@ -455,7 +403,6 @@ function initLoader() {
       }, 200 + i * 150);
     });
 
-    // Animar eyebrow (texto pequeño arriba)
     setTimeout(() => {
       const eyebrow = $(".hero-eyebrow");
       if (eyebrow) {
@@ -465,7 +412,6 @@ function initLoader() {
       }
     }, 100);
 
-    // Animar subtítulo
     setTimeout(() => {
       const sub = $(".hero-subtitle");
       if (sub) {
@@ -475,7 +421,6 @@ function initLoader() {
       }
     }, 700);
 
-    // Animar botón CTA
     setTimeout(() => {
       const cta = $(".hero-cta");
       if (cta) {
@@ -485,7 +430,6 @@ function initLoader() {
       }
     }, 900);
 
-    // Animar indicador de scroll
     setTimeout(() => {
       const si = $("#scrollIndicator");
       if (si) {
@@ -496,7 +440,7 @@ function initLoader() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ⌨️ TYPEWRITER (efecto máquina de escribir)
+  // ⌨️ TYPEWRITER
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initTypewriter() {
     if (!isBlockEnabled("hero")) return;
@@ -508,14 +452,10 @@ function initLoader() {
     const cursorEl = $("#typewriterCursor");
     if (!wordEl || !wrapperEl || !cursorEl) return;
 
-    // Calcular ancho máximo de las palabras para evitar saltos
     const tempSpan = document.createElement("span");
     tempSpan.style.cssText = `
-      position: absolute;
-      visibility: hidden;
-      white-space: nowrap;
-      font-family: var(--font-display);
-      font-style: italic;
+      position: absolute; visibility: hidden; white-space: nowrap;
+      font-family: var(--font-display); font-style: italic;
       font-size: ${getComputedStyle(wordEl).fontSize};
       line-height: ${getComputedStyle(wordEl).lineHeight};
     `;
@@ -529,25 +469,14 @@ function initLoader() {
     });
     document.body.removeChild(tempSpan);
 
-    // Aplicar ancho mínimo al wrapper
     wrapperEl.style.minWidth = (maxWidth + 12) + "px";
 
-    // Estado del typewriter
-    let wordIndex = 0;
-    let charIndex = 0;
-    let isDeleting = false;
-    let currentText = "";
-
-    // Velocidades de escritura
-    const typeSpeed = 120;      // ms por carácter al escribir
-    const deleteSpeed = 60;     // ms por carácter al borrar
-    const pauseEnd = 2200;      // pausa después de escribir palabra completa
-    const pauseStart = 400;     // pausa antes de empezar nueva palabra
+    let wordIndex = 0, charIndex = 0, isDeleting = false, currentText = "";
+    const typeSpeed = 120, deleteSpeed = 60, pauseEnd = 2200, pauseStart = 400;
 
     function tick() {
       const currentWord = words[wordIndex];
       
-      // Escribir o borrar según el estado
       if (isDeleting) {
         currentText = currentWord.substring(0, charIndex - 1);
         charIndex--;
@@ -559,13 +488,10 @@ function initLoader() {
       wordEl.textContent = currentText;
       let speed = isDeleting ? deleteSpeed : typeSpeed;
 
-      // Pausar al completar palabra
       if (!isDeleting && charIndex === currentWord.length) {
         speed = pauseEnd;
         isDeleting = true;
-      } 
-      // Cambiar a siguiente palabra al borrar todo
-      else if (isDeleting && charIndex === 0) {
+      } else if (isDeleting && charIndex === 0) {
         isDeleting = false;
         wordIndex = (wordIndex + 1) % words.length;
         speed = pauseStart;
@@ -574,12 +500,11 @@ function initLoader() {
       setTimeout(tick, speed);
     }
     
-    // Iniciar después de 1.8 segundos
     setTimeout(() => tick(), 1800);
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📖 BLOQUE 1: HISTORIA (+ PATROCINADORES)
+  // 📖 BLOQUE 1: HISTORIA
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildStory() {
     if (!isBlockEnabled("story")) {
@@ -591,10 +516,8 @@ function initLoader() {
     const inner = $("#storyInner");
     if (!inner) return;
 
-    // Verificar si hay patrocinadores
     const partnersOn = s.partners?.enabled && (s.partners.logos || []).length > 0;
     
-    // Generar HTML de logos
     const logosHTML = partnersOn ? s.partners.logos.map(l => `
       <span class="partner-logo" title="${escapeHtml(l.name)}">
         ${l.img
@@ -602,7 +525,6 @@ function initLoader() {
           : `<span class="partner-name">${escapeHtml(l.name)}</span>`}
       </span>`).join("") : "";
 
-    // Renderizar bloque de historia
     inner.innerHTML = `
       <div class="story-ribbon" id="storyRibbon">
         <svg viewBox="0 0 400 800" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -643,10 +565,8 @@ function initLoader() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ⚙️ SERVICIOS (carga desde Supabase + markdown)
+  // ⚙️ SERVICIOS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  
-  // Cargar servicios desde base de datos
   async function loadServicesFromDB() {
     try {
       const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
@@ -664,12 +584,9 @@ function initLoader() {
           image: r.image || ''
         }));
       }
-    } catch (e) { 
-      // Si falla, usar servicios de config.js como respaldo
-    }
+    } catch (e) {}
   }
   
-  // Convertir markdown a texto plano (para previews)
   function svcPlain(text) {
     return (text || '')
       .replace(/\*\*([^*]+)\*\*/g, '$1')
@@ -680,7 +597,6 @@ function initLoader() {
       .replace(/^>\s?/gm, '');
   }
   
-  // Convertir markdown a HTML (para renderizado)
   function svcInline(text) {
     let s = escapeHtml(text || '');
     s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
@@ -689,26 +605,18 @@ function initLoader() {
     return s;
   }
   
-  // Renderizar contenido con formato markdown
   function renderServiceContent(text) {
     if (!text) return '';
     return String(text).split(/\n\n+/).map(par => {
       const t = par.trim();
       if (!t) return '';
-      // Subtítulos (##)
       if (/^##\s/.test(t)) return `<h4 class="svc-h2">${svcInline(t.replace(/^##\s+/, ''))}</h4>`;
-      // Listas (- o •)
       if (/^[-•]\s/.test(t)) return `<ul class="svc-ul">${t.split('\n').map(l => l.trim()).filter(l => /^[-•]\s/.test(l)).map(l => `<li>${svcInline(l.replace(/^[-•]\s+/, ''))}</li>`).join('')}</ul>`;
-      // Citas (>)
       if (/^>\s?/.test(t)) return `<blockquote class="svc-quote">${svcInline(t.replace(/^>\s?/gm, ''))}</blockquote>`;
-      // Párrafos normales
       return `<p>${svcInline(t).replace(/\n/g, '<br>')}</p>`;
     }).join('');
   }
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🔄 BLOQUE 2: SERVICIOS (carrusel + flip cards)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildServices() {
     if (!isBlockEnabled("services")) {
       const section = $("#services");
@@ -719,7 +627,6 @@ function initLoader() {
     const inner = $("#servicesInner");
     if (!inner) return;
 
-    // Renderizar tarjetas de servicios
     inner.innerHTML = `
       <div class="services-header">
         <span class="section-label reveal">${s.label}</span>
@@ -769,7 +676,6 @@ function initLoader() {
       <div class="services-hint" id="servicesHint">← desliza →</div>
     `;
 
-    // Flip de tarjetas (solo una girada a la vez)
     const unflipAll = (except = null) => {
       inner.querySelectorAll(".service-card.flipped").forEach(c => {
         if (c !== except) {
@@ -780,18 +686,18 @@ function initLoader() {
       });
     };
 
-    // Event listeners para botones de flip
-    inner.querySelectorAll("[data-flip]").forEach(btn => {
-      btn.addEventListener("click", () => {
+    // Event delegation para flip
+    inner.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-flip]");
+      if (btn) {
         const card = btn.closest(".service-card");
         const willOpen = !card.classList.contains("flipped");
-        unflipAll(card); // Cerrar las demás tarjetas
+        unflipAll(card);
         card.classList.toggle("flipped", willOpen);
         btn.setAttribute("aria-expanded", String(willOpen));
-      });
+      }
     });
 
-    // Carrusel + HUD (flechas, contador, progreso, número fantasma)
     const track = inner.querySelector("#servicesTrack");
     const prev = inner.querySelector("#servicesPrev");
     const next = inner.querySelector("#servicesNext");
@@ -803,35 +709,30 @@ function initLoader() {
     if (track && prev && next) {
       const pad = n => String(n).padStart(2, "0");
       
-      // Calcular ancho de una tarjeta + gap
       const cardStep = () => {
         const card = track.querySelector(".service-card");
         const gap = parseFloat(getComputedStyle(track).columnGap) || 2;
         return card ? card.getBoundingClientRect().width + gap : 300;
       };
       
-      // Flechas de navegación
       prev.addEventListener("click", () => { unflipAll(); track.scrollBy({ left: -cardStep(), behavior: "smooth" }); });
       next.addEventListener("click", () => { unflipAll(); track.scrollBy({ left: cardStep(), behavior: "smooth" }); });
 
-      // Clic sobre cualquier zona de otra tarjeta endereza la girada
       track.addEventListener("click", (e) => {
+        if (e.target.closest("[data-flip]")) return;
         const card = e.target.closest(".service-card");
         if (card) unflipAll(card);
       });
 
-      // Actualizar HUD (contador, progreso, flechas)
-      const updateHUD = () => {
+      const updateHUD = throttle(() => {
         const total = s.items.length;
         const stepW = cardStep();
         const scrollable = track.scrollWidth > track.clientWidth + 1;
 
-        // Mostrar/ocultar flechas y hint según si hay scroll
         prev.style.display = scrollable ? "" : "none";
         next.style.display = scrollable ? "" : "none";
         if (hint) hint.style.display = scrollable ? "" : "none";
 
-        // Si no hay scroll, mostrar contador completo
         if (!scrollable) {
           if (counter) counter.innerHTML = `<span class="sc-now">${pad(total)}</span> / ${pad(total)}`;
           if (progressFill) progressFill.style.transform = "scaleX(1)";
@@ -842,58 +743,50 @@ function initLoader() {
         prev.disabled = track.scrollLeft <= 0;
         next.disabled = track.scrollLeft >= max;
 
-        // Contador inteligente: "02 / 08" si cabe 1 tarjeta, "01–03 / 08" si caben varias
         const idx = Math.max(0, Math.round(track.scrollLeft / stepW));
         const perView = Math.max(1, Math.round(track.clientWidth / stepW));
         const from = idx + 1;
         const to = Math.min(idx + perView, total);
         if (counter) counter.innerHTML = `<span class="sc-now">${from === to ? pad(from) : pad(from) + "–" + pad(to)}</span> / ${pad(total)}`;
 
-        // Línea de progreso
         if (progressFill) progressFill.style.transform = `scaleX(${max > 0 ? track.scrollLeft / max : 0})`;
 
-        // Número fantasma con tick animado
         const num = (s.items[Math.min(idx, total - 1)] || {}).number || pad(idx + 1);
         if (ghost && ghost.dataset.num !== num) {
           ghost.dataset.num = num;
           ghost.textContent = num;
           ghost.classList.remove("tick");
-          void ghost.offsetWidth; // Forzar reflow
+          void ghost.offsetWidth;
           ghost.classList.add("tick");
         }
-      };
+      }, 100);
 
-      // Actualizar HUD en scroll
       track.addEventListener("scroll", () => {
         if (hint) hint.classList.add("hide");
         requestAnimationFrame(updateHUD);
       }, { passive: true });
       
-      // Actualizar HUD en resize
       window.addEventListener("resize", updateHUD);
       updateHUD();
     }
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 💡 LUZ QUE CAE EN SERVICIOS (partículas)
+  // 💡 LUZ QUE CAE EN SERVICIOS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initServicesLight() {
     const servicesSection = $("#services");
     if (!servicesSection) return;
 
-    // Crear contenedor de luz
     const lightContainer = document.createElement("div");
     lightContainer.className = "services-light-container";
     const servicesInner = $("#servicesInner");
     servicesInner.insertBefore(lightContainer, servicesInner.firstChild);
 
-    // Crear haz de luz
     const lightBeam = document.createElement("div");
     lightBeam.className = "light-beam";
     lightContainer.appendChild(lightBeam);
 
-    // Crear glow ambiental
     const ambientGlow = document.createElement("div");
     ambientGlow.className = "services-ambient-glow";
     lightContainer.appendChild(ambientGlow);
@@ -905,27 +798,21 @@ function initLoader() {
     let activationTimer = null;
     let particlesActive = false;
 
-    // Crear partícula individual
     function createParticle() {
       if (particles.length >= maxParticles) return;
       const particle = document.createElement("div");
       particle.className = "light-particle";
       
-      // Posición horizontal aleatoria (30-70% del ancho)
       const startX = 30 + Math.random() * 40;
       particle.style.left = startX + "%";
       particle.style.top = "-10%";
       
-      // Tamaño aleatorio (1-3px)
       const size = Math.random() * 2 + 1;
       particle.style.width = size + "px";
       particle.style.height = size + "px";
       
-      // Duración de caída (2-8 segundos)
       const duration = Math.random() * 6 + 2;
-      // Delay antes de empezar (0-2 segundos)
       const delay = Math.random() * 2;
-      // Desplazamiento horizontal (-50 a 50px)
       const driftX = (Math.random() - 0.5) * 100;
 
       particle.style.setProperty("--fall-duration", duration + "s");
@@ -934,10 +821,8 @@ function initLoader() {
       lightContainer.appendChild(particle);
       particles.push(particle);
 
-      // Iniciar animación después de 50ms
       setTimeout(() => particle.classList.add("animate"), 50);
       
-      // Remover partícula después de que termine
       setTimeout(() => {
         particle.remove();
         const index = particles.indexOf(particle);
@@ -945,10 +830,9 @@ function initLoader() {
       }, (duration + delay) * 1000);
     }
 
-    // Programar siguiente partícula
     function scheduleNextParticle() {
       if (!particlesActive) return;
-      const delay = Math.random() * 1500 + 1000; // 1-2.5 segundos
+      const delay = Math.random() * 1500 + 1000;
       particleTimer = setTimeout(() => {
         createParticle();
         particleTimer = null;
@@ -956,14 +840,12 @@ function initLoader() {
       }, delay);
     }
 
-    // Iniciar sistema de partículas
     function startParticles() {
       if (particlesActive) return;
       particlesActive = true;
       scheduleNextParticle();
     }
 
-    // Detener sistema de partículas
     function stopParticles() {
       particlesActive = false;
       if (particleTimer) {
@@ -972,7 +854,6 @@ function initLoader() {
       }
     }
 
-    // Observer para activar/desactivar según visibilidad
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -991,7 +872,6 @@ function initLoader() {
     }, { threshold: 0.2 });
     observer.observe(servicesSection);
 
-    // Pausar partículas cuando la pestaña no está visible
     document.addEventListener("visibilitychange", () => {
       if (document.hidden) {
         stopParticles();
@@ -1003,7 +883,7 @@ function initLoader() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🖼️ BLOQUE 3: GALERÍA (carrusel parallax)
+  // 🖼️ BLOQUE 3: GALERÍA
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildGallery() {
     if (!isBlockEnabled("gallery")) {
@@ -1043,14 +923,12 @@ function initLoader() {
     `;
   }
 
-  // Partículas en galería (al hacer hover)
   function initGalleryParticles() {
     const slides = $$(".gallery-slide");
     slides.forEach((slide, index) => {
       const particlesContainer = $(`#galleryParticles-${index}`);
       if (!particlesContainer) return;
 
-      // Crear 12 partículas por slide
       for (let i = 0; i < 12; i++) {
         const particle = document.createElement("div");
         particle.className = "gallery-particle";
@@ -1067,7 +945,6 @@ function initLoader() {
         particlesContainer.appendChild(particle);
       }
 
-      // Efecto de luz que sigue al mouse
       slide.addEventListener("mousemove", (e) => {
         const rect = slide.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -1081,23 +958,21 @@ function initLoader() {
     });
   }
 
-  // ─── CARRUSEL "LIBRERÍA" v5: loop infinito sin retroceso (clones a ambos lados) ───
-function initGalleryCarousel() {
+  function initGalleryCarousel() {
     const wrapper = $("#galleryCarouselWrapper");
     const carousel = $("#galleryCarousel");
     const progressFill = $("#galleryProgressFill");
     if (!wrapper || !carousel) return;
 
-       const realSlides = $$(".gallery-slide", carousel);
+    const realSlides = $$(".gallery-slide", carousel);
     const n = realSlides.length;
     if (!n) return;
 
-    // 📱 MODO LITE en móvil: sin clones ni efectos pesados (mejor rendimiento)
     const lite = window.matchMedia("(max-width: 768px)").matches;
 
     let slides, START;
     if (lite) {
-      slides = realSlides;      // 1× el DOM, no 3×
+      slides = realSlides;
       START = 0;
     } else {
       const beforeFrag = document.createDocumentFragment();
@@ -1109,16 +984,14 @@ function initGalleryCarousel() {
       START = n;
     }
 
-        // 🖼️ Pre-decodifica TODAS las imágenes (reales + clones) para que el
-    //    salto del loop sea instantáneo y NO parpadee
     if (!lite) {
-    slides.forEach(s => {
+      slides.forEach(s => {
         const img = s.querySelector(".gallery-slide-img");
         if (img) {
-            img.loading = "eager";              // quita lazy en el carrusel
-            if (img.decode) img.decode().catch(() => {}); // fuerza decodificado
+          img.loading = "eager";
+          if (img.decode) img.decode().catch(() => {});
         }
-    });
+      });
     }
 
     let isDragging = false, startX = 0, startTranslate = 0, currentTranslate = 0,
@@ -1130,124 +1003,128 @@ function initGalleryCarousel() {
     const autoEvery = C.effects?.galleryAutoInterval || 4000;
 
     function calculateSnapPositions() {
-        snapPositions = []; slideCenters = [];
-        const wrapperCenter = wrapper.offsetWidth / 2;
-        const paddingLeft = parseFloat(getComputedStyle(carousel).paddingLeft) || 0;
-        slides.forEach(slide => {
-            const c = paddingLeft + slide.offsetLeft + slide.offsetWidth / 2;
-            slideCenters.push(c);
-            snapPositions.push(wrapperCenter - c);
-        });
+      snapPositions = []; slideCenters = [];
+      const wrapperCenter = wrapper.offsetWidth / 2;
+      const paddingLeft = parseFloat(getComputedStyle(carousel).paddingLeft) || 0;
+      slides.forEach(slide => {
+        const c = paddingLeft + slide.offsetLeft + slide.offsetWidth / 2;
+        slideCenters.push(c);
+        snapPositions.push(wrapperCenter - c);
+      });
     }
+
     function getLimits() {
-        return { minTranslate: -(carousel.scrollWidth - wrapper.offsetWidth), maxTranslate: 0 };
+      return { minTranslate: -(carousel.scrollWidth - wrapper.offsetWidth), maxTranslate: 0 };
     }
+
     function getClosestIndex(x) {
-        let bi = 0, md = Infinity;
-        snapPositions.forEach((p, i) => { const d = Math.abs(x - p); if (d < md) { md = d; bi = i; } });
-        return bi;
+      let bi = 0, md = Infinity;
+      snapPositions.forEach((p, i) => { const d = Math.abs(x - p); if (d < md) { md = d; bi = i; } });
+      return bi;
     }
+
     function getClosestSnap(x) { return snapPositions[getClosestIndex(x)] ?? 0; }
 
-    // Sin desfase: inclinación/resaltado con la posición OBJETIVO
     function updateVisuals(x, isSnapping = false) {
-        const { minTranslate, maxTranslate } = getLimits();
-        let finalX = x;
-        if (!isSnapping) {
-            if (x > maxTranslate) finalX = maxTranslate + (x - maxTranslate) * 0.3;
-            else if (x < minTranslate) finalX = minTranslate + (x - minTranslate) * 0.3;
-        } else finalX = clamp(x, minTranslate, maxTranslate);
+      const { minTranslate, maxTranslate } = getLimits();
+      let finalX = x;
+      if (!isSnapping) {
+        if (x > maxTranslate) finalX = maxTranslate + (x - maxTranslate) * 0.3;
+        else if (x < minTranslate) finalX = minTranslate + (x - minTranslate) * 0.3;
+      } else finalX = clamp(x, minTranslate, maxTranslate);
 
-        currentTranslate = finalX;
-        carousel.classList.toggle("is-snapping", isSnapping);
-        carousel.style.transform = `translate3d(${finalX}px, 0, 0)`;
+      currentTranslate = finalX;
+      carousel.classList.toggle("is-snapping", isSnapping);
+      carousel.style.transform = `translate3d(${finalX}px, 0, 0)`;
 
-        const wrapperCenter = wrapper.offsetWidth / 2, halfW = wrapper.offsetWidth / 2;
-        if (!lite) { 
+      const wrapperCenter = wrapper.offsetWidth / 2, halfW = wrapper.offsetWidth / 2;
+      if (!lite) {
         slides.forEach((slide, i) => {
-            const norm = ((slideCenters[i] + finalX) - wrapperCenter) / halfW;
-            const img = $(".gallery-slide-img", slide);
-            if (img) img.style.transform = `translate3d(${norm * 30}px, 0, 0) scale(1.2)`;
-            const scale = clamp(1 - Math.abs(norm) * 0.15, 0.85, 1);
-            const opacity = clamp(1 - Math.abs(norm) * 0.4, 0.5, 1);
-            const rot = clamp(norm * -8, -8, 8);
-            slide.style.transform = `scale(${scale}) rotate(${rot}deg)`;
-            slide.style.opacity = opacity;
-            slide.style.zIndex = String(20 - Math.round(Math.abs(norm) * 10));
+          const norm = ((slideCenters[i] + finalX) - wrapperCenter) / halfW;
+          const img = $(".gallery-slide-img", slide);
+          if (img) img.style.transform = `translate3d(${norm * 30}px, 0, 0) scale(1.2)`;
+          const scale = clamp(1 - Math.abs(norm) * 0.15, 0.85, 1);
+          const opacity = clamp(1 - Math.abs(norm) * 0.4, 0.5, 1);
+          const rot = clamp(norm * -8, -8, 8);
+          slide.style.transform = `scale(${scale}) rotate(${rot}deg)`;
+          slide.style.opacity = opacity;
+          slide.style.zIndex = String(20 - Math.round(Math.abs(norm) * 10));
         });
-        }
+      }
 
-        if (progressFill && minTranslate !== 0)
-            progressFill.style.width = (clamp(Math.abs(finalX) / Math.abs(minTranslate), 0, 1) * 100) + "%";
+      if (progressFill && minTranslate !== 0)
+        progressFill.style.width = (clamp(Math.abs(finalX) / Math.abs(minTranslate), 0, 1) * 100) + "%";
     }
 
     function goToSlide(i) {
-        if (snapPositions[i] === undefined) return;
-        autoIndex = i;
-        snapAnimating = true;
-        updateVisuals(snapPositions[i], true);
-        clearTimeout(snapFallbackTimer);
-        snapFallbackTimer = setTimeout(settle, 900);
+      if (snapPositions[i] === undefined) return;
+      autoIndex = i;
+      snapAnimating = true;
+      updateVisuals(snapPositions[i], true);
+      clearTimeout(snapFallbackTimer);
+      snapFallbackTimer = setTimeout(settle, 900);
     }
 
-        // Al asentarse: remapea al slide real con salto 100% instantáneo (sin parpadeo)
     function settle() {
-        carousel.classList.remove("is-snapping");
-        snapAnimating = false; velocity = 0;
+      carousel.classList.remove("is-snapping");
+      snapAnimating = false; velocity = 0;
 
-        let changed = false;
-        if (!lite) {
+      let changed = false;
+      if (!lite) {
         if (autoIndex >= 2 * n) { autoIndex -= n; changed = true; }
         else if (autoIndex < n) { autoIndex += n; changed = true; }
-        }
+      }
 
-        if (changed) {
-            // 1) Congela transiciones, 2) salta, 3) aplica en ESTE frame, 4) reactiva
-            carousel.classList.add("no-anim");
-            updateVisuals(snapPositions[autoIndex], false);
-            void carousel.offsetWidth;                       // fuerza repaint inmediato
-            requestAnimationFrame(() => carousel.classList.remove("no-anim"));
-        }
+      if (changed) {
+        carousel.classList.add("no-anim");
+        updateVisuals(snapPositions[autoIndex], false);
+        void carousel.offsetWidth;
+        requestAnimationFrame(() => carousel.classList.remove("no-anim"));
+      }
     }
 
     function startAuto() {
-         if (lite || !autoOn() || n < 2) return;
-        stopAuto();
-        autoTimer = setInterval(() => {
-            if (isDragging || snapAnimating) return;
-            goToSlide(autoIndex + 1);      // siempre avanza "hacia adelante"
-        }, autoEvery);
+      if (lite || !autoOn() || n < 2) return;
+      stopAuto();
+      autoTimer = setInterval(() => {
+        if (isDragging || snapAnimating) return;
+        goToSlide(autoIndex + 1);
+      }, autoEvery);
     }
+
     function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
     function pauseAuto() { stopAuto(); clearTimeout(idleTimer); idleTimer = setTimeout(startAuto, 6000); }
 
     function getX(e) { return e.type.includes("mouse") ? e.clientX : e.touches[0].clientX; }
+
     function onStart(e) {
-        if (e.type === "mousedown") e.preventDefault();
-        isDragging = true; pauseAuto();
-        startX = getX(e); startTranslate = currentTranslate;
-        lastX = startX; lastTime = Date.now(); velocity = 0;
-        if (rafId) cancelAnimationFrame(rafId);
-        carousel.classList.remove("is-snapping");
-        snapAnimating = false; clearTimeout(snapFallbackTimer);
+      if (e.type === "mousedown") e.preventDefault();
+      isDragging = true; pauseAuto();
+      startX = getX(e); startTranslate = currentTranslate;
+      lastX = startX; lastTime = Date.now(); velocity = 0;
+      if (rafId) cancelAnimationFrame(rafId);
+      carousel.classList.remove("is-snapping");
+      snapAnimating = false; clearTimeout(snapFallbackTimer);
     }
+
     function onMove(e) {
-        if (!isDragging) return;
-        if (e.type === "touchmove" && e.cancelable) e.preventDefault();
-        const x = getX(e), dx = x - startX, now = Date.now(), dt = now - lastTime;
-        if (dt > 0) velocity = clamp(((x - lastX) / dt) * 16, -50, 50);
-        lastX = x; lastTime = now;
-        if (!rafId) rafId = requestAnimationFrame(() => { updateVisuals(startTranslate + dx, false); rafId = null; });
+      if (!isDragging) return;
+      if (e.type === "touchmove" && e.cancelable) e.preventDefault();
+      const x = getX(e), dx = x - startX, now = Date.now(), dt = now - lastTime;
+      if (dt > 0) velocity = clamp(((x - lastX) / dt) * 16, -50, 50);
+      lastX = x; lastTime = now;
+      if (!rafId) rafId = requestAnimationFrame(() => { updateVisuals(startTranslate + dx, false); rafId = null; });
     }
+
     function onEnd() {
-        if (!isDragging) return;
-        isDragging = false; pauseAuto();
-        snapAnimating = true;
-        const target = getClosestSnap(currentTranslate + velocity * 15);
-        autoIndex = getClosestIndex(target);
-        updateVisuals(target, true);
-        clearTimeout(snapFallbackTimer);
-        snapFallbackTimer = setTimeout(settle, 900);
+      if (!isDragging) return;
+      isDragging = false; pauseAuto();
+      snapAnimating = true;
+      const target = getClosestSnap(currentTranslate + velocity * 15);
+      autoIndex = getClosestIndex(target);
+      updateVisuals(target, true);
+      clearTimeout(snapFallbackTimer);
+      snapFallbackTimer = setTimeout(settle, 900);
     }
 
     carousel.addEventListener("transitionend", e => { if (e.target === carousel) settle(); });
@@ -1261,48 +1138,48 @@ function initGalleryCarousel() {
     wrapper.addEventListener("touchend", onEnd);
 
     slides.forEach((slide, i) => {
-        slide.addEventListener("click", () => {
-            if (!isDragging && Math.abs(velocity) <= 2) { pauseAuto(); goToSlide(i); }
-        });
+      slide.addEventListener("click", () => {
+        if (!isDragging && Math.abs(velocity) <= 2) { pauseAuto(); goToSlide(i); }
+      });
     });
 
     function recalculateWhenImagesLoad() {
-        const imgs = $$(".gallery-slide-img", carousel);
-        if (!imgs.length) return;
-        let remaining = imgs.length, finished = false;
-        const done = () => {
-            if (finished) return;
-            if (--remaining <= 0) {
-                finished = true;
-                calculateSnapPositions();
-                if (!isDragging && !snapAnimating) updateVisuals(getClosestSnap(currentTranslate), true);
-            }
-        };
-        imgs.forEach(img => img.complete ? done() : (img.addEventListener("load", done, { once: true }), img.addEventListener("error", done, { once: true })));
+      const imgs = $$(".gallery-slide-img", carousel);
+      if (!imgs.length) return;
+      let remaining = imgs.length, finished = false;
+      const done = () => {
+        if (finished) return;
+        if (--remaining <= 0) {
+          finished = true;
+          calculateSnapPositions();
+          if (!isDragging && !snapAnimating) updateVisuals(getClosestSnap(currentTranslate), true);
+        }
+      };
+      imgs.forEach(img => img.complete ? done() : (img.addEventListener("load", done, { once: true }), img.addEventListener("error", done, { once: true })));
     }
 
     calculateSnapPositions();
-    updateVisuals(snapPositions[START], true);   // arranca en el 1er slide REAL, ya resaltado
+    updateVisuals(snapPositions[START], true);
     recalculateWhenImagesLoad();
     startAuto();
 
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
-        calculateSnapPositions();
-        if (!isDragging && !snapAnimating) updateVisuals(getClosestSnap(currentTranslate), true);
+      calculateSnapPositions();
+      if (!isDragging && !snapAnimating) updateVisuals(getClosestSnap(currentTranslate), true);
     });
 
     let resizeTimer;
     window.addEventListener("resize", () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            calculateSnapPositions();
-            if (!isDragging && !snapAnimating) updateVisuals(getClosestSnap(currentTranslate), true);
-        }, 200);
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        calculateSnapPositions();
+        if (!isDragging && !snapAnimating) updateVisuals(getClosestSnap(currentTranslate), true);
+      }, 200);
     });
-}
+  }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 💬 BLOQUE 4: FILOSOFÍA (cita + CTA)
+  // 💬 BLOQUE 4: FILOSOFÍA
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildPhilosophy() {
     if (!isBlockEnabled("philosophy")) {
@@ -1333,7 +1210,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🛍️ BLOQUE 5: E-COMMERCE (acceso a tienda)
+  // 🛍️ BLOQUE 5: E-COMMERCE
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildEcommerce() {
     if (!isBlockEnabled("ecommerce")) {
@@ -1369,7 +1246,6 @@ function initGalleryCarousel() {
     `;
   }
 
-  // Partículas flotantes en e-commerce
   function initEcommerceParticles() {
     const section = $("#ecommerce");
     if (!section) return;
@@ -1378,7 +1254,6 @@ function initGalleryCarousel() {
     particlesContainer.className = "ecommerce-particles";
     section.appendChild(particlesContainer);
 
-    // Crear 20 partículas con propiedades aleatorias
     for (let i = 0; i < 20; i++) {
       const particle = document.createElement("div");
       particle.className = "ecommerce-particle";
@@ -1393,7 +1268,6 @@ function initGalleryCarousel() {
       particlesContainer.appendChild(particle);
     }
 
-    // Activar partículas cuando la sección sea visible
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1406,11 +1280,11 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ⭐ BLOQUE: TESTIMONIOS (carga desde Supabase)
+  // ⭐ BLOQUE: TESTIMONIOS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  let tAll = [];           // Todos los testimonios cargados
-  let tRendered = 0;       // Cuántos se han renderizado
-  const T_BATCH = 6;       // Cuántos renderizar por lote
+  let tAll = [];
+  let tRendered = 0;
+  const T_BATCH = 6;
 
   function buildTestimonials() {
     const section = $("#testimonials");
@@ -1440,7 +1314,6 @@ function initGalleryCarousel() {
       </div>
     `;
 
-    // Activar animaciones reveal inmediatamente
     inner.querySelectorAll(".reveal").forEach(el => el.classList.add("visible"));
 
     const track = $("#testimonialsTrack");
@@ -1448,14 +1321,12 @@ function initGalleryCarousel() {
     const prev = $("#testimonialsPrev");
     const next = $("#testimonialsNext");
     
-    // Flechas de navegación
     if (prev) prev.addEventListener("click", () => track.scrollBy({ left: -360, behavior }));
     if (next) next.addEventListener("click", () => {
       renderTestimonialBatch();
       track.scrollBy({ left: 360, behavior });
     });
 
-    // Cargar testimonios cuando la sección sea visible
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -1466,14 +1337,12 @@ function initGalleryCarousel() {
     }, { threshold: 0.1, rootMargin: "200px 0px" });
     observer.observe(section);
 
-    // Cargar más testimonios al llegar al final
-    track.addEventListener("scroll", () => {
+    track.addEventListener("scroll", throttle(() => {
       const nearEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 400;
       if (nearEnd) renderTestimonialBatch();
-    }, { passive: true });
+    }, 200), { passive: true });
   }
 
-  // Cargar testimonios desde Supabase
   async function loadTestimonials() {
     const track = $("#testimonialsTrack");
     if (!track) return;
@@ -1498,14 +1367,12 @@ function initGalleryCarousel() {
       tAll = data;
       tRendered = 0;
       renderTestimonialBatch();
-      // Cargar segundo lote después de 2.5 segundos
       setTimeout(renderTestimonialBatch, 2500);
     } catch (e) {
       track.innerHTML = '<div class="testimonials-empty"></div>';
     }
   }
 
-  // Renderizar lote de testimonios
   function renderTestimonialBatch() {
     const track = $("#testimonialsTrack");
     if (!track || tRendered >= tAll.length) return;
@@ -1514,14 +1381,12 @@ function initGalleryCarousel() {
     batch.forEach(item => track.insertAdjacentHTML("beforeend", testimonialCard(item)));
     tRendered += batch.length;
     
-    // Agregar fallback a imágenes que fallen
     track.querySelectorAll(".testimonial-img:not([data-fb])").forEach(img => {
       img.dataset.fb = "1";
       img.addEventListener("error", function () { this.style.display = "none"; });
     });
   }
 
-  // Generar HTML de tarjeta de testimonio
   function testimonialCard(t) {
     const rating = clamp(Number(t.rating) || 5, 1, 5);
     const photo = (t.images && t.images.length) ? t.images[0] : null;
@@ -1557,7 +1422,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📝 BLOQUE 6: BLOG (acceso a blog.html)
+  // 📝 BLOQUE 6: BLOG
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildBlog() {
     if (!isBlockEnabled("blog")) {
@@ -1591,7 +1456,6 @@ function initGalleryCarousel() {
     `;
   }
 
-  // Efecto de tinta que aparece al hacer scroll
   function initBlogInkEffect() {
     const section = $("#blog");
     if (!section) return;
@@ -1607,7 +1471,6 @@ function initGalleryCarousel() {
     observer.observe(section);
   }
 
-  // Partículas flotantes en blog
   function initBlogParticles() {
     const container = $("#blogParticles");
     if (!container) return;
@@ -1626,24 +1489,27 @@ function initGalleryCarousel() {
     }
   }
 
-  // Parallax del icono de fondo del blog
   function initBlogParallax() {
     const icon = $("#blogBgIcon");
     if (!icon) return;
     
     let ticking = false;
+    const updateParallax = throttle(() => {
+      const rect = icon.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+        const normalizedProgress = (progress - 0.5) * 2;
+        const translateY = normalizedProgress * -40;
+        const rotateX = 5 + (normalizedProgress * 8);
+        const rotateY = -15 + (normalizedProgress * 10);
+        icon.style.transform = `translateY(calc(-50% + ${translateY}px)) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+      }
+    }, 100);
+
     window.addEventListener("scroll", () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          const rect = icon.getBoundingClientRect();
-          if (rect.top < window.innerHeight && rect.bottom > 0) {
-            const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-            const normalizedProgress = (progress - 0.5) * 2;
-            const translateY = normalizedProgress * -40;
-            const rotateX = 5 + (normalizedProgress * 8);
-            const rotateY = -15 + (normalizedProgress * 10);
-            icon.style.transform = `translateY(calc(-50% + ${translateY}px)) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-          }
+          updateParallax();
           ticking = false;
         });
         ticking = true;
@@ -1652,7 +1518,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📬 BLOQUE 7: CONTACTO (formulario + FormSubmit)
+  // 📬 BLOQUE 7: CONTACTO
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildContact() {
     if (!isBlockEnabled("contact")) {
@@ -1708,7 +1574,6 @@ function initGalleryCarousel() {
       </div>
     `;
     
-    // Inicializar efectos después de renderizar
     setTimeout(() => {
       initContactParticles();
       initContactParallax();
@@ -1716,7 +1581,6 @@ function initGalleryCarousel() {
     }, 100);
   }
 
-  // Partículas flotantes en contacto
   function initContactParticles() {
     const container = $("#contactParticles");
     if (!container) return;
@@ -1735,24 +1599,27 @@ function initGalleryCarousel() {
     }
   }
 
-  // Parallax del icono de fondo de contacto
   function initContactParallax() {
     const icon = $("#contactBgIcon");
     if (!icon) return;
     
     let ticking = false;
+    const updateParallax = throttle(() => {
+      const rect = icon.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+        const normalizedProgress = (progress - 0.5) * 2;
+        const translateY = normalizedProgress * -40;
+        const rotateX = -5 + (normalizedProgress * 8);
+        const rotateY = 15 + (normalizedProgress * 10);
+        icon.style.transform = `translateY(calc(-50% + ${translateY}px)) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
+      }
+    }, 100);
+
     window.addEventListener("scroll", () => {
       if (!ticking) {
         requestAnimationFrame(() => {
-          const rect = icon.getBoundingClientRect();
-          if (rect.top < window.innerHeight && rect.bottom > 0) {
-            const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
-            const normalizedProgress = (progress - 0.5) * 2;
-            const translateY = normalizedProgress * -40;
-            const rotateX = -5 + (normalizedProgress * 8);
-            const rotateY = 15 + (normalizedProgress * 10);
-            icon.style.transform = `translateY(calc(-50% + ${translateY}px)) rotateY(${rotateY}deg) rotateX(${rotateX}deg)`;
-          }
+          updateParallax();
           ticking = false;
         });
         ticking = true;
@@ -1760,20 +1627,17 @@ function initGalleryCarousel() {
     }, { passive: true });
   }
 
-  // Inicializar formulario de contacto con validaciones
   function initContactForm() {
     const form = $("#contactForm");
     const messageEl = $("#formMessage");
     if (!form) return;
 
-    // Guardar timestamp de carga del formulario
     const loadedAtInput = $("#formLoadedAt");
     if (loadedAtInput) loadedAtInput.value = Date.now().toString();
 
     let lastSubmitTime = 0;
-    const MIN_SUBMIT_INTERVAL = 3000; // 3 segundos entre envíos
+    const MIN_SUBMIT_INTERVAL = 3000;
 
-    // Efecto visual de "escribiendo"
     const inputs = $$(".form-input, .form-textarea", form);
     inputs.forEach(input => {
       input.addEventListener("input", () => {
@@ -1783,19 +1647,15 @@ function initGalleryCarousel() {
       });
     });
 
-    // Validar formato de email
     function isValidEmail(email) {
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
       return re.test(email);
     }
 
-    // Detectar spam en texto
     function looksLikeSpam(text) {
       if (!text) return false;
       const lower = text.toLowerCase();
-      // Detectar URLs largas
       if (/https?:\/\/|www\.|\.[a-z]{2,4}\/[a-z]/i.test(text) && text.length > 50) return true;
-      // Palabras clave de spam
       const spamWords = ['viagra', 'casino', 'poker', 'lottery', 'winner', 'prize', 'bitcoin', 'crypto investment', 'earn $', 'make money fast'];
       return spamWords.some(word => lower.includes(word));
     }
@@ -1807,7 +1667,6 @@ function initGalleryCarousel() {
       const submitBtn = $(".contact-submit", form);
       const originalText = submitBtn.querySelector("span").textContent;
 
-      // Honeypot anti-bot
       if (data.website_url && data.website_url.trim() !== "") {
         messageEl.textContent = C.contact.form.errorMessage;
         messageEl.className = "form-message error visible";
@@ -1815,7 +1674,6 @@ function initGalleryCarousel() {
         return;
       }
 
-      // Validar tiempo mínimo desde carga
       const loadedAt = parseInt(data.form_loaded_at || "0");
       const timeSinceLoad = Date.now() - loadedAt;
       if (timeSinceLoad < 1500) {
@@ -1825,7 +1683,6 @@ function initGalleryCarousel() {
         return;
       }
 
-      // Validar intervalo entre envíos
       const now = Date.now();
       if (now - lastSubmitTime < MIN_SUBMIT_INTERVAL) {
         const waitSec = Math.ceil((MIN_SUBMIT_INTERVAL - (now - lastSubmitTime)) / 1000);
@@ -1835,7 +1692,6 @@ function initGalleryCarousel() {
         return;
       }
 
-      // Validaciones de campos
       if (!data.name || data.name.trim().length < 2) {
         messageEl.textContent = "Por favor, ingresa tu nombre (mínimo 2 caracteres).";
         messageEl.className = "form-message error visible";
@@ -1867,7 +1723,6 @@ function initGalleryCarousel() {
         return;
       }
 
-      // Enviar formulario
       submitBtn.querySelector("span").textContent = "Enviando...";
       submitBtn.disabled = true;
       lastSubmitTime = now;
@@ -1908,7 +1763,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🦶 FOOTER (con colapso "Más")
+  // 🦶 FOOTER
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildFooter() {
     if (!isBlockEnabled("footer")) {
@@ -1921,7 +1776,6 @@ function initGalleryCarousel() {
     const inner = $("#footerInner");
     if (!inner) return;
 
-    // Filtrar columnas según bloques habilitados
     const visibleColumns = (f.columns || []).map(col => {
       const visibleLinks = (col.links || []).filter(link => {
         const href = link.href || "";
@@ -1934,7 +1788,6 @@ function initGalleryCarousel() {
       return { ...col, links: visibleLinks };
     }).filter(col => col.links.length > 0);
 
-    // Colapso "Más": primeros 3 enlaces visibles; el resto detrás de "Más"
     const FOOTER_VISIBLE = 3;
 
     inner.innerHTML = `
@@ -1977,7 +1830,6 @@ function initGalleryCarousel() {
       </div>
     `;
 
-    // Comportamiento del "Más" (abrir/cerrar, clic fuera, Escape)
     const closeAllMore = () => {
       $$(".footer-more-wrap.open", inner).forEach(w => {
         w.classList.remove("open");
@@ -1985,29 +1837,27 @@ function initGalleryCarousel() {
       });
     };
     
-    $$(".footer-more-btn", inner).forEach(btn => {
-      btn.addEventListener("click", (e) => {
+    inner.addEventListener("click", (e) => {
+      const btn = e.target.closest(".footer-more-btn");
+      if (btn) {
         e.stopPropagation();
         const wrap = btn.closest(".footer-more-wrap");
         const open = wrap.classList.toggle("open");
         btn.setAttribute("aria-expanded", String(open));
-      });
+      } else if (e.target.closest(".footer-more-panel a")) {
+        closeAllMore();
+      } else if (!e.target.closest(".footer-more-wrap")) {
+        closeAllMore();
+      }
     });
     
-    // Cerrar al hacer clic fuera
-    inner.addEventListener("click", (e) => {
-      if (e.target.closest(".footer-more-panel a")) closeAllMore();
-      else if (!e.target.closest(".footer-more-wrap")) closeAllMore();
-    });
-    
-    // Cerrar con Escape
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") closeAllMore();
     });
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 👁️ SCROLL REVEAL (animaciones al hacer scroll)
+  // 👁️ SCROLL REVEAL
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initReveal() {
     const els = $$(".reveal, .reveal-left, .reveal-right, .reveal-scale");
@@ -2025,11 +1875,10 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎭 PARALLAX ENGINE (hero + imagen de historia)
+  // 🎭 PARALLAX ENGINE
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initParallax() {
     const isMobile = window.innerWidth < 769;
-    // Reducir velocidad en móvil para mejor rendimiento
     const heroSpeed = isMobile ? C.effects.parallaxHeroSpeed * 0.3 : C.effects.parallaxHeroSpeed;
     const imageSpeed = isMobile ? C.effects.parallaxImageSpeed * 0.5 : C.effects.parallaxImageSpeed;
 
@@ -2039,13 +1888,11 @@ function initGalleryCarousel() {
     const storyImg = $(".story-image");
     let ticking = false;
 
-    function updateParallax() {
+    const updateParallax = throttle(() => {
       const scrollY = window.scrollY;
       
-      // Parallax del fondo del hero
       if (heroBg) heroBg.style.transform = `translate3d(0, ${scrollY * heroSpeed}px, 0) scale(1.1)`;
       
-      // Parallax de la imagen de historia
       if (storyImg) {
         const rect = storyImg.getBoundingClientRect();
         if (rect.top < window.innerHeight && rect.bottom > 0) {
@@ -2054,23 +1901,23 @@ function initGalleryCarousel() {
         }
       }
       
-      // Fade out del indicador de scroll
       const si = $("#scrollIndicator");
       if (si) si.style.opacity = clamp(1 - scrollY / 300, 0, 1);
-      
-      ticking = false;
-    }
+    }, 100);
 
     window.addEventListener("scroll", () => {
       if (!ticking) {
-        requestAnimationFrame(updateParallax);
+        requestAnimationFrame(() => {
+          updateParallax();
+          ticking = false;
+        });
         ticking = true;
       }
     }, { passive: true });
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🖱️ CURSOR PERSONALIZADO (con follower)
+  // 🖱️ CURSOR PERSONALIZADO
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initCursor() {
     if (!C.effects.cursorEnabled || window.innerWidth < 769) return;
@@ -2081,7 +1928,6 @@ function initGalleryCarousel() {
 
     let mx = 0, my = 0, fx = 0, fy = 0;
 
-    // Seguir mouse instantáneamente con el cursor
     document.addEventListener("mousemove", (e) => {
       mx = e.clientX;
       my = e.clientY;
@@ -2089,7 +1935,6 @@ function initGalleryCarousel() {
       cursor.style.top = my + "px";
     });
 
-    // Animar follower con interpolación lineal (lerp)
     function animateFollower() {
       fx = lerp(fx, mx, 0.12);
       fy = lerp(fy, my, 0.12);
@@ -2099,7 +1944,6 @@ function initGalleryCarousel() {
     }
     animateFollower();
 
-    // Efecto hover en elementos interactivos
     const hoverTargets = "a, button, .service-card, .gallery-item, .philosophy-cta, .footer-social-icon, .testimonials-nav, .testimonials-source";
     document.addEventListener("mouseover", (e) => {
       if (e.target.closest(hoverTargets)) {
@@ -2116,7 +1960,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🔗 SMOOTH ANCHOR SCROLL (scroll suave a anchors)
+  // 🔗 SMOOTH ANCHOR SCROLL
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initSmoothScroll() {
     document.addEventListener("click", (e) => {
@@ -2131,7 +1975,6 @@ function initGalleryCarousel() {
 
       e.preventDefault();
 
-      // Calcular offset considerando el header fijo
       const headerEl = $("#header");
       const headerHeight = headerEl ? headerEl.offsetHeight : 80;
       const offset = headerHeight + 20;
@@ -2140,7 +1983,6 @@ function initGalleryCarousel() {
 
       window.scrollTo({ top: targetPosition, behavior });
 
-      // Actualizar URL sin recargar
       if (window.history && window.history.pushState) {
         history.pushState(null, "", href);
       }
@@ -2148,7 +1990,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🌾 GRAIN TOGGLE (efecto de ruido)
+  // 🌾 GRAIN TOGGLE
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initGrain() {
     if (!C.effects.grainEnabled) {
@@ -2158,7 +2000,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🔢 COUNTER ANIMATION (números que cuentan)
+  // 🔢 COUNTER ANIMATION
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initCounters() {
     const counters = $$(".story-stat-number");
@@ -2173,7 +2015,7 @@ function initGalleryCarousel() {
           const target = parseInt(match[1]);
           const suffix = el.textContent.replace(match[1], "");
           let current = 0;
-          const step = Math.ceil(target / 60); // 60 frames para llegar al target
+          const step = Math.ceil(target / 60);
           
           const timer = setInterval(() => {
             current += step;
@@ -2182,7 +2024,7 @@ function initGalleryCarousel() {
               clearInterval(timer);
             }
             el.textContent = current + suffix;
-          }, 25); // 25ms por frame = ~40fps
+          }, 25);
           
           observer.unobserve(el);
         }
@@ -2193,7 +2035,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🧲 MAGNETIC EFFECT (botones que siguen al mouse)
+  // 🧲 MAGNETIC EFFECT
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initMagnetic() {
     if (prefersReducedMotion) return;
@@ -2201,25 +2043,21 @@ function initGalleryCarousel() {
     const buttons = $$(".philosophy-cta, .hero-cta, .nav-cta, .blog-cta, .ecommerce-cta, .contact-submit");
     
     buttons.forEach(btn => {
-      // Mover botón hacia el mouse
       btn.addEventListener("mousemove", (e) => {
         const rect = btn.getBoundingClientRect();
         btn.style.transform = `translate(${(e.clientX - rect.left - rect.width / 2) * 0.2}px, ${(e.clientY - rect.top - rect.height / 2) * 0.2}px)`;
       });
       
-      // Regresar a posición original al salir
       btn.addEventListener("mouseleave", () => {
         btn.style.transition = "transform 0.5s cubic-bezier(0.16,1,0.3,1)";
         btn.style.transform = "translate(0, 0)";
         
-        // Limpiar transition después de que termine
         const cleanup = () => {
           btn.style.transition = "";
           btn.removeEventListener("transitionend", cleanup);
         };
         btn.addEventListener("transitionend", cleanup);
         
-        // Fallback por si transitionend no se dispara
         setTimeout(() => {
           if (btn.style.transition) btn.style.transition = "";
         }, 600);
@@ -2228,7 +2066,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📍 BLOQUE: UBICACIÓN (mapa + dirección + horario)
+  // 📍 BLOQUE: UBICACIÓN
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildLocation() {
     if (!isBlockEnabled("location")) {
@@ -2240,11 +2078,9 @@ function initGalleryCarousel() {
     const inner = $("#locationInner");
     if (!inner) return;
 
-      // 🏥 Fachada discreta de fondo (watermark no invasivo)
-  const section = document.getElementById("location");
-  if (section && L.image) section.style.setProperty("--location-img", `url("${L.image}")`);
+    const section = document.getElementById("location");
+    if (section && L.image) section.style.setProperty("--location-img", `url("${L.image}")`);
     
-    // Generar URLs de Google Maps
     const mapSrc = `https://www.google.com/maps?q=${encodeURIComponent(L.mapsQuery)}&output=embed`;
     const dirHref = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(L.mapsQuery)}`;
     
@@ -2284,7 +2120,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📅 BLOQUE: CITAS (formulario → Supabase + WhatsApp)
+  // 📅 BLOQUE: CITAS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildAppointments() {
     if (!isBlockEnabled("appointments")) {
@@ -2327,17 +2163,14 @@ function initGalleryCarousel() {
     setTimeout(initAppointmentForm, 100);
   }
 
-  // Inicializar formulario de citas
   function initAppointmentForm() {
     const form = $("#apptForm");
     const msg = $("#apptMessage");
     if (!form) return;
     
-    // Establecer fecha mínima como hoy
     const dateInput = form.querySelector('input[name="date"]');
     if (dateInput) dateInput.min = new Date().toISOString().split("T")[0];
 
-    // Mostrar mensaje de error/éxito
     function showApptMsg(text, type) {
       if (!msg) return;
       msg.textContent = text;
@@ -2349,10 +2182,8 @@ function initGalleryCarousel() {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(form));
       
-      // Honeypot anti-bot
       if (data.website_url && data.website_url.trim()) return;
       
-      // Validaciones
       if (!data.name || data.name.trim().length < 2)  return showApptMsg("Escribe tu nombre.", "error");
       if (!data.phone || data.phone.trim().length < 8) return showApptMsg("Escribe un teléfono válido.", "error");
       if (!data.date) return showApptMsg("Elige una fecha.", "error");
@@ -2361,7 +2192,6 @@ function initGalleryCarousel() {
       const btn = form.querySelector('button[type="submit"]');
       btn.disabled = true;
 
-      // 1) Guardar en Supabase (si falla, seguimos con WhatsApp)
       let saved = false;
       try {
         const sb = window.__supabaseShared || (window.__supabaseShared = window.supabase.createClient(C.supabase.url, C.supabase.key));
@@ -2377,7 +2207,6 @@ function initGalleryCarousel() {
         if (error) console.warn("No se guardó la cita:", error.message);
       } catch (err) { console.warn(err); }
 
-      // 2) WhatsApp con el resumen pre-llenado
       const wa = (C.tienda && C.tienda.whatsapp) || "521234567890";
       let m = `📅 *Solicitud de cita*\n\n▪️ *Nombre:* ${data.name}\n▪️ *Teléfono:* ${data.phone}\n▪️ *Fecha:* ${data.date}\n▪️ *Horario:* ${data.slot}\n`;
       if (data.reason) m += `▪️ *Motivo:* ${data.reason}\n`;
@@ -2391,7 +2220,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 👥 BLOQUE: EQUIPO MÉDICO (tarjetas flip + carrusel)
+  // 👥 BLOQUE: EQUIPO MÉDICO
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function buildTeam() {
     if (!isBlockEnabled("team") || !C.team) {
@@ -2453,7 +2282,6 @@ function initGalleryCarousel() {
       <div class="services-hint" id="teamHint">← desliza →</div>
     `;
 
-    // Flip de tarjetas (solo una girada a la vez)
     const unflipTeam = (except = null) => {
       inner.querySelectorAll(".team-card.flipped").forEach(c => {
         if (c !== except) {
@@ -2464,17 +2292,17 @@ function initGalleryCarousel() {
       });
     };
     
-    inner.querySelectorAll("[data-tflip]").forEach(btn => {
-      btn.addEventListener("click", () => {
+    inner.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-tflip]");
+      if (btn) {
         const card = btn.closest(".team-card");
         const willOpen = !card.classList.contains("flipped");
         unflipTeam(card);
         card.classList.toggle("flipped", willOpen);
         btn.setAttribute("aria-expanded", String(willOpen));
-      });
+      }
     });
 
-    // Carrusel + HUD (reutiliza el motor visual de servicios)
     const track = inner.querySelector("#teamTrack");
     const prev = inner.querySelector("#teamPrev");
     const next = inner.querySelector("#teamNext");
@@ -2494,12 +2322,14 @@ function initGalleryCarousel() {
       prev.addEventListener("click", () => { unflipTeam(); track.scrollBy({ left: -stepW(), behavior: "smooth" }); });
       next.addEventListener("click", () => { unflipTeam(); track.scrollBy({ left: stepW(), behavior: "smooth" }); });
       
-      track.addEventListener("click", (e) => {
+            track.addEventListener("click", (e) => {
+        // Los botones "Ver ficha"/"Volver" los maneja la delegación de inner
+        if (e.target.closest("[data-tflip]")) return;
         const card = e.target.closest(".team-card");
         if (card) unflipTeam(card);
       });
       
-      const updateHUD = () => {
+      const updateHUD = throttle(() => {
         const total = T.items.length;
         const w = stepW();
         const scrollable = track.scrollWidth > track.clientWidth + 1;
@@ -2524,7 +2354,7 @@ function initGalleryCarousel() {
         
         if (counter) counter.innerHTML = `<span class="sc-now">${from === to ? pad(from) : pad(from) + "–" + pad(to)}</span> / ${pad(total)}`;
         if (fill) fill.style.transform = `scaleX(${max > 0 ? track.scrollLeft / max : 0})`;
-      };
+      }, 100);
       
       track.addEventListener("scroll", () => { 
         if (hint) hint.classList.add("hide"); 
@@ -2537,69 +2367,7 @@ function initGalleryCarousel() {
   }
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🚀 INICIALIZACIÓN PRINCIPAL
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  async function init() {
-    // 1. Tema y SEO
-    applyTheme();
-    injectSEO();
-    
-    // 2. Header y Hero
-    buildHeader();
-    buildHero();
-    
-    // 3. Bloques de contenido (en orden de aparición)
-    buildStory();
-    await loadServicesFromDB();
-    buildServices();
-    buildTeam();
-    buildGallery();
-    buildPhilosophy();
-    buildEcommerce();
-    initEcommerceParticles();
-    buildBlog();
-    initBlogInkEffect();
-    initBlogParticles();
-    initBlogParallax();
-    buildLocation();
-    buildAppointments();
-    buildContact();
-    
-    // 4. Footer
-    buildFooter();
-    
-    // 5. Efectos globales
-    initGrain();
-    initProgressBar();
-    initLoader();
-    initTypewriter();
-    initHeroStars();
-    initStoryRibbon();
-    initReveal();
-    initParallax();
-    initCursor();
-    initSmoothScroll();
-    initCounters();
-    initGalleryCarousel();
-    initGalleryParticles();
-      if (C.effects?.servicesLight !== false) initServicesLight();
-    
-    // 6. Efecto magnético (después del loader)
-    setTimeout(initMagnetic, C.loader.duration + 600);
-    
-    // 7. Testimonios (carga asíncrona)
-    buildTestimonials();
-  }
-
-  // Ejecutar init cuando el DOM esté listo
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-  } else {
-    init();
-  }
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎀 LISTÓN CON APARICIÓN AL SCROLL (story ribbon)
+  // 🎀 LISTÓN CON APARICIÓN AL SCROLL
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   function initStoryRibbon() {
     const ribbon = $("#storyRibbon");
@@ -2620,6 +2388,60 @@ function initGalleryCarousel() {
     
     const storyEl = $("#story");
     if (storyEl) observer.observe(storyEl);
+  }
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🚀 INICIALIZACIÓN PRINCIPAL
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  async function init() {
+    applyTheme();
+    injectSEO();
+    
+    buildHeader();
+    buildHero();
+    
+    buildStory();
+    await loadServicesFromDB();
+    buildServices();
+    buildTeam();
+    buildGallery();
+    buildPhilosophy();
+    buildEcommerce();
+    initEcommerceParticles();
+    buildBlog();
+    initBlogInkEffect();
+    initBlogParticles();
+    initBlogParallax();
+    buildLocation();
+    buildAppointments();
+    buildContact();
+    
+    buildFooter();
+    
+    initGrain();
+    initProgressBar();
+    initLoader();
+    initTypewriter();
+    initHeroStars();
+    initStoryRibbon();
+    initReveal();
+    initParallax();
+    initCursor();
+    initSmoothScroll();
+    initCounters();
+    initGalleryCarousel();
+    initGalleryParticles();
+    if (C.effects?.servicesLight !== false) initServicesLight();
+    
+    setTimeout(initMagnetic, C.loader.duration + 600);
+    
+    buildTestimonials();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
   }
 
 })();

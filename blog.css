@@ -1,5 +1,5 @@
 /* ============================================================
-   BLOG.CSS — ESTILOS DEL BLOG
+   BLOG.CSS — ESTILOS DEL BLOG (OPTIMIZADO)
    ============================================================
    ÍNDICE:
    01 Reset compatible              10 Gestión de categorías
@@ -15,8 +15,39 @@
    09++ Toast de notificaciones
    ============================================================ */
 
+/* ============ ANIMACIONES BASE ============ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(110%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes blogGlowPulse {
+  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
+}
+
+@keyframes blogStarFadeIn {
+  from { opacity: 0; transform: scale(0.3); }
+  to { opacity: var(--min-opacity); transform: scale(0.8); }
+}
+
+@keyframes blogStarTwinkle {
+  0%, 100% { opacity: var(--min-opacity); transform: scale(0.8); }
+  50% { opacity: var(--max-opacity); transform: scale(1.2); }
+}
+
+@keyframes likePop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.35); }
+  100% { transform: scale(1); }
+}
+
 /* ============ 01 RESET COMPATIBLE ============ */
-/* box-sizing explícito para componentes del blog */
 .blog-header,
 .blog-header *,
 .post-modal,
@@ -27,7 +58,6 @@
 }
 
 /* ============ 02 FOCUS VISIBLE (WCAG 2.4.7) ============ */
-/* Campos de texto: glow dorado al enfocar */
 .blog-search-bar input:focus-visible,
 .blog-sort select:focus-visible,
 .form-input:focus-visible,
@@ -42,7 +72,6 @@
   box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.25);
 }
 
-/* Botones y elementos interactivos: outline sólido */
 .filter-btn:focus-visible,
 .blog-toggle:focus-visible,
 .post-card:focus-visible,
@@ -66,7 +95,6 @@
 }
 
 /* ============ 03 HEADER DEL BLOG ============ */
-/* Header fijo con blur (glass effect) */
 .blog-header {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
   padding: 1.2rem 2rem;
@@ -76,13 +104,11 @@
 }
 .blog-header.scrolled { padding: 0.8rem 2rem; background: rgba(10, 10, 10, 0.98); }
 
-/* Contenedor interno: logo + búsqueda + botón nuevo post */
 .blog-header-inner {
   max-width: 1400px; margin: 0 auto;
   display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
 }
 
-/* Logo del blog */
 .blog-logo {
   font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
   letter-spacing: 0.08em; color: var(--color-text);
@@ -90,7 +116,6 @@
 }
 .blog-logo span { color: var(--color-accent); }
 
-/* Barra de búsqueda */
 .blog-search-bar { flex: 1; max-width: 450px; position: relative; }
 .blog-search-bar input {
   width: 100%; padding: 0.7rem 2.8rem 0.7rem 1.2rem;
@@ -104,7 +129,6 @@
 }
 .blog-search-bar input::placeholder { color: var(--color-text-muted); }
 
-/* Ícono de lupa (FA) dentro de la búsqueda */
 .blog-search-bar .search-icon {
   position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%);
   color: var(--color-text-muted); pointer-events: none;
@@ -112,10 +136,8 @@
 }
 .blog-search-bar input:focus + .search-icon { color: var(--color-accent); }
 
-/* Acciones del header (botón nuevo post) */
 .blog-header-actions { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
 
-/* Botón "Nuevo Post" (solo visible para admins) */
 .blog-toggle {
   position: relative;
   background: var(--color-accent); border: none;
@@ -129,7 +151,6 @@
 }
 .blog-toggle:hover { background: var(--color-accent-light); transform: translateY(-2px); }
 
-/* Label del botón (oculto en móvil, visible en desktop) */
 .blog-toggle-label { display: none; }
 @media (min-width: 768px) { .blog-toggle-label { display: inline; } }
 
@@ -140,14 +161,12 @@
   overflow: hidden; margin-top: 60px;
 }
 
-/* Fondo degradado oscuro */
 .blog-hero-bg {
   position: absolute; inset: 0;
   background: linear-gradient(160deg, #1a1a2e 0%, #0f0f1a 40%, #0a0a0a 100%);
   z-index: 0;
 }
 
-/* Glow pulsante en la parte inferior */
 .blog-hero-glow {
   position: absolute; bottom: -10%; left: 50%; transform: translateX(-50%);
   width: 100%; height: 70%; pointer-events: none; z-index: 1;
@@ -158,12 +177,7 @@
   filter: blur(30px);
   animation: blogGlowPulse 10s ease-in-out infinite;
 }
-@keyframes blogGlowPulse {
-  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
-  50% { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
-}
 
-/* Contenido del hero (título + subtítulo) */
 .blog-hero-content {
   position: relative; z-index: 2; text-align: center;
   padding: 0 1.5rem; max-width: 800px;
@@ -200,7 +214,6 @@
   animation: fadeInUp 0.8s var(--ease-out-expo) 0.9s forwards;
 }
 
-/* Onda SVG inferior (transición al contenido) */
 .blog-hero-wave {
   position: absolute; bottom: -1px; left: 0; width: 100%; height: 100px;
   z-index: 3; pointer-events: none; overflow: hidden;
@@ -216,25 +229,14 @@
 .blog-star {
   position: absolute;
   background: var(--color-accent); border-radius: 50%;
-  opacity: 0;
-  animation: 
-    blogStarFadeIn 1.8s ease-out var(--twinkle-delay) forwards,
-    blogStarTwinkle var(--twinkle-duration) ease-in-out calc(var(--twinkle-delay) + 1.8s) infinite;
+  opacity: var(--min-opacity);
+  transform: scale(0.8);
+  animation: blogStarTwinkle var(--twinkle-duration) ease-in-out infinite;
+  animation-delay: var(--twinkle-delay);
   box-shadow: 0 0 var(--glow-size) var(--color-accent);
 }
 
-@keyframes blogStarFadeIn {
-  from { opacity: 0; transform: scale(0.3); }
-  to { opacity: var(--min-opacity); transform: scale(0.8); }
-}
-
-@keyframes blogStarTwinkle {
-  0%, 100% { opacity: var(--min-opacity); transform: scale(0.8); }
-  50% { opacity: var(--max-opacity); transform: scale(1.2); }
-}
-
 /* ============ 06 FILTROS Y ORDENAMIENTO ============ */
-/* Barra sticky debajo del header */
 .blog-filters-section {
   position: sticky; top: 60px; z-index: 100;
   background: var(--color-bg);
@@ -242,7 +244,6 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Botones de filtro por categoría */
 .blog-filters {
   max-width: 1400px; margin: 0 auto;
   display: flex; gap: 0.8rem; flex-wrap: wrap;
@@ -265,7 +266,6 @@
   background: rgba(var(--accent-rgb), 0.05);
 }
 
-/* Select de ordenamiento */
 .blog-sort { max-width: 1400px; margin: 1.2rem auto 0; display: flex; justify-content: flex-end; }
 .blog-sort select {
   padding: 0.55rem 1.2rem;
@@ -314,7 +314,6 @@
   box-shadow: 0 22px 45px rgba(0,0,0,.45), 0 0 0 1px rgba(var(--accent-rgb), .12);
 }
 
-/* Imagen del post */
 .post-image-wrapper {
   position: relative; aspect-ratio: 16/10;
   overflow: hidden; background: rgba(255, 255, 255, 0.02);
@@ -329,13 +328,11 @@
   filter: brightness(1.05) saturate(1.1);
 }
 
-/* Overlay degradado sobre la imagen */
 .post-image-overlay {
   position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(to top, rgba(10,10,10,.55), transparent 45%);
 }
 
-/* Badge de categoría (estilo pill con blur) */
 .post-category-badge {
   position: absolute; top: 0.9rem; left: 0.9rem;
   padding: 0.38rem 0.9rem;
@@ -348,7 +345,6 @@
   border-radius: 50px; z-index: 2;
 }
 
-/* Chip de tiempo de lectura */
 .post-read-time {
   position: absolute; top: 0.9rem; right: 0.9rem; z-index: 2;
   display: inline-flex; align-items: center; gap: 0.4rem;
@@ -361,7 +357,6 @@
 }
 .post-read-time i { font-size: 0.6rem; color: var(--color-accent); }
 
-/* Info debajo de la imagen */
 .post-info { padding: 1.6rem 1.5rem 1.4rem; display: flex; flex-direction: column; flex: 1; }
 .post-title {
   font-family: var(--font-display); font-size: 1.35rem;
@@ -378,14 +373,12 @@
   -webkit-box-orient: vertical; overflow: hidden;
 }
 
-/* Meta información (autor + fecha) */
 .post-meta {
   display: flex; align-items: center; justify-content: space-between;
   padding-top: 1rem; margin-top: auto;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Avatar del autor con iniciales */
 .post-author-chip { display: inline-flex; align-items: center; gap: 0.55rem; min-width: 0; }
 .post-avatar {
   width: 30px; height: 30px; flex-shrink: 0;
@@ -399,7 +392,6 @@
 .post-author { font-size: 0.76rem; color: var(--color-text); font-weight: 600; }
 .post-date { font-size: 0.7rem; color: var(--color-text-muted); }
 
-/* CTA "Leer artículo" con flecha animada */
 .post-cta {
   margin-top: 1.1rem;
   display: inline-flex; align-items: center; gap: 0.5rem;
@@ -448,17 +440,14 @@
   transform: rotate(90deg);
 }
 
-/* Layout de dos columnas */
 .modal-body { display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh; }
 
-/* Imagen principal (izquierda) */
 .modal-image-section {
   position: relative; overflow: hidden;
   background: var(--color-dark);
 }
 .modal-image { width: 100%; height: 100%; min-height: 400px; object-fit: cover; }
 
-/* Info del artículo (derecha) */
 .modal-info-section { padding: clamp(3rem, 6vw, 6rem) clamp(2rem, 4vw, 4rem); overflow-y: auto; }
 .modal-info-content { max-width: 600px; }
 
@@ -474,21 +463,18 @@
   margin-bottom: 1.5rem; line-height: 1.2;
 }
 
-/* Subtítulo (opcional) */
 .modal-subtitle {
   font-size: 1.05rem; color: var(--color-text-muted);
   font-style: italic; line-height: 1.6;
   margin: -0.8rem 0 1.5rem;
 }
 
-/* Meta información (autor + fecha) */
 .modal-meta {
   display: flex; align-items: center; gap: 1.5rem;
   margin-bottom: 1.5rem; padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Autor con avatar */
 .modal-author { display: inline-flex; align-items: center; gap: 0.6rem; }
 .modal-author-avatar {
   width: 34px; height: 34px; border-radius: 50%;
@@ -501,14 +487,12 @@
 .modal-author { font-size: 0.85rem; color: var(--color-accent); font-weight: 500; }
 .modal-date { font-size: 0.8rem; color: var(--color-text-muted); }
 
-/* Contenido del artículo */
 .modal-description {
   font-size: 1.05rem; color: var(--color-text);
   line-height: 1.9; margin-bottom: 3rem;
   white-space: pre-wrap;
 }
 
-/* Letra capital editorial en el primer párrafo */
 .modal-description > p:first-of-type::first-letter {
   font-family: var(--font-display);
   font-size: 3.2em; float: left; line-height: 0.85;
@@ -712,7 +696,6 @@
 .blog-logout:hover svg { transform: rotate(-90deg); }
 
 /* ============ 13 RESPONSIVE ============ */
-/* TABLET (≤768px) */
 @media (max-width: 768px) {
   .blog-header { padding: 1rem 1.2rem; }
   .blog-header.scrolled { padding: 0.7rem 1.2rem; }
@@ -748,11 +731,9 @@
   .blog-logout { padding: 0.5rem; margin-left: 0.3rem; }
   .blog-logout svg { width: 16px; height: 16px; }
 
-  /* Optimizaciones móvil */
   .blog-hero-glow { filter: blur(20px); animation-duration: 15s; }
 }
 
-/* MÓVIL PEQUEÑO (≤480px) */
 @media (max-width: 480px) {
   .blog-title { font-size: clamp(2rem, 8vw, 3rem); }
   .filter-btn { padding: 0.45rem 0.8rem; font-size: 0.6rem; }
@@ -763,11 +744,9 @@
   .modal-info-section { padding: 1.5rem 1rem; }
   .modal-title { font-size: clamp(1.5rem, 6vw, 2rem); }
 
-  /* Hero glow muy sutil */
   .blog-hero-glow { filter: blur(15px); opacity: 0.6; animation: none; }
 }
 
-/* REDUCED MOTION (Accesibilidad WCAG) */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -855,7 +834,6 @@
   transition: all 0.3s var(--ease-out-expo);
 }
 
-/* Tamaño correcto de los iconos */
 .modal-like-btn svg,
 .modal-save-btn svg {
   width: 16px; height: 16px; flex-shrink: 0;
@@ -869,7 +847,6 @@
   transform: translateY(-2px);
 }
 
-/* Estado "Me gusta" activo */
 .modal-like-btn.liked {
   background: var(--color-accent);
   border-color: var(--color-accent);
@@ -879,13 +856,7 @@
   fill: currentColor;
   animation: likePop 0.4s var(--ease-out-expo);
 }
-@keyframes likePop {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.35); }
-  100% { transform: scale(1); }
-}
 
-/* Botón WhatsApp con acento verde al hover */
 .whatsapp-btn:hover {
   background: rgba(37, 211, 102, 0.1);
   border-color: #25D366;
@@ -938,7 +909,6 @@
 .comment-date { color: var(--color-text-muted); font-size: 0.7rem; }
 .comment-text { color: var(--color-text); font-size: 0.9rem; line-height: 1.6; }
 
-/* Formulario de comentarios */
 .comment-form { display: flex; flex-direction: column; gap: 0.9rem; }
 
 .comment-input,
@@ -978,7 +948,6 @@
 }
 
 /* ============ 17 FORMATO DE CONTENIDO (MD) ============ */
-/* Barra de herramientas de formato */
 .content-toolbar { margin-bottom: 0.6rem; }
 .toolbar-btn {
   padding: 0.6rem 1rem;
@@ -991,7 +960,6 @@
 }
 .toolbar-btn:hover { background: rgba(var(--accent-rgb), 0.2); }
 
-/* Citas bloque en el contenido */
 .content-quote {
   border-left: 3px solid var(--color-accent);
   padding: 0.6rem 1.2rem; margin: 1rem 0 1.5rem;
@@ -1001,7 +969,6 @@
   border-radius: 0 6px 6px 0;
 }
 
-/* Subtítulos (H2) en el contenido */
 .modal-description h3 {
   font-family: var(--font-display);
   color: var(--color-white);
@@ -1010,7 +977,6 @@
   line-height: 1.3; letter-spacing: -0.01em;
 }
 
-/* Listas en el contenido */
 .modal-description ul {
   padding-left: 1.5rem; list-style: none;
   margin: 1rem 0 1.5rem;
@@ -1026,11 +992,9 @@
   color: var(--color-accent); font-weight: 700;
 }
 
-/* Negrita y cursiva en el contenido */
 .modal-description strong { color: var(--color-white); font-weight: 700; }
 .modal-description em { color: var(--color-accent); font-style: italic; }
 
-/* Imágenes inline en el contenido */
 .content-inline-image {
   margin: 1.5rem 0;
   border-radius: 6px; overflow: hidden;
@@ -1039,14 +1003,12 @@
 .content-inline-image img { width: 100%; display: block; }
 
 /* ============ 18 FONT AWESOME (tamaños + animaciones) ============ */
-/* Botón cerrar modal (X de FA) */
 .modal-close i[class*="fa-"] {
   font-size: 18px;
   transition: transform 0.3s var(--ease-out-expo);
 }
 .modal-close:hover i[class*="fa-"] { transform: rotate(90deg); }
 
-/* Botones de acción (like, compartir, whatsapp) */
 .modal-like-btn i[class*="fa-"],
 .modal-save-btn i[class*="fa-"] {
   font-size: 14px; width: 16px; height: 16px;
@@ -1054,42 +1016,26 @@
   transition: transform 0.3s var(--ease-out-expo);
 }
 
-/* Efecto "pop" al dar like (corazón se llena y rebota) */
 .modal-like-btn.liked i.fa-heart {
   color: var(--color-accent);
-  animation: likePopFA 0.5s var(--ease-out-expo);
-}
-@keyframes likePopFA {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.4); }
-  60% { transform: scale(0.9); }
-  100% { transform: scale(1); }
+  animation: likePop 0.5s var(--ease-out-expo);
 }
 
-/* WhatsApp con hover verde juvenil */
 .whatsapp-btn i.fa-whatsapp { color: #25D366; }
-.whatsapp-btn:hover {
-  background: rgba(37, 211, 102, 0.12);
-  border-color: #25D366;
-  color: #25D366;
-}
 .whatsapp-btn:hover i.fa-whatsapp { transform: scale(1.15) rotate(-8deg); }
 
-/* Botón comentar con flecha animada */
 .comment-submit i[class*="fa-"] {
   margin-left: 0.5rem; font-size: 0.8rem;
   transition: transform 0.4s var(--ease-out-expo);
 }
 .comment-submit:hover i[class*="fa-"] { transform: translateX(4px); }
 
-/* Botón Publicar Post con flecha animada */
 .new-post-submit i[class*="fa-"] {
   margin-left: 0.6rem; font-size: 0.85rem;
   transition: transform 0.4s var(--ease-out-expo);
 }
 .new-post-submit:hover i[class*="fa-"] { transform: translateX(5px); }
 
-/* Barra de herramientas Markdown (FA icons) */
 .md-toolbar button {
   display: inline-flex; align-items: center; justify-content: center;
   width: 38px; height: 38px; padding: 0;
@@ -1107,7 +1053,6 @@
 }
 .md-toolbar button:active { transform: translateY(0); }
 
-/* Icono de área de subida (FA image) */
 .upload-icon {
   font-size: 2.5rem; color: var(--color-accent);
   opacity: 0.6; margin-bottom: 1rem;
@@ -1118,24 +1063,20 @@
   opacity: 1; transform: scale(1.1);
 }
 
-/* Botón "Insertar imagen" con icono cámara */
 .toolbar-btn i[class*="fa-"] { margin-right: 0.5rem; font-size: 0.85rem; }
 
-/* Botón agregar categoría (FA plus) */
 .category-add-btn i[class*="fa-"] { font-size: 1rem; }
 .category-add-btn:hover i[class*="fa-"] {
   transform: rotate(90deg);
   transition: transform 0.4s var(--ease-out-expo);
 }
 
-/* Responsive ajustes */
 @media (max-width: 480px) {
   .md-toolbar button { width: 34px; height: 34px; font-size: 0.8rem; }
   .modal-like-btn i[class*="fa-"],
   .modal-save-btn i[class*="fa-"] { font-size: 12px; }
 }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .modal-like-btn.liked i.fa-heart,
   .modal-close:hover i[class*="fa-"],
@@ -1146,15 +1087,4 @@
     animation: none !important;
     transform: none !important;
   }
-}
-
-/* Animaciones base */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(110%); }
-  to { transform: translateY(0); }
 }

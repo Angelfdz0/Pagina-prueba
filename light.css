@@ -1,22 +1,20 @@
 /* ============================================================
-   LIGHT.CSS — SKIN "CLARO PREMIUM"
+   LIGHT.CSS — SKIN "CLARO PREMIUM" (OPTIMIZADO)
    ------------------------------------------------------------
    Arquitectura: el CSS oscuro es la BASE y queda intacto.
    Este archivo es un SKIN que SOLO aplica bajo
    html[data-theme="light"] (lo activa theme.js desde config.js).
-
-   Toda la afinación del modo claro vive AQUÍ (1 archivo).
    ============================================================ */
 
 /* Tokens del modo claro (tinta = azul-noche de la clínica) */
 html[data-theme="light"] {
-  --L-card: #ffffff;                              /* superficies sólidas */
-  --L-line: rgba(15, 42, 63, .10);                /* hairlines */
-  --L-line-strong: rgba(15, 42, 63, .18);         /* bordes de campos */
-  --L-shadow: 0 18px 40px rgba(15, 42, 63, .10);  /* sombra suave premium */
-  --L-glass: rgba(250, 248, 245, .92);            /* vidrio claro (headers) */
-  --L-veil: rgba(15, 42, 63, .16);                /* velo suave sobre fotos */
-  --L-field: #ffffff;                             /* inputs */
+  --L-card: #ffffff;
+  --L-line: rgba(15, 42, 63, .10);
+  --L-line-strong: rgba(15, 42, 63, .18);
+  --L-shadow: 0 18px 40px rgba(15, 42, 63, .10);
+  --L-glass: rgba(250, 248, 245, .92);
+  --L-veil: rgba(15, 42, 63, .16);
+  --L-field: #ffffff;
   color-scheme: light;
 }
 
@@ -100,7 +98,6 @@ html[data-theme="light"] .service-face,
 html[data-theme="light"] .product-card,
 html[data-theme="light"] .post-card,
 html[data-theme="light"] .testimonial-card,
-html[data-theme="light"] .team-face,
 html[data-theme="light"] .location-card,
 html[data-theme="light"] .category-manager,
 html[data-theme="light"] .comment-item,
@@ -116,6 +113,14 @@ html[data-theme="light"] .admin-confirm-card {
   border-color: var(--L-line);
   box-shadow: var(--L-shadow);
 }
+
+/* Tarjeta de equipo: sombra suave propia (sin la "sombra que respira") */
+html[data-theme="light"] .team-face {
+  background: var(--L-card);
+  border-color: var(--L-line);
+  box-shadow: 0 12px 28px rgba(15, 42, 63, .08);
+}
+html[data-theme="light"] .team-card::after { display: none; }
 
 /* ============ HAIRLINES / BORDES INTERNOS ============ */
 html[data-theme="light"] .story-stat-row,
@@ -165,18 +170,23 @@ html[data-theme="light"] .admin-body select option { background: var(--L-card); 
 
 /* ============ VELOS SUAVES SOBRE FOTOS ============ */
 html[data-theme="light"] .team-photo::after { background: linear-gradient(to top, var(--L-veil), transparent 45%); }
-html[data-theme="light"] .team-card::after { background: radial-gradient(ellipse at center, rgba(15,42,63,.20), transparent 70%); }
 html[data-theme="light"] .location-map { box-shadow: var(--L-shadow); }
-/* (los velos de galería/post se quedan: viven SOBRE la foto) */
 
 /* ============ BOTONES / PIEZAS SOBRE CLARO ============ */
 html[data-theme="light"] .action-btn { background: #fff; }
-html[data-theme="light"] .modal-close,
 html[data-theme="light"] .promo-close { background: rgba(15,42,63,.06); color: var(--color-text); }
 html[data-theme="light"] .promo-dot { background: rgba(15,42,63,.2); }
 html[data-theme="light"] .promo-code-wrapper { background: rgba(15,42,63,.04); }
 html[data-theme="light"] .admin-btn { background: #fff; border-color: var(--L-line-strong); }
 html[data-theme="light"] .admin-btn:hover { border-color: var(--color-accent); }
+
+/* Cerrar modal: blanco sólido legible sobre fotos */
+html[data-theme="light"] .modal-close,
+html[data-theme="light"] .post-modal .modal-close {
+  background: rgba(255, 255, 255, .92);
+  color: var(--color-text);
+  box-shadow: 0 4px 14px rgba(15, 42, 63, .25);
+}
 
 /* ============ PARTNERS (logos en gris elegante) ============ */
 html[data-theme="light"] .partner-logo { filter: grayscale(1) opacity(.6); }
@@ -199,28 +209,16 @@ html[data-theme="light"] .admin-table th { background: rgba(15,42,63,.04); }
 html[data-theme="light"] .admin-stat { background: var(--L-card); border-color: var(--L-line); box-shadow: var(--L-shadow); }
 html[data-theme="light"] .admin-stat .num { color: var(--color-text); }
 
-html[data-theme="light"] .team-face {
-  box-shadow: 0 12px 28px rgba(15, 42, 63, .08);  /* sombra suave azul-noche al 8% */
-}
-html[data-theme="light"] .team-card::after {
-  display: none;  /* la "sombra que respira" sí la quitamos */
-}
-
-/* ============================================================
-   ✅ HERO MÓVIL (≤900px): imagen OSCURA + texto BLANCO
-   (va al FINAL de light.css para ganar sobre las reglas split)
-   ============================================================ */
+/* ============ HERO MÓVIL (≤900px): imagen OSCURA + texto BLANCO ============ */
 @media (max-width: 900px) {
-  /* Oscurece la imagen (anula el filter:none del split) */
   html[data-theme="light"] .hero-bg,
   html[data-theme="light"][data-hero-layout="split"] .hero-bg {
-    filter: brightness(.55) saturate(.9) blur(5px);
+    filter: brightness(.55) saturate(.9) blur(3px);   /* blur reducido = mejor rendimiento */
     border-radius: 0;
     border: none;
     box-shadow: none;
   }
 
-  /* Velo oscuro para unificar el fondo del texto */
   html[data-theme="light"] .hero-bg::after {
     background: linear-gradient(180deg,
       rgba(10, 10, 10, .55) 0%,
@@ -228,7 +226,6 @@ html[data-theme="light"] .team-card::after {
       rgba(10, 10, 10, .20) 100%);
   }
 
-  /* Texto en blanco sobre la imagen oscurecida */
   html[data-theme="light"] .hero-title,
   html[data-theme="light"][data-hero-layout="split"] .hero-title { color: #fff; }
   html[data-theme="light"] .hero-subtitle { color: rgba(255,255,255,.9); }
@@ -239,17 +236,11 @@ html[data-theme="light"] .team-card::after {
   html[data-theme="light"] .scroll-indicator-text { color: rgba(255,255,255,.7); }
 }
 
-html[data-theme="light"] .modal-close,
-html[data-theme="light"] .post-modal .modal-close {
-  background: rgba(255, 255, 255, .92);
-  color: var(--color-text);
-  box-shadow: 0 4px 14px rgba(15, 42, 63, .25);
-}
-
+/* ============ PIEZAS FINAS ============ */
 html[data-theme="light"] .footer-brand-name { color: #F5F2EA; }
 html[data-theme="light"] .footer-brand-name span { color: var(--color-accent-light); }
 
-/* Badge "X min" legible sobre la imagen (fondo oscuro + texto blanco) */
+/* Badge "X min" legible sobre la imagen */
 html[data-theme="light"] .post-read-time {
   color: #ffffff;
   background: rgba(15, 42, 63, .55);
@@ -257,8 +248,6 @@ html[data-theme="light"] .post-read-time {
   backdrop-filter: blur(8px);
 }
 
-/* ============ LOADER (telón premium) ============ */
+/* ============ NOTAS ============ */
 /* El loader conserva el telón oscuro (contraste de entrada elegante). */
-
-/* ============ FOOTER ============ */
 /* El footer conserva su fondo oscuro: contraste premium sobre sitio claro. */

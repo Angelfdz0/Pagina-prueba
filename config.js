@@ -76,7 +76,7 @@ const SITE_CONFIG = {
       { label: "Inicio",         href: "#hero" },
       { label: "Nosotros",       href: "#story" },
       { label: "Especialidades", href: "#services" },
-      { label: "Equipo",  href: "#team" },
+      { label: "Equipo",         href: "#team" },
       { label: "Instalaciones",  href: "#gallery" },
       { label: "Blog de Salud",  href: "#blog" },
       { label: "Testimonios",    href: "#testimonials" },
@@ -148,14 +148,14 @@ const SITE_CONFIG = {
       enabled: true,
       title: "Aseguradoras y Convenios",
       logos: [
-        { name: "GNP Seguros",        img: "" },
-        { name: "MetLife",            img: "" },
-        { name: "AXA Seguros",        img: "" },
-        { name: "Allianz",            img: "" },
-        { name: "Mapfre",             img: "" },
-        { name: "Zurich Seguros",     img: "" },
-        { name: "Cigna",              img: "" },
-        { name: "Bupa",               img: "" },
+        { name: "GNP Seguros",    img: "" },
+        { name: "MetLife",        img: "" },
+        { name: "AXA Seguros",    img: "" },
+        { name: "Allianz",        img: "" },
+        { name: "Mapfre",         img: "" },
+        { name: "Zurich Seguros", img: "" },
+        { name: "Cigna",          img: "" },
+        { name: "Bupa",           img: "" },
       ],
     },
   },
@@ -280,18 +280,18 @@ const SITE_CONFIG = {
   // 🖼️ GALERÍA / INSTALACIONES
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   gallery: {
-  enabled: true,
-  label: "Nuestras Instalaciones",
-  heading: "Espacios diseñados para tu <em>bienestar</em>",
-  subtitle: "Instalaciones modernas, higiénicas y pensadas para que te sientas cómodo desde el primer momento.",
-  items: [
-    { image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2000&auto=format&fit=crop", caption: "Recepción Principal",  parallaxSpeed: 0.08 },
-    { image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=2000&auto=format&fit=crop", caption: "Consultorios",        parallaxSpeed: -0.05 },
-    { image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2000&auto=format&fit=crop", caption: "Laboratorio Clínico", parallaxSpeed: 0.1 },
-    { image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2000&auto=format&fit=crop", caption: "Sala de Espera",      parallaxSpeed: -0.08 },
-    { image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2000&auto=format&fit=crop", caption: "Atención Pediátrica", parallaxSpeed: 0.06 },
-  ],
-},
+    enabled: true,
+    label: "Nuestras Instalaciones",
+    heading: "Espacios diseñados para tu <em>bienestar</em>",
+    subtitle: "Instalaciones modernas, higiénicas y pensadas para que te sientas cómodo desde el primer momento.",
+    items: [
+      { image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2000&auto=format&fit=crop", caption: "Recepción Principal",  parallaxSpeed: 0.08 },
+      { image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=2000&auto=format&fit=crop", caption: "Consultorios",        parallaxSpeed: -0.05 },
+      { image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2000&auto=format&fit=crop", caption: "Laboratorio Clínico", parallaxSpeed: 0.1 },
+      { image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2000&auto=format&fit=crop", caption: "Sala de Espera",      parallaxSpeed: -0.08 },
+      { image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2000&auto=format&fit=crop", caption: "Atención Pediátrica", parallaxSpeed: 0.06 },
+    ],
+  },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 💬 FILOSOFÍA (activada para clínicas)
@@ -309,7 +309,7 @@ const SITE_CONFIG = {
   // 🛒 TIENDA (DESACTIVADA — no es natural en clínicas)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ecommerce: { 
-    enabled: false,  // ★ Desactivada (clínicas médicas no venden productos)
+    enabled: true,  // ★ Desactivada (clínicas médicas no venden productos)
     label: "Farmacia",
     heading: "Productos que <em>cuidan</em>",
     subtitle: "Productos médicos y de cuidado personal recomendados por nuestros especialistas.",
@@ -374,7 +374,7 @@ const SITE_CONFIG = {
           { label: "Inicio",           href: "#hero" },
           { label: "Nosotros",         href: "#story" },
           { label: "Especialidades",   href: "#services" },
-          { label: "Equipo",    href: "#team" },
+          { label: "Equipo",           href: "#team" },
           { label: "Instalaciones",    href: "#gallery" },
           { label: "Blog de Salud",    href: "#blog" },
           { label: "Testimonios",      href: "#testimonials" },
@@ -461,6 +461,14 @@ const SITE_CONFIG = {
     key: "sb_publishable_jAgXqz1iqlEyveCIFy4eOw_idYvxmoQ",
     storageBucket: "blog-images",
   },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // Analítica (se activa solo si el cliente la pide Y el usuario acepta)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  analytics: {
+  enabled: false,            // ← pon true cuando el cliente contrate analítica
+  measurementId: "G-XXXXXXXXXX",  // ← ID de Google Analytics 4
+},
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 📧 EMAIL & FORMULARIOS
@@ -563,8 +571,8 @@ const SITE_CONFIG = {
       { d: "Urgencias",       h: "24 horas" },
     ],
 
-     image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2000&auto=format&fit=crop",
-  // ↑ Fachada de la clínica (reemplázala por la foto real del cliente)
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2000&auto=format&fit=crop",
+    // ↑ Fachada de la clínica (reemplázala por la foto real del cliente)
     
     mapsQuery: "Av. Paseo de la Reforma 222, Juárez, Cuauhtémoc, 06600 Ciudad de México, CDMX",
   },
