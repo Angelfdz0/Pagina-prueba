@@ -1434,3 +1434,49 @@ html[data-theme="light"] .team-card:hover .team-photo img {
 .gallery-lite::-webkit-scrollbar { display: none; }
 .gallery-lite .gallery-carousel { transform: none !important; }
 .gallery-lite .gallery-slide { scroll-snap-align: center; }
+
+/* ============================================================
+   📅 FIX INPUT DE FECHA (Citas): icono visible + sin desborde
+   ============================================================ */
+
+/* 1) Columnas que SÍ pueden encoger (evita que se salga en móvil) */
+.appt-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.appt-row .form-group { min-width: 0; }          /* clave: deja encoger al item */
+@media (max-width: 640px) {
+  .appt-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 2) Icono de calendario visible según el tema */
+.appt-form input[type="date"] { color-scheme: dark; }              /* tema oscuro */
+html[data-theme="light"] .appt-form input[type="date"] { color-scheme: light; }  /* tema claro */
+
+/* Icono siempre clickeable y con buen contraste */
+.appt-form input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: .75;
+  transition: opacity .2s;
+}
+.appt-form input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+/* ============================================================
+   📅 FIX INPUT DE FECHA (Citas): icono visible + sin desborde
+   ============================================================ */
+
+/* 1) Columnas que SÍ pueden encoger (evita que se salga en móvil) */
+.appt-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.appt-row .form-group { min-width: 0; }          /* clave: deja encoger al item */
+@media (max-width: 640px) {
+  .appt-row { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 2) Icono de calendario visible según el tema */
+.appt-form input[type="date"] { color-scheme: dark; }              /* tema oscuro */
+html[data-theme="light"] .appt-form input[type="date"] { color-scheme: light; }  /* tema claro */
+
+/* Icono siempre clickeable y con buen contraste */
+.appt-form input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: .75;
+  transition: opacity .2s;
+}
+.appt-form input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
