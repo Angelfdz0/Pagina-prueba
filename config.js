@@ -96,9 +96,10 @@ const SITE_CONFIG = {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   hero: {
     enabled: true,
+    sealImage: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/pngwing.com.png",   // ★ Logo del sello flotante (PNG transparente).
     
     // Imagen: doctor(a) o instalaciones premium (recomendado 2000x1200px)
-    backgroundImage: "https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?q=80&w=2091&auto=format&fit=crop",
+    backgroundImage: "https://www.thenewbarcelonapost.com/uploads/s1/41/74/24/fiatc-clinica-diagonal-metge.jpeg",
     
     eyebrow: "Clínica Médica Premium — Desde 2010",
     
@@ -129,7 +130,7 @@ const SITE_CONFIG = {
     heading: "Más de una década <em>cuidando</em> de ti",
     
     // Imagen: fachada de la clínica o sala de espera premium
-    image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2068&auto=format&fit=crop",
+    image: "https://medicina.uaemex.mx/images/2023/conocetuespacio/labensenanza/e32c28ac-c5b7-4830-9dce-2a363751cb8b.jpg",
     
     paragraphs: [
       "Fundada en 2010 por un equipo de médicos con visión humanista, Clínica Vitalis nació con un propósito claro: ofrecer atención médica de primer nivel sin perder el trato cálido que cada paciente merece. Hoy somos referentes en medicina integral en la región.",
@@ -148,14 +149,13 @@ const SITE_CONFIG = {
       enabled: true,
       title: "Aseguradoras y Convenios",
       logos: [
-        { name: "GNP Seguros",    img: "" },
-        { name: "MetLife",        img: "" },
-        { name: "AXA Seguros",    img: "" },
-        { name: "Allianz",        img: "" },
-        { name: "Mapfre",         img: "" },
-        { name: "Zurich Seguros", img: "" },
-        { name: "Cigna",          img: "" },
-        { name: "Bupa",           img: "" },
+        { name: "GNP Seguros",    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/GNP_Seguros_logo.svg/3840px-GNP_Seguros_logo.svg.png" },
+        { name: "MetLife",        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/MetLife-Logo.svg/3840px-MetLife-Logo.svg.png" },
+        { name: "AXA Seguros",    img: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/axa-health.svg" },
+        { name: "Allianz",        img: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/allianz-1.svg" },
+        { name: "Mapfre",         img: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/mapfre-3.svg" },
+        { name: "Cigna",          img: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/cigna-3.svg" },
+        { name: "Scotiabank",           img: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/scotiabank-5.svg" },
       ],
     },
   },
@@ -201,20 +201,6 @@ const SITE_CONFIG = {
         desc: "**Atención ginecológica completa** con equipo de diagnóstico de última generación.\n\n- Papanicolaou y colposcopia digital\n- Ultrasonido pélvico y obstétrico 4D\n- Control prenatal de alto y bajo riesgo\n- Climaterio y terapia hormonal\n- Planificación familiar\n\n*Ginecólogas certificadas con enfoque humano y discreto.*",
         image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?q=80&w=2069&auto=format&fit=crop"
       },
-      {
-        number: "05",
-        title: "Nutrición Clínica",
-        intro: "Planes alimenticios personalizados basados en evidencia científica.",
-        desc: "**Evaluación nutricional integral** con análisis de composición corporal (bioimpedancia).\n\n- Pérdida y control de peso\n- Nutrición deportiva\n- Dietas para enfermedades crónicas (diabetes, hipertensión)\n- Nutrición en embarazo y lactancia\n- Alimentación vegetariana/vegana\n\n*Plan de alimentación personalizado + seguimiento semanal.*",
-        image: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2053&auto=format&fit=crop"
-      },
-      {
-        number: "06",
-        title: "Medicina General",
-        intro: "Tu primer punto de contacto: diagnósticos precisos y derivaciones oportunas.",
-        desc: "**Consulta médica integral** con historia clínica digital completa.\n\n- Chequeo médico preventivo anual\n- Interpretación de estudios de laboratorio\n- Certificados médicos oficiales\n- Atención de enfermedades agudas\n- Derivación a especialistas cuando sea necesario\n\n*Incluye receta digital y seguimiento por WhatsApp durante 7 días.*",
-        image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=2080&auto=format&fit=crop"
-      },
     ],
   },
 
@@ -230,7 +216,7 @@ const SITE_CONFIG = {
     
     items: [
       {
-        photo: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=2070&auto=format&fit=crop",
+        photo: "https://t4.ftcdn.net/jpg/16/46/03/45/360_F_1646034556_NiefkgqnRJExBY4Ed78jRLqEYLrZN9SP.jpg",
         name: "Dra. María López Hernández",
         cedula: "Céd. Prof. 7845123",
         specialty: "Cardiología Clínica",
@@ -241,7 +227,7 @@ const SITE_CONFIG = {
         schedule: "Lun–Vie · 9:00–17:00",
       },
       {
-        photo: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?q=80&w=2070&auto=format&fit=crop",
+        photo: "https://static.vecteezy.com/system/resources/thumbnails/026/375/249/small/ai-generative-portrait-of-confident-male-doctor-in-white-coat-and-stethoscope-standing-with-arms-crossed-and-looking-at-camera-photo.jpg",
         name: "Dr. Carlos Ramírez Soto",
         cedula: "Céd. Prof. 9234567",
         specialty: "Dermatología",
@@ -252,7 +238,7 @@ const SITE_CONFIG = {
         schedule: "Mar–Sáb · 10:00–18:00",
       },
       {
-        photo: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?q=80&w=1974&auto=format&fit=crop",
+        photo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCyaB0raKmfqufCbPX8fyUV-U_wMSG3PecLACn5FH7tSBs4K6XEPtT_qw&s=10",
         name: "Dra. Andrea Torres Vega",
         cedula: "Céd. Prof. 8123456",
         specialty: "Pediatría",
@@ -263,7 +249,7 @@ const SITE_CONFIG = {
         schedule: "Lun–Vie · 8:00–15:00",
       },
       {
-        photo: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=80&w=1964&auto=format&fit=crop",
+        photo: "https://img.magnific.com/premium-photo/man-smiling-looking-camera-doctor-student-intern-with-stethoscope_709984-4974.jpg?semt=ais_hybrid&w=740&q=80",
         name: "Dr. Roberto Mendoza",
         cedula: "Céd. Prof. 6547891",
         specialty: "Ginecología y Obstetricia",
@@ -285,11 +271,11 @@ const SITE_CONFIG = {
     heading: "Espacios diseñados para tu <em>bienestar</em>",
     subtitle: "Instalaciones modernas, higiénicas y pensadas para que te sientas cómodo desde el primer momento.",
     items: [
-      { image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=2000&auto=format&fit=crop", caption: "Recepción Principal",  parallaxSpeed: 0.08 },
-      { image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=2000&auto=format&fit=crop", caption: "Consultorios",        parallaxSpeed: -0.05 },
-      { image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?q=80&w=2000&auto=format&fit=crop", caption: "Laboratorio Clínico", parallaxSpeed: 0.1 },
-      { image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=2000&auto=format&fit=crop", caption: "Sala de Espera",      parallaxSpeed: -0.08 },
-      { image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2000&auto=format&fit=crop", caption: "Atención Pediátrica", parallaxSpeed: 0.06 },
+      { image: "https://cdn.getmidnight.com/f0f4b6598f2cee45644673998b4f44be/2025/04/disenos-de-recepcion-para-tu-clinica-integrada-con-sala-de-espera.webp", caption: "Recepción Principal",  parallaxSpeed: 0.08 },
+      { image: "https://clinicasarabia.com/wp-content/uploads/elementor/thumbs/Clinica-Sarabia-Tehuacan-Renta-de-Consultorios-Medicos-03-reyj6z6seynoux1femj5xa9b92bljvvzazlwgp4u9s.webp", caption: "Consultorios",        parallaxSpeed: -0.05 },
+      { image: "https://upload.wikimedia.org/wikipedia/commons/9/9e/LabMachines.jpg", caption: "Laboratorio Clínico", parallaxSpeed: 0.1 },
+      { image: "https://cdn.pixabay.com/photo/2020/04/09/21/15/hospital-5023120_640.jpg", caption: "Sala de Espera",      parallaxSpeed: -0.08 },
+      { image: "https://blogs.ugto.mx/enfermeriaenlinea/wp-content/uploads/sites/43/2018/04/EL_136365488b4db45_0.jpg", caption: "Atención Pediátrica", parallaxSpeed: 0.06 },
     ],
   },
 
@@ -309,7 +295,7 @@ const SITE_CONFIG = {
   // 🛒 TIENDA (DESACTIVADA — no es natural en clínicas)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   ecommerce: { 
-    enabled: true,  // ★ Desactivada (clínicas médicas no venden productos)
+    enabled: false,  // ★ Desactivada (clínicas médicas no venden productos)
     label: "Farmacia",
     heading: "Productos que <em>cuidan</em>",
     subtitle: "Productos médicos y de cuidado personal recomendados por nuestros especialistas.",

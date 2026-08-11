@@ -376,3 +376,89 @@ html[data-theme="light"] .image-upload-area { background: rgba(15,42,63,.03); }
 
 html[data-theme="light"] .admin-brand { color: var(--color-text); }
 html[data-theme="light"] .admin-brand span { color: var(--color-accent); }
+
+/* ============================================================
+🏥 FIX CONTRASTE — EDITOR DE SERVICIOS EN TEMA CLARO
+============================================================ */
+html[data-theme="light"] #view-services #serviceEditor {
+  background: linear-gradient(160deg, rgba(var(--accent-rgb), .05), transparent 45%), var(--A-card);
+  border-color: var(--A-line);
+  box-shadow: var(--A-shadow);
+}
+html[data-theme="light"] #view-services #serviceEditor h3 { color: var(--color-text); }
+html[data-theme="light"] #view-services #serviceEditor input,
+html[data-theme="light"] #view-services #serviceEditor textarea {
+  background: #ffffff;
+  border: 1px solid var(--A-line-strong);
+  color: var(--color-text);
+}
+html[data-theme="light"] #view-services #serviceEditor input::placeholder,
+html[data-theme="light"] #view-services #serviceEditor textarea::placeholder {
+  color: var(--color-text-muted);
+  opacity: .75;
+}
+html[data-theme="light"] #view-services #serviceEditor input:focus,
+html[data-theme="light"] #view-services #serviceEditor textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .15);
+}
+html[data-theme="light"] #view-services #serviceEditor label.admin-check {
+  background: rgba(15, 42, 63, .03);
+  border-color: var(--A-line);
+  color: var(--color-text-muted);
+}
+
+/* ============ COLAPSABLES: CUPONES / TESTIMONIOS ============ */
+#view-coupons #newCouponBtn,
+#view-testimonials #newTestimonialBtn { margin-bottom: 1.2rem; }
+.admin-collapsible[hidden] { display: none; }
+
+/* ============================================================
+🧾 TABLAS ORDENADAS — textos largos sin desastre
+============================================================ */
+/* Más respiro horizontal: la tabla desliza en vez de aplastarse */
+.admin-table { min-width: 760px; }
+#appointmentsTable .admin-table { min-width: 920px; }
+#ordersTable .admin-table { min-width: 840px; }
+
+/* Nombres / autores: máximo 2 líneas con "…" (adiós filas gigantes) */
+.cell-author {
+  position: relative;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 230px;
+  padding-left: 1.05rem;
+  overflow-wrap: normal;
+}
+.cell-author::before {
+  position: absolute;
+  left: 0;
+  top: .55em;
+}
+
+/* Textos largos (motivo, comentario): 2 líneas y "…" */
+.cell-clamp { max-width: 300px; }
+
+/* Datos secundarios (fecha · horario): máx. 2 líneas, sin cortes feos */
+.cell-muted {
+  max-width: 240px;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  white-space: normal;
+}
+
+/* Títulos: un poco más de espacio para leerlos mejor */
+.cell-title { max-width: 320px; }
+
+#appointmentsTable .cell-muted { display: block; -webkit-line-clamp: unset; line-clamp: unset; }
+.appt-date { display: block; font-weight: 600; color: var(--color-text); white-space: nowrap; }
+.appt-slot {
+  display: block; margin-top: .15rem;
+  font-size: .75rem; color: var(--color-text-muted);
+  max-width: 200px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}

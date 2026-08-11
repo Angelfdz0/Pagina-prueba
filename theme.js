@@ -58,6 +58,15 @@
     // IMPORTANTE: debe aplicarse SIEMPRE, independiente de Font Awesome
     root.setAttribute('data-theme', t.mode || 'dark');
 
+     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ // 🎖️ SELLO DEL HERO (logo flotante en layout split)
+ // Si hay logo en config.js, reemplaza la cruz médica por el logo.
+ // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ if (C.hero?.sealImage) {
+     r.setProperty('--hero-seal-img', `url("${C.hero.sealImage}") center / 60% 60% no-repeat`);
+     r.setProperty('--hero-seal-cross', 'none');
+ }
+
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 🔗 4. CARGA DE RECURSOS EXTERNOS (Fuentes e Íconos)
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

@@ -665,8 +665,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
 .gallery-carousel { display: flex; gap: clamp(1rem, 2vw, 2rem); padding: 0 clamp(2rem, 5vw, 8rem); transition: none; }
 .gallery-carousel.is-snapping { transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
 .gallery-slide { position: relative; flex-shrink: 0; overflow: hidden; border-radius: 4px; transition: transform 0.6s var(--ease-out-expo), opacity 0.6s var(--ease-out-expo); }
-.gallery-slide { width: clamp(280px, 45vw, 500px); height: clamp(380px, 60vw, 650px); }
-.gallery-slide-img-wrapper { position: absolute; inset: -20%; overflow: hidden; }
+.gallery-slide { width: clamp(320px, 52vw, 640px); height: auto; aspect-ratio: 3 / 2; }
+.gallery-slide-img-wrapper { position: absolute; inset: -6%; overflow: hidden; }
 .gallery-slide-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease-out-expo), filter 0.6s var(--ease-out-expo); filter: brightness(0.85) saturate(0.9); pointer-events: none; }
 .gallery-slide:hover .gallery-slide-img { filter: brightness(1.1) saturate(1.3); }
 .gallery-slide::after {
@@ -705,7 +705,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   80% { opacity: 0.6; } 100% { opacity: 0; }
 }
 @media (max-width: 768px) {
-  .gallery-slide { width: clamp(260px, 75vw, 320px); height: clamp(340px, 90vw, 420px); }
+  .gallery-slide { width: min(88vw, 440px); height: auto; aspect-ratio: 4 / 3; }
   .gallery-carousel { padding: 0 1.5rem; gap: 1rem; }
 }
 
@@ -1005,7 +1005,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--color-accent); 
   .hero-bg { transform: none !important; }
   .story-image { transform: none !important; }
   .reveal, .reveal-left, .reveal-right, .reveal-scale { transition-duration: 0.6s; }
-  .gallery-slide-img { transform: scale(1.1) !important; }
+  .gallery-slide-img { transform: none !important; }
   .blog-particles-container, .contact-particles-container, .ecommerce-particles { opacity: 0.4; }
   .section-blog.blog-visible .blog-ink-bg { transform: translate(-50%, -50%) scale(1); }
   .philosophy-cta, .ecommerce-cta, .blog-cta, .contact-submit, .hero-cta { transition: all 0.3s ease; }
@@ -1459,24 +1459,219 @@ html[data-theme="light"] .appt-form input[type="date"] { color-scheme: light; } 
 .appt-form input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 /* ============================================================
-   📅 FIX INPUT DE FECHA (Citas): icono visible + sin desborde
-   ============================================================ */
+📅 FIX INPUT DE FECHA (Citas): alineado en iPhone / iOS Safari
+============================================================ */
 
-/* 1) Columnas que SÍ pueden encoger (evita que se salga en móvil) */
+/* 1) Columnas que SÍ pueden encoger (evita desborde en el grid) */
 .appt-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-.appt-row .form-group { min-width: 0; }          /* clave: deja encoger al item */
+.appt-row .form-group { min-width: 0; }
+
 @media (max-width: 640px) {
   .appt-row { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* 2) Icono de calendario visible según el tema */
-.appt-form input[type="date"] { color-scheme: dark; }              /* tema oscuro */
-html[data-theme="light"] .appt-form input[type="date"] { color-scheme: light; }  /* tema claro */
+.appt-form input[type="date"] { color-scheme: dark; }
+html[data-theme="light"] .appt-form input[type="date"] { color-scheme: light; }
 
-/* Icono siempre clickeable y con buen contraste */
+/* 3) Normaliza el campo de fecha en iOS (Safari iPhone) */
+.appt-form input[type="date"].form-input {
+  -webkit-appearance: none;   /* Quita el render nativo que ignora el ancho */
+  appearance: none;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  text-align: left;           /* Lo alinea con el resto de los campos */
+}
+
+/* Icono del calendario clickeable y con buen contraste */
 .appt-form input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
   opacity: .75;
   transition: opacity .2s;
 }
 .appt-form input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+/* ============================================================
+💎 HERO SPLIT — TARJETA PREMIUM CON ADORNOS
+============================================================ */
+/* 1) Trama de puntos que asoma por arriba de la tarjeta */
+[data-hero-layout="split"] .hero::before {
+  content: '';
+  position: absolute;
+  top: 4%;
+  right: calc(clamp(1rem, 4vw, 4.5rem) + 10px);
+  width: min(34%, 480px);
+  height: 34%;
+  background-image: radial-gradient(rgba(var(--accent-rgb), .38) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(160deg, #000 35%, transparent 78%);
+  mask-image: linear-gradient(160deg, #000 35%, transparent 78%);
+  pointer-events: none;
+}
+/* 2) Sello flotante (cruz médica) en la esquina de la tarjeta */
+[data-hero-layout="split"] .hero::after {
+  content: '';
+  position: absolute;
+  left: calc(53% - 46px);
+  bottom: 17%;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background:
+    linear-gradient(var(--color-accent), var(--color-accent)) center / 36% 3px no-repeat,
+    linear-gradient(var(--color-accent), var(--color-accent)) center / 3px 36% no-repeat,
+    var(--color-white);
+  border: 1px solid rgba(var(--accent-rgb), .55);
+  box-shadow: 0 18px 40px rgba(15, 42, 63, .18);
+  animation: heroSealFloat 7s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes heroSealFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+/* 3) Tarjeta: esquinas suaves + panel desplazado detrás */
+[data-hero-layout="split"] .hero-bg {
+  border-radius: 24px;
+  box-shadow:
+    -20px 20px 0 rgba(var(--accent-rgb), .10),
+    0 40px 80px rgba(15, 42, 63, .25);
+}
+/* 4) Marco doble desplazado (línea + contralínea) */
+[data-hero-layout="split"] .hero-bg::before {
+  transform: translate(20px, 20px);
+  border: 1px solid rgba(var(--accent-rgb), .55);
+  outline: 1px solid rgba(var(--accent-rgb), .22);
+  outline-offset: 7px;
+  border-radius: 24px;
+}
+/* Tema claro: sombra premium más profunda */
+html[data-theme="light"][data-hero-layout="split"] .hero-bg.hero-bg {
+  box-shadow:
+    -20px 20px 0 rgba(var(--accent-rgb), .12),
+    0 40px 90px rgba(15, 42, 63, .20);
+}
+/* Móvil: sin adornos flotantes (la foto respira sola) */
+@media (max-width: 900px) {
+  [data-hero-layout="split"] .hero::before,
+  [data-hero-layout="split"] .hero::after { display: none; }
+  [data-hero-layout="split"] .hero-bg { box-shadow: 0 30px 60px rgba(15, 42, 63, .25); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-hero-layout="split"] .hero::after { animation: none; }
+}
+
+/* ============================================================
+💎 HERO SPLIT v2 — CONTORNO PREMIUM + SELLO CON LOGO
+============================================================ */
+/* 1) Contorno "passe-partout": marco blanco + contralínea verde */
+[data-hero-layout="split"] .hero-bg.hero-bg,
+html[data-theme="light"][data-hero-layout="split"] .hero-bg.hero-bg {
+  border: none;
+  box-shadow:
+    0 0 0 1px rgba(15, 42, 63, .12),            /* hairline al borde de la foto */
+    0 0 0 10px #ffffff,                          /* marco blanco (grueso del marco) */
+    0 0 0 11px rgba(var(--accent-rgb), .30),     /* contralínea verde exterior */
+    -24px 24px 0 rgba(var(--accent-rgb), .10),   /* panel desplazado (adorno) */
+    0 45px 90px rgba(15, 42, 63, .22);           /* sombra profunda */
+}
+/* Suaviza el marco doble anterior para no saturar de líneas */
+[data-hero-layout="split"] .hero-bg::before {
+  outline: none;
+  border: 1px solid rgba(var(--accent-rgb), .45);
+  transform: translate(24px, 24px);
+  border-radius: 26px;
+}
+
+/* 2) SELLO: logo desde config.js (hero.sealImage) o cruz médica por defecto */
+[data-hero-layout="split"] .hero::after {
+  width: 100px; height: 100px;
+  left: calc(53% - 50px);
+  background:
+    var(--hero-seal-img, none),
+    var(--hero-seal-cross,
+        linear-gradient(var(--color-accent), var(--color-accent)) center / 36% 3px no-repeat,
+        linear-gradient(var(--color-accent), var(--color-accent)) center / 3px 36% no-repeat),
+    #ffffff;
+}
+
+/* ============================================================
+🖼️ HISTORIA — TARJETA PREMIUM (misma lengua visual del hero)
+============================================================ */
+/* Marco tipo foto enmarcada: hairline + passe-partout + contralínea
+   + panel desplazado (abajo-derecha) + sombra profunda */
+.story-image-wrapper {
+  border-radius: 24px;
+  box-shadow:
+    0 0 0 1px rgba(15, 42, 63, .12),           /* hairline al borde de la foto */
+    0 0 0 10px #ffffff,                         /* marco blanco (grosor ajustable) */
+    0 0 0 11px rgba(var(--accent-rgb), .30),    /* contralínea verde quirúrgico */
+    24px 24px 0 rgba(var(--accent-rgb), .10),   /* panel desplazado (adorno) */
+    0 45px 90px rgba(15, 42, 63, .22);          /* sombra profunda */
+}
+/* Hairline interior siguiendo el nuevo radio */
+.story-image-wrapper::before {
+  border: 1px solid rgba(255, 255, 255, .35);
+  border-radius: 24px;
+}
+/* Trama de puntos que asoma por arriba-izquierda, detrás de la foto */
+.story-grid::before {
+  content: '';
+  position: absolute;
+  top: -26px; left: -26px;
+  width: min(58%, 460px); height: 42%;
+  background-image: radial-gradient(rgba(var(--accent-rgb), .38) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+  -webkit-mask-image: linear-gradient(135deg, #000 30%, transparent 75%);
+  mask-image: linear-gradient(135deg, #000 30%, transparent 75%);
+  pointer-events: none;
+}
+/* Tono premium sutil para la foto (sin apagarla) */
+.story-image { filter: saturate(.95) contrast(1.03); }
+
+/* Móvil: marco más ligero y sin trama (la foto respira sola) */
+@media (max-width: 768px) {
+  .story-grid::before { display: none; }
+  .story-image-wrapper {
+    box-shadow:
+      0 0 0 1px rgba(15, 42, 63, .12),
+      0 0 0 8px #ffffff,
+      0 0 0 9px rgba(var(--accent-rgb), .30),
+      0 30px 60px rgba(15, 42, 63, .20);
+  }
+}
+
+/* ============ NÚMERO GHOST DE SERVICIOS: solo pantallas chicas ============ */
+.services-ghost { display: none; }
+@media (max-width: 640px) {
+  .services-ghost { display: block; }
+}
+
+/* ============================================================
+🛠️ RESTAURAR GALERÍA "LIBRERÍA" (tarjetas altas premium)
+============================================================ */
+.gallery-slide {
+  width: clamp(280px, 45vw, 500px);
+  height: clamp(380px, 60vw, 650px);
+  aspect-ratio: auto;
+  border-radius: 6px 18px 18px 6px;
+  border-left: 3px solid rgba(var(--accent-rgb), .35);
+  box-shadow: -14px 0 28px rgba(15, 42, 63, .18);
+}
+.gallery-slide + .gallery-slide { margin-left: clamp(-3.5rem, -4vw, -1.5rem); }
+.gallery-slide-img-wrapper { position: absolute; inset: -10%; overflow: hidden; }
+
+@media (max-width: 768px) {
+  .gallery-slide {
+    width: clamp(260px, 75vw, 320px);
+    height: clamp(340px, 90vw, 420px);
+    aspect-ratio: auto;
+    border-radius: 10px;
+    border-left: none;
+    box-shadow: 0 6px 16px rgba(15, 42, 63, .12);
+  }
+  .gallery-slide + .gallery-slide { margin-left: 0; }
+}

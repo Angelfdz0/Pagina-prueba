@@ -161,7 +161,7 @@
             list:   { line: '- ' },
             quote:  { line: '> ' }
         };
-        const scope = textarea.closest('form, .admin-editor-card, .new-post-inner');
+        const scope = textarea.closest('form, .admin-editor-card, .new-post-inner, #serviceEditor');
         const toolbar = scope && scope.querySelector('.md-toolbar');
         if (!toolbar) return;
         
@@ -226,78 +226,34 @@
 
     // Carga selectiva: solo módulos activos
     async function loadAll() {
-        const sb = getSupabase();
-        const queries = [];
-        
-        if (C.blog?.enabled !== false) {
-            queries.push(
-                sb.from('posts').select('*').order('created_at', { ascending: false }),
-                sb.from('post_comments').select('*').order('created_at', { ascending: false }),
-                sb.from('categories').select('*').order('name'),
-                sb.from('post_likes').select('post_id')
-            );
-        } else {
-            queries.push(null, null, null, null);
-        }
-        
-        if (C.ecommerce?.enabled !== false) {
-            queries.push(
-                sb.from('orders').select('*').order('created_at', { ascending: false }),
-                sb.from('coupons').select('*').order('created_at', { ascending: false })
-            );
-        } else {
-            queries.push(null, null);
-        }
-        
-        if (C.testimonials?.enabled !== false) {
-            queries.push(sb.from('testimonials').select('*').order('created_at', { ascending: false }));
-        } else {
-            queries.push(null);
-        }
-        
-        if (C.appointments?.enabled === true) {
-            queries.push(sb.from('appointments').select('*').order('created_at', { ascending: false }));
-        } else {
-            queries.push(null);
-        }
-        
-        const results = await Promise.all(queries);
-        
-        let idx = 0;
-        if (C.blog?.enabled !== false) {
-            DATA.posts = results[idx++]?.data || [];
-            DATA.comments = results[idx++]?.data || [];
-            DATA.categories = results[idx++]?.data || [];
-            DATA.likes = results[idx++]?.data || [];
-        }
-        
-        if (C.ecommerce?.enabled !== false) {
-            DATA.orders = results[idx++]?.data || [];
-            DATA.coupons = results[idx++]?.data || [];
-        }
-        
-        if (C.testimonials?.enabled !== false) {
-            DATA.testimonials = results[idx++]?.data || [];
-        }
-        
-        if (C.appointments?.enabled === true) {
-            DATA.appointments = results[idx++]?.data || [];
-        }
-        
-        if (C.ecommerce?.enabled !== false) {
-            try {
-                const prod = await sb.from('products').select('*').order('created_at', { ascending: false });
-                DATA.products = prod.data || [];
-            } catch (e) { DATA.products = []; console.warn('Tabla products no disponible'); }
-        }
-        
-        if (C.services?.enabled !== false || C.services?.items?.length) {
-            try {
-                const srv = await sb.from('services').select('*').order('sort', { ascending: true }).order('created_at', { ascending: true });
-                DATA.services = srv.data || [];
-            } catch (e) { DATA.services = []; console.warn('Tabla services no disponible'); }
-        }
+    const sb = getSupabase();
+    const safe = (p) => p.then(r => r.data || []).catch(() => []);
+
+    if (C.blog?.enabled !== false) {
+        [DATA.posts, DATA.comments, DATA.categories, DATA.likes] = await Promise.all([
+            safe(sb.from('posts').select('*').order('created_at', { ascending: false })),
+            safe(sb.from('post_comments').select('*').order('created_at', { ascending: false })),
+            safe(sb.from('categories').select('*').order('name')),
+            safe(sb.from('post_likes').select('post_id'))
+        ]);
     }
+    if (C.ecommerce?.enabled !== false) {
+        [DATA.orders, DATA.coupons, DATA.products] = await Promise.all([
+            safe(sb.from('orders').select('*').order('created_at', { ascending: false })),
+            safe(sb.from('coupons').select('*').order('created_at', { ascending: false })),
+            safe(sb.from('products').select('*').order('created_at', { ascending: false }))
+        ]);
+    }
+    if (C.testimonials?.enabled !== false) {
+        DATA.testimonials = await safe(sb.from('testimonials').select('*').order('created_at', { ascending: false }));
+    }
+    if (C.appointments?.enabled === true) {
+        DATA.appointments = await safe(sb.from('appointments').select('*').order('created_at', { ascending: false }));
+    }
+    if (C.services?.enabled !== false || C.services?.items?.length) {
+        DATA.services = await safe(sb.from('services').select('*').order('sort', { ascending: true }).order('created_at', { ascending: true }));
+    }
+}
 
     function renderAll() {
         renderDashboard();
@@ -345,30 +301,30 @@
     updateViewShortcut('dashboard');
 
     function applyAdminTabsVisibility() {
-        const rules = {
-            posts:        C.blog?.enabled !== false,
-            categories:   C.blog?.enabled !== false,
-            comments:     C.blog?.enabled !== false,
-            products:     C.ecommerce?.enabled !== false,
-            orders:       C.ecommerce?.enabled !== false,
-            coupons:      C.ecommerce?.enabled !== false,
-            testimonials: C.testimonials?.enabled !== false,
-            appointments: C.appointments?.enabled === true,
-        };
-        Object.entries(rules).forEach(([view, visible]) => {
-            const btn = document.querySelector(`.admin-sidebar nav button[data-view="${view}"]`);
-            if (btn) btn.style.display = visible ? '' : 'none';
-        });
-        const activeBtn = document.querySelector('.admin-sidebar nav button.active');
-        if (activeBtn && activeBtn.style.display === 'none') {
-            document.querySelector('.admin-sidebar nav button[data-view="dashboard"]')?.click();
-        }
+    const rules = {
+        posts:        C.blog?.enabled !== false,
+        categories:   C.blog?.enabled !== false,
+        comments:     C.blog?.enabled !== false,
+        products:     C.ecommerce?.enabled !== false,
+        orders:       C.ecommerce?.enabled !== false,
+        coupons:      C.ecommerce?.enabled !== false,
+        testimonials: C.testimonials?.enabled !== false,
+        appointments: C.appointments?.enabled === true
+    };
+    Object.entries(rules).forEach(([view, visible]) => {
+        const btn = document.querySelector(`.admin-sidebar nav button[data-view="${view}"]`);
+        if (btn) btn.style.display = visible ? '' : 'none';
+        // Si el módulo está apagado, también apaga su vista por seguridad
+        const vista = document.getElementById('view-' + view);
+        if (vista && !visible) vista.classList.remove('active');
+    });
+    // Si la pestaña activa quedó oculta, regresa al Dashboard
+    const activeBtn = document.querySelector('.admin-sidebar nav button.active');
+    if (activeBtn && activeBtn.style.display === 'none') {
+        document.querySelector('.admin-sidebar nav button[data-view="dashboard"]')?.click();
     }
+}
 
-    if (C.appointments?.enabled !== true) {
-        const b = document.querySelector('[data-view="appointments"]');
-        if (b) b.style.display = 'none';
-    }
 
     function renderDashboard() {
         const stats = [];
@@ -418,7 +374,7 @@
             <td class="cell-date">${fmtDate(a.created_at)}</td>
             <td><span class="cell-author">${escapeHtml(a.name)}</span></td>
             <td><a href="https://wa.me/${escapeHtml((a.phone || '').replace(/\D/g, ''))}" target="_blank" rel="noopener" style="color:var(--color-accent)">${escapeHtml(a.phone)}</a></td>
-            <td class="cell-muted">${escapeHtml(a.date)} · ${escapeHtml(a.slot)}</td>
+            <td class="cell-muted"><span class="appt-date">${escapeHtml(a.date)}</span><span class="appt-slot">${escapeHtml(a.slot)}</span></td>
             <td><span class="cell-clamp">${escapeHtml(a.reason || '—')}</span></td>
             <td><select class="admin-select" data-appt="${a.id}">
                 ${['pending', 'confirmed', 'cancelled'].map(s => `<option value="${s}" ${a.status === s ? 'selected' : ''}>${s === 'pending' ? 'Pendiente' : s === 'confirmed' ? 'Confirmada' : 'Cancelada'}</option>`).join('')}
@@ -790,7 +746,7 @@
             show_in_popup: $('#couponPopup').checked
         }]);
         toast(error ? 'Error: ' + error.message : 'Cupón creado');
-        if (!error) { e.target.reset(); $('#couponBadge').value = '🔥 OFERTA'; await loadAll(); renderCoupons(); }
+        if (!error) { e.target.reset(); $('#couponBadge').value = '🔥 OFERTA'; await loadAll(); renderCoupons(); if (couponEditorCtl) couponEditorCtl.close(); }
     });
 
     let prodImagesArr = [];
@@ -1039,19 +995,24 @@
         }]);
         toast(error ? 'Error: ' + error.message : 'Testimonio publicado');
         if (!error) {
-            e.target.reset(); tPhotosArr = []; renderTestimonialPhotos();
-            await loadAll(); renderTestimonials();
-        }
+    e.target.reset(); tPhotosArr = []; renderTestimonialPhotos();
+    await loadAll(); renderTestimonials();
+    if (testimonialEditorCtl) testimonialEditorCtl.close();
+}
     });
 
     let editingServiceId = null;
 
     (function attachServiceToolbar() {
-        const ta = $('#serviceContent');
-        if (!ta) return;
-        ta.insertAdjacentHTML('beforebegin', MD_TOOLBAR_HTML);
-        attachMdToolbar(ta);
-    })();
+    const ta = $('#serviceContent');
+    if (!ta) return;
+    // Elimina la toolbar estática duplicada del HTML (si existe)
+    const staticTb = document.getElementById('serviceMdToolbar');
+    if (staticTb) staticTb.remove();
+    // Inyecta UNA sola toolbar y la deja conectada
+    ta.insertAdjacentHTML('beforebegin', MD_TOOLBAR_HTML);
+    attachMdToolbar(ta);
+})();
 
     function renderServicesAdmin() {
         const el = $('#servicesTable');
@@ -1134,6 +1095,118 @@
         }
         e.target.value = '';
     });
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🧩 FORMS COLAPSABLES: Cupones y Testimonios
+// (igual que Servicios: botón "+ Nuevo" y form oculto por defecto)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function setupCollapsibleForm(formId, viewId, editorId, btnId, label) {
+    const form = document.getElementById(formId);
+    const view = document.getElementById(viewId);
+    if (!form || !view) return null;
+
+    // 1) Contenedor colapsable alrededor del formulario
+    const wrap = document.createElement('div');
+    wrap.id = editorId;
+    wrap.className = 'admin-collapsible';
+    form.parentNode.insertBefore(wrap, form);
+    wrap.appendChild(form);
+
+    // 2) Botón "+ Nuevo ..." después del título de la vista
+    const btn = document.createElement('button');
+    btn.id = btnId;
+    btn.type = 'button';
+    btn.className = 'admin-btn action solid';
+    btn.textContent = label;
+    const h2 = view.querySelector('h2');
+    if (h2) h2.insertAdjacentElement('afterend', btn);
+    else view.prepend(btn);
+
+    const ctl = {
+        form, wrap, btn,
+        open() {
+            wrap.hidden = false;
+            btn.classList.add('active');
+            wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const first = form.querySelector('input, select, textarea');
+            if (first) setTimeout(() => first.focus({ preventScroll: true }), 400);
+        },
+        close() {
+            wrap.hidden = true;
+            btn.classList.remove('active');
+        },
+        toggle() { wrap.hidden ? this.open() : this.close(); }
+    };
+    btn.addEventListener('click', () => ctl.toggle());
+    ctl.close(); // arranca oculto
+    return ctl;
+}
+
+const couponEditorCtl = setupCollapsibleForm(
+    'couponForm', 'view-coupons', 'couponEditor', 'newCouponBtn', '＋ Nuevo cupón'
+);
+const testimonialEditorCtl = setupCollapsibleForm(
+    'testimonialForm', 'view-testimonials', 'testimonialEditor', 'newTestimonialBtn', '＋ Nuevo testimonio'
+);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🔍 LECTOR SIMPLE DE CELDAS (estilos en línea: no depende de admin.css)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function marcarCeldasCortadas() {
+    document.querySelectorAll('.cell-clamp, .cell-author, .cell-title .t, .cell-muted').forEach(function (el) {
+        if (el.scrollHeight > el.clientHeight + 1) {
+            el.style.cursor = 'pointer';
+            el.setAttribute('title', 'Toca para ver el texto completo');
+        }
+    });
+}
+
+// Re-marca cada vez que una tabla se repinta
+new MutationObserver(function () {
+    requestAnimationFrame(marcarCeldasCortadas);
+}).observe(document.body, { childList: true, subtree: true });
+
+// Al tocar una celda cortada → se abre el lector
+document.addEventListener('click', function (e) {
+    var cell = e.target.closest('.cell-clamp, .cell-author, .cell-title .t, .cell-muted');
+    if (!cell) return;
+    if (cell.scrollHeight <= cell.clientHeight + 1) return;
+
+    var td = cell.closest('td');
+    var tabla = td ? td.closest('table') : null;
+    var th = tabla ? tabla.querySelectorAll('th')[td.cellIndex] : null;
+
+    var fondo = document.createElement('div');
+    fondo.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:1rem;';
+
+    var tarjeta = document.createElement('div');
+    tarjeta.style.cssText = 'max-width:480px;width:100%;max-height:70vh;overflow:auto;background:#ffffff;border-radius:12px;padding:1.4rem;box-shadow:0 20px 50px rgba(0,0,0,.4);';
+
+    var titulo = document.createElement('h3');
+    titulo.style.cssText = 'margin:0 0 .8rem;font-size:1rem;color:#2E8B7F;';
+    titulo.textContent = th ? th.textContent.trim() : 'Detalle';
+
+    var texto = document.createElement('p');
+    texto.style.cssText = 'margin:0;line-height:1.7;white-space:pre-wrap;word-break:break-word;font-size:.9rem;color:#0F2A3F;';
+    texto.textContent = cell.textContent.trim();
+
+    var boton = document.createElement('button');
+    boton.type = 'button';
+    boton.textContent = 'Cerrar ✕';
+    boton.style.cssText = 'margin-top:1rem;padding:.6rem 1.2rem;background:#2E8B7F;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:600;';
+
+    tarjeta.appendChild(titulo);
+    tarjeta.appendChild(texto);
+    tarjeta.appendChild(boton);
+    fondo.appendChild(tarjeta);
+    document.body.appendChild(fondo);
+
+    function cerrar() { fondo.remove(); }
+    boton.addEventListener('click', cerrar);
+    fondo.addEventListener('click', function (ev) { if (ev.target === fondo) cerrar(); });
+}, true);
+
+setTimeout(marcarCeldasCortadas, 600);
 
     initAuth();
 

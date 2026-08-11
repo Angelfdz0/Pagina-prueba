@@ -1042,7 +1042,7 @@
         slides.forEach((slide, i) => {
           const norm = ((slideCenters[i] + finalX) - wrapperCenter) / halfW;
           const img = $(".gallery-slide-img", slide);
-          if (img) img.style.transform = `translate3d(${norm * 30}px, 0, 0) scale(1.2)`;
+          if (img) img.style.transform = `translate3d(${norm * 20}px, 0, 0) scale(1.05)`;
           const scale = clamp(1 - Math.abs(norm) * 0.15, 0.85, 1);
           const opacity = clamp(1 - Math.abs(norm) * 0.4, 0.5, 1);
           const rot = clamp(norm * -8, -8, 8);
