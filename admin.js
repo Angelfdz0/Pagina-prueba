@@ -937,16 +937,19 @@
             <td class="cell-muted">${escapeHtml(t.source || 'instagram')}</td>
             <td><span class="badge ${t.is_active ? 'published' : 'draft'}">${t.is_active ? 'Visible' : 'Oculto'}</span></td>
             <td class="cell-actions">
-                <button class="admin-btn" data-togtest="${t.id}" title="${t.is_active ? 'Ocultar' : 'Mostrar'}">${t.is_active ? ICONS.eyeOff : ICONS.eye}</button>
-                <button class="admin-btn danger" data-deltest="${t.id}" title="Eliminar">${ICONS.trash}</button>
-            </td>
+             <button class="admin-btn" data-edittest="${t.id}" title="Editar">${ICONS.edit}</button>
+             <button class="admin-btn" data-togtest="${t.id}" title="${t.is_active ? 'Ocultar' : 'Mostrar'}">${t.is_active ? ICONS.eyeOff : ICONS.eye}</button>
+             <button class="admin-btn danger" data-deltest="${t.id}" title="Eliminar">${ICONS.trash}</button>
+         </td>
         </tr>`).join('') + `</tbody></table>` + pagerHTML('testimonials', DATA.testimonials.length);
 
-        el.addEventListener('click', async e => {
-            const toggleBtn = e.target.closest('[data-togtest]');
-            const delBtn = e.target.closest('[data-deltest]');
-            
-            if (toggleBtn) {
+             el.addEventListener('click', async e => {
+         const editBtn = e.target.closest('[data-edittest]');
+         const toggleBtn = e.target.closest('[data-togtest]');
+         const delBtn = e.target.closest('[data-deltest]');
+         if (editBtn) {
+             openTestimonialEditor(editBtn.dataset.edittest);
+         } else if (toggleBtn) {
                 const t = DATA.testimonials.find(x => String(x.id) === String(toggleBtn.dataset.togtest));
                 await getSupabase().from('testimonials').update({ is_active: !t.is_active }).eq('id', t.id);
                 await loadAll(); renderTestimonials(); toast('Testimonio actualizado');
@@ -967,7 +970,13 @@
 
     const tAddPhoto = $('#tAddPhoto');
     if (tAddPhoto) {
-        tAddPhoto.addEventListener('click', () => $('#tPhotoInput').click());
+             tAddPhoto.addEventListener('click', async () => {
+         const choice = await askImageSource();
+         if (!choice) return;
+         if (choice === 'file') { $('#tPhotoInput').click(); return; }
+         if (choice.url) { tPhotosArr.push(choice.url); renderTestimonialPhotos(); toast('Foto agregada desde enlace ✅'); }
+     });
+     
         $('#tPhotoInput').addEventListener('change', async e => {
             const file = e.target.files[0];
             if (!file) return;
@@ -978,28 +987,72 @@
         });
     }
 
-    const testimonialForm = $('#testimonialForm');
-    if (testimonialForm) testimonialForm.addEventListener('submit', async e => {
-        e.preventDefault();
-        const author = $('#tAuthor').value.trim();
-        const comment = $('#tComment').value.trim();
-        if (!author || !comment) return;
-        const { error } = await getSupabase().from('testimonials').insert([{
-            author,
-            comment,
-            location: $('#tLocation').value.trim() || null,
-            source: $('#tSource').value,
-            rating: Number($('#tRating').value),
-            images: tPhotosArr,
-            is_active: true,
-        }]);
-        toast(error ? 'Error: ' + error.message : 'Testimonio publicado');
-        if (!error) {
-    e.target.reset(); tPhotosArr = []; renderTestimonialPhotos();
-    await loadAll(); renderTestimonials();
-    if (testimonialEditorCtl) testimonialEditorCtl.close();
-}
-    });
+     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ // ✏️ EDITAR TESTIMONIOS (crear vs actualizar)
+ // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ let editingTestimonialId = null;
+
+ function getTestimonialSubmitBtn() {
+     return document.querySelector('#testimonialForm button[type="submit"]') ||
+            document.querySelector('#testimonialForm button:not(#tAddPhoto)');
+ }
+ function openTestimonialEditor(id) {
+     const t = DATA.testimonials.find(x => String(x.id) === String(id));
+     if (!t) return;
+     editingTestimonialId = t.id;
+     $('#tAuthor').value = t.author || '';
+     $('#tLocation').value = t.location || '';
+     $('#tSource').value = t.source || 'instagram';
+     $('#tRating').value = String(t.rating || 5);
+     $('#tComment').value = t.comment || '';
+     tPhotosArr = [...(t.images || [])];
+     renderTestimonialPhotos();
+     const btn = getTestimonialSubmitBtn();
+     if (btn) btn.textContent = 'Guardar cambios';
+     if (testimonialEditorCtl) testimonialEditorCtl.open();
+ }
+ function resetTestimonialEditor() {
+     editingTestimonialId = null;
+     const form = $('#testimonialForm');
+     if (form) form.reset();
+     tPhotosArr = []; renderTestimonialPhotos();
+     const btn = getTestimonialSubmitBtn();
+     if (btn) btn.textContent = 'Publicar testimonio';
+ }
+ // "＋ Nuevo testimonio" siempre entra en modo crear (limpia edición previa)
+ document.getElementById('newTestimonialBtn')?.addEventListener('click', () => {
+     if (editingTestimonialId) resetTestimonialEditor();
+ });
+
+ const testimonialForm = $('#testimonialForm');
+ if (testimonialForm) testimonialForm.addEventListener('submit', async e => {
+     e.preventDefault();
+     const author = $('#tAuthor').value.trim();
+     const comment = $('#tComment').value.trim();
+     if (!author || !comment) { toast('Nombre y comentario son obligatorios'); return; }
+     const payload = {
+         author,
+         comment,
+         location: $('#tLocation').value.trim() || null,
+         source: $('#tSource').value,
+         rating: Number($('#tRating').value),
+         images: tPhotosArr,
+     };
+     let error = null;
+     if (editingTestimonialId) {
+         const res = await getSupabase().from('testimonials').update(payload).eq('id', editingTestimonialId);
+         error = res.error;
+     } else {
+         const res = await getSupabase().from('testimonials').insert([{ ...payload, is_active: true }]);
+         error = res.error;
+     }
+     toast(error ? 'Error: ' + error.message : (editingTestimonialId ? 'Testimonio actualizado ✅' : 'Testimonio publicado ✅'));
+     if (!error) {
+         resetTestimonialEditor();
+         await loadAll(); renderTestimonials();
+         if (testimonialEditorCtl) testimonialEditorCtl.close();
+     }
+ });
 
     let editingServiceId = null;
 
@@ -1083,7 +1136,13 @@
         if (!error) { closeServiceEditor(); await loadAll(); renderServicesAdmin(); }
     });
     
-    $('#serviceImgBtn').addEventListener('click', () => $('#serviceImgInput').click());
+     $('#serviceImgBtn').addEventListener('click', async () => {
+     const choice = await askImageSource();
+     if (!choice) return;
+     if (choice === 'file') { $('#serviceImgInput').click(); return; }
+     if (choice.url) { $('#serviceImage').value = choice.url; toast('Imagen aplicada desde enlace ✅'); }
+ });
+
     $('#serviceImgInput').addEventListener('change', async e => {
         const file = e.target.files[0];
         if (!file) return;
@@ -1207,6 +1266,62 @@ document.addEventListener('click', function (e) {
 }, true);
 
 setTimeout(marcarCeldasCortadas, 600);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🖼️ SELECTOR DE IMAGEN: subir archivo o pegar enlace
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+let imgSourceModal = null;
+let imgSourceResolve = null;
+function closeImgSource(val) {
+    if (imgSourceModal) imgSourceModal.classList.remove('open');
+    if (imgSourceResolve) { imgSourceResolve(val); imgSourceResolve = null; }
+}
+function askImageSource() {
+    return new Promise(resolve => {
+        imgSourceResolve = resolve;
+        if (!imgSourceModal) {
+            imgSourceModal = document.createElement('div');
+            imgSourceModal.className = 'admin-confirm';
+            imgSourceModal.innerHTML = `<div class="admin-confirm-card">
+                <div class="admin-confirm-icon">🖼️</div>
+                <h3>Agregar imagen</h3>
+                <p>Elige cómo quieres agregarla:</p>
+                <div class="img-source-options">
+                    <button class="admin-btn txt" id="imgSrcFile" type="button">📁 Subir archivo</button>
+                    <button class="admin-btn txt" id="imgSrcUrlToggle" type="button">🔗 Pegar enlace</button>
+                </div>
+                <div class="img-source-url" id="imgSrcUrlWrap">
+                    <input type="url" id="imgSrcUrlInput" placeholder="https://.../imagen.jpg" autocomplete="off">
+                    <button class="admin-btn txt" id="imgSrcUrlOk" type="button" style="width:100%;">Usar enlace</button>
+                </div>
+                <div class="admin-confirm-actions">
+                    <button class="admin-btn txt" id="imgSrcCancel" type="button">Cancelar</button>
+                </div>
+            </div>`;
+            document.body.appendChild(imgSourceModal);
+            imgSourceModal.querySelector('#imgSrcFile').addEventListener('click', () => closeImgSource('file'));
+            imgSourceModal.querySelector('#imgSrcUrlToggle').addEventListener('click', () => {
+                const w = imgSourceModal.querySelector('#imgSrcUrlWrap');
+                w.classList.toggle('open');
+                if (w.classList.contains('open')) imgSourceModal.querySelector('#imgSrcUrlInput').focus();
+            });
+            imgSourceModal.querySelector('#imgSrcUrlOk').addEventListener('click', () => {
+                const url = imgSourceModal.querySelector('#imgSrcUrlInput').value.trim();
+                if (!url) { toast('Pega un enlace de imagen válido'); return; }
+                imgSourceModal.querySelector('#imgSrcUrlInput').value = '';
+                closeImgSource({ url });
+            });
+            imgSourceModal.querySelector('#imgSrcUrlInput').addEventListener('keypress', e => {
+                if (e.key === 'Enter') { e.preventDefault(); imgSourceModal.querySelector('#imgSrcUrlOk').click(); }
+            });
+            imgSourceModal.querySelector('#imgSrcCancel').addEventListener('click', () => closeImgSource(null));
+            imgSourceModal.addEventListener('click', e => { if (e.target === imgSourceModal) closeImgSource(null); });
+        }
+        imgSourceModal.querySelector('#imgSrcUrlWrap').classList.remove('open');
+        imgSourceModal.querySelector('#imgSrcUrlInput').value = '';
+        imgSourceModal.classList.add('open');
+    });
+}
 
     initAuth();
 

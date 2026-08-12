@@ -1675,3 +1675,86 @@ html[data-theme="light"][data-hero-layout="split"] .hero-bg.hero-bg {
   }
   .gallery-slide + .gallery-slide { margin-left: 0; }
 }
+
+/* ============================================================
+🖼️ GALERÍA PREMIUM — impresiones enmarcadas + peek en móvil
+============================================================ */
+/* Tramas de puntos detrás del carrusel (eco del hero/historia) */
+.gallery-carousel-wrapper::before,
+.gallery-carousel-wrapper::after {
+  content: '';
+  position: absolute;
+  width: min(28%, 360px); height: 32%;
+  background-image: radial-gradient(rgba(var(--accent-rgb), .32) 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+  pointer-events: none;
+  z-index: 0;
+}
+.gallery-carousel-wrapper::before {
+  top: 4%; left: 3%;
+  -webkit-mask-image: linear-gradient(135deg, #000 30%, transparent 75%);
+  mask-image: linear-gradient(135deg, #000 30%, transparent 75%);
+}
+.gallery-carousel-wrapper::after {
+  bottom: 4%; right: 3%;
+  -webkit-mask-image: linear-gradient(315deg, #000 30%, transparent 75%);
+  mask-image: linear-gradient(315deg, #000 30%, transparent 75%);
+}
+.gallery-carousel { position: relative; z-index: 1; }
+
+/* Tarjetas = impresiones enmarcadas (passe-partout blanco + contralínea) */
+.gallery-slide {
+  border-radius: 14px;
+  border-left: none;
+  box-shadow:
+    0 0 0 1px rgba(15, 42, 63, .12),
+    0 0 0 9px #ffffff,
+    0 0 0 10px rgba(var(--accent-rgb), .28),
+    -16px 0 32px rgba(15, 42, 63, .18),
+    0 30px 60px rgba(15, 42, 63, .22);
+}
+/* En tema oscuro el marco se vuelve sutil (no blanco pleno) */
+html[data-theme="dark"] .gallery-slide {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.10),
+    0 0 0 9px rgba(255,255,255,.05),
+    0 0 0 10px rgba(var(--accent-rgb), .30),
+    -16px 0 32px rgba(0,0,0,.55),
+    0 30px 60px rgba(0,0,0,.55);
+}
+
+/* Leyenda estilo "placa" en tema claro */
+html[data-theme="light"] .gallery-slide-caption {
+  color: var(--color-text);
+  background: rgba(255,255,255,.88);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(var(--accent-rgb), .35);
+  border-radius: 50px;
+  padding: .45rem .95rem;
+  text-shadow: none;
+}
+
+/* ============ MÓVIL: que asome la siguiente tarjeta ============ */
+@media (max-width: 768px) {
+  .gallery-slide {
+    width: clamp(240px, 70vw, 340px);
+    height: clamp(320px, 92vw, 460px);
+    border-radius: 12px;
+    box-shadow:
+      0 0 0 1px rgba(15, 42, 63, .12),
+      0 0 0 6px #ffffff,
+      0 0 0 7px rgba(var(--accent-rgb), .28),
+      0 18px 40px rgba(15, 42, 63, .20);
+  }
+  html[data-theme="dark"] .gallery-slide {
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,.10),
+      0 0 0 6px rgba(255,255,255,.05),
+      0 0 0 7px rgba(var(--accent-rgb), .30),
+      0 18px 40px rgba(0,0,0,.55);
+  }
+  .gallery-carousel { gap: 4vw; padding: 0 5vw; }
+  /* La leyenda siempre visible en móvil (no hay hover) */
+  .gallery-slide-caption { opacity: 1; transform: none; }
+}
