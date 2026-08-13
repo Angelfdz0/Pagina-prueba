@@ -1246,6 +1246,133 @@
     `;
   }
 
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🤝 BLOQUE: COLABORA CON NOSOTROS (B2B)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function buildCollab() {
+  if (!isBlockEnabled("collab") || !C.collab) {
+    const section = $("#collab");
+    if (section) section.style.display = "none";
+    return;
+  }
+  const K = C.collab;
+  const inner = $("#collabInner");
+  if (!inner) return;
+  const marqueeHTML = (K.marquee || []).map(m =>
+    `<span class="collab-marquee-item">${escapeHtml(m)}<i aria-hidden="true">✦</i></span>`).join("");
+  inner.innerHTML = `
+    <div class="collab-marquee" aria-hidden="true">
+      <div class="collab-marquee-track">
+        <div class="collab-marquee-group">${marqueeHTML}</div>
+        <div class="collab-marquee-group">${marqueeHTML}</div>
+      </div>
+    </div>
+    <div class="collab-card reveal">
+      <div class="collab-glow" aria-hidden="true"></div>
+      <span class="collab-badge"><i class="fa-solid fa-handshake" aria-hidden="true"></i> Programa B2B</span>
+      <span class="section-label">${escapeHtml(K.label || "")}</span>
+      <h2 class="section-heading">${K.heading}</h2>
+      <p class="collab-subtitle">${K.subtitle}</p>
+      <div class="collab-points">
+        ${(K.points || []).map((p, i) => `
+          <div class="collab-point reveal reveal-delay-${i + 1}">
+            <i class="fa-solid ${p.icon}" aria-hidden="true"></i>
+            <h3>${escapeHtml(p.title)}</h3>
+            <p>${escapeHtml(p.desc)}</p>
+          </div>`).join("")}
+      </div>
+      <div class="collab-ctas reveal reveal-delay-3">
+        ${K.brochureUrl ? `<a class="collab-cta" href="${K.brochureUrl}" target="_blank" rel="noopener">
+          <i class="fa-solid fa-file-pdf" aria-hidden="true"></i><span>${escapeHtml(K.cta || "Ver folleto")}</span></a>` : ""}
+        ${K.whatsapp ? `<a class="collab-cta ghost" href="https://wa.me/${K.whatsapp}?text=${encodeURIComponent("Hola, me interesa el programa de proveedor de postres.")}" target="_blank" rel="noopener">
+          <i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>${escapeHtml(K.ctaSecondary || "Escríbenos")}</span></a>` : ""}
+      </div>
+    </div>
+  `;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🍓 BLOQUE: TEMPORADA (spotlight + cuenta regresiva)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+let seasonTimer = null;
+function buildSeason() {
+  const section = $("#season");
+  if (!isBlockEnabled("season") || !C.season) {
+    if (section) section.style.display = "none";
+    return;
+  }
+  const K = C.season;
+  const inner = $("#seasonInner");
+  if (!inner) return;
+
+  // ¿Temporada terminada? → el bloque se oculta solo
+  const end = K.endDate ? new Date(K.endDate) : null;
+  if (end && !isNaN(end.getTime()) && end.getTime() <= Date.now()) {
+    section.style.display = "none";
+    return;
+  }
+
+  const marqueeHTML = (K.marquee || []).map(m =>
+    `<span class="season-marquee-item">${escapeHtml(m)}<i aria-hidden="true">✦</i></span>`).join("");
+
+  inner.innerHTML = `
+    <div class="season-marquee" aria-hidden="true">
+      <div class="season-marquee-track">
+        <div class="season-marquee-group">${marqueeHTML}</div>
+        <div class="season-marquee-group">${marqueeHTML}</div>
+      </div>
+    </div>
+    <div class="season-card reveal">
+      <div class="season-glow" aria-hidden="true"></div>
+      <div class="season-media reveal-left">
+        <span class="season-badge">${escapeHtml(K.product?.badge || "Edición limitada")}</span>
+        <img src="${K.product?.image || ""}" alt="${escapeHtml(K.product?.name || "Producto de temporada")}" loading="lazy">
+      </div>
+      <div class="season-info reveal-right">
+        <span class="section-label">${escapeHtml(K.label || "Temporada")}</span>
+        <h2 class="section-heading">${K.heading}</h2>
+        <p class="season-subtitle">${K.subtitle}</p>
+        <h3 class="season-product-name">${escapeHtml(K.product?.name || "")}</h3>
+        <p class="season-product-desc">${escapeHtml(K.product?.desc || "")}</p>
+        ${K.product?.price ? `
+        <div class="season-price">
+          <span class="now">$${Number(K.product.price).toLocaleString("es-MX")}</span>
+          ${K.product.originalPrice ? `<span class="was">$${Number(K.product.originalPrice).toLocaleString("es-MX")}</span>` : ""}
+        </div>` : ""}
+        <div class="season-countdown" role="timer" aria-label="Tiempo restante de la temporada">
+          <div class="season-count"><span class="n" id="scD">--</span><span class="l">días</span></div>
+          <div class="season-count"><span class="n" id="scH">--</span><span class="l">hrs</span></div>
+          <div class="season-count"><span class="n" id="scM">--</span><span class="l">min</span></div>
+          <div class="season-count"><span class="n" id="scS">--</span><span class="l">seg</span></div>
+        </div>
+        <div class="season-ctas">
+          ${K.whatsapp ? `<a class="season-cta" href="https://wa.me/${K.whatsapp}?text=${encodeURIComponent(K.waMessage || ("Hola, me interesa el producto de temporada: " + (K.product?.name || "")))}" target="_blank" rel="noopener">
+            <i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span>${escapeHtml(K.cta || "Apartar la mía")}</span></a>` : ""}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Cuenta regresiva en vivo (el segundero "late" cada segundo)
+  if (end) {
+    const d = $("#scD"), h = $("#scH"), m = $("#scM"), s = $("#scS");
+    const pad = n => String(n).padStart(2, "0");
+    const tick = () => {
+      const diff = end.getTime() - Date.now();
+      if (diff <= 0) { clearInterval(seasonTimer); section.style.display = "none"; return; }
+      if (d) d.textContent = pad(Math.floor(diff / 86400000));
+      if (h) h.textContent = pad(Math.floor(diff / 3600000) % 24);
+      if (m) m.textContent = pad(Math.floor(diff / 60000) % 60);
+      if (s) {
+        const v = pad(Math.floor(diff / 1000) % 60);
+        if (s.textContent !== v) { s.textContent = v; s.classList.remove("tick"); void s.offsetWidth; s.classList.add("tick"); }
+      }
+    };
+    tick();
+    seasonTimer = setInterval(tick, 1000);
+  }
+}
+
   function initEcommerceParticles() {
     const section = $("#ecommerce");
     if (!section) return;
@@ -2408,6 +2535,8 @@
     buildPhilosophy();
     buildEcommerce();
     initEcommerceParticles();
+    buildCollab();
+    buildSeason();
     buildBlog();
     initBlogInkEffect();
     initBlogParticles();

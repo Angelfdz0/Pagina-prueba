@@ -475,3 +475,13 @@ html[data-theme="light"] #view-services #serviceEditor label.admin-check {
 }
 .img-source-url input:focus { outline: none; border-color: var(--color-accent); }
 html[data-theme="light"] .img-source-url input { background: #ffffff; border-color: var(--A-line-strong); }
+
+/* ============ FIX: BOTÓN ROJO DE CONFIRMACIÓN VISIBLE EN TEMA CLARO ============ */
+html[data-theme="light"] .admin-btn.danger-solid {
+  background: #ff4444;
+  border: none;
+  color: #ffffff;
+}
+html[data-theme="light"] .admin-btn.danger-solid:hover {
+  background: #ff6b6b;
+}

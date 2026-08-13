@@ -252,7 +252,7 @@
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = filteredPostsCache.map((post, index) => {
             const clean = (post.content || '').replace(/\{\{img:[^}]+\}\}/g, ' ');
-            const excerpt = clean ? escapeHtml(clean.substring(0, 110)) + "…" : "";
+            const excerpt = post.excerpt ? escapeHtml(post.excerpt) : (clean ? escapeHtml(clean.substring(0, 110)) + "…" : "");
             const firstImage = post.images && post.images.length > 0 ? escapeHtml(post.images[0]) : 'https://via.placeholder.com/400x300?text=Sin+Imagen';
             const mins = readingTime(clean);
             

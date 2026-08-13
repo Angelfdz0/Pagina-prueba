@@ -82,6 +82,8 @@ const SITE_CONFIG = {
       { label: "Testimonios",    href: "#testimonials" },
       { label: "Ubicación",      href: "#location" },
       { label: "Contacto",       href: "#contact" },
+      { label: "Colabora con nosotros", href: "#collab" },
+      { label: "Temporada",      href: "#season" },
     ],
     
     // CTA principal: AGENDAR CITA (el más importante en salud)
@@ -364,6 +366,8 @@ const SITE_CONFIG = {
           { label: "Instalaciones",    href: "#gallery" },
           { label: "Blog de Salud",    href: "#blog" },
           { label: "Testimonios",      href: "#testimonials" },
+          { label: "Colabora con nosotros", href: "#collab" },
+          { label: "Temporada",        href: "#season" },
         ],
       },
       {
@@ -454,7 +458,7 @@ const SITE_CONFIG = {
   analytics: {
   enabled: false,            // ← pon true cuando el cliente contrate analítica
   measurementId: "G-XXXXXXXXXX",  // ← ID de Google Analytics 4
-},
+ },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 📧 EMAIL & FORMULARIOS
@@ -600,4 +604,48 @@ const SITE_CONFIG = {
     heading: "Pacientes que <em>confían</em> en nosotros",
     subtitle: "Opiniones reales de pacientes que han recibido atención en nuestra clínica.",
   },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🤝 COLABORA CON NOSOTROS (B2B / PROVEEDOR)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+collab: {
+  enabled: false,
+  label: "Colabora con nosotros",
+  heading: "Tu negocio con <em>sabor propio</em>",
+  subtitle: "Somos tu proveedor de postres artesanales para cafeterías, restaurantes, hoteles y eventos. Entregas diarias, precios de mayoreo y personalización con tu marca.",
+  marquee: ["Pasteles", "Cheesecakes", "Macarons", "Tartas frías", "Postres individuales", "Pan dulce", "Mesas de postres", "Temporadas especiales"],
+  points: [
+    { icon: "fa-truck-fast",    title: "Entrega diaria",     desc: "Rutas de reparto matutinas para que tu vitrina siempre esté llena." },
+    { icon: "fa-tags",          title: "Precio de mayoreo",  desc: "Esquema especial para negocios con pedidos recurrentes." },
+    { icon: "fa-cake-candles",  title: "Marca blanca",       desc: "Personalizamos postres con el nombre y estilo de tu negocio." },
+    { icon: "fa-handshake",     title: "Asesoría de menú",   desc: "Te ayudamos a elegir los postres que más rotan en tu zona." }
+  ],
+  cta: "Ver folleto de precios",
+  brochureUrl: "https://tudominio.com/folleto-postres-b2b.pdf",   // ★ PDF o enlace (Supabase, Drive, etc.)
+  ctaSecondary: "Escríbenos por WhatsApp",
+  whatsapp: "5215555551234"   // ★ WhatsApp de la pastelería
+},
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🍓 TEMPORADA (producto estrella + cuenta regresiva)
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+season: {
+  enabled: false,
+  label: "Temporada",
+  heading: "Sabor de <em>temporada</em>",
+  subtitle: "Ediciones limitadas que solo existen mientras dura su momento. Cuando se acaba, se despide hasta el próximo año.",
+  product: {
+    badge: "🍓 Edición limitada",
+    name: "Fresas con Crema Signature",
+    desc: "Bizcocho de vainilla de Madagascar, fresas maceradas y crema chantilly italiana. Solo mientras dure la cosecha.",
+    price: 480,
+    originalPrice: 560,   // pon null si no quieres tachado
+    image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=2000&auto=format&fit=crop",
+  },
+  endDate: "2026-08-31T23:59:59",   // ★ fin de la temporada (el bloque se oculta solo al llegar)
+  cta: "Apartar la mía",
+  whatsapp: "5215555551234",
+  waMessage: "Hola, quiero apartar mi Fresas con Crema Signature 🍓",
+  marquee: ["Fresas con crema", "Rosca de Reyes", "Pan de muerto", "Tarta de elote", "Buñuelos", "Conchas de temporada"],
+},
 };

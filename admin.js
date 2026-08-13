@@ -576,7 +576,12 @@
     $('#postEditorClose').addEventListener('click', () => $('#postEditor').classList.remove('open'));
     $('#newPostAdminBtn').addEventListener('click', () => openPostEditor(null));
 
-    $('#editAddCover').addEventListener('click', () => $('#editCoverInput').click());
+    $('#editAddCover').addEventListener('click', async () => {
+     const choice = await askImageSource();
+     if (!choice) return;
+     if (choice === 'file') { $('#editCoverInput').click(); return; }
+     if (choice.url) { editImagesArr.push(choice.url); renderEditImages(); toast('Portada agregada ✅'); }
+ });
     $('#editCoverInput').addEventListener('change', async e => {
         const file = e.target.files[0];
         if (!file) return;
@@ -586,7 +591,18 @@
         e.target.value = '';
     });
 
-    $('#editInsertImage').addEventListener('click', () => $('#editImageInput').click());
+    $('#editInsertImage').addEventListener('click', async () => {
+     const choice = await askImageSource();
+     if (!choice) return;
+     if (choice === 'file') { $('#editImageInput').click(); return; }
+     if (choice.url) {
+         const ta = $('#editContent');
+         const token = `\n\n{{img:${choice.url}}}\n\n`;
+         const pos = ta.selectionStart || ta.value.length;
+         ta.value = ta.value.slice(0, pos) + token + ta.value.slice(pos);
+         toast('Imagen insertada en el contenido ✅');
+     }
+ });
     $('#editImageInput').addEventListener('change', async e => {
         const file = e.target.files[0];
         if (!file) return;
@@ -877,7 +893,12 @@
     $('#productEditorClose').addEventListener('click', () => $('#productEditor').classList.remove('open'));
     $('#newProductBtn').addEventListener('click', () => openProductEditor(null));
     
-    $('#prodAddImg').addEventListener('click', () => $('#prodImgInput').click());
+    $('#prodAddImg').addEventListener('click', async () => {
+     const choice = await askImageSource();
+     if (!choice) return;
+     if (choice === 'file') { $('#prodImgInput').click(); return; }
+     if (choice.url) { prodImagesArr.push(choice.url); renderProdImages(); toast('Imagen agregada ✅'); }
+ });
     $('#prodImgInput').addEventListener('change', async e => {
         const file = e.target.files[0]; e.target.value = '';
         if (!file) return;
