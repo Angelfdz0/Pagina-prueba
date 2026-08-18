@@ -1,321 +1,315 @@
 /* ============================================================
-   CONFIG.JS — CONFIGURACIÓN MAESTRA — SECTOR SALUD
-   ============================================================
-   Plantilla adaptada para clínicas, hospitales, consultorios
-   médicos y profesionales de la salud.
-   
-   🎨 PALETA PREMIUM MÉDICA:
-   - Crema clínica (#FAF8F5)
-   - Verde quirúrgico (#2E8B7F)
-   - Azul noche (#0F2A3F)
-   - Tipografías: Cormorant Garamond + Manrope
-   
-   FLUJO DE TRABAJO POR CLIENTE:
-   1. Copiar este archivo como config.js
-   2. Modificar campos marcados con ★ CLIENTE
-   3. Configurar Supabase (URL + key anon)
-   4. Subir al hosting del cliente
+   CONFIG.JS — DOLCENITA · Pastelería Artesanal Premium
+   Paleta: blanco + rosado premium (dusty rose + crema)
    ============================================================ */
 
 const SITE_CONFIG = {
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🎨 TEMA / IDENTIDAD VISUAL (PALETA MÉDICA PREMIUM)
+  // 🎨 TEMA / IDENTIDAD VISUAL
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   theme: {
-    mode: "light",   // ← "light" para clínicas | "dark" para clientes oscuros
-    // Paleta médica premium: calma, confianza y profesionalismo
-    bg: "#FAF8F5",              // Fondo principal (blanco clínico cálido)
-    bgAlt: "#F0EDE4",           // Fondo alternativo (crema muy suave)
-    text: "#0F2A3F",            // Texto principal (azul noche médico)
-    textMuted: "#6B7A8F",       // Texto secundario (gris azulado)
-    
-    accent: "#2E8B7F",          // ★ Verde quirúrgico (color hospital premium)
-    accentRGB: "46, 139, 127",  // Mismo color en RGB
-    accentLight: "#5FB8AD",     // Verde menta claro (para hovers)
-    
-    white: "#ffffff",           // Blanco puro
-    dark: "#0F2A3F",            // Azul noche profundo (reemplaza al negro puro)
-    
-    // Tipografías médicas premium (serif elegante + sans legible)
-    fontDisplay: "'Cormorant Garamond', 'Playfair Display', Georgia, serif",
-    fontBody: "'Manrope', 'Inter', -apple-system, sans-serif",
-    
-    // Google Fonts con la nueva selección
-    googleFontsUrl: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@300;400;500;600;700&display=swap",
+    mode: "light",
+    bg: "#FEFBF9",              // Blanco crema muy suave
+    bgAlt: "#FBEFF2",           // Rosa pálido premium
+    text: "#3D2828",            // Marrón chocolate oscuro (elegante)
+    textMuted: "#9B7A7F",       // Gris rosado
+    accent: "#C97B8F",          // Rosa francés (dusty rose premium)
+    accentRGB: "201, 123, 143",
+    accentLight: "#E8B4BC",     // Rosa pastel
+    white: "#ffffff",
+    dark: "#3D2828",
+    fontDisplay: "'Playfair Display', 'Cormorant Garamond', Georgia, serif",
+    fontBody: "'Quicksand', 'Poppins', -apple-system, sans-serif",
+    googleFontsUrl: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Quicksand:wght@300;400;500;600;700&display=swap",
     fontAwesomeUrl: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css",
-    
-    // Personalidad: "editorial" = elegante, sofisticado, serio (ideal para salud)
     personality: "editorial",
-    
-    // Layout del hero: "split" = texto izquierda + imagen derecha (estilo clínica premium)
     heroLayout: "split",
+  },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🔍 SEO / HEAD
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  seo: {
+    title: "Dolcenita | Pastelería Artesanal en CDMX",
+    title_en: "Dolcenita | Artisan Bakery in Mexico City",
+    description: "Pasteles artesanales para bodas, XV años, cumpleaños y eventos especiales. Ingredientes premium, diseño personalizado y entrega en CDMX.",
+    description_en: "Artisan cakes for weddings, quinceañeras, birthdays and special events. Premium ingredients, custom design and delivery in Mexico City.",
+    themeColor: "#C97B8F",
+    robots: "index, follow",
+    locale: "es_MX",
+    locale_en: "en_US",
+    ogImage: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=2000&auto=format&fit=crop",
+    ogUrl: "",
+    twitterCard: "summary_large_image",
+    twitterSite: "@dolcenita",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // ⏳ LOADER
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   loader: {
-    text: "Vitalis",            // ★ Nombre corto de la clínica
-    duration: 2200,
+    text: "Dolcenita",
+    text_en: "Dolcenita",
+    tagline: "Pastelería artesanal · CDMX",   // ★ frase que aparece bajo el porcentaje
+    duration: 2700,
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🧭 HEADER / NAVEGACIÓN SUPERIOR
+  // 🧭 HEADER / NAVEGACIÓN
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   header: {
     enabled: true,
+    adminTab: true,
     maxLinks: 5,
-    
     logo: {
-      text: "VI",               // ★ Primera parte del logo
-      highlight: "TALIS",       // ★ Parte en color accent
+      text: "DOLCE",
+      highlight: "NITA",
     },
-    
     links: [
-      { label: "Inicio",         href: "#hero" },
-      { label: "Nosotros",       href: "#story" },
-      { label: "Especialidades", href: "#services" },
-      { label: "Equipo",         href: "#team" },
-      { label: "Instalaciones",  href: "#gallery" },
-      { label: "Blog de Salud",  href: "#blog" },
-      { label: "Testimonios",    href: "#testimonials" },
-      { label: "Ubicación",      href: "#location" },
-      { label: "Contacto",       href: "#contact" },
-      { label: "Colabora con nosotros", href: "#collab" },
-      { label: "Temporada",      href: "#season" },
+      { label: "Inicio",          label_en: "Home",          href: "#hero" },
+      { label: "Historia",        label_en: "Our Story",    href: "#story" },
+      { label: "Especialidades",  label_en: "Specialties",   href: "#services" },
+      { label: "Menú",            label_en: "Menu",          href: "#menu" },
+      { label: "Galería",         label_en: "Gallery",       href: "#gallery" },
+      { label: "Temporada",       label_en: "Seasonal",      href: "#season" },
+      { label: "Cotiza tu pastel", label_en: "Quote a cake", href: "#cotizador" },
+      { label: "Colabora",        label_en: "Partner",       href: "#collab" },
+      { label: "Blog",            label_en: "Blog",          href: "#blog" },
+      { label: "Testimonios",     label_en: "Testimonials",  href: "#testimonials" },
+      { label: "Ubicación",       label_en: "Location",      href: "#location" },
+      { label: "Contacto",        label_en: "Contact",       href: "#contact" },
     ],
-    
-    // CTA principal: AGENDAR CITA (el más importante en salud)
-    cta: { 
-      label: "Agendar Cita",
-      href: "#appointments"
+    cta: {
+      label: "Cotiza tu pastel",
+      label_en: "Quote a cake",
+      href: "#cotizador"
     },
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🏠 HERO (pantalla principal)
+  // 🏠 HERO
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   hero: {
     enabled: true,
-    sealImage: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/pngwing.com.png",   // ★ Logo del sello flotante (PNG transparente).
-    
-    // Imagen: doctor(a) o instalaciones premium (recomendado 2000x1200px)
-    backgroundImage: "https://www.thenewbarcelonapost.com/uploads/s1/41/74/24/fiatc-clinica-diagonal-metge.jpeg",
-    
-    eyebrow: "Clínica Médica Premium — Desde 2010",
-    
+    adminTab: false,
+    sealImage: "",
+    backgroundImage: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=2000&auto=format&fit=crop",
+    eyebrow: "Pastelería artesanal · Desde 2016",
+    eyebrow_en: "Artisan bakery · Since 2016",
     title: {
-      line1: "Nosotros",
-      line2: "Cuidamos tu",
-      typewriterWords: [
-        "Bienestar",
-        "Salud",
-        "Futuro",
-        "Familia"
-      ],
+      line1: "Endulzamos tus",
+      line1_en: "Sweetening your",
+      line2: "momentos más",
+      line2_en: "most precious",
+      typewriterWords: ["Especiales", "Dulces", "Únicos", "Inolvidables"],
+      typewriterWords_en: ["Moments", "Sweets", "Unique", "Unforgettable"],
     },
-    
-    subtitle: "Medicina de precisión con calidez humana. Diagnósticos avanzados y atención personalizada por especialistas certificados.",
-    
-    cta: "Agendar Consulta",
-    ctaHref: "#appointments",
+    subtitle: "Pasteles artesanales elaborados con ingredientes premium, recetas familiares y el cariño de siempre. Bodas, XV años, cumpleaños y eventos que merecen lo mejor.",
+    subtitle_en: "Artisan cakes made with premium ingredients, family recipes, and heartfelt care. Weddings, quinceañeras, birthdays and events that deserve the best.",
+    cta: "Cotiza tu pastel",
+    cta_en: "Quote your cake",
+    ctaHref: "#cotizador",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📖 HISTORIA (Sobre la Clínica)
+  // 📖 HISTORIA
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   story: {
     enabled: true,
-    
+    adminTab: false,
     label: "Nuestra Historia",
-    heading: "Más de una década <em>cuidando</em> de ti",
-    
-    // Imagen: fachada de la clínica o sala de espera premium
-    image: "https://medicina.uaemex.mx/images/2023/conocetuespacio/labensenanza/e32c28ac-c5b7-4830-9dce-2a363751cb8b.jpg",
-    
+    label_en: "Our Story",
+    heading: "Una tradición familiar que se <em>hornea</em> con el alma",
+    heading_en: "A family tradition <em>baked</em> with soul",
+    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=2000&auto=format&fit=crop",
     paragraphs: [
-      "Fundada en 2010 por un equipo de médicos con visión humanista, Clínica Vitalis nació con un propósito claro: ofrecer atención médica de primer nivel sin perder el trato cálido que cada paciente merece. Hoy somos referentes en medicina integral en la región.",
-      "Contamos con tecnología diagnóstica de última generación, un equipo multidisciplinario de más de 25 especialistas y protocolos clínicos basados en evidencia internacional. Cada paciente recibe un plan de atención personalizado, porque entendemos que no hay dos historias clínicas iguales."
+      "Dolcenita nació en 2016 en la cocina de la abuela Elena, donde cada pastel era una carta de amor. Lo que empezó como un regalo para los vecinos, hoy es una pastelería reconocida por su calidad artesanal y el trato cercano con cada cliente.",
+      "Trabajamos con ingredientes de origen responsable: mantequilla francesa, chocolate belga, vainilla de Madagascar y frutas de temporada. Cada creación pasa por las manos de nuestros pasteleros, que hornean con la misma dedicación de aquel primer pastel.",
+      "Creemos que los mejores momentos de la vida merecen los mejores sabores. Por eso diseñamos cada pastel como una pieza única, pensada para la historia que celebras."
     ],
-    
+    paragraphs_en: [
+      "Dolcenita was born in 2016 in grandma Elena's kitchen, where every cake was a love letter. What started as a gift for neighbors is now a bakery recognized for its artisan quality and close connection with every client.",
+      "We work with responsibly sourced ingredients: French butter, Belgian chocolate, Madagascar vanilla, and seasonal fruits. Every creation passes through our bakers' hands, who bake with the same dedication as that very first cake.",
+      "We believe life's best moments deserve the best flavors. That's why we design every cake as a unique piece, created for the story you're celebrating."
+    ],
     stats: [
-      { number: "15K+", label: "Pacientes Atendidos" },
-      { number: "25",   label: "Especialistas" },
-      { number: "99%",  label: "Satisfacción" },
-      { number: "14",   label: "Años de Experiencia" },
+      { number: "9K+", label: "Pasteles entregados", label_en: "Cakes delivered" },
+      { number: "600+", label: "Bodas endulzadas", label_en: "Weddings sweetened" },
+      { number: "99%", label: "Clientes felices", label_en: "Happy clients" },
+      { number: "10", label: "Años horneando", label_en: "Years baking" },
     ],
-    
-    // Convenios con aseguradoras (clave para clínicas privadas)
     partners: {
       enabled: true,
-      title: "Aseguradoras y Convenios",
+      title: "Aliados y convenios",
+      title_en: "Partners & Alliances",
       logos: [
-        { name: "GNP Seguros",    img: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/GNP_Seguros_logo.svg/3840px-GNP_Seguros_logo.svg.png" },
-        { name: "MetLife",        img: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/MetLife-Logo.svg/3840px-MetLife-Logo.svg.png" },
-        { name: "AXA Seguros",    img: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/axa-health.svg" },
-        { name: "Allianz",        img: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/allianz-1.svg" },
-        { name: "Mapfre",         img: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/mapfre-3.svg" },
-        { name: "Cigna",          img: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/cigna-3.svg" },
-        { name: "Scotiabank",           img: "https://ouxfmeugibrpjysjfqso.supabase.co/storage/v1/object/public/blog-images/scotiabank-5.svg" },
+        { name: "Wedding Planner MX", img: "" },
+        { name: "Eventos Premium", img: "" },
+        { name: "Café Central", img: "" },
+        { name: "Hotel Riviera", img: "" },
+        { name: "Salón Luna", img: "" },
       ],
     },
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // ⚙️ SERVICIOS / ESPECIALIDADES MÉDICAS
+  // ⚙️ SERVICIOS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   services: {
     enabled: true,
-    
+    adminTab: true,
     label: "Especialidades",
-    heading: "Atención médica <em>integral</em>",
-    subtitle: "Cada especialidad cuenta con equipo de diagnóstico avanzado y especialistas certificados por sus respectivos consejos médicos.",
-    
+    label_en: "Specialties",
+    heading: "Creaciones <em>artesanales</em> para cada ocasión",
+    heading_en: "Artisan <em>creations</em> for every occasion",
+    subtitle: "Cada pieza es única, horneada con ingredientes premium y diseñada para tu celebración.",
+    subtitle_en: "Every piece is unique, baked with premium ingredients and designed for your celebration.",
     visibleCount: 6,
-    
-    items: [
+        items: [
       {
         number: "01",
-        title: "Cardiología",
-        intro: "Diagnóstico y tratamiento de enfermedades del corazón y sistema circulatorio.",
-        desc: "**Evaluación cardiovascular completa** con electrocardiograma, ecocardiograma Doppler, prueba de esfuerzo y monitoreo Holter 24h.\n\nNuestros cardiólogos certificados por el Consejo Mexicano de Cardiología atienden:\n- Hipertensión arterial\n- Arritmias cardíacas\n- Insuficiencia cardíaca\n- Enfermedad coronaria\n- Prevención cardiovascular\n\n*Incluye interpretación de estudios, receta digital y seguimiento por WhatsApp.*",
-        image: "https://images.unsplash.com/photo-1628348068343-c6a848d2b6dd?q=80&w=2070&auto=format&fit=crop"
+        title: "Pasteles de Boda",
+        title_en: "Wedding Cakes",
+        intro: "Diseños únicos para el día más importante de tu historia.",
+        intro_en: "Unique designs for the most important day of your story.",
+        desc: "**Diseño 100% personalizado** con prueba de sabor incluida.\n\nNuestro proceso:\n- Entrevista y boceto de diseño\n- Degustación de 3 sabores\n- Montaje en el salón incluido\n- Coordinación con tu wedding planner\n\n*Incluye topper de bienvenida y caja para el primer aniversario.*",
+        image: "https://images.unsplash.com/photo-1535254973040-607b47802d6f?q=80&w=2070&auto=format&fit=crop"
       },
       {
         number: "02",
-        title: "Dermatología",
-        intro: "Cuidado especializado de piel, cabello y uñas con tecnología de última generación.",
-        desc: "**Diagnóstico dermatoscópico digital** y tratamientos avanzados para:\n- Acné y rosácea\n- Dermatitis y psoriasis\n- Lunares y lesiones sospechosas (mapeo corporal)\n- Caída del cabello\n- Rejuvenecimiento facial médico\n\n*Contamos con láser fraccionado, luz pulsada y crioterapia.*",
-        image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop"
+        title: "XV Años",
+        title_en: "Quinceañeras",
+        intro: "Pasteles que brillan tanto como la festejada.",
+        intro_en: "Cakes that shine as bright as the guest of honor.",
+        desc: "**Temáticas personalizadas** con acabados premium.\n\nOpciones favoritas:\n- Fondant con detalles metálicos\n- Flores naturales o de azúcar\n- Efectos mármol y perlas comestibles\n- Montaje en el salón del evento\n\n*Incluye degustación previa para la familia.*",
+        image: "https://images.unsplash.com/photo-1562777717-dc6984f64a33?q=80&w=2070&auto=format&fit=crop"
       },
       {
         number: "03",
-        title: "Pediatría",
-        intro: "Atención integral para recién nacidos, niños y adolescentes en un entorno cálido.",
-        desc: "**Control del niño sano**, vacunación y atención de enfermedades pediátricas.\n\n- Consultas de desarrollo y crecimiento\n- Vacunación completa (esquema nacional + internacional)\n- Atención de enfermedades comunes\n- Evaluación nutricional\n- Adolescencia y salud mental juvenil\n\n*Área de juegos diseñada para que los pequeños se sientan cómodos.*",
-        image: "https://images.unsplash.com/photo-1581056771107-2421345a0e4a?q=80&w=2070&auto=format&fit=crop"
+        title: "Cumpleaños",
+        title_en: "Birthdays",
+        intro: "Celebraciones dulces para todas las edades.",
+        intro_en: "Sweet celebrations for every age.",
+        desc: "**Diseños temáticos** para niños y adultos.\n\nPersonaliza:\n- Personajes y colores favoritos\n- Foto comestible o topper personalizado\n- Sabores de temporada\n- Velas premium y caja de regalo\n\n*Pedido mínimo con 3 días de anticipación.*",
+        image: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=2070&auto=format&fit=crop"
       },
       {
         number: "04",
-        title: "Ginecología y Obstetricia",
-        intro: "Cuidado integral de la salud femenina en todas las etapas de la vida.",
-        desc: "**Atención ginecológica completa** con equipo de diagnóstico de última generación.\n\n- Papanicolaou y colposcopia digital\n- Ultrasonido pélvico y obstétrico 4D\n- Control prenatal de alto y bajo riesgo\n- Climaterio y terapia hormonal\n- Planificación familiar\n\n*Ginecólogas certificadas con enfoque humano y discreto.*",
-        image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?q=80&w=2069&auto=format&fit=crop"
+        title: "Mesas de Postres",
+        title_en: "Dessert Tables",
+        intro: "Mesas completas que enamoran a primera vista.",
+        intro_en: "Complete tables that charm at first sight.",
+        desc: "**Curaduría completa** de postres para tu evento.\n\nIncluye:\n- Macarons y tartas individuales\n- Cupcakes decorados\n- Cheesecakes y pays artesanales\n- Montaje y mobiliario decorativo\n\n*Ideal para bodas, bautizos y eventos corporativos.*",
+        image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=2070&auto=format&fit=crop"
+      },
+      {
+        number: "05",
+        title: "Cupcakes y Detalles",
+        title_en: "Cupcakes & Treats",
+        intro: "Detalles perfectos para regalar o consentirte.",
+        intro_en: "Perfect little details to gift or indulge.",
+        desc: "**Horneado diario** con ingredientes premium.\n\nDisponibles:\n- Cajas de 6, 12 y 24 piezas\n- Sabores rotativos de temporada\n- Personalización con tu marca\n- Empaque para regalo incluido\n\n*Perfectos para detalles de empresa y eventos.*",
+        image: "https://images.unsplash.com/photo-1576618148400-f54bed99fcf8?q=80&w=2070&auto=format&fit=crop"
+      },
+      {
+        number: "06",
+        title: "Eventos Corporativos",
+        title_en: "Corporate Events",
+        intro: "Endulza tu marca con postres personalizados.",
+        intro_en: "Sweeten your brand with custom desserts.",
+        desc: "**Soluciones B2B** para empresas y eventos corporativos.\n\nServicios:\n- Postres con logo de tu marca\n- Cajas de regalo para colaboradores\n- Coffee breaks y mesas dulces\n- Facturación y precios de mayoreo\n\n*Descuento especial por volumen.*",
+        image: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?q=80&w=2070&auto=format&fit=crop"
       },
     ],
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 👩‍⚕️ EQUIPO MÉDICO
+  // 👥 EQUIPO (desactivado en pastelería pequeña)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   team: {
-    enabled: true,
-    
-    label: "Nuestro Equipo",
-    heading: "Especialistas que <em>te cuidan</em>",
-    subtitle: "Médicos certificados con formación en las mejores instituciones del país y del extranjero.",
-    
-    items: [
-      {
-        photo: "https://t4.ftcdn.net/jpg/16/46/03/45/360_F_1646034556_NiefkgqnRJExBY4Ed78jRLqEYLrZN9SP.jpg",
-        name: "Dra. María López Hernández",
-        cedula: "Céd. Prof. 7845123",
-        specialty: "Cardiología Clínica",
-        bio: "Egresada de la UNAM con especialidad en el Instituto Nacional de Cardiología. Más de 12 años de experiencia.",
-        phone: "+52 55 1234 5678",
-        whatsapp: "5215512345678",
-        email: "dra.lopez@clinicavitalis.com",
-        schedule: "Lun–Vie · 9:00–17:00",
-      },
-      {
-        photo: "https://static.vecteezy.com/system/resources/thumbnails/026/375/249/small/ai-generative-portrait-of-confident-male-doctor-in-white-coat-and-stethoscope-standing-with-arms-crossed-and-looking-at-camera-photo.jpg",
-        name: "Dr. Carlos Ramírez Soto",
-        cedula: "Céd. Prof. 9234567",
-        specialty: "Dermatología",
-        bio: "Especialista formado en la Fundación Jiménez Díaz (España). Experto en dermatoscopia y láser dermatológico.",
-        phone: "+52 55 1234 5679",
-        whatsapp: "5215512345679",
-        email: "dr.ramirez@clinicavitalis.com",
-        schedule: "Mar–Sáb · 10:00–18:00",
-      },
-      {
-        photo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCyaB0raKmfqufCbPX8fyUV-U_wMSG3PecLACn5FH7tSBs4K6XEPtT_qw&s=10",
-        name: "Dra. Andrea Torres Vega",
-        cedula: "Céd. Prof. 8123456",
-        specialty: "Pediatría",
-        bio: "Pediatra con subespecialidad en neonatología. Certificada por el Consejo Mexicano de Pediatría.",
-        phone: "+52 55 1234 5680",
-        whatsapp: "5215512345680",
-        email: "dra.torres@clinicavitalis.com",
-        schedule: "Lun–Vie · 8:00–15:00",
-      },
-      {
-        photo: "https://img.magnific.com/premium-photo/man-smiling-looking-camera-doctor-student-intern-with-stethoscope_709984-4974.jpg?semt=ais_hybrid&w=740&q=80",
-        name: "Dr. Roberto Mendoza",
-        cedula: "Céd. Prof. 6547891",
-        specialty: "Ginecología y Obstetricia",
-        bio: "Más de 15 años de experiencia en obstetricia de alto riesgo. Formado en el Hospital Español de México.",
-        phone: "+52 55 1234 5681",
-        whatsapp: "5215512345681",
-        email: "dr.mendoza@clinicavitalis.com",
-        schedule: "Lun–Vie · 9:00–18:00",
-      },
-    ],
+    enabled: false,
+    adminTab: false,
+    label: "Nuestro Equipo", label_en: "Our Team",
+    heading: "", heading_en: "",
+    subtitle: "", subtitle_en: "",
+    items: [],
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🖼️ GALERÍA / INSTALACIONES
+  // 🖼️ GALERÍA
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   gallery: {
     enabled: true,
-    label: "Nuestras Instalaciones",
-    heading: "Espacios diseñados para tu <em>bienestar</em>",
-    subtitle: "Instalaciones modernas, higiénicas y pensadas para que te sientas cómodo desde el primer momento.",
-    items: [
-      { image: "https://cdn.getmidnight.com/f0f4b6598f2cee45644673998b4f44be/2025/04/disenos-de-recepcion-para-tu-clinica-integrada-con-sala-de-espera.webp", caption: "Recepción Principal",  parallaxSpeed: 0.08 },
-      { image: "https://clinicasarabia.com/wp-content/uploads/elementor/thumbs/Clinica-Sarabia-Tehuacan-Renta-de-Consultorios-Medicos-03-reyj6z6seynoux1femj5xa9b92bljvvzazlwgp4u9s.webp", caption: "Consultorios",        parallaxSpeed: -0.05 },
-      { image: "https://upload.wikimedia.org/wikipedia/commons/9/9e/LabMachines.jpg", caption: "Laboratorio Clínico", parallaxSpeed: 0.1 },
-      { image: "https://cdn.pixabay.com/photo/2020/04/09/21/15/hospital-5023120_640.jpg", caption: "Sala de Espera",      parallaxSpeed: -0.08 },
-      { image: "https://blogs.ugto.mx/enfermeriaenlinea/wp-content/uploads/sites/43/2018/04/EL_136365488b4db45_0.jpg", caption: "Atención Pediátrica", parallaxSpeed: 0.06 },
+    adminTab: false,
+    label: "Nuestra Galería",
+    label_en: "Our Gallery",
+    heading: "Creaciones que enamoran a la <em>primera vista</em>",
+    heading_en: "Creations you fall in love with at <em>first sight</em>",
+    subtitle: "Una pequeña muestra de nuestros trabajos más recientes.",
+    subtitle_en: "A small sample of our most recent creations.",
+        items: [
+      { image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBPvImDx1DVjr79DGAzabomuLICZot-1S1Nrrq3876BfvHvE2oFSDGa9sr&s=10",
+        caption: "Pastel de boda con flores naturales", caption_en: "Wedding cake with fresh flowers" },
+      { image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=2000&auto=format&fit=crop",
+        caption: "Fresas con crema Signature", caption_en: "Signature strawberries & cream" },
+      { image: "https://dulcesilusiones.mx/wp-content/uploads/2022/09/XV-anos-rosa-pastel--scaled.jpg",
+        caption: "XV años en rosa pastel", caption_en: "Quinceañera in pastel pink" },
+      { image: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=2000&auto=format&fit=crop",
+        caption: "Cumpleaños que se celebran con pastel", caption_en: "Birthdays celebrated with cake" },
+      { image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=2000&auto=format&fit=crop",
+        caption: "Mesa de postres para eventos", caption_en: "Event dessert table" },
+      { image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRvz_5RzKxkQewj8mQMlfsRLKxwoKCYhsqWWxoo-KnxSHYkpqOE3ZifoJq&s=10",
+        caption: "Cupcakes de temporada", caption_en: "Seasonal cupcakes" },
+      { image: "https://images.unsplash.com/photo-1569864358642-9d1684040f43?q=80&w=2000&auto=format&fit=crop",
+        caption: "Macarons artesanales", caption_en: "Artisan macarons" },
+      { image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?q=80&w=2000&auto=format&fit=crop",
+        caption: "Nuestro horno, cada mañana", caption_en: "Our oven, every morning" },
     ],
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 💬 FILOSOFÍA (activada para clínicas)
+  // 💬 FILOSOFÍA
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   philosophy: {
     enabled: true,
-    label: "Nuestra Filosofía",
-    quote: "La medicina no es solo ciencia, es el <em>arte de cuidar</em> con el corazón.",
-    author: "— Dr. Carlos Ramírez, Director Médico",
-    cta: "Conoce a Nuestro Equipo",
-    ctaHref: "#team",
+    adminTab: false,
+    label: "Nuestra Filosofía", label_en: "Our Philosophy",
+    quote: "Hornear no es solo un oficio, es el <em>arte de regalar felicidad</em>.",
+    quote_en: "Baking is not just a trade, it's the <em>art of gifting happiness</em>.",
+    author: "— Elena Ramírez, fundadora",
+    author_en: "— Elena Ramírez, founder",
+    cta: "Conoce nuestra historia",
+    cta_en: "Discover our story",
+    ctaHref: "#story",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🛒 TIENDA (DESACTIVADA — no es natural en clínicas)
+  // 🛒 E-COMMERCE (desactivado)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  ecommerce: { 
-    enabled: false,  // ★ Desactivada (clínicas médicas no venden productos)
-    label: "Farmacia",
-    heading: "Productos que <em>cuidan</em>",
-    subtitle: "Productos médicos y de cuidado personal recomendados por nuestros especialistas.",
-    cta: "Ver Catálogo",
+  ecommerce: {
+    enabled: false,
+    adminTab: false,
+    label: "Tienda", label_en: "Shop",
+    heading: "", heading_en: "",
+    subtitle: "", subtitle_en: "",
+    cta: "Ver catálogo", cta_en: "View catalog",
     ctaHref: "tienda.html",
-    products: [],
-    promotions: { enabled: false, delay: 3000, autoRotate: true, rotateInterval: 6000, showCloseButton: true, rememberDismiss: true, dismissDuration: 24, items: [] },
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📝 BLOG DE SALUD
+  // 📝 BLOG
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   blog: {
     enabled: true,
-    label: "Blog de Salud",
-    heading: "Información que <em>cuida</em>",
-    subtitle: "Artículos médicos redactados por nuestros especialistas. Educación en salud basada en evidencia.",
-    cta: "Leer Artículos",
+    adminTab: true,
+    label: "Recetas y Tips",
+    label_en: "Recipes & Tips",
+    heading: "El rincón dulce del <em>blog</em>",
+    heading_en: "The sweet corner of our <em>blog</em>",
+    subtitle: "Recetas, consejos y tendencias del mundo de la repostería.",
+    subtitle_en: "Recipes, tips, and trends from the world of baking.",
+    cta: "Leer artículos", cta_en: "Read articles",
     ctaHref: "blog.html",
   },
 
@@ -324,24 +318,21 @@ const SITE_CONFIG = {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   contact: {
     enabled: true,
-    label: "Contacto",
-    heading: "Estamos para <em>atenderte</em>",
-    subtitle: "¿Tienes dudas sobre tu salud o nuestros servicios? Nuestro equipo de atención al paciente te responde en menos de 24 horas.",
-    
+    adminTab: false,
+    label: "Contacto", label_en: "Contact",
+    heading: "Hablemos de tu <em>próximo pastel</em>",
+    heading_en: "Let's talk about your <em>next cake</em>",
+    subtitle: "¿Tienes una ocasión especial en mente? Escríbenos y diseñamos juntos tu creación ideal.",
+    subtitle_en: "Do you have a special occasion in mind? Write to us and let's design your ideal creation together.",
     form: {
-      namePlaceholder: "Tu nombre completo",
-      emailPlaceholder: "Tu correo electrónico",
-      subjectPlaceholder: "Motivo de consulta",
-      messagePlaceholder: "Cuéntanos cómo podemos ayudarte...",
-      submitText: "Enviar Mensaje",
-      successMessage: "¡Mensaje enviado! Nuestro equipo te contactará en las próximas 24 horas.",
-      errorMessage: "Hubo un error al enviar. Intenta de nuevo o llámanos directamente.",
+      namePlaceholder: "Tu nombre", namePlaceholder_en: "Your name",
+      emailPlaceholder: "Tu correo", emailPlaceholder_en: "Your email",
+      subjectPlaceholder: "Motivo (boda, cumpleaños, evento...)", subjectPlaceholder_en: "Subject (wedding, birthday, event...)",
+      messagePlaceholder: "Cuéntanos tu idea: fecha, personas, sabores favoritos...", messagePlaceholder_en: "Tell us your idea: date, guests, favorite flavors...",
+      submitText: "Enviar mensaje", submitText_en: "Send message",
+      successMessage: "¡Mensaje enviado! Te contactamos en menos de 24 horas.", successMessage_en: "Message sent! We'll contact you within 24 hours.",
+      errorMessage: "Hubo un error. Intenta de nuevo o escríbenos por WhatsApp.", errorMessage_en: "An error occurred. Try again or message us on WhatsApp.",
     },
-    
-    email: "contacto@clinicavitalis.com",
-    phone: "+52 55 5555 1234",
-    address: "Av. Reforma 222, Col. Juárez, C.P. 06600, Ciudad de México",
-    urgencias: "+52 55 5555 9999",  // ★ DATO EXTRA: línea de urgencias (útil en salud)
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -349,69 +340,66 @@ const SITE_CONFIG = {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   footer: {
     enabled: true,
+    adminTab: false,
     brand: {
-      name: "VI",
-      highlight: "TALIS",
-      desc: "Clínica médica premium. Medicina integral con tecnología de vanguardia y trato humano.",
+      name: "DOLCE", highlight: "NITA",
+      desc: "Pastelería artesanal. Endulzando momentos desde 2016.",
+      desc_en: "Artisan bakery. Sweetening moments since 2016.",
     },
-    
     columns: [
       {
-        title: "Clínica",
+        title: "Pastelería", title_en: "Bakery",
         links: [
-          { label: "Inicio",           href: "#hero" },
-          { label: "Nosotros",         href: "#story" },
-          { label: "Especialidades",   href: "#services" },
-          { label: "Equipo",           href: "#team" },
-          { label: "Instalaciones",    href: "#gallery" },
-          { label: "Blog de Salud",    href: "#blog" },
-          { label: "Testimonios",      href: "#testimonials" },
-          { label: "Colabora con nosotros", href: "#collab" },
-          { label: "Temporada",        href: "#season" },
+          { label: "Inicio",        label_en: "Home",          href: "#hero" },
+          { label: "Historia",      label_en: "Story",         href: "#story" },
+          { label: "Especialidades", label_en: "Specialties",  href: "#services" },
+          { label: "Menú",          label_en: "Menu",          href: "#menu" },
+          { label: "Galería",       label_en: "Gallery",       href: "#gallery" },
+          { label: "Blog",          label_en: "Blog",          href: "#blog" },
+          { label: "Testimonios",   label_en: "Testimonials",  href: "#testimonials" },
         ],
       },
       {
-        title: "Servicios",
+        title: "Servicios", title_en: "Services",
         links: [
-          { label: "Cardiología",              href: "#services" },
-          { label: "Dermatología",             href: "#services" },
-          { label: "Pediatría",                href: "#services" },
-          { label: "Ginecología",              href: "#services" },
-          { label: "Nutrición",                href: "#services" },
-          { label: "Chequeos Preventivos",     href: "#services" },
+          { label: "Bodas",         label_en: "Weddings",       href: "#services" },
+          { label: "XV años",       label_en: "Quinceañeras",   href: "#services" },
+          { label: "Cumpleaños",    label_en: "Birthdays",      href: "#services" },
+          { label: "Eventos corporativos", label_en: "Corporate events", href: "#services" },
+          { label: "Temporada",     label_en: "Seasonal",       href: "#season" },
+          { label: "Cotizador",     label_en: "Quote tool",     href: "#cotizador" },
+          { label: "Proveedor B2B", label_en: "B2B supplier",   href: "#collab" },
         ],
       },
       {
-        title: "Legal",
+        title: "Legal", title_en: "Legal",
         links: [
-          { label: "Aviso de Privacidad",    href: "legal.html#privacy" },
-          { label: "Términos y Condiciones", href: "legal.html#terms" },
-          { label: "Términos Comerciales",   href: "legal.html#commercial" },
-          { label: "Política de Cookies",    href: "legal.html#cookies" },
+          { label: "Aviso de privacidad",    label_en: "Privacy notice",    href: "legal.html#privacy" },
+          { label: "Términos y condiciones", label_en: "Terms & conditions", href: "legal.html#terms" },
+          { label: "Política de cookies",    label_en: "Cookie policy",     href: "legal.html#cookies" },
         ],
       },
       {
-        title: "Contacto",
+        title: "Contacto", title_en: "Contact",
         links: [
-          { label: "🚨 Urgencias 24h",               href: "tel:+525555559999" },
-          { label: "📞 Citas: +52 55 5555 1234",     href: "tel:+525555551234" },
-          { label: "✉️ contacto@clinicavitalis.com", href: "mailto:contacto@clinicavitalis.com" },
-          { label: "📍 Av. Reforma 222, CDMX",       href: "#location" },
+          { label: "📞 +52 55 5555 1234",       label_en: "📞 +52 55 5555 1234",       href: "tel:+525555551234" },
+          { label: "✉️ hola@dolcenita.mx",      label_en: "✉️ hello@dolcenita.mx",     href: "mailto:hola@dolcenita.mx" },
+          { label: "📍 Av. Ámsterdam 123, CDMX", label_en: "📍 123 Amsterdam Ave, CDMX", href: "#location" },
         ],
       },
     ],
-    
-    copyright: "© " + new Date().getFullYear() + " Clínica Vitalis S.A. de C.V. — Todos los derechos reservados. Aviso: La información en este sitio no sustituye una consulta médica profesional.",
+    copyright: "© 2026 Pastelería Dolcenita S.A. de C.V. — Todos los derechos reservados.",
+    copyright_en: "© 2026 Dolcenita Bakery — All rights reserved.",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // 🌐 REDES SOCIALES
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   socials: [
-    { label: "Instagram", href: "https://instagram.com/clinicavitalis" },
-    { label: "Facebook",  href: "https://facebook.com/clinicavitalis" },
+    { label: "Instagram", href: "https://instagram.com/dolcenita" },
+    { label: "Facebook",  href: "https://facebook.com/dolcenita" },
+    { label: "TikTok",    href: "https://tiktok.com/@dolcenita" },
     { label: "WhatsApp",  href: "https://wa.me/5215555551234" },
-    { label: "LinkedIn",  href: "https://linkedin.com/company/clinica-vitalis" },
   ],
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -423,122 +411,87 @@ const SITE_CONFIG = {
     smoothScrollLerp: 0.08,
     revealThreshold: 0.15,
     cursorEnabled: true,
-    grainEnabled: false,       // ★ Desactivado (clínicas piden look más limpio)
+    grainEnabled: true,        // Look artesanal con grano sutil
     progressBarEnabled: true,
-    servicesLight: false,
-    galleryAuto: true,          // false = sin auto-rotación (solo clic/drag)
-    galleryAutoInterval: 4000,  // ms entre cada libro centrado
+    servicesLight: false,       // Efecto de luz sobre especialidades
+    galleryAuto: true,
+    galleryAutoInterval: 4000,
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🛒 TIENDA (archivo tienda.html) — desactivada
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  tienda: {
-    whatsapp: "5215555551234",
-    hero: {
-      eyebrow: "Farmacia Vitalis",
-      titleLine1: "Productos que",
-      titleLine2: "cuidan",
-      subtitle: "Productos médicos recomendados por nuestros especialistas."
-    }
-  },
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🔐 SUPABASE
+  // 🔐 SUPABASE (rellenar con credenciales del cliente)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   supabase: {
-    url: "https://ouxfmeugibrpjysjfqso.supabase.co",
-    key: "sb_publishable_jAgXqz1iqlEyveCIFy4eOw_idYvxmoQ",
-    storageBucket: "blog-images",
+    url: "https://fcxmqjiuacyyudwiqoju.supabase.co",
+    key: "sb_publishable_nn8jVPm-CDx2VjnUxd7iTA_P5HuqhkS",
+    storageBucket: "media",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // Analítica (se activa solo si el cliente la pide Y el usuario acepta)
+  // 📊 ANALÍTICA
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   analytics: {
-  enabled: false,            // ← pon true cuando el cliente contrate analítica
-  measurementId: "G-XXXXXXXXXX",  // ← ID de Google Analytics 4
- },
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📧 EMAIL & FORMULARIOS
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  email: {
-    contactForm: "contacto@clinicavitalis.com",
-    formSubmitUrl: "https://formsubmit.co/ajax/contacto@clinicavitalis.com",
+    enabled: false,
+    measurementId: "",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📝 BLOG CONFIG
+  // 📧 EMAIL
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  email: {
+    formSubmitUrl: "https://formsubmit.co/ajax/hola@dolcenita.mx",
+  },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 💬 MENSAJES DEL SISTEMA (se dejan iguales — multinegocio)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   blogConfig: {
-    categories: ["prevencion", "cardiologia", "nutricion", "pediatria", "dermatologia"],
-    heroStars: 25,  // menos estrellas (look más serio)
+    categories: ["recetas", "tendencias", "bodas", "eventos", "tips"],
+    heroStars: 25,
     messages: {
-      postSuccess: "¡Artículo publicado con éxito!",
-      postError: "Error al crear el artículo",
-      categoryAdded: "Categoría agregada",
-      categoryRemoved: "Categoría eliminada",
-      categoryExists: "Categoría ya existe o inválida",
-      loginWelcome: "¡Bienvenido, administrador!",
-      loginError: "Credenciales inválidas. Verifica tu email y contraseña.",
-      sessionClosed: "Sesión cerrada",
-      logoutError: "Error al cerrar sesión",
-      imageUploading: "Subiendo imágenes...",
-      imageSuccess: "Imágenes subidas correctamente",
-      imageError: "Error al subir",
-      notImage: "no es una imagen",
-      exceedsSize: "excede 5MB",
-      needLogin: "Debes iniciar sesión primero",
-      needImage: "Debes subir al menos una imagen",
-      dbError: "Error al conectar con la base de datos",
-      noPosts: "No se encontraron artículos",
-      noComments: "Sé el primero en comentar",
-      commentAdded: "¡Comentario agregado!",
-      likeAdded: "¡Te gustó este artículo!",
-      likeRemoved: "Like removido",
-      saved: "Artículo guardado",
-      unsaved: "Artículo removido de guardados",
-      invalidCategory: "Debe haber al menos una categoría",
+      postSuccess: "¡Artículo publicado!", postSuccess_en: "Article published!",
+      postError: "Error al publicar", postError_en: "Publish error",
+      categoryAdded: "Categoría agregada", categoryAdded_en: "Category added",
+      categoryRemoved: "Categoría eliminada", categoryRemoved_en: "Category removed",
+      categoryExists: "La categoría ya existe", categoryExists_en: "Category already exists",
+      loginWelcome: "¡Bienvenido!", loginWelcome_en: "Welcome!",
+      loginError: "Credenciales inválidas", loginError_en: "Invalid credentials",
+      sessionClosed: "Sesión cerrada", sessionClosed_en: "Session closed",
+      logoutError: "Error al cerrar sesión", logoutError_en: "Logout error",
+      imageUploading: "Subiendo...", imageUploading_en: "Uploading...",
+      imageSuccess: "Imágenes subidas", imageSuccess_en: "Images uploaded",
+      imageError: "Error al subir", imageError_en: "Upload error",
+      notImage: "no es una imagen", notImage_en: "is not an image",
+      exceedsSize: "excede 5MB", exceedsSize_en: "exceeds 5MB",
+      needLogin: "Inicia sesión primero", needLogin_en: "Please login first",
+      needImage: "Sube al menos una imagen", needImage_en: "Upload at least one image",
+      dbError: "Error de conexión", dbError_en: "Connection error",
+      noPosts: "No hay artículos", noPosts_en: "No articles found",
+      noComments: "Sé el primero en comentar", noComments_en: "Be the first to comment",
+      commentAdded: "¡Comentario agregado!", commentAdded_en: "Comment added!",
+      likeAdded: "¡Like agregado!", likeAdded_en: "Like added!",
+      likeRemoved: "Like removido", likeRemoved_en: "Like removed",
+      saved: "Guardado", saved_en: "Saved",
+      unsaved: "Removido de guardados", unsaved_en: "Removed from saved",
+      invalidCategory: "Debe haber al menos una categoría", invalidCategory_en: "There must be at least one category",
     },
   },
 
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🛒 TIENDA CONFIG
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   shopConfig: {
     whatsapp: {
       number: "5215555551234",
-      defaultMessage: "Hola, me interesa conocer más sobre sus productos médicos.",
-      orderMessage: "Hola, me gustaría realizar el siguiente pedido:\n\n",
-      orderTotal: "\n*💰 Total a pagar: $",
-      emptyCartAlert: "Tu carrito está vacío.",
-    },
-    whatsappButton: {
-      showThreshold: 0.80,
-      hideThreshold: 0.75,
+      defaultMessage: "Hola, me interesa este producto de Dolcenita.", defaultMessage_en: "Hi, I'm interested in this Dolcenita product.",
+      orderMessage: "Hola, quiero hacer el siguiente pedido:\n\n", orderMessage_en: "Hi, I'd like to place the following order:\n\n",
+      orderTotal: "\n*💰 Total: $", orderTotal_en: "\n*💰 Total: $",
+      emptyCartAlert: "Tu carrito está vacío.", emptyCartAlert_en: "Your cart is empty.",
     },
     messages: {
-      promoApplied: '¡Código "{code}" aplicado! {label}',
-      promoInvalid: "Código no válido o expirado",
-      promoRemoved: "Código de descuento eliminado",
-      promoCopied: 'Código "{code}" copiado',
-      addedToCart: "Producto agregado al carrito",
+      promoApplied: '¡Código "{code}" aplicado!', promoApplied_en: 'Code "{code}" applied!',
+      promoInvalid: "Código no válido", promoInvalid_en: "Invalid code",
+      promoRemoved: "Código removido", promoRemoved_en: "Code removed",
+      promoCopied: 'Código "{code}" copiado', promoCopied_en: 'Code "{code}" copied',
+      addedToCart: "Producto agregado", addedToCart_en: "Product added",
     },
-  },
-
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🏢 DATOS FISCALES (CLÍNICA)
-  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  business: {
-    name: "Clínica Vitalis",
-    legalName: "Clínica Vitalis S.A. de C.V.",
-    taxId: "CVL100315AB1",                       // RFC real de la clínica
-    address: "Av. Reforma 222, Col. Juárez, C.P. 06600, Ciudad de México",
-    phone: "+52 55 5555 1234",
-    email: "contacto@clinicavitalis.com",
-    businessHours: "Lun - Sáb: 8:00 - 20:00 | Urgencias 24h",
-    registryData: "Inscrita en el Registro Público de Comercio. COFEPRIS: 193300101A0234",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -546,106 +499,269 @@ const SITE_CONFIG = {
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   location: {
     enabled: true,
-    label: "Nuestra Ubicación",
-    heading: "Visítanos en <em>nuestra clínica</em>",
-    subtitle: "Fácil acceso, estacionamiento propio y transporte público cercano.",
-    
-    address: "Av. Reforma 222, Col. Juárez, C.P. 06600, Ciudad de México",
+    adminTab: false,
+    label: "Visítanos", label_en: "Visit us",
+    heading: "Nuestra <em>pastelería</em>",
+    heading_en: "Our <em>bakery</em>",
+    subtitle: "Te esperamos con el aroma de pan recién horneado y un café caliente.",
+    subtitle_en: "We're waiting with the aroma of fresh-baked bread and a hot coffee.",
+    address: "Av. Ámsterdam 123, Col. Hipódromo, C.P. 06100, Ciudad de México",
+    address_en: "123 Amsterdam Ave, Hipódromo, 06100 Mexico City",
     phone: "+52 55 5555 1234",
     phoneHref: "tel:+525555551234",
-    
     hours: [
-      { d: "Lunes a Viernes", h: "8:00 – 20:00" },
-      { d: "Sábado",          h: "9:00 – 14:00" },
-      { d: "Domingo",         h: "Solo Urgencias" },
-      { d: "Urgencias",       h: "24 horas" },
+      { d: "Lunes a Viernes", h: "9:00 – 20:00", d_en: "Monday to Friday", h_en: "9:00 AM – 8:00 PM" },
+      { d: "Sábado", h: "9:00 – 21:00", d_en: "Saturday", h_en: "9:00 AM – 9:00 PM" },
+      { d: "Domingo", h: "10:00 – 18:00", d_en: "Sunday", h_en: "10:00 AM – 6:00 PM" },
     ],
-
-    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2000&auto=format&fit=crop",
-    // ↑ Fachada de la clínica (reemplázala por la foto real del cliente)
-    
-    mapsQuery: "Av. Paseo de la Reforma 222, Juárez, Cuauhtémoc, 06600 Ciudad de México, CDMX",
+    image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=2000&auto=format&fit=crop",
+    mapsQuery: "Av. Ámsterdam 123, Hipódromo, Cuauhtémoc, 06100 Ciudad de México, CDMX",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 📅 CITAS (CRÍTICO en salud)
+  // 📅 CITAS (desactivado — pastelería usa cotizador)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   appointments: {
-    enabled: true,
-    label: "Agenda tu Cita",
-    heading: "Reserva tu <em>consulta</em>",
-    subtitle: "Déjanos tus datos y te confirmamos por WhatsApp en menos de 2 horas en horario laboral.",
-    
-    slots: [
-      "Mañana (8:00–12:00)",
-      "Mediodía (12:00–15:00)",
-      "Tarde (15:00–19:00)"
-    ],
-    
-    successMessage: "¡Solicitud recibida! Nuestro equipo te contactará para confirmar tu cita.",
+    enabled: false,
+    adminTab: false,
+    label: "Agenda tu cita", label_en: "Book your appointment",
+    heading: "", heading_en: "",
+    subtitle: "", subtitle_en: "",
+    slots: [],
+    successMessage: "", successMessage_en: "",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 💳 PAGOS (desactivado por defecto)
+  // 💳 PAGOS (desactivado)
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   payments: {
     enabled: false,
+    adminTab: false,
     provider: "mercadopago",
     currency: "MXN",
-    buttonLabel: "💳 Pagar consulta",
+    buttonLabel: "Pagar", buttonLabel_en: "Pay",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  // 🌟 TESTIMONIOS (de pacientes)
+  // ⭐ TESTIMONIOS
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   testimonials: {
     enabled: true,
-    label: "Testimonios",
-    heading: "Pacientes que <em>confían</em> en nosotros",
-    subtitle: "Opiniones reales de pacientes que han recibido atención en nuestra clínica.",
+    adminTab: true,
+    label: "Testimonios", label_en: "Testimonials",
+    heading: "Lo que dicen nuestros <em>clientes</em>",
+    heading_en: "What our <em>clients</em> say",
+    subtitle: "Historias dulces de quienes confiaron en nosotros para sus momentos más especiales.",
+    subtitle_en: "Sweet stories from those who trusted us for their most special moments.",
   },
 
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🤝 COLABORA CON NOSOTROS (B2B / PROVEEDOR)
+  // 🤝 COLABORA B2B
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  collab: {
+    enabled: true,
+    adminTab: false,
+    label: "Colabora con nosotros", label_en: "Partner with us",
+    heading: "Tu negocio con <em>sabor propio</em>",
+    heading_en: "Your business with <em>its own flavor</em>",
+    subtitle: "Somos tu proveedor de postres artesanales para cafeterías, restaurantes, hoteles y eventos. Entregas diarias, precios de mayoreo y personalización con tu marca.",
+    subtitle_en: "We're your artisan dessert supplier for cafes, restaurants, hotels, and events. Daily deliveries, wholesale prices, and branding with your logo.",
+    marquee: ["Pasteles", "Cheesecakes", "Macarons", "Tartas frías", "Postres individuales", "Pan dulce", "Mesas de postres", "Temporadas especiales"],
+    points: [
+      { icon: "fa-truck-fast", title: "Entrega diaria", desc: "Rutas de reparto matutinas para que tu vitrina siempre esté llena.", title_en: "Daily delivery", desc_en: "Morning delivery routes to keep your showcase always full." },
+      { icon: "fa-tags", title: "Precio de mayoreo", desc: "Esquema especial para negocios con pedidos recurrentes.", title_en: "Wholesale prices", desc_en: "Special pricing for businesses with recurring orders." },
+      { icon: "fa-cake-candles", title: "Marca blanca", desc: "Personalizamos postres con el nombre y estilo de tu negocio.", title_en: "White label", desc_en: "Custom desserts with your business name and style." },
+      { icon: "fa-handshake", title: "Asesoría de menú", desc: "Te ayudamos a elegir los postres que más rotan en tu zona.", title_en: "Menu consulting", desc_en: "We help you choose the best-selling desserts for your area." }
+    ],
+    cta: "Ver folleto de precios", cta_en: "View price brochure",
+    brochureUrl: "",
+    ctaSecondary: "Escríbenos por WhatsApp", ctaSecondary_en: "Message us on WhatsApp",
+    whatsapp: "5215555551234",
+  },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🍓 TEMPORADA
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-collab: {
-  enabled: false,
-  label: "Colabora con nosotros",
-  heading: "Tu negocio con <em>sabor propio</em>",
-  subtitle: "Somos tu proveedor de postres artesanales para cafeterías, restaurantes, hoteles y eventos. Entregas diarias, precios de mayoreo y personalización con tu marca.",
-  marquee: ["Pasteles", "Cheesecakes", "Macarons", "Tartas frías", "Postres individuales", "Pan dulce", "Mesas de postres", "Temporadas especiales"],
-  points: [
-    { icon: "fa-truck-fast",    title: "Entrega diaria",     desc: "Rutas de reparto matutinas para que tu vitrina siempre esté llena." },
-    { icon: "fa-tags",          title: "Precio de mayoreo",  desc: "Esquema especial para negocios con pedidos recurrentes." },
-    { icon: "fa-cake-candles",  title: "Marca blanca",       desc: "Personalizamos postres con el nombre y estilo de tu negocio." },
-    { icon: "fa-handshake",     title: "Asesoría de menú",   desc: "Te ayudamos a elegir los postres que más rotan en tu zona." }
-  ],
-  cta: "Ver folleto de precios",
-  brochureUrl: "https://tudominio.com/folleto-postres-b2b.pdf",   // ★ PDF o enlace (Supabase, Drive, etc.)
-  ctaSecondary: "Escríbenos por WhatsApp",
-  whatsapp: "5215555551234"   // ★ WhatsApp de la pastelería
+season: {
+    enabled: true,
+    adminTab: true,
+    label: "Temporada", label_en: "Seasonal",
+    heading: "Sabor de <em>temporada</em>", heading_en: "<em>Seasonal</em> flavor",
+    subtitle: "Ediciones limitadas que solo existen mientras dura su momento.",
+    subtitle_en: "Limited editions that only exist while the moment lasts.",
+    marquee: ["Fresas con crema", "Rosca de Reyes", "Pan de muerto", "Tarta de elote", "Buñuelos", "Conchas de temporada"],
+    product: {
+      badge: "🍓 Edición limitada", badge_en: "🍓 Limited edition",
+      name: "Fresas con Crema Dolcenita", name_en: "Dolcenita Strawberries & Cream",
+      desc: "Bizcocho de vainilla de Madagascar, fresas maceradas y crema chantilly italiana.",
+      desc_en: "Madagascar vanilla sponge, macerated strawberries and Italian chantilly cream.",
+      price: 480,
+      originalPrice: 560,
+      image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=2000&auto=format&fit=crop",
+    },
+    endDate: "2026-09-30T23:59:59",
+    cta: "Apartar la mía", cta_en: "Reserve mine",
+    whatsapp: "5215555551234",
+    waMessage: "Hola, quiero apartar mi Fresas con Crema Dolcenita 🍓",
+    waMessage_en: "Hi, I'd like to reserve my Dolcenita Strawberries & Cream 🍓",
 },
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// 🍓 TEMPORADA (producto estrella + cuenta regresiva)
+// 🎂 COTIZADOR
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-season: {
-  enabled: false,
-  label: "Temporada",
-  heading: "Sabor de <em>temporada</em>",
-  subtitle: "Ediciones limitadas que solo existen mientras dura su momento. Cuando se acaba, se despide hasta el próximo año.",
-  product: {
-    badge: "🍓 Edición limitada",
-    name: "Fresas con Crema Signature",
-    desc: "Bizcocho de vainilla de Madagascar, fresas maceradas y crema chantilly italiana. Solo mientras dure la cosecha.",
-    price: 480,
-    originalPrice: 560,   // pon null si no quieres tachado
-    image: "https://images.unsplash.com/photo-1565958011703-44f9829ba187?q=80&w=2000&auto=format&fit=crop",
-  },
-  endDate: "2026-08-31T23:59:59",   // ★ fin de la temporada (el bloque se oculta solo al llegar)
-  cta: "Apartar la mía",
-  whatsapp: "5215555551234",
-  waMessage: "Hola, quiero apartar mi Fresas con Crema Signature 🍓",
-  marquee: ["Fresas con crema", "Rosca de Reyes", "Pan de muerto", "Tarta de elote", "Buñuelos", "Conchas de temporada"],
+cotizador: {
+    enabled: true,
+    adminTab: true,
+    minDaysAhead: 3,
+    maxPerDay: 2,
+    label: "Cotiza tu pastel", label_en: "Quote your cake",
+    heading: "Diseña y cotiza <em>tu pastel</em>", heading_en: "Design and quote <em>your cake</em>",
+    subtitle: "Arma tu pastel ideal y recibe un precio estimado al instante. El precio final se confirma al realizar tu pedido.",
+    subtitle_en: "Build your ideal cake and get an instant estimate. Final price is confirmed when you place your order.",
+    currency: "MXN",
+    sizes: [
+      { label: "10 personas", label_en: "10 servings", price: 550 },
+      { label: "20 personas", label_en: "20 servings", price: 950 },
+      { label: "30 personas", label_en: "30 servings", price: 1350 },
+      { label: "50 personas", label_en: "50 servings", price: 2100 },
+    ],
+    fillings: [
+      { label: "Vainilla clásica", label_en: "Classic vanilla", add: 0 },
+      { label: "Chocolate belga", label_en: "Belgian chocolate", add: 50 },
+      { label: "Fresas con crema", label_en: "Strawberries & cream", add: 70 },
+      { label: "Tres leches", label_en: "Three milks", add: 80 },
+      { label: "Red velvet", label_en: "Red velvet", add: 90 },
+    ],
+    decorations: [
+      { label: "Glaseado básico", label_en: "Basic glaze", add: 0 },
+      { label: "Chantilly con manga", label_en: "Piped chantilly", add: 90 },
+      { label: "Foto comestible", label_en: "Edible photo", add: 200 },
+      { label: "Flores naturales", label_en: "Fresh flowers", add: 250 },
+      { label: "Fondant temático", label_en: "Themed fondant", add: 280 },
+    ],
+    extras: [
+      { label: "Topper personalizado", label_en: "Custom topper", add: 100 },
+      { label: "Velas premium", label_en: "Premium candles", add: 60 },
+      { label: "Caja de regalo", label_en: "Gift box", add: 70 },
+      { label: "Dedicatoria especial", label_en: "Special dedication", add: 0 },
+    ],
+    delivery: {
+      pickupLabel: "Recoger en pastelería", pickupLabel_en: "Pickup at bakery",
+      pickupNote: "Recoger en tienda no tiene costo extra.", pickupNote_en: "Pickup has no extra cost.",
+      deliveryLabel: "Envío a domicilio", deliveryLabel_en: "Home delivery",
+      deliveryNote: "El envío tiene costo extra según el trayecto; lo confirmamos con tu pedido.", deliveryNote_en: "Delivery has an extra cost depending on distance; confirmed with your order.",
+    },
+    whatsapp: "5215555551234",
+    cta: "Enviar cotización por WhatsApp", cta_en: "Send quote via WhatsApp",
+    note: "*Precio estimado. El precio final puede variar según disponibilidad y personalización.",
+    note_en: "*Estimated price. Final price may vary based on availability and customization.",
 },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🍽️ MENÚ
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  menu: {
+    enabled: true,
+    adminTab: true,
+    label: "Nuestro Menú", label_en: "Our Menu",
+    heading: "Sabores que <em>enamoran</em>",
+    heading_en: "Flavors you <em>fall in love</em> with",
+    subtitle: "Productos de vitrina hechos al momento con ingredientes frescos.",
+    subtitle_en: "Showcase products made fresh with the finest ingredients.",
+    cta: "Hacer pedido por WhatsApp", cta_en: "Order via WhatsApp",
+    ctaHref: "https://wa.me/5215555551234",
+  },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🔁 ANTES/DESPUÉS (desactivado)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  beforeafter: {
+    enabled: false, adminTab: false,
+    label: "", label_en: "",
+    heading: "", heading_en: "",
+    subtitle: "", subtitle_en: "",
+  },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 💎 PLANES (desactivado)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  plans: {
+    enabled: false, adminTab: false,
+    label: "", label_en: "",
+    heading: "", heading_en: "",
+    subtitle: "", subtitle_en: "",
+    whatsapp: "",
+    note: "", note_en: "",
+  },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🏋️ CLASES (desactivado)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  classes: {
+    enabled: false, adminTab: false,
+    label: "", label_en: "",
+    heading: "", heading_en: "",
+    subtitle: "", subtitle_en: "",
+    note: "", note_en: "",
+  },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🔍 DATOS DEL NEGOCIO (SEO + fiscal)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  business: {
+    enabled: true,
+    adminTab: false,
+    type: "Bakery",
+    name: "Pastelería Dolcenita", name_en: "Dolcenita Bakery",
+    legalName: "Pastelería Dolcenita S.A. de C.V.",
+    taxId: "PDO160315ABC",
+    registryData: "Registro COFEPRIS 23-AL-00123",
+    description: "Pastelería artesanal con pasteles personalizados, temporadas y entregas el mismo día en CDMX.",
+    description_en: "Artisan bakery with custom cakes, seasonal specials, and same-day delivery in Mexico City.",
+    url: "https://dolcenita.mx",
+    logo: "",
+    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=2000&auto=format&fit=crop",
+    phone: "+52 55 5555 1234",
+    email: "hola@dolcenita.mx",
+    priceRange: "$$",
+    address: { street: "Av. Ámsterdam 123", city: "Ciudad de México", state: "CDMX", zip: "06100", country: "MX" },
+    geo: { lat: 19.4326, lng: -99.1332 },
+    hours: "Mo-Fr 09:00-20:00; Sa 09:00-21:00; Su 10:00-18:00",
+    hours_en: "Mon-Fri 9 AM-8 PM; Sat 9 AM-9 PM; Sun 10 AM-6 PM",
+    social: ["https://instagram.com/dolcenita", "https://facebook.com/dolcenita", "https://tiktok.com/@dolcenita"],
+    faqLabel: "Preguntas frecuentes", faqLabel_en: "Frequently asked questions",
+    faqHeading: "Resolvemos tus <em>dudas</em>", faqHeading_en: "Answering your <em>questions</em>",
+    faq: [
+      { q: "¿Hacen pasteles personalizados?", a: "Sí, con al menos 3 días de anticipación. Cotízalo desde el cotizador o por WhatsApp.", q_en: "Do you make custom cakes?", a_en: "Yes, with at least 3 days' notice. Quote it from the quote tool or via WhatsApp." },
+      { q: "¿Tienen opciones sin azúcar o veganas?", a: "Sí, manejamos línea especial bajo pedido. Pregúntanos por disponibilidad.", q_en: "Do you have sugar-free or vegan options?", a_en: "Yes, we offer a special line on request. Ask us about availability." },
+      { q: "¿Hacen entregas a domicilio?", a: "Sí, el costo depende del trayecto y se confirma al confirmar tu pedido.", q_en: "Do you deliver?", a_en: "Yes, cost depends on distance and is confirmed when we confirm your order." },
+      { q: "¿Con cuánta anticipación debo pedir mi pastel?", a: "Recomendamos mínimo 3 días; para bodas y XV años, al menos 2 meses.", q_en: "How far in advance should I order?", a_en: "We recommend at least 3 days; for weddings and quinceañeras, at least 2 months." },
+      { q: "¿Puedo probar sabores antes de pedir?", a: "Sí, agenda una degustación en nuestra pastelería con cita previa.", q_en: "Can I taste flavors before ordering?", a_en: "Yes, book a tasting at our bakery by appointment." },
+    ],
+    faq_en: [],
+  },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🛒 TIENDA (desactivada)
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  tienda: {
+    enabled: false,
+    adminTab: false,
+    whatsapp: "",
+    hero: {
+      eyebrow: "", eyebrow_en: "",
+      titleLine1: "", titleLine1_en: "",
+      titleLine2: "", titleLine2_en: "",
+      subtitle: "", subtitle_en: "",
+    },
+  },
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // 🌐 MULTI-IDIOMA
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  lang: {
+    enabled: false,
+    adminTab: false,
+    default: "es",
+  },
 };

@@ -11,38 +11,36 @@
     // de C.business (nombre, RFC, dirección, correos, teléfono).
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     function applyBusinessData() {
-        if (!C || !C.business) return;
-        const b = C.business;
-
-        // [texto del HTML] → [valor de config.js]
-        // (el más largo primero para no pisar coincidencias)
-        const map = [
-            ['Studio Creativo S.A. de C.V.', b.legalName],
-            ['STC200115AB1', b.taxId],
-            ['Av. Paseo de la Reforma 250, Piso 12, Col. Juárez, C.P. 06600, Ciudad de México', b.address],
-            ['privacidad@studio.com', b.email],
-            ['devoluciones@studio.com', b.email],
-            ['soporte@studio.com', b.email],
-            ['quejas@studio.com', b.email],
-            ['+52 55 1234 5678', b.phone],
-            ['55 1234 5678', b.phone]
-        ].filter(([old, nw]) => old && nw && old !== nw);
-
-        if (!map.length) return;
-
-        // Recorre solo nodos de texto (no rompe el HTML)
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
-        const nodes = [];
-        while (walker.nextNode()) nodes.push(walker.currentNode);
-
-        nodes.forEach(node => {
-            let text = node.nodeValue, changed = false;
-            map.forEach(([old, nw]) => {
-                if (text.includes(old)) { text = text.split(old).join(nw); changed = true; }
-            });
-            if (changed) node.nodeValue = text;
+    if (!C || !C.business) return;
+    const b = C.business;
+    // Dirección: acepta string (legal) u objeto (SEO)
+    const addr = typeof b.address === 'string'
+        ? b.address
+        : [b.address?.street, b.address?.city, b.address?.state, b.address?.zip]
+            .filter(Boolean).join(', ');
+    const map = [
+        ['Studio Creativo S.A. de C.V.', b.legalName],
+        ['STC200115AB1', b.taxId],
+        ['Av. Paseo de la Reforma 250, Piso 12, Col. Juárez, C.P. 06600, Ciudad de México', addr],
+        ['privacidad@studio.com', b.email],
+        ['devoluciones@studio.com', b.email],
+        ['soporte@studio.com', b.email],
+        ['quejas@studio.com', b.email],
+        ['+52 55 1234 5678', b.phone],
+        ['55 1234 5678', b.phone]
+    ].filter(([old, nw]) => old && nw && typeof nw === 'string' && old !== nw);
+    if (!map.length) return;
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(node => {
+        let text = node.nodeValue, changed = false;
+        map.forEach(([old, nw]) => {
+            if (text.includes(old)) { text = text.split(old).join(nw); changed = true; }
         });
-    }
+        if (changed) node.nodeValue = text;
+    });
+}
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     // 🎯 2. NAVEGACIÓN POR PESTAÑAS

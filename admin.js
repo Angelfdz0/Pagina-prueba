@@ -51,10 +51,11 @@
     let DATA = { 
         posts: [], comments: [], orders: [], coupons: [], 
         categories: [], likes: [], testimonials: [], 
-        products: [], appointments: [], services: [] 
+        products: [], appointments: [], services: [], menuItems: [], ba: [], plans: [], classes: [], team: [], gallery: [] 
     };
     
     let editImagesArr = [];
+    let ADMIN_ROLE = 'owner';
 
     const ICONS_SVG = {
         trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>',
@@ -81,18 +82,19 @@
     const USE_FONTAWESOME = true; 
     const ICONS = USE_FONTAWESOME ? ICONS_FA : ICONS_SVG;
 
-    const PAGE_SIZE = 10;
+    const PAGE_SIZE = 5;
     const pageState = { 
         posts: 1, comments: 1, orders: 1, coupons: 1, 
-        testimonials: 1, products: 1, appointments: 1, services: 1 
+        testimonials: 1, products: 1, appointments: 1, services: 1, menuItems: 1, ba: 1, plans: 1, classes: 1, team: 1, gallery: 1 
     };
 
-    function slicePage(arr, key) {
-        const pages = Math.max(1, Math.ceil(arr.length / PAGE_SIZE));
-        if (pageState[key] > pages) pageState[key] = pages;
-        const start = (pageState[key] - 1) * PAGE_SIZE;
-        return arr.slice(start, start + PAGE_SIZE);
-    }
+     function slicePage(arr, key) {
+     const pages = Math.max(1, Math.ceil(arr.length / PAGE_SIZE));
+     const cur = Math.min(Math.max(1, pageState[key] || 1), pages);
+     pageState[key] = cur;
+     const start = (cur - 1) * PAGE_SIZE;
+     return arr.slice(start, start + PAGE_SIZE);
+ }
 
     function pagerHTML(key, total) {
         const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
@@ -110,6 +112,30 @@
         const btn = e.target.closest('[data-page-key]');
         if (!btn || btn.disabled) return;
         pageState[btn.dataset.pageKey] = Number(btn.dataset.page);
+                if (btn.dataset.pageKey === 'menuItems' && typeof refreshMenuAdmin === 'function') {
+            refreshMenuAdmin();
+            return;
+        }
+        if (btn.dataset.pageKey === 'ba' && typeof refreshBAAdmin === 'function') {
+            refreshBAAdmin();
+            return;
+        }
+        if (btn.dataset.pageKey === 'plans' && typeof refreshPlansAdmin === 'function') {
+            refreshPlansAdmin();
+            return;
+        }
+        if (btn.dataset.pageKey === 'classes' && typeof refreshClassesAdmin === 'function') {
+            refreshClassesAdmin();
+            return;
+        }
+        if (btn.dataset.pageKey === 'team' && typeof refreshTeamAdmin === 'function') {
+            refreshTeamAdmin();
+            return;
+        }
+        if (btn.dataset.pageKey === 'gallery' && typeof refreshGalleryAdmin === 'function') {
+            refreshGalleryAdmin();
+            return;
+        }
         renderAll();
     });
 
@@ -178,10 +204,16 @@
         });
     }
 
-    async function initAuth() {
+        async function initAuth() {
         try {
             const { data: { session } } = await getSupabase().auth.getSession();
-            if (session) showApp();
+            if (session) {
+                try {
+                    const { data: prof } = await getSupabase().from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+                    ADMIN_ROLE = prof?.role || 'owner';
+                } catch (e) { ADMIN_ROLE = 'owner'; }
+                showApp();
+            }
             else $('#adminLogin').style.display = 'flex';
         } catch (e) {
             console.error('Error de autenticación:', e);
@@ -200,6 +232,11 @@
             });
             btn.disabled = false; btn.textContent = 'Entrar';
             if (error) { $('#adminLoginError').textContent = 'Credenciales inválidas'; return; }
+            try {
+                const { data: { session } } = await getSupabase().auth.getSession();
+                const { data: prof } = await getSupabase().from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+                ADMIN_ROLE = prof?.role || 'owner';
+            } catch (e) { ADMIN_ROLE = 'owner'; }
             showApp();
         } catch (e) {
             btn.disabled = false; btn.textContent = 'Entrar';
@@ -217,12 +254,27 @@
     });
 
     async function showApp() {
-        $('#adminLogin').style.display = 'none';
-        $('#adminApp').hidden = false;
-        applyAdminTabsVisibility();
-        await loadAll();
-        renderAll();
-    }
+    $('#adminLogin').style.display = 'none';
+    $('#adminApp').hidden = false;
+    mergeCotSettings(await loadCotSettings());
+    applyAdminTabsVisibility();
+    await loadAll();
+    if (typeof refreshMenuAdmin === 'function') await refreshMenuAdmin();
+    if (typeof refreshBAAdmin === 'function') await refreshBAAdmin();
+    if (typeof refreshPlansAdmin === 'function') await refreshPlansAdmin();
+    if (typeof refreshClassesAdmin === 'function') await refreshClassesAdmin();
+    if (typeof refreshTeamAdmin === 'function') await refreshTeamAdmin();
+    if (typeof refreshGalleryAdmin === 'function') await refreshGalleryAdmin();
+    if (typeof refreshStoryAdmin === 'function') await refreshStoryAdmin();
+    if (typeof refreshPhilosophyAdmin === 'function') await refreshPhilosophyAdmin();
+    if (typeof refreshLocationAdmin === 'function') await refreshLocationAdmin();
+    if (typeof refreshHeroAdmin === 'function') await refreshHeroAdmin();
+    if (typeof refreshCollabAdmin === 'function') await refreshCollabAdmin();
+    if (typeof refreshBusinessAdmin === 'function') await refreshBusinessAdmin();
+    renderAll();
+    fillCotForm();
+    refreshCotBookings();
+}
 
     // Carga selectiva: solo módulos activos
     async function loadAll() {
@@ -289,28 +341,55 @@
         }
     }
 
-    $$('.admin-sidebar nav button').forEach(btn => {
-        btn.addEventListener('click', () => {
-            $$('.admin-sidebar nav button').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            $$('.admin-view').forEach(v => v.classList.remove('active'));
-            $('#view-' + btn.dataset.view).classList.add('active');
-            updateViewShortcut(btn.dataset.view);
-        });
-    });
+     $$('.admin-sidebar nav button').forEach(btn => {
+     btn.addEventListener('click', () => {
+         $$('.admin-sidebar nav button').forEach(b => b.classList.remove('active'));
+         btn.classList.add('active');
+         $$('.admin-view').forEach(v => v.classList.remove('active'));
+         $('#view-' + btn.dataset.view).classList.add('active');
+         updateViewShortcut(btn.dataset.view);
+         if (btn.dataset.view === 'menu' && typeof refreshMenuAdmin === 'function') refreshMenuAdmin();
+         if (btn.dataset.view === 'beforeafter' && typeof refreshBAAdmin === 'function') refreshBAAdmin();
+         if (btn.dataset.view === 'plans' && typeof refreshPlansAdmin === 'function') refreshPlansAdmin();
+         if (btn.dataset.view === 'classes' && typeof refreshClassesAdmin === 'function') refreshClassesAdmin();
+         if (btn.dataset.view === 'team' && typeof refreshTeamAdmin === 'function') refreshTeamAdmin();
+         if (btn.dataset.view === 'gallery' && typeof refreshGalleryAdmin === 'function') refreshGalleryAdmin();
+         if (btn.dataset.view === 'story' && typeof refreshStoryAdmin === 'function') refreshStoryAdmin();
+         if (btn.dataset.view === 'philosophy' && typeof refreshPhilosophyAdmin === 'function') refreshPhilosophyAdmin();
+         if (btn.dataset.view === 'location' && typeof refreshLocationAdmin === 'function') refreshLocationAdmin();
+         if (btn.dataset.view === 'hero' && typeof refreshHeroAdmin === 'function') refreshHeroAdmin();
+         if (btn.dataset.view === 'collab' && typeof refreshCollabAdmin === 'function') refreshCollabAdmin();
+         if (btn.dataset.view === 'business' && typeof refreshBusinessAdmin === 'function') refreshBusinessAdmin();
+     });
+ });
     updateViewShortcut('dashboard');
 
     function applyAdminTabsVisibility() {
     const rules = {
-        posts:        C.blog?.enabled !== false,
-        categories:   C.blog?.enabled !== false,
-        comments:     C.blog?.enabled !== false,
-        products:     C.ecommerce?.enabled !== false,
-        orders:       C.ecommerce?.enabled !== false,
-        coupons:      C.ecommerce?.enabled !== false,
-        testimonials: C.testimonials?.enabled !== false,
-        appointments: C.appointments?.enabled === true
+        posts:        !!C.blog         && (C.blog.adminTab         ?? C.blog.enabled)         !== false,
+        categories:   !!C.blog         && (C.blog.adminTab         ?? C.blog.enabled)         !== false,
+        comments:     !!C.blog         && (C.blog.adminTab         ?? C.blog.enabled)         !== false,
+        products:     !!C.ecommerce    && (C.ecommerce.adminTab    ?? C.ecommerce.enabled)    !== false,
+        orders:       !!C.ecommerce    && (C.ecommerce.adminTab    ?? C.ecommerce.enabled)    !== false,
+        coupons:      !!C.ecommerce    && (C.ecommerce.adminTab    ?? C.ecommerce.enabled)    !== false,
+        testimonials: !!C.testimonials && (C.testimonials.adminTab ?? C.testimonials.enabled) !== false,
+        appointments: !!C.appointments && (C.appointments.adminTab ?? C.appointments.enabled) !== false,
+        cotizador:    !!C.cotizador    && (C.cotizador.adminTab    ?? C.cotizador.enabled)    !== false,
+        menu:         !!C.menu         && (C.menu.adminTab         ?? C.menu.enabled)         !== false,
+        beforeafter:  !!C.beforeafter  && (C.beforeafter.adminTab  ?? C.beforeafter.enabled)  !== false,
+        plans:        !!C.plans        && (C.plans.adminTab        ?? C.plans.enabled)        !== false,
+        classes:      !!C.classes      && (C.classes.adminTab      ?? C.classes.enabled)      !== false,
+        team:         !!C.team         && (C.team.adminTab         ?? C.team.enabled)         !== false,
+        gallery:      !!C.gallery      && (C.gallery.adminTab      ?? C.gallery.enabled)      !== false,
+        story:        !!C.story        && (C.story.adminTab        ?? C.story.enabled)        !== false,
+        philosophy:   !!C.philosophy   && (C.philosophy.adminTab   ?? C.philosophy.enabled)   !== false,
+        location:     !!C.location     && (C.location.adminTab     ?? C.location.enabled)     !== false,
+        hero:         !!C.hero         && (C.hero.adminTab         ?? C.hero.enabled)         !== false,
+        collab:       !!C.collab       && (C.collab.adminTab       ?? C.collab.enabled)       !== false,
+        business:     !!C.business     && (C.business.adminTab     ?? true)                   !== false,
+        season:       !!C.season       && (C.season.adminTab       ?? C.season.enabled)       !== false,
     };
+    
     Object.entries(rules).forEach(([view, visible]) => {
         const btn = document.querySelector(`.admin-sidebar nav button[data-view="${view}"]`);
         if (btn) btn.style.display = visible ? '' : 'none';
@@ -323,6 +402,7 @@
     if (activeBtn && activeBtn.style.display === 'none') {
         document.querySelector('.admin-sidebar nav button[data-view="dashboard"]')?.click();
     }
+    if (typeof applyRoleRestrictions === 'function') applyRoleRestrictions();
 }
 
 
@@ -354,6 +434,30 @@
             stats.push({ n: DATA.testimonials.length, l: 'Testimonios' });
         }
 
+        if (!!C.menu && C.menu.enabled !== false) {
+            stats.push({ n: (DATA.menuItems || []).filter(m => m.is_active).length, l: 'Platillos' });
+        }
+
+        if (!!C.beforeafter && C.beforeafter.enabled !== false) {
+            stats.push({ n: (DATA.ba || []).filter(x => x.is_active).length, l: 'Resultados' });
+        }
+
+        if (!!C.plans && C.plans.enabled !== false) {
+            stats.push({ n: (DATA.plans || []).filter(p => p.is_active).length, l: 'Planes' });
+        }
+
+        if (!!C.classes && C.classes.enabled !== false) {
+            stats.push({ n: (DATA.classes || []).filter(c => c.is_active).length, l: 'Clases' });
+        }
+
+        if (!!C.team && C.team.enabled !== false) {
+            stats.push({ n: (DATA.team || []).filter(x => x.is_active).length, l: 'Equipo' });
+        }
+
+        if (!!C.gallery && C.gallery.enabled !== false) {
+            stats.push({ n: (DATA.gallery || []).filter(g => g.is_active).length, l: 'Galería' });
+        }
+
         if (C.appointments?.enabled === true) {
             stats.push({ n: (DATA.appointments || []).filter(a => a.status === 'pending').length, l: 'Citas pend.' });
         }
@@ -361,6 +465,7 @@
         $('#adminStats').innerHTML = stats.map(s =>
             `<div class="admin-stat"><div class="num">${s.n}</div><div class="lbl">${s.l}</div></div>`
         ).join('') || '<p class="admin-empty">Sin módulos activos</p>';
+        renderDashboardMetrics();
     }
 
     function renderAppointments() {
@@ -1341,6 +1446,1301 @@ function askImageSource() {
         imgSourceModal.querySelector('#imgSrcUrlWrap').classList.remove('open');
         imgSourceModal.querySelector('#imgSrcUrlInput').value = '';
         imgSourceModal.classList.add('open');
+    });
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🍓 TEMPORADA — gestión completa desde el panel
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function loadSeasonSettings() {
+    try {
+        const { data } = await getSupabase().from('site_settings')
+            .select('value, updated_at').eq('key', 'season').maybeSingle();
+        return data || null;
+    } catch (e) { console.warn('Temporada: tabla site_settings no disponible —', e.message); return null; }
+}
+function toLocalInput(iso) {
+    const d = new Date(iso);
+    if (isNaN(d)) return '';
+    const p = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+function fillSeasonForm(row) {
+    const s = row?.value || null;
+    const K = Object.assign({}, C.season || {}, s || {});
+    const P = Object.assign({}, (C.season || {}).product || {}, (s || {}).product || {});
+    $('#seasonEnabled').checked = K.enabled !== false;
+    $('#seasonLabel').value = K.label || '';
+    $('#seasonHeading').value = K.heading || '';
+    $('#seasonSubtitle').value = K.subtitle || '';
+    $('#seasonBadge').value = P.badge || '';
+    $('#seasonName').value = P.name || '';
+    $('#seasonDesc').value = P.desc || '';
+    $('#seasonPrice').value = P.price ?? '';
+    $('#seasonPriceOrig').value = P.originalPrice ?? '';
+    $('#seasonImage').value = P.image || '';
+    $('#seasonEnd').value = K.endDate ? toLocalInput(K.endDate) : '';
+    $('#seasonCta').value = K.cta || '';
+    $('#seasonWhatsapp').value = K.whatsapp || '';
+    $('#seasonWaMsg').value = K.waMessage || '';
+    $('#seasonMarquee').value = (K.marquee || []).join('\n');
+    const at = $('#seasonSavedAt');
+    if (at) at.textContent = row?.updated_at ? 'Último guardado: ' + fmtDate(row.updated_at) : 'Usando valores de config.js';
+}
+$('#seasonImgBtn').addEventListener('click', async () => {
+    const choice = await askImageSource();
+    if (!choice) return;
+    if (choice === 'file') { $('#seasonImgInput').click(); return; }
+    if (choice.url) { $('#seasonImage').value = choice.url; toast('Imagen aplicada ✅'); }
+});
+$('#seasonImgInput').addEventListener('change', async e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    toast('Subiendo imagen...');
+    const url = await uploadFile(file, 'temporada');
+    if (url) { $('#seasonImage').value = url; toast('Imagen lista ✅'); }
+    e.target.value = '';
+});
+$('#seasonSave').addEventListener('click', async () => {
+    const payload = {
+        enabled: $('#seasonEnabled').checked,
+        label: $('#seasonLabel').value.trim(),
+        heading: $('#seasonHeading').value.trim(),
+        subtitle: $('#seasonSubtitle').value.trim(),
+        cta: $('#seasonCta').value.trim(),
+        whatsapp: $('#seasonWhatsapp').value.trim(),
+        waMessage: $('#seasonWaMsg').value.trim(),
+        endDate: $('#seasonEnd').value ? new Date($('#seasonEnd').value).toISOString() : null,
+        marquee: $('#seasonMarquee').value.split('\n').map(x => x.trim()).filter(Boolean),
+        product: {
+            badge: $('#seasonBadge').value.trim(),
+            name: $('#seasonName').value.trim(),
+            desc: $('#seasonDesc').value.trim(),
+            price: Number($('#seasonPrice').value) || 0,
+            originalPrice: Number($('#seasonPriceOrig').value) || null,
+            image: $('#seasonImage').value.trim(),
+        }
+    };
+    const btn = $('#seasonSave');
+    btn.disabled = true; btn.textContent = 'Guardando...';
+    const { error } = await getSupabase().from('site_settings')
+        .upsert({ key: 'season', value: payload, updated_at: new Date().toISOString() });
+    btn.disabled = false; btn.textContent = 'Guardar cambios';
+    toast(error ? 'Error: ' + error.message : 'Temporada guardada ✅');
+    if (!error) fillSeasonForm({ value: payload, updated_at: new Date().toISOString() });
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// 🎂 COTIZADOR — gestión completa desde el panel
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function loadCotSettings() {
+    try {
+        const { data } = await getSupabase().from('site_settings')
+            .select('value').eq('key', 'cotizador').maybeSingle();
+        return data?.value || null;
+    } catch (e) { return null; }
+}
+function mergeCotSettings(s) {
+    if (!s) return;
+    const base = C.cotizador || {};
+    C.cotizador = Object.assign({}, base, s);
+    C.cotizador.delivery = Object.assign({}, base.delivery || {}, s.delivery || {});
+}
+function cotLines(items, key) {
+    return (items || []).map(i => `${i.label} | ${i[key] ?? 0}`).join('\n');
+}
+function cotParse(txt) {
+    return (txt || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+        const [label, num] = l.split('|').map(x => x.trim());
+        return { label: label || '', price: Number(num) || 0, add: Number(num) || 0 };
+    }).filter(x => x.label);
+}
+function fillCotForm() {
+    const K = C.cotizador || {};
+    const D = K.delivery || {};
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+    const chk = document.getElementById('cotEnabled');
+    if (chk) chk.checked = K.enabled !== false;
+    set('cotMinDays', K.minDaysAhead ?? 3);
+    set('cotMaxDay', K.maxPerDay ?? 1);
+    set('cotWhatsapp', K.whatsapp || '');
+    set('cotSizes', cotLines(K.sizes, 'price'));
+    set('cotFillings', cotLines(K.fillings, 'add'));
+    set('cotDecos', cotLines(K.decorations, 'add'));
+    set('cotExtras', cotLines(K.extras, 'add'));
+    set('cotPickupLabel', D.pickupLabel || '');
+    set('cotPickupNote', D.pickupNote || '');
+    set('cotDeliveryLabel', D.deliveryLabel || '');
+    set('cotDeliveryNote', D.deliveryNote || '');
+}
+
+$('#cotSave')?.addEventListener('click', async () => {
+    const payload = {
+        enabled: document.getElementById('cotEnabled')?.checked !== false,
+        minDaysAhead: Number(document.getElementById('cotMinDays')?.value) || 0,
+        maxPerDay: Number(document.getElementById('cotMaxDay')?.value) || 1,
+        whatsapp: document.getElementById('cotWhatsapp')?.value.trim() || '',
+        sizes: cotParse(document.getElementById('cotSizes')?.value || ''),
+        fillings: cotParse(document.getElementById('cotFillings')?.value || ''),
+        decorations: cotParse(document.getElementById('cotDecos')?.value || ''),
+        extras: cotParse(document.getElementById('cotExtras')?.value || ''),
+        delivery: {
+            pickupLabel: document.getElementById('cotPickupLabel')?.value.trim() || '',
+            pickupNote: document.getElementById('cotPickupNote')?.value.trim() || '',
+            deliveryLabel: document.getElementById('cotDeliveryLabel')?.value.trim() || '',
+            deliveryNote: document.getElementById('cotDeliveryNote')?.value.trim() || '',
+        }
+    };
+    const btn = document.getElementById('cotSave');
+    btn.disabled = true; btn.textContent = 'Guardando...';
+    const { error } = await getSupabase().from('site_settings')
+        .upsert({ key: 'cotizador', value: payload, updated_at: new Date().toISOString() });
+    btn.disabled = false; btn.textContent = 'Guardar cambios';
+    toast(error ? 'Error: ' + error.message : 'Cotizador guardado ✅');
+    if (!error) {
+        mergeCotSettings(payload);
+        fillCotForm();
+        applyAdminTabsVisibility();
+        const at = document.getElementById('cotSavedAt');
+        if (at) at.textContent = 'Último guardado: ' + new Date().toLocaleString('es-MX');
+    }
+});
+
+async function refreshCotBookings() {
+    const el = $('#cotBookingsTable');
+    if (!el) return;
+    let rows = [];
+    try {
+        const { data } = await getSupabase().from('cake_bookings')
+            .select('*').order('order_date', { ascending: true });
+        rows = data || [];
+    } catch (e) { rows = []; }
+    if (!rows.length) { el.innerHTML = '<p class="admin-empty">Sin pedidos registrados</p>'; return; }
+    el.innerHTML = `<table class="admin-table"><thead><tr>
+        <th>Entrega</th><th>Pedido</th><th>Modalidad</th><th>Total</th><th>Estado</th><th>Acciones</th>
+    </tr></thead><tbody>` + rows.map(b => {
+        const d = b.details || {};
+        const resumen = [d.size, d.filling, d.deco].filter(Boolean).join(' · ') +
+            ((d.extras || []).length ? ' + ' + d.extras.join(', ') : '') +
+            (d.qty > 1 ? ` (×${d.qty})` : '');
+        return `<tr>
+            <td class="cell-date">${escapeHtml(b.order_date)}</td>
+            <td><span class="cell-clamp">${escapeHtml(resumen || '—')}</span></td>
+            <td class="cell-muted">${b.delivery === 'delivery' ? '🚗 Domicilio' : '🏪 Recoger'}</td>
+            <td class="cell-value">${money(d.total || 0)}</td>
+            <td><span class="badge ${b.status === 'cancelled' ? 'cancelled' : 'pending'}">${b.status === 'cancelled' ? 'Cancelado' : 'Activo'}</span></td>
+            <td class="cell-actions">
+                ${b.status === 'cancelled'
+                    ? `<button class="admin-btn" data-cotreact="${b.id}" title="Reactivar (vuelve a bloquear la fecha)">${ICONS.check}</button>`
+                    : `<button class="admin-btn" data-cotcancel="${b.id}" title="Cancelar pedido (libera la fecha)">${ICONS.ban}</button>`}
+                <button class="admin-btn danger" data-cotdel="${b.id}" title="Eliminar">${ICONS.trash}</button>
+            </td>
+        </tr>`;
+    }).join('') + '</tbody></table>';
+    if (el.dataset.bound) return;
+    el.dataset.bound = '1';
+    el.addEventListener('click', async e => {
+        const cancelBtn = e.target.closest('[data-cotcancel]');
+        const reactBtn = e.target.closest('[data-cotreact]');
+        const delBtn = e.target.closest('[data-cotdel]');
+        if (cancelBtn) {
+            if (!await askConfirm({ title: 'Cancelar pedido', message: 'La fecha quedará LIBRE para nuevos pedidos.' })) return;
+            const { error } = await getSupabase().from('cake_bookings').update({ status: 'cancelled' }).eq('id', cancelBtn.dataset.cotcancel);
+            toast(error ? 'Error al cancelar' : 'Pedido cancelado — fecha liberada ✅');
+            if (!error) refreshCotBookings();
+        } else if (reactBtn) {
+            const { error } = await getSupabase().from('cake_bookings').update({ status: 'pending' }).eq('id', reactBtn.dataset.cotreact);
+            toast(error ? 'Error al reactivar' : 'Pedido reactivado — fecha bloqueada de nuevo');
+            if (!error) refreshCotBookings();
+        } else if (delBtn) {
+            if (!await askConfirm({ title: 'Eliminar pedido', message: 'Se elimina el registro y la fecha queda libre.' })) return;
+            const { error } = await getSupabase().from('cake_bookings').delete().eq('id', delBtn.dataset.cotdel);
+            toast(error ? 'Error al eliminar' : 'Pedido eliminado');
+            if (!error) refreshCotBookings();
+        }
+    });
+}
+
+// ━━━ 🍽️ MENÚ v2 (panel) ━━━
+let editingMenuItemId = null;
+
+async function refreshMenuAdmin() {
+    let rows = [];
+    try {
+        const r = await getSupabase().from('menu_items').select('*').order('sort', { ascending: true }).order('created_at', { ascending: true });
+        rows = r.data || [];
+    } catch (e) { rows = []; }
+    DATA.menuItems = rows;
+    renderMenuAdmin();
+}
+
+function renderMenuAdmin() {
+    const el = $('#menuItemsTable');
+    if (!el) return;
+    if (!DATA.menuItems.length) { el.innerHTML = '<p class="admin-empty">Sin platillos todavía. Crea el primero con "＋ Nuevo platillo".</p>'; return; }
+    el.innerHTML = `<div class="mat">
+        <div class="mat-row mat-head">
+            <span>Categoría</span><span>Platillo</span><span>Precio</span><span>Estado</span><span>Acciones</span>
+        </div>` +
+        slicePage(DATA.menuItems, 'menuItems').map(mi => `<div class="mat-row">
+            <span class="cell-muted">${escapeHtml(mi.category || 'General')}</span>
+            <span><span class="cell-author">${escapeHtml(mi.name)}</span>${mi.description ? `<span class="menu-desc">${escapeHtml(mi.description)}</span>` : ''}</span>
+            <span class="cell-value">${money(mi.price)}</span>
+            <span><span class="badge ${mi.is_active ? 'published' : 'draft'}">${mi.is_active ? 'Activo' : 'Oculto'}</span></span>
+            <span class="cell-actions">
+                <button class="admin-btn" data-editmenu="${mi.id}" title="Editar">${ICONS.edit}</button>
+                <button class="admin-btn danger" data-delmenu="${mi.id}" title="Eliminar">${ICONS.trash}</button>
+            </span>
+        </div>`).join('') +
+    `</div>` + pagerHTML('menuItems', DATA.menuItems.length);
+    if (el.dataset.bound) return;
+    el.dataset.bound = '1';
+    el.addEventListener('click', async e => {
+        const editBtn = e.target.closest('[data-editmenu]');
+        const delBtn = e.target.closest('[data-delmenu]');
+        if (editBtn) openMenuEditor(editBtn.dataset.editmenu);
+        else if (delBtn) {
+            if (!await askConfirm({ title: 'Eliminar platillo', message: 'Se quitará del menú del sitio inmediatamente.' })) return;
+            const { error } = await getSupabase().from('menu_items').delete().eq('id', delBtn.dataset.delmenu);
+            toast(error ? 'Error al eliminar' : 'Platillo eliminado');
+            if (!error) await refreshMenuAdmin();
+        }
+    });
+}
+
+function menuCategories() {
+    const cats = [];
+    (C.menu?.categories || []).forEach(c => {
+        if (!cats.some(x => x.toLowerCase() === c.name.toLowerCase())) cats.push(c.name);
+    });
+    (DATA.menuItems || []).forEach(mi => {
+        const n = (mi.category || 'General').trim();
+        if (!cats.some(x => x.toLowerCase() === n.toLowerCase())) cats.push(n);
+    });
+    if (!cats.length) cats.push('General');
+    return cats;
+}
+function renderMenuCatSelect(selected) {
+    const sel = $('#menuItemCategory');
+    if (!sel) return;
+    const cats = menuCategories();
+    sel.innerHTML = cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+    const match = cats.find(c => c.toLowerCase() === String(selected || '').toLowerCase());
+    sel.value = match || cats[0];
+}
+
+function openMenuEditor(id) {
+    editingMenuItemId = id || null;
+    const mi = (DATA.menuItems || []).find(x => String(x.id) === String(id)) || null;
+    $('#menuEditorTitle').textContent = mi ? 'Editar platillo' : 'Nuevo platillo';
+    renderMenuCatSelect(mi?.category || '');
+    $('#menuItemName').value = mi?.name || '';
+    $('#menuItemDesc').value = mi?.description || '';
+    $('#menuItemPrice').value = mi?.price ?? '';
+    $('#menuItemActive').checked = mi ? mi.is_active : true;
+    $('#menuEditor').hidden = false;
+    $('#menuEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function closeMenuEditor() { $('#menuEditor').hidden = true; editingMenuItemId = null; }
+
+if ($('#newMenuItemBtn') && !$('#newMenuItemBtn').dataset.bound) {
+    $('#newMenuItemBtn').dataset.bound = '1';
+    $('#newMenuItemBtn').addEventListener('click', () => openMenuEditor(null));
+    $('#menuItemCancel').addEventListener('click', closeMenuEditor);
+    $('#menuCatToggle').addEventListener('click', () => {
+        const q = $('#menuCatQuick');
+        q.hidden = !q.hidden;
+        if (!q.hidden) $('#menuCatName').focus();
+    });
+    $('#menuCatSave').addEventListener('click', () => {
+        const name = $('#menuCatName').value.trim();
+        if (!name) { toast('Escribe un nombre de categoría'); return; }
+        const sel = $('#menuItemCategory');
+        const exists = Array.from(sel.options).some(o => o.value.toLowerCase() === name.toLowerCase());
+        if (exists) { toast('Esa categoría ya existe'); return; }
+        sel.insertAdjacentHTML('beforeend', `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`);
+        sel.value = name;
+        $('#menuCatName').value = '';
+        $('#menuCatQuick').hidden = true;
+        toast('Categoría lista ✅ (se guardará con el platillo)');
+    });
+    $('#menuItemSave').addEventListener('click', async () => {
+        const name = $('#menuItemName').value.trim();
+        if (!name) { toast('El nombre del platillo es obligatorio'); return; }
+        const payload = {
+            category: $('#menuItemCategory').value.trim() || 'General',
+            name,
+            description: $('#menuItemDesc').value.trim() || null,
+            price: Number($('#menuItemPrice').value) || 0,
+            tag: null,
+            is_active: $('#menuItemActive').checked,
+            sort: (DATA.menuItems || []).length
+        };
+        const { error } = editingMenuItemId
+            ? await getSupabase().from('menu_items').update(payload).eq('id', editingMenuItemId)
+            : await getSupabase().from('menu_items').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Platillo guardado ✅');
+        if (!error) { closeMenuEditor(); await refreshMenuAdmin(); }
+    });
+}
+
+// ━━━ 🔁 ANTES/DESPUÉS (panel) ━━━
+let editingBAId = null;
+
+async function refreshBAAdmin() {
+    let rows = [];
+    try {
+        const r = await getSupabase().from('before_after').select('*').order('sort', { ascending: true }).order('created_at', { ascending: true });
+        rows = r.data || [];
+    } catch (e) { rows = []; }
+    DATA.ba = rows;
+    renderBAAdmin();
+}
+
+function renderBAAdmin() {
+    const el = $('#baTable');
+    if (!el) return;
+    if (!DATA.ba.length) { el.innerHTML = '<p class="admin-empty">Sin casos todavía. Crea el primero con "＋ Nuevo caso".</p>'; return; }
+    el.innerHTML = `<div class="mat">
+        <div class="mat-row mat-head"><span>Título</span><span>Vista previa</span><span>Estado</span><span>Acciones</span></div>` +
+        slicePage(DATA.ba, 'ba').map(b => `<div class="mat-row">
+            <span><span class="cell-author">${escapeHtml(b.title)}</span>${b.tag ? `<span class="menu-desc">${escapeHtml(b.tag)}</span>` : ''}</span>
+            <span class="ba-prev"><img src="${b.before_img}" alt="Antes"><img src="${b.after_img}" alt="Después"></span>
+            <span><span class="badge ${b.is_active ? 'published' : 'draft'}">${b.is_active ? 'Activo' : 'Oculto'}</span></span>
+            <span class="cell-actions">
+                <button class="admin-btn" data-editba="${b.id}" title="Editar">${ICONS.edit}</button>
+                <button class="admin-btn danger" data-delba="${b.id}" title="Eliminar">${ICONS.trash}</button>
+            </span>
+        </div>`).join('') + `</div>` + pagerHTML('ba', DATA.ba.length);
+    if (el.dataset.bound) return;
+    el.dataset.bound = '1';
+    el.addEventListener('click', async e => {
+        const editBtn = e.target.closest('[data-editba]');
+        const delBtn = e.target.closest('[data-delba]');
+        if (editBtn) openBAEditor(editBtn.dataset.editba);
+        else if (delBtn) {
+            if (!await askConfirm({ title: 'Eliminar caso', message: 'Se quitará del sitio inmediatamente.' })) return;
+            const { error } = await getSupabase().from('before_after').delete().eq('id', delBtn.dataset.delba);
+            toast(error ? 'Error al eliminar' : 'Caso eliminado');
+            if (!error) await refreshBAAdmin();
+        }
+    });
+}
+
+function openBAEditor(id) {
+    editingBAId = id || null;
+    const b = (DATA.ba || []).find(x => String(x.id) === String(id)) || null;
+    $('#baEditorTitle').textContent = b ? 'Editar caso' : 'Nuevo caso';
+    $('#baTitle').value = b?.title || '';
+    $('#baTag').value = b?.tag || '';
+    $('#baBefore').value = b?.before_img || '';
+    $('#baAfter').value = b?.after_img || '';
+    $('#baActive').checked = b ? b.is_active : true;
+    $('#baEditor').hidden = false;
+    $('#baEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function closeBAEditor() { $('#baEditor').hidden = true; editingBAId = null; }
+
+if ($('#newBABtn') && !$('#newBABtn').dataset.bound) {
+    $('#newBABtn').dataset.bound = '1';
+    $('#newBABtn').addEventListener('click', () => openBAEditor(null));
+    $('#baCancel').addEventListener('click', closeBAEditor);
+    $('#baBeforeBtn').addEventListener('click', async () => {
+        const choice = await askImageSource();
+        if (!choice) return;
+        if (choice === 'file') { $('#baBeforeInput').click(); return; }
+        if (choice.url) { $('#baBefore').value = choice.url; toast('Imagen "antes" aplicada ✅'); }
+    });
+    $('#baAfterBtn').addEventListener('click', async () => {
+        const choice = await askImageSource();
+        if (!choice) return;
+        if (choice === 'file') { $('#baAfterInput').click(); return; }
+        if (choice.url) { $('#baAfter').value = choice.url; toast('Imagen "después" aplicada ✅'); }
+    });
+    $('#baBeforeInput').addEventListener('change', async e => {
+        const file = e.target.files[0]; e.target.value = '';
+        if (!file) return;
+        toast('Subiendo imagen...');
+        const url = await uploadFile(file, 'antes');
+        if (url) { $('#baBefore').value = url; toast('Imagen "antes" lista ✅'); }
+    });
+    $('#baAfterInput').addEventListener('change', async e => {
+        const file = e.target.files[0]; e.target.value = '';
+        if (!file) return;
+        toast('Subiendo imagen...');
+        const url = await uploadFile(file, 'despues');
+        if (url) { $('#baAfter').value = url; toast('Imagen "después" lista ✅'); }
+    });
+    $('#baSave').addEventListener('click', async () => {
+        const title = $('#baTitle').value.trim();
+        const before = $('#baBefore').value.trim();
+        const after = $('#baAfter').value.trim();
+        if (!title || !before || !after) { toast('Título y ambas imágenes son obligatorios'); return; }
+        const payload = {
+            title,
+            tag: $('#baTag').value.trim() || null,
+            before_img: before,
+            after_img: after,
+            is_active: $('#baActive').checked,
+            sort: (DATA.ba || []).length
+        };
+        const { error } = editingBAId
+            ? await getSupabase().from('before_after').update(payload).eq('id', editingBAId)
+            : await getSupabase().from('before_after').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Caso guardado ✅');
+        if (!error) { closeBAEditor(); await refreshBAAdmin(); }
+    });
+}
+
+// ━━━ ⭐ PLANES/MEMBRESÍAS (panel) ━━━
+let editingPlanId = null;
+
+async function refreshPlansAdmin() {
+    let rows = [];
+    try {
+        const r = await getSupabase().from('plans').select('*').order('sort', { ascending: true }).order('created_at', { ascending: true });
+        rows = r.data || [];
+    } catch (e) { rows = []; }
+    DATA.plans = rows;
+    renderPlansAdmin();
+}
+
+function renderPlansAdmin() {
+    const el = $('#plansTable');
+    if (!el) return;
+    if (!DATA.plans.length) { el.innerHTML = '<p class="admin-empty">Sin planes todavía. Crea el primero con "＋ Nuevo plan".</p>'; return; }
+    el.innerHTML = `<div class="mat">
+        <div class="mat-row mat-head"><span>Plan</span><span>Precio</span><span>Estado</span><span>Acciones</span></div>` +
+        slicePage(DATA.plans, 'plans').map(p => `<div class="mat-row">
+            <span><span class="cell-author">${escapeHtml(p.name)}</span>${p.highlighted ? '<span class="menu-desc">⭐ Más popular</span>' : ''}</span>
+            <span class="cell-value">${money(p.price)} / ${escapeHtml(p.period || 'mes')}</span>
+            <span><span class="badge ${p.is_active ? 'published' : 'draft'}">${p.is_active ? 'Activo' : 'Oculto'}</span></span>
+            <span class="cell-actions">
+                <button class="admin-btn" data-editplan="${p.id}" title="Editar">${ICONS.edit}</button>
+                <button class="admin-btn danger" data-delplan="${p.id}" title="Eliminar">${ICONS.trash}</button>
+            </span>
+        </div>`).join('') + `</div>` + pagerHTML('plans', DATA.plans.length);
+    if (el.dataset.bound) return;
+    el.dataset.bound = '1';
+    el.addEventListener('click', async e => {
+        const editBtn = e.target.closest('[data-editplan]');
+        const delBtn = e.target.closest('[data-delplan]');
+        if (editBtn) openPlanEditor(editBtn.dataset.editplan);
+        else if (delBtn) {
+            if (!await askConfirm({ title: 'Eliminar plan', message: 'Se quitará del sitio inmediatamente.' })) return;
+            const { error } = await getSupabase().from('plans').delete().eq('id', delBtn.dataset.delplan);
+            toast(error ? 'Error al eliminar' : 'Plan eliminado');
+            if (!error) await refreshPlansAdmin();
+        }
+    });
+}
+
+function openPlanEditor(id) {
+    editingPlanId = id || null;
+    const p = (DATA.plans || []).find(x => String(x.id) === String(id)) || null;
+    $('#planEditorTitle').textContent = p ? 'Editar plan' : 'Nuevo plan';
+    $('#planName').value = p?.name || '';
+    $('#planPrice').value = p?.price ?? '';
+    $('#planPeriod').value = p?.period || 'mes';
+    $('#planDesc').value = p?.description || '';
+    $('#planFeatures').value = (p?.features || []).join('\n');
+    $('#planCta').value = p?.cta || '';
+    $('#planFeatured').checked = !!p?.highlighted;
+    $('#planActive').checked = p ? p.is_active : true;
+    $('#planEditor').hidden = false;
+    $('#planEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function closePlanEditor() { $('#planEditor').hidden = true; editingPlanId = null; }
+
+if ($('#newPlanBtn') && !$('#newPlanBtn').dataset.bound) {
+    $('#newPlanBtn').dataset.bound = '1';
+    $('#newPlanBtn').addEventListener('click', () => openPlanEditor(null));
+    $('#planCancel').addEventListener('click', closePlanEditor);
+    $('#planSave').addEventListener('click', async () => {
+        const name = $('#planName').value.trim();
+        const price = Number($('#planPrice').value);
+        if (!name || isNaN(price)) { toast('Nombre y precio son obligatorios'); return; }
+        const payload = {
+            name,
+            price,
+            period: $('#planPeriod').value.trim() || 'mes',
+            description: $('#planDesc').value.trim() || null,
+            features: $('#planFeatures').value.split('\n').map(s => s.trim()).filter(Boolean),
+            cta: $('#planCta').value.trim() || null,
+            highlighted: $('#planFeatured').checked,
+            is_active: $('#planActive').checked,
+            sort: (DATA.plans || []).length
+        };
+        const { error } = editingPlanId
+            ? await getSupabase().from('plans').update(payload).eq('id', editingPlanId)
+            : await getSupabase().from('plans').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Plan guardado ✅');
+        if (!error) { closePlanEditor(); await refreshPlansAdmin(); }
+    });
+}
+
+// ━━━ ️ AGENDA DE CLASES (panel) ━━━
+let editingClassId = null;
+
+async function refreshClassesAdmin() {
+    let rows = [];
+    try {
+        const r = await getSupabase().from('classes').select('*').order('sort', { ascending: true }).order('created_at', { ascending: true });
+        rows = r.data || [];
+    } catch (e) { rows = []; }
+    DATA.classes = rows;
+    renderClassesAdmin();
+}
+
+function renderClassesAdmin() {
+    const el = $('#classesTable');
+    if (!el) return;
+    if (!DATA.classes.length) { el.innerHTML = '<p class="admin-empty">Sin clases todavía. Crea la primera con "＋ Nueva clase".</p>'; return; }
+    el.innerHTML = `<div class="mat">
+        <div class="mat-row mat-head"><span>Día / Hora</span><span>Clase</span><span>Estado</span><span>Acciones</span></div>` +
+        slicePage(DATA.classes, 'classes').map(c => `<div class="mat-row">
+            <span><span class="cell-author">${escapeHtml(c.day)}</span><span class="menu-desc">${escapeHtml(c.time)} hrs</span></span>
+            <span><span class="cell-author">${escapeHtml(c.name)}</span>${c.coach ? `<span class="menu-desc">con ${escapeHtml(c.coach)}</span>` : ''}</span>
+            <span><span class="badge ${c.is_active ? 'published' : 'draft'}">${c.is_active ? 'Activa' : 'Oculta'}</span></span>
+            <span class="cell-actions">
+                <button class="admin-btn" data-editclass="${c.id}" title="Editar">${ICONS.edit}</button>
+                <button class="admin-btn danger" data-delclass="${c.id}" title="Eliminar">${ICONS.trash}</button>
+            </span>
+        </div>`).join('') + `</div>` + pagerHTML('classes', DATA.classes.length);
+    if (el.dataset.bound) return;
+    el.dataset.bound = '1';
+    el.addEventListener('click', async e => {
+        const editBtn = e.target.closest('[data-editclass]');
+        const delBtn = e.target.closest('[data-delclass]');
+        if (editBtn) openClassEditor(editBtn.dataset.editclass);
+        else if (delBtn) {
+            if (!await askConfirm({ title: 'Eliminar clase', message: 'Se quitará de la agenda del sitio inmediatamente.' })) return;
+            const { error } = await getSupabase().from('classes').delete().eq('id', delBtn.dataset.delclass);
+            toast(error ? 'Error al eliminar' : 'Clase eliminada');
+            if (!error) await refreshClassesAdmin();
+        }
+    });
+}
+
+function openClassEditor(id) {
+    editingClassId = id || null;
+    const c = (DATA.classes || []).find(x => String(x.id) === String(id)) || null;
+    $('#classEditorTitle').textContent = c ? 'Editar clase' : 'Nueva clase';
+    $('#classDay').value = c?.day || 'Lunes';
+    $('#classTime').value = c?.time || '';
+    $('#className').value = c?.name || '';
+    $('#classCoach').value = c?.coach || '';
+    $('#classLevel').value = c?.level || '';
+    $('#classActive').checked = c ? c.is_active : true;
+    $('#classEditor').hidden = false;
+    $('#classEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function closeClassEditor() { $('#classEditor').hidden = true; editingClassId = null; }
+
+if ($('#newClassBtn') && !$('#newClassBtn').dataset.bound) {
+    $('#newClassBtn').dataset.bound = '1';
+    $('#newClassBtn').addEventListener('click', () => openClassEditor(null));
+    $('#classCancel').addEventListener('click', closeClassEditor);
+    $('#classSave').addEventListener('click', async () => {
+        const name = $('#className').value.trim();
+        const time = $('#classTime').value.trim();
+        if (!name || !time) { toast('Clase y hora son obligatorios'); return; }
+        const payload = {
+            day: $('#classDay').value,
+            time,
+            name,
+            coach: $('#classCoach').value.trim() || null,
+            level: $('#classLevel').value.trim() || null,
+            is_active: $('#classActive').checked,
+            sort: (DATA.classes || []).length
+        };
+        const { error } = editingClassId
+            ? await getSupabase().from('classes').update(payload).eq('id', editingClassId)
+            : await getSupabase().from('classes').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Clase guardada ✅');
+        if (!error) { closeClassEditor(); await refreshClassesAdmin(); }
+    });
+}
+
+// ━━━ 📈 MÉTRICAS DEL DASHBOARD ━━━
+function renderDashboardMetrics() {
+    const wrap = $('#adminMetrics');
+    if (!wrap) return;
+    const hasShop = C.ecommerce?.enabled !== false && (DATA.orders || []).length;
+    const hasAppt = C.appointments?.enabled === true && (DATA.appointments || []).length;
+    if (!hasShop && !hasAppt) { wrap.innerHTML = ''; return; }
+
+    const dayMs = 86400000;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+
+    const sales7 = [];
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date(today.getTime() - i * dayMs);
+        const key = d.toDateString();
+        const total = (DATA.orders || [])
+            .filter(o => o.status !== 'cancelled' && new Date(o.created_at).toDateString() === key)
+            .reduce((s, o) => s + Number(o.total || 0), 0);
+        sales7.push({ label: d.toLocaleDateString('es-MX', { weekday: 'short' }), value: total });
+    }
+
+    const top = {};
+    (DATA.orders || []).filter(o => o.status !== 'cancelled').forEach(o => (o.items || []).forEach(i => {
+        top[i.name] = (top[i.name] || 0) + (i.qty || 1);
+    }));
+    const topList = Object.entries(top).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+    const apptDays = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const apptCount = [0, 0, 0, 0, 0, 0, 0];
+    (DATA.appointments || []).forEach(a => {
+        const d = new Date(a.date + 'T12:00:00');
+        if (!isNaN(d)) apptCount[d.getDay()]++;
+    });
+
+    const since30 = today.getTime() - 29 * dayMs;
+    const orders30 = (DATA.orders || []).filter(o => o.status !== 'cancelled' && new Date(o.created_at).getTime() >= since30);
+    const revenue30 = orders30.reduce((s, o) => s + Number(o.total || 0), 0);
+    const ticket = orders30.length ? revenue30 / orders30.length : 0;
+
+    const barChart = (data, fmt) => {
+        const max = Math.max(...data.map(d => d.value), 1);
+        return `<div class="m-chart">${data.map(d => `
+            <div class="m-col" title="${d.label}: ${fmt(d.value)}">
+                <div class="m-bar" style="height:${Math.max(3, Math.round((d.value / max) * 100))}%"></div>
+                <span>${d.label}</span>
+            </div>`).join("")}</div>`;
+    };
+
+    wrap.innerHTML = `
+        <div class="m-kpis">
+            <div class="m-kpi"><div class="n">${money(revenue30)}</div><div class="l">Ventas (30 días)</div></div>
+            <div class="m-kpi"><div class="n">${orders30.length}</div><div class="l">Pedidos (30 días)</div></div>
+            <div class="m-kpi"><div class="n">${money(ticket)}</div><div class="l">Ticket promedio</div></div>
+        </div>
+        <div class="m-grid">
+            ${hasShop ? `
+            <div class="m-card">
+                <h4>💵 Ventas últimos 7 días</h4>
+                ${barChart(sales7, v => money(v))}
+            </div>
+            <div class="m-card">
+                <h4>🏆 Más vendidos</h4>
+                ${topList.length ? `<ul class="m-top">${topList.map(([name, qty], i) => `
+                    <li><span class="pos">${i + 1}</span><span class="nm">${escapeHtml(name)}</span><span class="qt">${qty} vend.</span></li>`).join("")}</ul>`
+                : '<p class="admin-empty">Sin ventas aún</p>'}
+            </div>` : ""}
+            ${hasAppt ? `
+            <div class="m-card">
+                <h4>📅 Citas por día de semana</h4>
+                ${barChart(apptCount.map((v, i) => ({ label: apptDays[i], value: v })), v => v + ' citas')}
+            </div>` : ""}
+        </div>
+    `;
+}
+
+// ━━━ 👥 ROLES: DUEÑO vs STAFF ━━━
+// 'all' → staff ve TODAS las pestañas (sigue sin poder eliminar)
+// [...] → lista blanca si algún día quieres restringir de nuevo
+const STAFF_TABS = 'all';
+
+function applyRoleRestrictions() {
+    const badge = $('#adminRoleBadge');
+    if (badge) {
+        badge.textContent = ADMIN_ROLE === 'owner' ? '👑 Dueño' : '🧑🍳 Staff';
+        badge.className = 'admin-role-badge ' + ADMIN_ROLE;
+    }
+    document.body.classList.toggle('role-staff', ADMIN_ROLE === 'staff');
+    if (ADMIN_ROLE === 'staff' && Array.isArray(STAFF_TABS)) {
+        $$('.admin-sidebar nav button').forEach(b => {
+            if (!STAFF_TABS.includes(b.dataset.view)) b.style.display = 'none';
+        });
+        const active = document.querySelector('.admin-sidebar nav button.active');
+        if (active && active.style.display === 'none') {
+            document.querySelector('.admin-sidebar nav button[data-view="dashboard"]')?.click();
+        }
+    }
+}
+
+// Candado global: staff no puede eliminar NADA (aunque inspeccione el DOM)
+document.addEventListener('click', e => {
+    if (ADMIN_ROLE === 'staff' && e.target.closest('.admin-btn.danger')) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        toast('🔒 Solo el dueño puede eliminar');
+    }
+}, true);
+
+// ━━━ 👥 EQUIPO (panel) ━━━
+let editingTeamId = null;
+
+async function refreshTeamAdmin() {
+    let rows = [];
+    try {
+        const r = await getSupabase().from('team').select('*').order('sort', { ascending: true }).order('created_at', { ascending: true });
+        rows = r.data || [];
+    } catch (e) { rows = []; }
+    DATA.team = rows;
+    renderTeamAdmin();
+}
+
+function renderTeamAdmin() {
+    const el = $('#teamTable');
+    if (!el) return;
+    if (!DATA.team.length) { el.innerHTML = '<p class="admin-empty">Sin miembros todavía. Crea el primero con "＋ Nuevo miembro".</p>'; return; }
+    el.innerHTML = `<div class="mat">
+        <div class="mat-row mat-head"><span>Miembro</span><span>Contacto</span><span>Estado</span><span>Acciones</span></div>` +
+        slicePage(DATA.team, 'team').map(d => `<div class="mat-row">
+            <span style="display:flex;align-items:center;gap:.7rem;">
+                ${d.photo ? `<img src="${d.photo}" alt="" style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:1px solid var(--A-line, rgba(255,255,255,.12));">` : `<span class="testimonial-avatar">${(d.name || '?').split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}</span>`}
+                <span><span class="cell-author">${escapeHtml(d.name)}</span>${d.specialty ? `<span class="menu-desc">${escapeHtml(d.specialty)}</span>` : ''}</span>
+            </span>
+            <span class="cell-muted">${escapeHtml(d.phone || d.email || '—')}</span>
+            <span><span class="badge ${d.is_active ? 'published' : 'draft'}">${d.is_active ? 'Activo' : 'Oculto'}</span></span>
+            <span class="cell-actions">
+                <button class="admin-btn" data-editeam="${d.id}" title="Editar">${ICONS.edit}</button>
+                <button class="admin-btn danger" data-delteam="${d.id}" title="Eliminar">${ICONS.trash}</button>
+            </span>
+        </div>`).join('') + `</div>` + pagerHTML('team', DATA.team.length);
+    if (el.dataset.bound) return;
+    el.dataset.bound = '1';
+    el.addEventListener('click', async e => {
+        const editBtn = e.target.closest('[data-editeam]');
+        const delBtn = e.target.closest('[data-delteam]');
+        if (editBtn) openTeamEditor(editBtn.dataset.editeam);
+        else if (delBtn) {
+            if (!await askConfirm({ title: 'Eliminar miembro', message: 'Se quitará del sitio inmediatamente.' })) return;
+            const { error } = await getSupabase().from('team').delete().eq('id', delBtn.dataset.delteam);
+            toast(error ? 'Error al eliminar' : 'Miembro eliminado');
+            if (!error) await refreshTeamAdmin();
+        }
+    });
+}
+
+function openTeamEditor(id) {
+    editingTeamId = id || null;
+    const d = (DATA.team || []).find(x => String(x.id) === String(id)) || null;
+    $('#teamEditorTitle').textContent = d ? 'Editar miembro' : 'Nuevo miembro';
+    $('#teamName').value = d?.name || '';
+    $('#teamSpecialty').value = d?.specialty || '';
+    $('#teamCedula').value = d?.cedula || '';
+    $('#teamSchedule').value = d?.schedule || '';
+    $('#teamBio').value = d?.bio || '';
+    $('#teamPhone').value = d?.phone || '';
+    $('#teamWhatsapp').value = d?.whatsapp || '';
+    $('#teamEmail').value = d?.email || '';
+    $('#teamPhoto').value = d?.photo || '';
+    $('#teamActive').checked = d ? d.is_active : true;
+    $('#teamEditor').hidden = false;
+    $('#teamEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function closeTeamEditor() { $('#teamEditor').hidden = true; editingTeamId = null; }
+
+if ($('#newTeamBtn') && !$('#newTeamBtn').dataset.bound) {
+    $('#newTeamBtn').dataset.bound = '1';
+    $('#newTeamBtn').addEventListener('click', () => openTeamEditor(null));
+    $('#teamCancel').addEventListener('click', closeTeamEditor);
+    $('#teamPhotoBtn').addEventListener('click', async () => {
+        const choice = await askImageSource();
+        if (!choice) return;
+        if (choice === 'file') { $('#teamPhotoInput').click(); return; }
+        if (choice.url) { $('#teamPhoto').value = choice.url; toast('Foto aplicada ✅'); }
+    });
+    $('#teamPhotoInput').addEventListener('change', async e => {
+        const file = e.target.files[0]; e.target.value = '';
+        if (!file) return;
+        toast('Subiendo foto...');
+        const url = await uploadFile(file, 'team');
+        if (url) { $('#teamPhoto').value = url; toast('Foto lista ✅'); }
+    });
+    $('#teamSave').addEventListener('click', async () => {
+        const name = $('#teamName').value.trim();
+        if (!name) { toast('El nombre es obligatorio'); return; }
+        const payload = {
+            name,
+            specialty: $('#teamSpecialty').value.trim() || null,
+            cedula: $('#teamCedula').value.trim() || null,
+            schedule: $('#teamSchedule').value.trim() || null,
+            bio: $('#teamBio').value.trim() || null,
+            phone: $('#teamPhone').value.trim() || null,
+            whatsapp: $('#teamWhatsapp').value.replace(/\D/g, '') || null,
+            email: $('#teamEmail').value.trim() || null,
+            photo: $('#teamPhoto').value.trim() || null,
+            is_active: $('#teamActive').checked,
+            sort: (DATA.team || []).length
+        };
+        const { error } = editingTeamId
+            ? await getSupabase().from('team').update(payload).eq('id', editingTeamId)
+            : await getSupabase().from('team').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Miembro guardado ✅');
+        if (!error) { closeTeamEditor(); await refreshTeamAdmin(); }
+    });
+}
+
+// ━━━ 🖼️ GALERÍA (panel) ━━━
+let editingGalleryId = null;
+
+async function refreshGalleryAdmin() {
+    let rows = [];
+    try {
+        const r = await getSupabase().from('gallery').select('*').order('sort', { ascending: true }).order('created_at', { ascending: true });
+        rows = r.data || [];
+    } catch (e) { rows = []; }
+    DATA.gallery = rows;
+    renderGalleryAdmin();
+}
+
+function renderGalleryAdmin() {
+    const el = $('#galleryTable');
+    if (!el) return;
+    if (!DATA.gallery.length) { el.innerHTML = '<p class="admin-empty">Sin imágenes todavía. Agrega la primera con "＋ Nueva imagen".</p>'; return; }
+    el.innerHTML = `<div class="mat">
+        <div class="mat-row mat-head"><span>Imagen</span><span>Leyenda</span><span>Estado</span><span>Acciones</span></div>` +
+        slicePage(DATA.gallery, 'gallery').map(g => `<div class="mat-row">
+            <span><img src="${g.image}" alt="" style="width:64px;height:48px;object-fit:cover;border-radius:8px;border:1px solid var(--A-line, rgba(255,255,255,.12));"></span>
+            <span class="cell-muted">${escapeHtml(g.caption || '—')}</span>
+            <span><span class="badge ${g.is_active ? 'published' : 'draft'}">${g.is_active ? 'Activa' : 'Oculta'}</span></span>
+            <span class="cell-actions">
+                <button class="admin-btn" data-editgallery="${g.id}" title="Editar">${ICONS.edit}</button>
+                <button class="admin-btn danger" data-delgallery="${g.id}" title="Eliminar">${ICONS.trash}</button>
+            </span>
+        </div>`).join('') + `</div>` + pagerHTML('gallery', DATA.gallery.length);
+    if (el.dataset.bound) return;
+    el.dataset.bound = '1';
+    el.addEventListener('click', async e => {
+        const editBtn = e.target.closest('[data-editgallery]');
+        const delBtn = e.target.closest('[data-delgallery]');
+        if (editBtn) openGalleryEditor(editBtn.dataset.editgallery);
+        else if (delBtn) {
+            if (!await askConfirm({ title: 'Eliminar imagen', message: 'Se quitará de la galería inmediatamente.' })) return;
+            const { error } = await getSupabase().from('gallery').delete().eq('id', delBtn.dataset.delgallery);
+            toast(error ? 'Error al eliminar' : 'Imagen eliminada');
+            if (!error) await refreshGalleryAdmin();
+        }
+    });
+}
+
+function openGalleryEditor(id) {
+    editingGalleryId = id || null;
+    const g = (DATA.gallery || []).find(x => String(x.id) === String(id)) || null;
+    $('#galleryEditorTitle').textContent = g ? 'Editar imagen' : 'Nueva imagen';
+    $('#galleryImage').value = g?.image || '';
+    $('#galleryCaption').value = g?.caption || '';
+    $('#galleryActive').checked = g ? g.is_active : true;
+    $('#galleryEditor').hidden = false;
+    $('#galleryEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function closeGalleryEditor() { $('#galleryEditor').hidden = true; editingGalleryId = null; }
+
+if ($('#newGalleryBtn') && !$('#newGalleryBtn').dataset.bound) {
+    $('#newGalleryBtn').dataset.bound = '1';
+    $('#newGalleryBtn').addEventListener('click', () => openGalleryEditor(null));
+    $('#galleryCancel').addEventListener('click', closeGalleryEditor);
+    $('#galleryImageBtn').addEventListener('click', async () => {
+        const choice = await askImageSource();
+        if (!choice) return;
+        if (choice === 'file') { $('#galleryImageInput').click(); return; }
+        if (choice.url) { $('#galleryImage').value = choice.url; toast('Imagen aplicada ✅'); }
+    });
+    $('#galleryImageInput').addEventListener('change', async e => {
+        const file = e.target.files[0]; e.target.value = '';
+        if (!file) return;
+        toast('Subiendo imagen...');
+        const url = await uploadFile(file, 'gallery');
+        if (url) { $('#galleryImage').value = url; toast('Imagen lista ✅'); }
+    });
+    $('#gallerySave').addEventListener('click', async () => {
+        const image = $('#galleryImage').value.trim();
+        if (!image) { toast('La imagen es obligatoria'); return; }
+        const payload = {
+            image,
+            caption: $('#galleryCaption').value.trim() || null,
+            is_active: $('#galleryActive').checked,
+            sort: (DATA.gallery || []).length
+        };
+        const { error } = editingGalleryId
+            ? await getSupabase().from('gallery').update(payload).eq('id', editingGalleryId)
+            : await getSupabase().from('gallery').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Imagen guardada ✅');
+        if (!error) { closeGalleryEditor(); await refreshGalleryAdmin(); }
+    });
+}
+
+// ━━━ 📖 HISTORIA (panel) ━━━
+async function refreshStoryAdmin() {
+    let row = null;
+    try {
+        const r = await getSupabase().from('story').select('*').order('id', { ascending: true }).limit(1);
+        row = (r.data && r.data[0]) || null;
+    } catch (e) { row = null; }
+    DATA.storyRow = row;
+    fillStoryForm(row);
+}
+
+function fillStoryForm(r) {
+    $('#storyLabel').value = r?.label || '';
+    $('#storyHeading').value = r?.heading || '';
+    $('#storyImage').value = r?.image || '';
+    $('#storyParagraphs').value = (r?.paragraphs || []).join('\n');
+    $('#storyStats').value = (r?.stats || []).map(s => `${s.number} | ${s.label}`).join('\n');
+    $('#storyPartnersOn').checked = !!r?.partners_enabled;
+    $('#storyPartnersTitle').value = r?.partners_title || '';
+    $('#storyPartners').value = (r?.partners || []).map(p => p.img ? `${p.name} | ${p.img}` : p.name).join('\n');
+    $('#storyActive').checked = r ? r.is_active : true;
+}
+
+if ($('#storySave') && !$('#storySave').dataset.bound) {
+    $('#storySave').dataset.bound = '1';
+    $('#storyImageBtn').addEventListener('click', async () => {
+        const choice = await askImageSource();
+        if (!choice) return;
+        if (choice === 'file') { $('#storyImageInput').click(); return; }
+        if (choice.url) { $('#storyImage').value = choice.url; toast('Imagen aplicada ✅'); }
+    });
+    $('#storyImageInput').addEventListener('change', async e => {
+        const file = e.target.files[0]; e.target.value = '';
+        if (!file) return;
+        toast('Subiendo imagen...');
+        const url = await uploadFile(file, 'story');
+        if (url) { $('#storyImage').value = url; toast('Imagen lista ✅'); }
+    });
+    $('#storySave').addEventListener('click', async () => {
+        const payload = {
+            label: $('#storyLabel').value.trim() || null,
+            heading: $('#storyHeading').value.trim() || null,
+            image: $('#storyImage').value.trim() || null,
+            paragraphs: $('#storyParagraphs').value.split('\n').map(s => s.trim()).filter(Boolean),
+            stats: $('#storyStats').value.split('\n').map(l => {
+                const [n, ...rest] = l.split('|');
+                return (n || '').trim() ? { number: n.trim(), label: (rest.join('|') || '').trim() } : null;
+            }).filter(Boolean),
+            partners_enabled: $('#storyPartnersOn').checked,
+            partners_title: $('#storyPartnersTitle').value.trim() || null,
+            partners: $('#storyPartners').value.split('\n').map(l => {
+                const [name, ...rest] = l.split('|');
+                return (name || '').trim() ? { name: name.trim(), img: (rest.join('|') || '').trim() || null } : null;
+            }).filter(Boolean),
+            is_active: $('#storyActive').checked
+        };
+        const existing = DATA.storyRow;
+        const { error } = existing
+            ? await getSupabase().from('story').update(payload).eq('id', existing.id)
+            : await getSupabase().from('story').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Historia guardada ✅');
+        if (!error) await refreshStoryAdmin();
+    });
+}
+
+// ━━━ 💬 FILOSOFÍA (panel) ━━━
+async function refreshPhilosophyAdmin() {
+    let row = null;
+    try {
+        const r = await getSupabase().from('philosophy').select('*').order('id', { ascending: true }).limit(1);
+        row = (r.data && r.data[0]) || null;
+    } catch (e) { row = null; }
+    DATA.philosophyRow = row;
+    fillPhilosophyForm(row);
+}
+
+function fillPhilosophyForm(r) {
+    $('#philoLabel').value = r?.label || '';
+    $('#philoQuote').value = r?.quote || '';
+    $('#philoAuthor').value = r?.author || '';
+    $('#philoCta').value = r?.cta_label || '';
+    $('#philoHref').value = r?.cta_href || '';
+    $('#philoActive').checked = r ? r.is_active : true;
+}
+
+if ($('#philoSave') && !$('#philoSave').dataset.bound) {
+    $('#philoSave').dataset.bound = '1';
+    $('#philoSave').addEventListener('click', async () => {
+        const payload = {
+            label: $('#philoLabel').value.trim() || null,
+            quote: $('#philoQuote').value.trim() || null,
+            author: $('#philoAuthor').value.trim() || null,
+            cta_label: $('#philoCta').value.trim() || null,
+            cta_href: $('#philoHref').value.trim() || null,
+            is_active: $('#philoActive').checked
+        };
+        const existing = DATA.philosophyRow;
+        const { error } = existing
+            ? await getSupabase().from('philosophy').update(payload).eq('id', existing.id)
+            : await getSupabase().from('philosophy').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Filosofía guardada ✅');
+        if (!error) await refreshPhilosophyAdmin();
+    });
+}
+
+// ━━━  UBICACIÓN (panel) ━━━
+async function refreshLocationAdmin() {
+    let row = null;
+    try {
+        const r = await getSupabase().from('location').select('*').order('id', { ascending: true }).limit(1);
+        row = (r.data && r.data[0]) || null;
+    } catch (e) { row = null; }
+    DATA.locationRow = row;
+    fillLocationForm(row);
+}
+
+function fillLocationForm(r) {
+    $('#locLabel').value = r?.label || '';
+    $('#locHeading').value = r?.heading || '';
+    $('#locSubtitle').value = r?.subtitle || '';
+    $('#locAddress').value = r?.address || '';
+    $('#locPhone').value = r?.phone || '';
+    $('#locPhoneHref').value = r?.phone_href || '';
+    $('#locHours').value = (r?.hours || []).map(h => `${h.d} | ${h.h}`).join('\n');
+    $('#locImage').value = r?.image || '';
+    $('#locQuery').value = r?.maps_query || '';
+    $('#locActive').checked = r ? r.is_active : true;
+}
+
+if ($('#locSave') && !$('#locSave').dataset.bound) {
+    $('#locSave').dataset.bound = '1';
+    $('#locImageBtn').addEventListener('click', async () => {
+        const choice = await askImageSource();
+        if (!choice) return;
+        if (choice === 'file') { $('#locImageInput').click(); return; }
+        if (choice.url) { $('#locImage').value = choice.url; toast('Imagen aplicada ✅'); }
+    });
+    $('#locImageInput').addEventListener('change', async e => {
+        const file = e.target.files[0]; e.target.value = '';
+        if (!file) return;
+        toast('Subiendo imagen...');
+        const url = await uploadFile(file, 'location');
+        if (url) { $('#locImage').value = url; toast('Imagen lista ✅'); }
+    });
+    $('#locSave').addEventListener('click', async () => {
+        const payload = {
+            label: $('#locLabel').value.trim() || null,
+            heading: $('#locHeading').value.trim() || null,
+            subtitle: $('#locSubtitle').value.trim() || null,
+            address: $('#locAddress').value.trim() || null,
+            phone: $('#locPhone').value.trim() || null,
+            phone_href: $('#locPhoneHref').value.trim() || null,
+            hours: $('#locHours').value.split('\n').map(l => {
+                const [d, ...rest] = l.split('|');
+                return (d || '').trim() ? { d: d.trim(), h: (rest.join('|') || '').trim() } : null;
+            }).filter(Boolean),
+            image: $('#locImage').value.trim() || null,
+            maps_query: $('#locQuery').value.trim() || null,
+            is_active: $('#locActive').checked
+        };
+        const existing = DATA.locationRow;
+        const { error } = existing
+            ? await getSupabase().from('location').update(payload).eq('id', existing.id)
+            : await getSupabase().from('location').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Ubicación guardada ✅');
+        if (!error) await refreshLocationAdmin();
+    });
+}
+
+// ━━━ 🏠 HERO (panel) ━━━
+async function refreshHeroAdmin() {
+    let row = null;
+    try {
+        const r = await getSupabase().from('hero').select('*').order('id', { ascending: true }).limit(1);
+        row = (r.data && r.data[0]) || null;
+    } catch (e) { row = null; }
+    DATA.heroRow = row;
+    fillHeroForm(row);
+}
+
+function fillHeroForm(r) {
+    $('#heroEyebrow').value = r?.eyebrow || '';
+    $('#heroLine1').value = r?.title_line1 || '';
+    $('#heroLine2').value = r?.title_line2 || '';
+    $('#heroWords').value = (r?.typewriter_words || []).join('\n');
+    $('#heroSubtitle').value = r?.subtitle || '';
+    $('#heroCta').value = r?.cta_label || '';
+    $('#heroHref').value = r?.cta_href || '';
+    $('#heroBg').value = r?.background_image || '';
+    $('#heroSeal').value = r?.seal_image || '';
+    $('#heroActive').checked = r ? r.is_active : true;
+}
+
+if ($('#heroSave') && !$('#heroSave').dataset.bound) {
+    $('#heroSave').dataset.bound = '1';
+    $('#heroBgBtn').addEventListener('click', async () => {
+        const choice = await askImageSource();
+        if (!choice) return;
+        if (choice === 'file') { $('#heroBgInput').click(); return; }
+        if (choice.url) { $('#heroBg').value = choice.url; toast('Fondo aplicado ✅'); }
+    });
+    $('#heroBgInput').addEventListener('change', async e => {
+        const file = e.target.files[0]; e.target.value = '';
+        if (!file) return;
+        toast('Subiendo fondo...');
+        const url = await uploadFile(file, 'hero');
+        if (url) { $('#heroBg').value = url; toast('Fondo listo ✅'); }
+    });
+    $('#heroSealBtn').addEventListener('click', async () => {
+        const choice = await askImageSource();
+        if (!choice) return;
+        if (choice === 'file') { $('#heroSealInput').click(); return; }
+        if (choice.url) { $('#heroSeal').value = choice.url; toast('Sello aplicado ✅'); }
+    });
+    $('#heroSealInput').addEventListener('change', async e => {
+        const file = e.target.files[0]; e.target.value = '';
+        if (!file) return;
+        toast('Subiendo sello...');
+        const url = await uploadFile(file, 'hero');
+        if (url) { $('#heroSeal').value = url; toast('Sello listo ✅'); }
+    });
+    $('#heroSave').addEventListener('click', async () => {
+        const payload = {
+            eyebrow: $('#heroEyebrow').value.trim() || null,
+            title_line1: $('#heroLine1').value.trim() || null,
+            title_line2: $('#heroLine2').value.trim() || null,
+            typewriter_words: $('#heroWords').value.split('\n').map(s => s.trim()).filter(Boolean),
+            subtitle: $('#heroSubtitle').value.trim() || null,
+            cta_label: $('#heroCta').value.trim() || null,
+            cta_href: $('#heroHref').value.trim() || null,
+            background_image: $('#heroBg').value.trim() || null,
+            seal_image: $('#heroSeal').value.trim() || null,
+            is_active: $('#heroActive').checked
+        };
+        const existing = DATA.heroRow;
+        const { error } = existing
+            ? await getSupabase().from('hero').update(payload).eq('id', existing.id)
+            : await getSupabase().from('hero').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Hero guardado ✅');
+        if (!error) await refreshHeroAdmin();
+    });
+}
+
+// ━━━ 🤝 COLABORA B2B (panel) ━━━
+async function refreshCollabAdmin() {
+    let row = null;
+    try {
+        const r = await getSupabase().from('collab').select('*').order('id', { ascending: true }).limit(1);
+        row = (r.data && r.data[0]) || null;
+    } catch (e) { row = null; }
+    DATA.collabRow = row;
+    fillCollabForm(row);
+}
+
+function fillCollabForm(r) {
+    $('#collabLabel').value = r?.label || '';
+    $('#collabHeading').value = r?.heading || '';
+    $('#collabSubtitle').value = r?.subtitle || '';
+    $('#collabMarquee').value = (r?.marquee || []).join('\n');
+    $('#collabPoints').value = (r?.points || []).map(p => `${p.icon || 'fa-handshake'} | ${p.title} | ${p.desc}`).join('\n');
+    $('#collabCta').value = r?.cta || '';
+    $('#collabBrochure').value = r?.brochure_url || '';
+    $('#collabCta2').value = r?.cta_secondary || '';
+    $('#collabWa').value = r?.whatsapp || '';
+    $('#collabActive').checked = r ? r.is_active : true;
+}
+
+if ($('#collabSave') && !$('#collabSave').dataset.bound) {
+    $('#collabSave').dataset.bound = '1';
+    $('#collabSave').addEventListener('click', async () => {
+        const payload = {
+            label: $('#collabLabel').value.trim() || null,
+            heading: $('#collabHeading').value.trim() || null,
+            subtitle: $('#collabSubtitle').value.trim() || null,
+            marquee: $('#collabMarquee').value.split('\n').map(s => s.trim()).filter(Boolean),
+            points: $('#collabPoints').value.split('\n').map(l => {
+                const parts = l.split('|').map(s => s.trim());
+                if (parts.length >= 3) return { icon: parts[0] || 'fa-handshake', title: parts[1], desc: parts.slice(2).join(' | ') };
+                if (parts.length === 2 && parts[0]) return { icon: 'fa-handshake', title: parts[0], desc: parts[1] };
+                return null;
+            }).filter(Boolean),
+            cta: $('#collabCta').value.trim() || null,
+            brochure_url: $('#collabBrochure').value.trim() || null,
+            cta_secondary: $('#collabCta2').value.trim() || null,
+            whatsapp: $('#collabWa').value.replace(/\D/g, '') || null,
+            is_active: $('#collabActive').checked
+        };
+        const existing = DATA.collabRow;
+        const { error } = existing
+            ? await getSupabase().from('collab').update(payload).eq('id', existing.id)
+            : await getSupabase().from('collab').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Colabora guardado ✅');
+        if (!error) await refreshCollabAdmin();
+    });
+}
+
+// ━━━ 🔍 NEGOCIO / SEO (panel) ━━━
+async function refreshBusinessAdmin() {
+    let row = null;
+    try {
+        const r = await getSupabase().from('business').select('*').order('id', { ascending: true }).limit(1);
+        row = (r.data && r.data[0]) || null;
+    } catch (e) { row = null; }
+    DATA.businessRow = row;
+    fillBusinessForm(row);
+}
+
+function fillBusinessForm(r) {
+    const a = r?.address || {};
+    $('#bizType').value = r?.type || 'LocalBusiness';
+    $('#bizName').value = r?.name || '';
+    $('#bizLegal').value = r?.legal_name || '';
+    $('#bizTax').value = r?.tax_id || '';
+    $('#bizDesc').value = r?.description || '';
+    $('#bizUrl').value = r?.url || '';
+    $('#bizLogo').value = r?.logo || '';
+    $('#bizImage').value = r?.image || '';
+    $('#bizPhone').value = r?.phone || '';
+    $('#bizEmail').value = r?.email || '';
+    $('#bizPrice').value = r?.price_range || '';
+    $('#bizStreet').value = a.street || '';
+    $('#bizCity').value = a.city || '';
+    $('#bizState').value = a.state || '';
+    $('#bizZip').value = a.zip || '';
+    $('#bizCountry').value = a.country || 'MX';
+    $('#bizLat').value = r?.geo_lat ?? '';
+    $('#bizLng').value = r?.geo_lng ?? '';
+    $('#bizHours').value = r?.hours || '';
+    $('#bizSocial').value = (r?.social || []).join('\n');
+    $('#bizRegistry').value = r?.registry_data || '';
+    $('#bizFaqLabel').value = r?.faq_label || '';
+    $('#bizFaqHeading').value = r?.faq_heading || '';
+    $('#bizFaq').value = (r?.faq || []).map(f => `${f.q} | ${f.a}`).join('\n');
+    $('#bizActive').checked = r ? r.is_active : true;
+}
+
+if ($('#bizSave') && !$('#bizSave').dataset.bound) {
+    $('#bizSave').dataset.bound = '1';
+    $('#bizSave').addEventListener('click', async () => {
+        const payload = {
+            type: $('#bizType').value || 'LocalBusiness',
+            name: $('#bizName').value.trim() || null,
+            legal_name: $('#bizLegal').value.trim() || null,
+            tax_id: $('#bizTax').value.trim() || null,
+            description: $('#bizDesc').value.trim() || null,
+            url: $('#bizUrl').value.trim() || null,
+            logo: $('#bizLogo').value.trim() || null,
+            image: $('#bizImage').value.trim() || null,
+            phone: $('#bizPhone').value.trim() || null,
+            email: $('#bizEmail').value.trim() || null,
+            price_range: $('#bizPrice').value.trim() || null,
+            address: {
+                street: $('#bizStreet').value.trim(),
+                city: $('#bizCity').value.trim(),
+                state: $('#bizState').value.trim(),
+                zip: $('#bizZip').value.trim(),
+                country: $('#bizCountry').value.trim() || 'MX'
+            },
+            geo_lat: $('#bizLat').value !== '' ? Number($('#bizLat').value) : null,
+            geo_lng: $('#bizLng').value !== '' ? Number($('#bizLng').value) : null,
+            hours: $('#bizHours').value.trim() || null,
+            social: $('#bizSocial').value.split('\n').map(s => s.trim()).filter(Boolean),
+            registry_data: $('#bizRegistry').value.trim() || null,
+            faq_label: $('#bizFaqLabel').value.trim() || null,
+            faq_heading: $('#bizFaqHeading').value.trim() || null,
+            faq: $('#bizFaq').value.split('\n').map(l => {
+                const [q, ...rest] = l.split('|');
+                return (q || '').trim() ? { q: q.trim(), a: (rest.join('|') || '').trim() } : null;
+            }).filter(Boolean),
+            is_active: $('#bizActive').checked
+        };
+        const existing = DATA.businessRow;
+        const { error } = existing
+            ? await getSupabase().from('business').update(payload).eq('id', existing.id)
+            : await getSupabase().from('business').insert([payload]);
+        toast(error ? 'Error: ' + error.message : 'Datos del negocio guardados ✅');
+        if (!error) await refreshBusinessAdmin();
     });
 }
 

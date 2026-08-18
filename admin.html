@@ -69,11 +69,26 @@
                 <button data-view="categories">🏷️ Categorías</button>
                 <button data-view="testimonials">🌟 Testimonios</button>
                 <button data-view="appointments">📅 Citas</button>
+                <button data-view="classes">🏋️ Clases</button>
+                <button data-view="menu">🍽️ Menú</button>
+                <button data-view="beforeafter">🔁 Antes/Después</button>
+                <button data-view="plans">⭐ Planes</button>
+                <button data-view="cotizador">🎂 Cotizador</button>
+                <button data-view="season">🍓 Temporada</button>
+                <button data-view="team">👥 Equipo</button>
+                <button data-view="gallery">🖼️ Galería</button>
+                <button data-view="story">📖 Historia</button>
+                <button data-view="philosophy">💬 Filosofía</button>
+                <button data-view="location">📍 Ubicación</button>
+                <button data-view="hero">🏠 Hero</button>
+                <button data-view="collab">🤝 Colabora</button>
+                <button data-view="business">🔍 Negocio</button>
             </nav>
             
             <div class="admin-sidebar-footer">
                 <a href="index.html" class="admin-back-home">← Volver al inicio</a>
                 <a href="#" id="adminShortcut" class="admin-back-home admin-shortcut" target="_blank" rel="noopener" hidden>Ver blog ↗</a>
+                <span id="adminRoleBadge" class="admin-role-badge"></span>
                 <button id="adminLogout">Cerrar sesión</button>
             </div>
         </aside>
@@ -84,6 +99,7 @@
             <section id="view-dashboard" class="admin-view active">
                 <h2>Dashboard</h2>
                 <div class="admin-stats" id="adminStats"></div>
+                <div id="adminMetrics" class="admin-metrics"></div>
             </section>
 
             <!-- 📝 POSTS (Blog) -->
@@ -265,6 +281,673 @@
                 </div>
                 <div id="productsTable"></div>
             </section>
+
+            <div class="admin-view" id="view-season">
+  <h2>Temporada</h2>
+  <p class="admin-empty" style="margin-bottom:1rem;">Edita el bloque "Temporada" del sitio público. Al guardar, los cambios se aplican solos; si borras el registro, el sitio vuelve a config.js.</p>
+  <form id="seasonForm" onsubmit="return false;">
+    <div>
+      <label class="admin-check" style="display:inline-flex;gap:.5rem;align-items:center;text-transform:none;letter-spacing:.05em;font-size:.75rem;">
+        <input type="checkbox" id="seasonEnabled" style="width:auto;"> Activo en el sitio
+      </label>
+    </div>
+    <div class="coupon-section-title">📣 Textos del bloque</div>
+    <div class="coupon-grid">
+      <div><label>Etiqueta (eyebrow)</label><input id="seasonLabel" placeholder="Temporada"></div>
+      <div><label>Badge</label><input id="seasonBadge" placeholder="🍓 Edición limitada"></div>
+    </div>
+    <div><label>Encabezado (acepta &lt;em&gt;)</label><input id="seasonHeading" placeholder="Sabor de <em>temporada</em>"></div>
+    <div><label>Subtítulo</label><textarea id="seasonSubtitle" rows="2"></textarea></div>
+    <div class="coupon-section-title">🍰 Producto estrella</div>
+    <div class="coupon-grid">
+      <div class="span-2"><label>Nombre</label><input id="seasonName" placeholder="Fresas con Crema Signature"></div>
+      <div><label>Precio (MXN)</label><input id="seasonPrice" type="number" min="0"></div>
+      <div><label>Precio original</label><input id="seasonPriceOrig" type="number" min="0"></div>
+    </div>
+    <div><label>Descripción</label><textarea id="seasonDesc" rows="3"></textarea></div>
+    <div class="coupon-grid">
+      <div class="span-2"><label>URL de imagen</label><input id="seasonImage" placeholder="https://..."></div>
+      <div style="display:flex;align-items:flex-end;">
+        <button type="button" id="seasonImgBtn" class="admin-btn action outline" style="width:100%;">📷 Subir / enlace</button>
+        <input type="file" id="seasonImgInput" accept="image/*" hidden>
+      </div>
+    </div>
+    <div class="coupon-section-title">⏳ Disponibilidad y contacto</div>
+    <div class="coupon-grid">
+      <div><label>Fin de temporada</label><input id="seasonEnd" type="datetime-local"></div>
+      <div><label>WhatsApp</label><input id="seasonWhatsapp" placeholder="5215555551234"></div>
+    </div>
+    <div class="coupon-grid">
+      <div><label>Texto del botón</label><input id="seasonCta" placeholder="Apartar la mía"></div>
+      <div><label>Mensaje de WhatsApp</label><input id="seasonWaMsg" placeholder="Hola, quiero apartar..."></div>
+    </div>
+    <div><label>Cinta superior (un artículo por línea)</label><textarea id="seasonMarquee" rows="3" placeholder="Pasteles&#10;Cheesecakes&#10;Macarons"></textarea></div>
+    <div class="coupon-footer">
+      <span class="admin-empty" id="seasonSavedAt"></span>
+      <button type="button" id="seasonSave" class="coupon-submit">Guardar cambios</button>
+    </div>
+  </form>
+</div>
+
+<!-- 🎂 COTIZADOR -->
+<section id="view-cotizador" class="admin-view">
+    <h2>Cotizador</h2>
+    <form id="cotForm" class="cot-form" onsubmit="return false;">
+    <label class="cot-check">
+        <input type="checkbox" id="cotEnabled"> Activo en el sitio (muestra bloque y pestaña)
+    </label>
+
+    <div class="cot-section-title">📅 Agenda</div>
+    <div class="cot-grid">
+        <div class="cot-field">
+            <label for="cotMinDays">Días mínimos de preparación</label>
+            <input id="cotMinDays" type="number" min="0">
+        </div>
+        <div class="cot-field">
+            <label for="cotMaxDay">Pedidos máximos por día</label>
+            <input id="cotMaxDay" type="number" min="1">
+        </div>
+        <div class="cot-field span-2">
+            <label for="cotWhatsapp">WhatsApp</label>
+            <input id="cotWhatsapp" placeholder="521...">
+        </div>
+    </div>
+
+    <div class="cot-section-title">🍰 Catálogo <span class="cot-hint">(uno por línea: Nombre | precio)</span></div>
+    <div class="cot-grid cot-grid-equal">
+        <div class="cot-field">
+            <label for="cotSizes">Tamaños</label>
+            <textarea id="cotSizes" rows="5"></textarea>
+        </div>
+        <div class="cot-field">
+            <label for="cotFillings">Rellenos (+extra)</label>
+            <textarea id="cotFillings" rows="5"></textarea>
+        </div>
+        <div class="cot-field">
+            <label for="cotDecos">Decoraciones (+extra)</label>
+            <textarea id="cotDecos" rows="5"></textarea>
+        </div>
+        <div class="cot-field">
+            <label for="cotExtras">Extras (+extra)</label>
+            <textarea id="cotExtras" rows="5"></textarea>
+        </div>
+    </div>
+
+    <div class="cot-section-title">🚗 Entrega</div>
+    <div class="cot-grid">
+        <div class="cot-field">
+            <label for="cotPickupLabel">Texto recoger</label>
+            <input id="cotPickupLabel">
+        </div>
+        <div class="cot-field">
+            <label for="cotDeliveryLabel">Texto envío</label>
+            <input id="cotDeliveryLabel">
+        </div>
+        <div class="cot-field span-2">
+            <label for="cotPickupNote">Nota recoger</label>
+            <input id="cotPickupNote">
+        </div>
+        <div class="cot-field span-2">
+            <label for="cotDeliveryNote">Nota envío (costo por trayecto)</label>
+            <textarea id="cotDeliveryNote" rows="2"></textarea>
+        </div>
+    </div>
+
+    <div class="cot-footer">
+        <span class="admin-empty" id="cotSavedAt"></span>
+        <button type="button" id="cotSave" class="coupon-submit">Guardar cambios</button>
+    </div>
+</form>
+    <div class="coupon-section-title">📦 Pedidos recibidos (cancelar = liberar fecha)</div>
+    <div id="cotBookingsTable"></div>
+</section>
+
+<section id="view-menu" class="admin-view">
+    <h2>Menú / Carta</h2>
+    <button id="newMenuItemBtn" class="admin-btn action solid">＋ Nuevo platillo</button>
+    <div id="menuItemsTable"></div>
+    <div id="menuEditor" class="admin-editor-card" hidden>
+        <h3 id="menuEditorTitle">Nuevo platillo</h3>
+        <div class="admin-editor-row">
+            <div>
+                <label for="menuItemCategory">Categoría</label>
+                <div class="menu-cat-row">
+                    <select id="menuItemCategory"></select>
+                    <button type="button" id="menuCatToggle" class="admin-btn action outline" title="Nueva categoría">＋</button>
+                </div>
+                <div id="menuCatQuick" hidden>
+                    <input id="menuCatName" placeholder="Nombre de la nueva categoría" maxlength="40">
+                    <button type="button" id="menuCatSave" class="admin-btn txt">Crear</button>
+                </div>
+            </div>
+            <div>
+                <label for="menuItemPrice">Precio (MXN)</label>
+                <input id="menuItemPrice" type="number" min="0">
+            </div>
+        </div>
+        <label for="menuItemName">Nombre del platillo *</label>
+        <input id="menuItemName" placeholder="Hamburguesa clásica">
+        <label for="menuItemDesc">Descripción</label>
+        <textarea id="menuItemDesc" rows="2" placeholder="Carne 150g, queso americano y papas."></textarea>
+        <label class="admin-check"><input type="checkbox" id="menuItemActive" checked> Activo (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button id="menuItemSave" class="admin-btn action solid">Guardar platillo</button>
+            <button id="menuItemCancel" class="admin-btn action ghost">Cancelar</button>
+        </div>
+    </div>
+</section>
+
+<section id="view-beforeafter" class="admin-view">
+    <h2>Antes / Después</h2>
+    <button id="newBABtn" class="admin-btn action solid">＋ Nuevo caso</button>
+    <div id="baTable"></div>
+    <div id="baEditor" class="admin-editor-card" hidden>
+        <h3 id="baEditorTitle">Nuevo caso</h3>
+        <div class="admin-editor-row">
+            <div>
+                <label for="baTitle">Título *</label>
+                <input id="baTitle" placeholder="Balayage + matiz">
+            </div>
+            <div>
+                <label for="baTag">Tag (opcional)</label>
+                <input id="baTag" placeholder="Coloración">
+            </div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="baBefore">Imagen ANTES *</label>
+                <input id="baBefore" placeholder="https://...">
+                <div style="margin-top:.5rem;">
+                    <button type="button" id="baBeforeBtn" class="admin-btn action outline">📷 Subir / enlace</button>
+                    <input type="file" id="baBeforeInput" accept="image/*" hidden>
+                </div>
+            </div>
+            <div>
+                <label for="baAfter">Imagen DESPUÉS *</label>
+                <input id="baAfter" placeholder="https://...">
+                <div style="margin-top:.5rem;">
+                    <button type="button" id="baAfterBtn" class="admin-btn action outline">📷 Subir / enlace</button>
+                    <input type="file" id="baAfterInput" accept="image/*" hidden>
+                </div>
+            </div>
+        </div>
+        <label class="admin-check"><input type="checkbox" id="baActive" checked> Activo (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button id="baSave" class="admin-btn action solid">Guardar caso</button>
+            <button id="baCancel" class="admin-btn action ghost">Cancelar</button>
+        </div>
+    </div>
+</section>
+
+<section id="view-plans" class="admin-view">
+    <h2>Planes / Membresías</h2>
+    <button id="newPlanBtn" class="admin-btn action solid">＋ Nuevo plan</button>
+    <div id="plansTable"></div>
+    <div id="planEditor" class="admin-editor-card" hidden>
+        <h3 id="planEditorTitle">Nuevo plan</h3>
+        <div class="admin-editor-row">
+            <div>
+                <label for="planName">Nombre *</label>
+                <input id="planName" placeholder="Club Fade">
+            </div>
+            <div>
+                <label for="planPeriod">Periodo</label>
+                <input id="planPeriod" placeholder="mes" value="mes">
+            </div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="planPrice">Precio (MXN) *</label>
+                <input id="planPrice" type="number" min="0">
+            </div>
+            <div>
+                <label for="planCta">Texto del botón</label>
+                <input id="planCta" placeholder="Elegir plan">
+            </div>
+        </div>
+        <label for="planDesc">Descripción corta</label>
+        <textarea id="planDesc" rows="2" placeholder="Cortes ilimitados al mes..."></textarea>
+        <label for="planFeatures">Beneficios (uno por línea)</label>
+        <textarea id="planFeatures" rows="4" placeholder="Corte + fade incluido&#10;Ceja y acabado&#10;1 invitado al mes"></textarea>
+        <label class="admin-check"><input type="checkbox" id="planFeatured"> ⭐ Destacar como "Más popular"</label>
+        <label class="admin-check"><input type="checkbox" id="planActive" checked> Activo (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button id="planSave" class="admin-btn action solid">Guardar plan</button>
+            <button id="planCancel" class="admin-btn action ghost">Cancelar</button>
+        </div>
+    </div>
+</section>
+
+<section id="view-classes" class="admin-view">
+    <h2>Agenda de clases</h2>
+    <button id="newClassBtn" class="admin-btn action solid">＋ Nueva clase</button>
+    <div id="classesTable"></div>
+    <div id="classEditor" class="admin-editor-card" hidden>
+        <h3 id="classEditorTitle">Nueva clase</h3>
+        <div class="admin-editor-row">
+            <div>
+                <label for="classDay">Día</label>
+                <select id="classDay">
+                    <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+                    <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
+                </select>
+            </div>
+            <div>
+                <label for="classTime">Hora (24 h)</label>
+                <input id="classTime" placeholder="19:00">
+            </div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="className">Clase *</label>
+                <input id="className" placeholder="Spinning">
+            </div>
+            <div>
+                <label for="classCoach">Coach</label>
+                <input id="classCoach" placeholder="Sofía">
+            </div>
+        </div>
+        <label for="classLevel">Nivel (opcional)</label>
+        <input id="classLevel" placeholder="Principiante / Intermedio / Avanzado">
+        <label class="admin-check"><input type="checkbox" id="classActive" checked> Activa (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button id="classSave" class="admin-btn action solid">Guardar clase</button>
+            <button id="classCancel" class="admin-btn action ghost">Cancelar</button>
+        </div>
+    </div>
+</section>
+
+<section id="view-team" class="admin-view">
+    <h2>Equipo</h2>
+    <button id="newTeamBtn" class="admin-btn action solid">＋ Nuevo miembro</button>
+    <div id="teamTable"></div>
+    <div id="teamEditor" class="admin-editor-card" hidden>
+        <h3 id="teamEditorTitle">Nuevo miembro</h3>
+        <div class="admin-editor-row">
+            <div>
+                <label for="teamName">Nombre *</label>
+                <input id="teamName" placeholder="Dra. María López">
+            </div>
+            <div>
+                <label for="teamSpecialty">Especialidad / puesto</label>
+                <input id="teamSpecialty" placeholder="Cardiología Clínica">
+            </div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="teamCedula">Cédula / credencial</label>
+                <input id="teamCedula" placeholder="Céd. Prof. 1234567">
+            </div>
+            <div>
+                <label for="teamSchedule">Horario</label>
+                <input id="teamSchedule" placeholder="Lun–Vie · 9:00–17:00">
+            </div>
+        </div>
+        <label for="teamBio">Bio / descripción</label>
+        <textarea id="teamBio" rows="3" placeholder="Formación, experiencia, certificaciones..."></textarea>
+        <div class="admin-editor-row">
+            <div>
+                <label for="teamPhone">Teléfono</label>
+                <input id="teamPhone" placeholder="+52 55 1234 5678">
+            </div>
+            <div>
+                <label for="teamWhatsapp">WhatsApp (solo números)</label>
+                <input id="teamWhatsapp" placeholder="5215512345678">
+            </div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="teamEmail">Correo</label>
+                <input id="teamEmail" placeholder="correo@negocio.com">
+            </div>
+            <div>
+                <label for="teamPhoto">Foto</label>
+                <input id="teamPhoto" placeholder="https://...">
+                <div style="margin-top:.5rem;">
+                    <button type="button" id="teamPhotoBtn" class="admin-btn action outline">📷 Subir / enlace</button>
+                    <input type="file" id="teamPhotoInput" accept="image/*" hidden>
+                </div>
+            </div>
+        </div>
+        <label class="admin-check"><input type="checkbox" id="teamActive" checked> Activo (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button id="teamSave" class="admin-btn action solid">Guardar miembro</button>
+            <button id="teamCancel" class="admin-btn action ghost">Cancelar</button>
+        </div>
+    </div>
+</section>
+
+<section id="view-gallery" class="admin-view">
+    <h2>Galería</h2>
+    <button id="newGalleryBtn" class="admin-btn action solid">＋ Nueva imagen</button>
+    <div id="galleryTable"></div>
+    <div id="galleryEditor" class="admin-editor-card" hidden>
+        <h3 id="galleryEditorTitle">Nueva imagen</h3>
+        <label for="galleryImage">Imagen *</label>
+        <input id="galleryImage" placeholder="https://...">
+        <div style="margin-top:.5rem;">
+            <button type="button" id="galleryImageBtn" class="admin-btn action outline">📷 Subir / enlace</button>
+            <input type="file" id="galleryImageInput" accept="image/*" hidden>
+        </div>
+        <label for="galleryCaption">Leyenda (caption)</label>
+        <input id="galleryCaption" placeholder="Recepción principal">
+        <label class="admin-check"><input type="checkbox" id="galleryActive" checked> Activa (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button id="gallerySave" class="admin-btn action solid">Guardar imagen</button>
+            <button id="galleryCancel" class="admin-btn action ghost">Cancelar</button>
+        </div>
+    </div>
+</section>
+
+<section id="view-story" class="admin-view">
+    <h2>Historia / Nosotros</h2>
+    <form id="storyForm" class="admin-editor-card" style="max-width:880px;" onsubmit="return false;">
+        <div class="admin-editor-row">
+            <div>
+                <label for="storyLabel">Etiqueta (label)</label>
+                <input id="storyLabel" placeholder="Nuestra Historia">
+            </div>
+            <div>
+                <label for="storyHeading">Título (usa &lt;em&gt; para resaltar)</label>
+                <input id="storyHeading" placeholder="Más de una década <em>cuidando</em> de ti">
+            </div>
+        </div>
+        <label for="storyImage">Imagen principal</label>
+        <input id="storyImage" placeholder="https://...">
+        <div style="margin-top:.5rem;">
+            <button type="button" id="storyImageBtn" class="admin-btn action outline">📷 Subir / enlace</button>
+            <input type="file" id="storyImageInput" accept="image/*" hidden>
+        </div>
+        <label for="storyParagraphs">Párrafos (uno por línea)</label>
+        <textarea id="storyParagraphs" rows="5" placeholder="Fundada en 2010...&#10;Contamos con tecnología..."></textarea>
+        <label for="storyStats">Cifras (una por línea: número | texto)</label>
+        <textarea id="storyStats" rows="3" placeholder="15K+ | Pacientes Atendidos&#10;25 | Especialistas&#10;99% | Satisfacción"></textarea>
+        <label class="admin-check"><input type="checkbox" id="storyPartnersOn"> Mostrar convenios / patrocinadores</label>
+        <label for="storyPartnersTitle">Título de convenios</label>
+        <input id="storyPartnersTitle" placeholder="Aseguradoras y Convenios">
+        <label for="storyPartners">Convenios (uno por línea: Nombre | url-logo opcional)</label>
+        <textarea id="storyPartners" rows="4" placeholder="GNP Seguros | https://...logo.png&#10;MetLife"></textarea>
+        <label class="admin-check"><input type="checkbox" id="storyActive" checked> Activo (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button type="button" id="storySave" class="admin-btn action solid">Guardar historia</button>
+        </div>
+    </form>
+</section>
+
+<section id="view-philosophy" class="admin-view">
+    <h2>Filosofía / Cita</h2>
+    <form id="philoForm" class="admin-editor-card" style="max-width:780px;" onsubmit="return false;">
+        <label for="philoLabel">Etiqueta (label)</label>
+        <input id="philoLabel" placeholder="Nuestra Filosofía">
+        <label for="philoQuote">Cita / frase principal (usa &lt;em&gt; para resaltar)</label>
+        <textarea id="philoQuote" rows="3" placeholder="La medicina no es solo ciencia, es el <em>arte de cuidar</em> con el corazón."></textarea>
+        <label for="philoAuthor">Autor / firma</label>
+        <input id="philoAuthor" placeholder="— Dr. Carlos Ramírez, Director Médico">
+        <div class="admin-editor-row">
+            <div>
+                <label for="philoCta">Texto del botón</label>
+                <input id="philoCta" placeholder="Conoce a Nuestro Equipo">
+            </div>
+            <div>
+                <label for="philoHref">Enlace del botón</label>
+                <input id="philoHref" placeholder="#team">
+            </div>
+        </div>
+        <label class="admin-check"><input type="checkbox" id="philoActive" checked> Activo (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button type="button" id="philoSave" class="admin-btn action solid">Guardar filosofía</button>
+        </div>
+    </form>
+</section>
+
+<section id="view-location" class="admin-view">
+    <h2>Ubicación</h2>
+    <form id="locForm" class="admin-editor-card" style="max-width:880px;" onsubmit="return false;">
+        <div class="admin-editor-row">
+            <div>
+                <label for="locLabel">Etiqueta (label)</label>
+                <input id="locLabel" placeholder="Nuestra Ubicación">
+            </div>
+            <div>
+                <label for="locHeading">Título (usa &lt;em&gt; para resaltar)</label>
+                <input id="locHeading" placeholder="Visítanos en <em>nuestra clínica</em>">
+            </div>
+        </div>
+        <label for="locSubtitle">Subtítulo</label>
+        <input id="locSubtitle" placeholder="Fácil acceso, estacionamiento propio...">
+        <label for="locAddress">Dirección completa</label>
+        <input id="locAddress" placeholder="Av. Reforma 222, Col. Juárez, CDMX">
+        <div class="admin-editor-row">
+            <div>
+                <label for="locPhone">Teléfono (visible)</label>
+                <input id="locPhone" placeholder="+52 55 5555 1234">
+            </div>
+            <div>
+                <label for="locPhoneHref">Enlace tel: (sin espacios)</label>
+                <input id="locPhoneHref" placeholder="tel:+525555551234">
+            </div>
+        </div>
+        <label for="locHours">Horarios (uno por línea: día | horario)</label>
+        <textarea id="locHours" rows="4" placeholder="Lunes a Viernes | 8:00 – 20:00&#10;Sábado | 9:00 – 14:00&#10;Domingo | Solo Urgencias"></textarea>
+        <label for="locImage">Imagen de fondo (fachada)</label>
+        <input id="locImage" placeholder="https://...">
+        <div style="margin-top:.5rem;">
+            <button type="button" id="locImageBtn" class="admin-btn action outline">📷 Subir / enlace</button>
+            <input type="file" id="locImageInput" accept="image/*" hidden>
+        </div>
+        <label for="locQuery">Consulta del mapa (dirección para Google Maps)</label>
+        <input id="locQuery" placeholder="Av. Paseo de la Reforma 222, Juárez, CDMX">
+        <label class="admin-check"><input type="checkbox" id="locActive" checked> Activo (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button type="button" id="locSave" class="admin-btn action solid">Guardar ubicación</button>
+        </div>
+    </form>
+</section>
+
+<section id="view-hero" class="admin-view">
+    <h2>Hero (portada)</h2>
+    <form id="heroForm" class="admin-editor-card" style="max-width:880px;" onsubmit="return false;">
+        <label for="heroEyebrow">Eyebrow (línea superior pequeña)</label>
+        <input id="heroEyebrow" placeholder="Clínica Médica Premium — Desde 2010">
+        <div class="admin-editor-row">
+            <div>
+                <label for="heroLine1">Título línea 1</label>
+                <input id="heroLine1" placeholder="Nosotros">
+            </div>
+            <div>
+                <label for="heroLine2">Título línea 2</label>
+                <input id="heroLine2" placeholder="Cuidamos tu">
+            </div>
+        </div>
+        <label for="heroWords">Palabras del typewriter (una por línea)</label>
+        <textarea id="heroWords" rows="3" placeholder="Bienestar&#10;Salud&#10;Familia"></textarea>
+        <label for="heroSubtitle">Subtítulo</label>
+        <textarea id="heroSubtitle" rows="2" placeholder="Medicina de precisión con calidez humana..."></textarea>
+        <div class="admin-editor-row">
+            <div>
+                <label for="heroCta">Texto del botón</label>
+                <input id="heroCta" placeholder="Agendar Consulta">
+            </div>
+            <div>
+                <label for="heroHref">Enlace del botón</label>
+                <input id="heroHref" placeholder="#appointments">
+            </div>
+        </div>
+        <label for="heroBg">Imagen de fondo</label>
+        <input id="heroBg" placeholder="https://...">
+        <div style="margin-top:.5rem;">
+            <button type="button" id="heroBgBtn" class="admin-btn action outline">📷 Subir / enlace</button>
+            <input type="file" id="heroBgInput" accept="image/*" hidden>
+        </div>
+        <label for="heroSeal">Logo del sello flotante (PNG transparente, opcional)</label>
+        <input id="heroSeal" placeholder="https://...">
+        <div style="margin-top:.5rem;">
+            <button type="button" id="heroSealBtn" class="admin-btn action outline">📷 Subir / enlace</button>
+            <input type="file" id="heroSealInput" accept="image/*" hidden>
+        </div>
+        <label class="admin-check"><input type="checkbox" id="heroActive" checked> Activo (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button type="button" id="heroSave" class="admin-btn action solid">Guardar hero</button>
+        </div>
+    </form>
+</section>
+
+<section id="view-collab" class="admin-view">
+    <h2>Colabora (B2B)</h2>
+    <form id="collabForm" class="admin-editor-card" style="max-width:880px;" onsubmit="return false;">
+        <div class="admin-editor-row">
+            <div>
+                <label for="collabLabel">Etiqueta (label)</label>
+                <input id="collabLabel" placeholder="Colabora con nosotros">
+            </div>
+            <div>
+                <label for="collabHeading">Título (usa &lt;em&gt;)</label>
+                <input id="collabHeading" placeholder="Tu negocio con <em>sabor propio</em>">
+            </div>
+        </div>
+        <label for="collabSubtitle">Subtítulo</label>
+        <textarea id="collabSubtitle" rows="2" placeholder="Somos tu proveedor de postres artesanales..."></textarea>
+        <label for="collabMarquee">Cinta de especialidades (una por línea)</label>
+        <textarea id="collabMarquee" rows="3" placeholder="Pasteles&#10;Cheesecakes&#10;Macarons"></textarea>
+        <label for="collabPoints">Beneficios (uno por línea: icono | título | descripción)</label>
+        <textarea id="collabPoints" rows="4" placeholder="fa-truck-fast | Entrega diaria | Rutas de reparto matutinas.&#10;fa-tags | Precio de mayoreo | Esquema especial para pedidos recurrentes."></textarea>
+        <div class="admin-editor-row">
+            <div>
+                <label for="collabCta">Texto botón principal</label>
+                <input id="collabCta" placeholder="Ver folleto de precios">
+            </div>
+            <div>
+                <label for="collabBrochure">URL del folleto (PDF/Drive)</label>
+                <input id="collabBrochure" placeholder="https://...">
+            </div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="collabCta2">Texto botón secundario</label>
+                <input id="collabCta2" placeholder="Escríbenos por WhatsApp">
+            </div>
+            <div>
+                <label for="collabWa">WhatsApp (solo números)</label>
+                <input id="collabWa" placeholder="5215555551234">
+            </div>
+        </div>
+        <label class="admin-check"><input type="checkbox" id="collabActive" checked> Activo (visible en el sitio)</label>
+        <div class="admin-editor-actions">
+            <button type="button" id="collabSave" class="admin-btn action solid">Guardar colabora</button>
+        </div>
+    </form>
+</section>
+
+<section id="view-business" class="admin-view">
+    <h2>Negocio (SEO + fiscal)</h2>
+    <form id="bizForm" class="admin-editor-card" style="max-width:980px;" onsubmit="return false;">
+        <div class="admin-editor-row">
+            <div>
+                <label for="bizType">Tipo de negocio (Schema)</label>
+                <select id="bizType">
+                    <option>LocalBusiness</option><option>Bakery</option><option>Restaurant</option>
+                    <option>CafeOrCoffeeShop</option><option>BeautySalon</option><option>HealthAndBeautyBusiness</option>
+                    <option>ExerciseGym</option><option>Dentist</option><option>MedicalClinic</option><option>Store</option>
+                </select>
+            </div>
+            <div>
+                <label for="bizName">Nombre comercial</label>
+                <input id="bizName" placeholder="Pastelería Dulce Alma">
+            </div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="bizLegal">Razón social</label>
+                <input id="bizLegal" placeholder="Dulce Alma S.A. de C.V.">
+            </div>
+            <div>
+                <label for="bizTax">RFC / ID fiscal</label>
+                <input id="bizTax" placeholder="DAC100315AB1">
+            </div>
+        </div>
+        <label for="bizDesc">Descripción (para Google)</label>
+        <textarea id="bizDesc" rows="2" placeholder="Pastelería artesanal con entregas el mismo día..."></textarea>
+        <div class="admin-editor-row">
+            <div>
+                <label for="bizUrl">URL del sitio</label>
+                <input id="bizUrl" placeholder="https://tudominio.com">
+            </div>
+            <div>
+                <label for="bizPrice">Rango de precios</label>
+                <input id="bizPrice" placeholder="$$">
+            </div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="bizPhone">Teléfono</label>
+                <input id="bizPhone" placeholder="+52 55 5555 1234">
+            </div>
+            <div>
+                <label for="bizEmail">Correo</label>
+                <input id="bizEmail" placeholder="hola@negocio.com">
+            </div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="bizLogo">URL del logo</label>
+                <input id="bizLogo" placeholder="https://.../logo.png">
+            </div>
+            <div>
+                <label for="bizImage">URL imagen representativa</label>
+                <input id="bizImage" placeholder="https://.../hero.jpg">
+            </div>
+        </div>
+        <label>Dirección</label>
+        <div class="admin-editor-row">
+            <div><input id="bizStreet" placeholder="Calle y número"></div>
+            <div><input id="bizCity" placeholder="Ciudad"></div>
+        </div>
+        <div class="admin-editor-row">
+            <div><input id="bizState" placeholder="Estado"></div>
+            <div><input id="bizZip" placeholder="C.P."></div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="bizCountry">País</label>
+                <input id="bizCountry" placeholder="MX">
+            </div>
+            <div>
+                <label for="bizHours">Horario (texto)</label>
+                <input id="bizHours" placeholder="Mo-Sa 09:00-20:00">
+            </div>
+        </div>
+        <div class="admin-editor-row">
+            <div>
+                <label for="bizLat">Latitud (Google)</label>
+                <input id="bizLat" type="number" step="any" placeholder="19.4326">
+            </div>
+            <div>
+                <label for="bizLng">Longitud (Google)</label>
+                <input id="bizLng" type="number" step="any" placeholder="-99.1332">
+            </div>
+        </div>
+        <label for="bizSocial">Redes sociales (una URL por línea)</label>
+        <textarea id="bizSocial" rows="2" placeholder="https://instagram.com/negocio&#10;https://facebook.com/negocio"></textarea>
+        <label for="bizRegistry">Datos de registro (COFEPRIS, comercio, etc.)</label>
+        <input id="bizRegistry" placeholder="Registro público / permisos">
+        <div class="admin-editor-row">
+            <div>
+                <label for="bizFaqLabel">Etiqueta FAQ</label>
+                <input id="bizFaqLabel" placeholder="Preguntas frecuentes">
+            </div>
+            <div>
+                <label for="bizFaqHeading">Título FAQ (usa &lt;em&gt;)</label>
+                <input id="bizFaqHeading" placeholder="Resolvemos tus <em>dudas</em>">
+            </div>
+        </div>
+        <label for="bizFaq">Preguntas FAQ (una por línea: pregunta | respuesta)</label>
+        <textarea id="bizFaq" rows="4" placeholder="¿Hacen entregas? | Sí, el mismo día.&#10;¿Aceptan pedidos especiales? | Sí, con 3 días de anticipación."></textarea>
+        <label class="admin-check"><input type="checkbox" id="bizActive" checked> Activo (alimenta SEO + bloque FAQ)</label>
+        <div class="admin-editor-actions">
+            <button type="button" id="bizSave" class="admin-btn action solid">Guardar negocio</button>
+        </div>
+    </form>
+</section>
             
         </main>
     </div>
